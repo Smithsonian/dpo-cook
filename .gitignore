@@ -1,0 +1,15 @@
+# FOLDERS
+.idea/
+.vscode/
+node_modules/
+doc/source/
+server/bin/
+server/work/
+server/static/models/
+server/static/app/
+
+# FILES
+*.log
+.DS_Store
+server/tools.json
+server/clients.json
