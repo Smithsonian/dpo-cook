@@ -1,0 +1,135 @@
+{
+    "id": "967ed977-055e-41c8-a836-b1372be3b3ca",
+    "name": "unwrap",
+    "description": "Unwrap decimated mesh using Unfold",
+    "version": "2",
+    "start": "pickup",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "decimatedMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "baseFileName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "pickupPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            },
+            "numFaces": {
+                "type": "integer",
+                "minimum": 100,
+                "default": 100000
+            },
+            "mapSize": {
+                "type": "integer",
+                "multipleOf": 128,
+                "default": 4096
+            },
+            "segmentationStrength": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.6
+            },
+            "packEffort": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "cutHandles": {
+                "type": "boolean",
+                "default": true
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "Unfold",
+                    "Unknit",
+                    "Mops"
+                ],
+                "default": "Unfold"
+            }
+        },
+        "required": [
+            "decimatedMeshFile",
+            "baseFileName",
+            "numFaces",
+            "mapSize"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "pre": {
+                "baseName": "$baseName(baseFileName)",
+                "baseMeshName": "$baseMeshName(baseFileName, numFaces)"
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "decimatedMeshFile": "decimatedMeshFile"
+                }
+            },
+            "success": "'unwrap'",
+            "failure": "$failure"
+        },
+        "unwrap": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using Unfold",
+            "pre": {
+                "deliverables": {
+                    "unwrappedMeshObjFile": "baseMeshName & '-unwrapped-' & $lowercase(tool) & '.obj'",
+                    "unwrappedMeshFbxFile": "tool = 'Unfold' ? baseMeshName & '-unwrapped-' & $lowercase(tool) & '.fbx' : ''"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "deliverables.unwrappedMeshObjFile",
+                "saveFbx": true,
+                "saveObj": true,
+                "mapSize": "mapSize",
+                "segmentationStrength": "segmentationStrength",
+                "packEffort": "packEffort",
+                "cutHandles": "cutHandles",
+                "timeout": 1800,
+                "tool": "tool"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

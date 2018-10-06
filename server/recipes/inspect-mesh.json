@@ -1,0 +1,103 @@
+{
+    "id": "ee77ee05-d832-4729-9914-18a96939f205",
+    "name": "inspect-mesh",
+    "description": "Inspects a mesh and returns a report with results",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "meshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "inspectionTool": {
+                "type": "string",
+                "enum": [
+                    "Meshlab",
+                    "MeshSmith"
+                ],
+                "default": "Meshlab"
+            },
+            "pickupPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            }
+        },
+        "required": [
+            "meshFile"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "pre": {
+                "baseName": "$baseName(meshFile)",
+                "delivery": {
+                    "inspectionReport": "baseName & '-inspection.json'"
+                }
+            },
+            "parameters": {
+                "logToConsole": true,
+                "logFile": "baseName & '-log.txt'",
+                "reportFile": "baseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Get input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "meshFile": "meshFile"
+                }
+            },
+            "success": "'inspect'",
+            "failure": "$failure"
+        },
+        "inspect": {
+            "task": "InspectMesh",
+            "description": "Validate mesh and inspect topology",
+            "parameters": {
+                "meshFile": "meshFile",
+                "reportFile": "delivery.inspectionReport",
+                "tool": "inspectionTool"
+            },
+            "post": {
+                "maxRayDistance": "$max($result.inspection.scene.geometry.size) * 0.01"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "delivery"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

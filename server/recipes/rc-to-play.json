@@ -1,0 +1,94 @@
+{
+    "id": "19f06147-d460-4e47-a55d-2b58dc84a4ab",
+    "name": "rc-to-play",
+    "description": "[DRAFT!] Converts RC output to PLAY assets, including mesh, textures and descriptor file",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "someFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "pickupPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            }
+        },
+        "required": [
+            "someFile"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "$baseName(someFile) & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "someFile": "someFile"
+                }
+            },
+            "success": "'process'",
+            "failure": "$failure"
+        },
+        "process": {
+            "task": "Dummy",
+            "description": "Dummy Task",
+            "pre": {
+            },
+            "parameters": {
+                "outcome": "success",
+                "duration": 1
+            },
+            "post": {
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "pre": {
+                "deliverables": {
+                    "someFile": "someFile"
+                }
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

@@ -1,0 +1,372 @@
+{
+    "id": "fe8dd515-13d5-4990-830c-e2198b43b585",
+    "name": "vz-to-play-alt",
+    "description": "VZ Collection CT mesh to Web, decimate (don't preserve bounds, topo), fix, unwrap, and bake, generate PLAY-ready assets",
+    "version": "2",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "highPolyMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "pickupPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            },
+            "numFaces": {
+                "type": "integer",
+                "minimum": 1000,
+                "multipleOf": 1000,
+                "default": 125000
+            },
+            "mapSize": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 8192,
+                "default": 4096
+            },
+            "segmentationStrength": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.6
+            },
+            "packEffort": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "bakeOcclusion": {
+                "type": "boolean",
+                "default": true
+            },
+            "bakeNormals": {
+                "type": "boolean",
+                "default": true
+            },
+            "bakeTest": {
+                "type": "boolean",
+                "default": false
+            },
+            "maxRayDistance": {
+                "type": "number",
+                "default": 0
+            },
+            "occlusionRays": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 512,
+                "default": 96
+            },
+            "diffuseMapQuality": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 79
+            },
+            "occlusionMapQuality": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 59
+            },
+            "normalMapQuality": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 89
+            },
+            "tangentSpaceNormals": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "required": [
+            "highPolyMeshFile"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Start logging to file",
+            "pre": {
+                "baseName": "$baseName(highPolyMeshFile)",
+                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
+                "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "logFile": "baseName & '_log.txt'",
+                "reportFile": "baseName & '_report.json'",
+                "markerFile": "baseName & '_log.txt'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "highPolyMeshFile": "highPolyMeshFile"
+                }
+            },
+            "success": "'decimate-meshlab'",
+            "failure": "$failure"
+        },
+
+        "decimate-meshlab": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using Meshlab",
+            "pre": {
+                "decimatedMeshlabMeshFile": "baseMeshName & '-decimated-meshlab.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "highPolyMeshFile",
+                "outputMeshFile": "decimatedMeshlabMeshFile",
+                "numFaces": "numFaces",
+                "preserveTopology": false,
+                "preserveBoundaries": false,
+                "minComponentSize": "'2%'",
+                "timeout": 300
+            },
+            "post": {
+                "decimatedMeshFile": "decimatedMeshlabMeshFile"
+            },
+            "success": "'fix'",
+            "failure": "'decimate-mops'"
+        },
+
+        "decimate-mops": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using Mops",
+            "pre": {
+                "decimatedMopsMeshFile": "baseMeshName & '-decimated-mops.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "highPolyMeshFile",
+                "outputMeshFile": "decimatedMopsMeshFile",
+                "numFaces": "numFaces",
+                "timeout": 180,
+                "tool": "'Mops'"
+            },
+            "post": {
+                "decimatedMeshFile": "decimatedMopsMeshFile"
+            },
+            "success": "'fix'",
+            "failure": "$failure"
+        },
+
+        "fix": {
+            "task": "FixMesh",
+            "description": "Try to fix mesh using MeshFix",
+            "pre": {
+                "decimatedFixedMeshFile": "baseMeshName & '-decimated-fixed.off'"
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "decimatedFixedMeshFile"
+            },
+            "success": "'fix-convert'",
+            "failure": "$failure"
+        },
+
+        "fix-convert": {
+            "task": "ConvertMesh",
+            "description": "Convert OFF to OBJ",
+            "pre": {
+                "decimatedFixedConvertedMeshFile": "baseMeshName & '-decimated-fixed.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedFixedMeshFile",
+                "outputMeshFile": "decimatedFixedConvertedMeshFile",
+                "tool": "'Meshlab'"
+            },
+            "success": "'unwrap-mops-a'",
+            "failure": "$failure"
+        },
+
+        "unwrap-mops-a": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using Mops",
+            "pre": {
+                "unwrappedMeshFile": "baseMeshName & '-unwrapped.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(decimatedFixedConvertedMeshFile, decimatedMeshFile)",
+                "outputMeshFile": "unwrappedMeshFile",
+                "mapSize": "mapSize",
+                "segmentationStrength": "segmentationStrength",
+                "packEffort": "packEffort",
+                "unwrapMethod": "'forwardBijective'",
+                "timeout": 540,
+                "tool": "'Mops'"
+            },
+            "success": "'convert-obj'",
+            "failure": "'unwrap-unfold'"
+        },
+
+        "unwrap-unfold": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using Unfold",
+            "pre": {
+                "unwrappedMeshFile": "baseMeshName & '-unwrapped.obj'",
+                "unwrappedMeshFileFbx": "baseMeshName & '-unwrapped.fbx'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(decimatedFixedConvertedMeshFile, decimatedMeshFile)",
+                "outputMeshFile": "unwrappedMeshFile",
+                "mapSize": "mapSize",
+                "segmentationStrength": "segmentationStrength",
+                "packEffort": "packEffort",
+                "timeout": 600,
+                "tool": "'Unfold'"
+            },
+            "success": "'convert-fbx'",
+            "failure": "'unwrap-mops-b'"
+        },
+
+        "unwrap-mops-b": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using Mops",
+            "pre": {
+                "unwrappedMeshFile": "baseMeshName & '-unwrapped.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "unwrappedMeshFile",
+                "mapSize": "mapSize",
+                "segmentationStrength": "segmentationStrength",
+                "packEffort": "packEffort",
+                "unwrapMethod": "'isometric'",
+                "timeout": 240,
+                "tool": "'Mops'"
+            },
+            "success": "'convert-obj'",
+            "failure": "$failure"
+        },
+
+        "convert-obj": {
+            "task": "ConvertMesh",
+            "description": "Strip normals, join identical vertices",
+            "pre": {
+                "unwrappedConvertedMeshFile": "baseName & '.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "unwrappedMeshFile",
+                "outputMeshFile": "unwrappedConvertedMeshFile",
+                "stripNormals": true,
+                "joinVertices": true
+            },
+            "success": "'bake'",
+            "failure": "$failure"
+        },
+
+        "convert-fbx": {
+            "task": "ConvertMesh",
+            "description": "Strip normals, join identical vertices",
+            "pre": {
+                "unwrappedConvertedMeshFile": "baseName & '.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "unwrappedMeshFile",
+                "outputMeshFile": "unwrappedConvertedMeshFile",
+                "stripNormals": true,
+                "joinVertices": true
+            },
+            "success": "'bake'",
+            "failure": "$failure"
+        },
+
+        "bake": {
+            "task": "BakeMaps",
+            "description": "Bake normal and occlusion maps using xNormal",
+            "parameters": {
+                "highPolyMeshFile": "highPolyMeshFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedConvertedMeshFile",
+                "mapBaseName": "baseMeshMapName & '.png'",
+                "mapSize": "mapSize",
+                "maxRayDistance": 0.5,
+                "bakeOcclusion": "bakeOcclusion",
+                "bakeNormals": "bakeNormals",
+                "bakeTest": "bakeTest",
+                "occlusionRays": "occlusionRays",
+                "timeout": 720
+            },
+            "post": {
+                "bakedOcclusionMap": "baseMeshMapName & '-occlusion.png'",
+                "bakedNormalMap": "baseMeshMapName & '-normals.png'"
+            },
+            "success": "'convert-occlusion'",
+            "failure": "$failure"
+        },
+
+        "convert-occlusion": {
+            "task": "ConvertImage",
+            "description": "Convert occlusion map to JPG",
+            "pre": {
+                "convertedOcclusionMap": "baseName & '_occlusion.jpg'"
+            },
+            "parameters": {
+                "inputImageFile": "bakedOcclusionMap",
+                "outputImageFile": "convertedOcclusionMap",
+                "quality": "occlusionMapQuality"
+            },
+            "success": "'convert-normals'",
+            "failure": "$failure"
+        },
+
+        "convert-normals": {
+            "task": "ConvertImage",
+            "description": "Convert normal map to JPG",
+            "pre": {
+                "convertedNormalMap": "baseName & '_normal.jpg'"
+            },
+            "parameters": {
+                "inputImageFile": "bakedNormalMap",
+                "outputImageFile": "convertedNormalMap",
+                "quality": "normalMapQuality"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": {
+                    "lowPolyUnrwappedMeshFile": "unwrappedConvertedMeshFile",
+                    "occlusionMapFile": "convertedOcclusionMap",
+                    "normalMapFile": "convertedNormalMap"
+                }
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

@@ -1,0 +1,265 @@
+{
+    "$id": "https://schemas.3d.si.edu/cook/recipe.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+
+    "title": "Smithsonian 3D Processing Recipe",
+
+    "definitions": {
+        "primitiveValue": {
+            "$id": "#primitiveValue",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "taskParameter": {
+            "$id": "#taskParameter",
+            "oneOf": [
+                {
+                    "$ref": "#primitiveValue"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#primitiveValue"
+                    }
+                },
+                {
+                    "type": "object",
+                    "items": {
+                        "$ref": "#primitiveValue"
+                    }
+
+                }
+            ]
+        },
+        "recipeParameterMetaSchema": {
+            "$id": "#recipeParameterMetaSchema",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "const": "object"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "oneOf": [
+                            {
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "number"
+                                    },
+                                    "minimum": {
+                                        "type": "number"
+                                    },
+                                    "maximum": {
+                                        "type": "number"
+                                    },
+                                    "multipleOf": {
+                                        "type": "integer"
+                                    },
+                                    "default": {
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "type"
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "integer"
+                                    },
+                                    "minimum": {
+                                        "type": "integer"
+                                    },
+                                    "maximum": {
+                                        "type": "integer"
+                                    },
+                                    "multipleOf": {
+                                        "type": "integer"
+                                    },
+                                    "default": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "type"
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "boolean"
+                                    },
+                                    "default": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "type"
+                                ]
+                            },
+                            {
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "string"
+                                    },
+                                    "minLength": {
+                                        "type": "integer"
+                                    },
+                                    "maxLength": {
+                                        "type": "integer"
+                                    },
+                                    "default": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "type"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "required": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": {
+                    "type": "boolean",
+                    "const": false
+                }
+            },
+            "required": [
+                "type",
+                "properties",
+                "additionalProperties"
+            ]
+        },
+        "recipeStep": {
+            "$id": "#recipeStep",
+            "type": "object",
+            "properties": {
+                "task": {
+                    "description": "name of the task to be executed in this step",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "description": "descriptive text for this recipe step",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "parameters": {
+                    "title": "task parameters",
+                    "description": "primitive value or JSONata expression; strings must be put in quotes",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#taskParameter"
+                    }
+                },
+                "pre": {
+                    "title": "variables defined before task is started",
+                    "description": "primitive value or JSONata expression; strings must be put in quotes",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#taskParameter"
+                    }
+                },
+                "post": {
+                    "title": "variables defined after task is done",
+                    "description": "primitive value or JSONata expression; strings must be put in quotes",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#taskParameter"
+                    }
+                },
+                "success": {
+                    "title": "name of next step to be executed in case of success",
+                    "description": "name as string or JSONata expression; string must be put in quotes",
+                    "type": "string",
+                    "minLength": 1
+                },
+                "failure": {
+                    "title": "name of next step to be executed in case of failure",
+                    "description": "name as string or JSONata expression; string must be put in quotes",
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": [
+                "task",
+                "parameters",
+                "success",
+                "failure"
+            ],
+            "additionalProperties": false
+        }
+    },
+
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "unique identifier for the recipe",
+            "type": "string",
+            "minLength": 1
+        },
+        "name": {
+            "description": "recipe name",
+            "type": "string",
+            "minLength": 1
+        },
+        "description": {
+            "description": "recipe description",
+            "type": "string",
+            "minLength": 1
+        },
+        "version": {
+            "description": "version of the recipe, must be incremented each time recipe changes",
+            "type": "string",
+            "minLength": 1
+        },
+        "parameterSchema": {
+            "description": "JSON schema for the recipe's parameters; the schema must be valid against this meta schema",
+            "$ref": "#recipeParameterMetaSchema"
+        },
+        "start": {
+            "description": "name of first step to be executed",
+            "type": "string",
+            "minLength": 1
+        },
+        "steps": {
+            "description": "each recipe step consists of a task to be executed, and next steps in case of success or failure",
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#recipeStep"
+            }
+        }
+    },
+    "required": [
+        "id",
+        "name",
+        "version",
+        "parameterSchema",
+        "start",
+        "steps"
+    ],
+    "additionalProperties": false
+}

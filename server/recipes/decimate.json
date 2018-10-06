@@ -1,0 +1,136 @@
+{
+    "id": "7ce5c5b1-00d2-4d7f-bebc-ea99ae5f6640",
+    "name": "decimate",
+    "description": "Decimate high poly mesh",
+    "version": "4",
+    "start": "pickup",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "highPolyMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "pickupPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            },
+            "inspectMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "numFaces": {
+                "type": "integer",
+                "minimum": 100,
+                "default": 125000
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "Meshlab",
+                    "Mops"
+                ],
+                "default": "Meshlab"
+            }
+        },
+        "required": [
+            "highPolyMeshFile",
+            "numFaces"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "pre": {
+                "baseName": "$baseName(highPolyMeshFile)",
+                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)"
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "highPolyMeshFile": "highPolyMeshFile"
+                }
+            },
+            "success": "inspectMesh ? 'inspect-highpoly' : 'decimate'",
+            "failure": "$failure"
+        },
+        "inspect-highpoly": {
+            "task": "InspectMesh",
+            "description": "Inspect high poly mesh using Meshlab",
+            "pre": {
+                "deliverables": {
+                    "highPolyReportFile": "baseName & '-highpoly-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshFile": "highPolyMeshFile",
+                "reportFile": "deliverables.highPolyReportFile"
+            },
+            "success": "'decimate'",
+            "failure": "$failure"
+        },
+        "decimate": {
+            "task": "DecimateMesh",
+            "description": "Decimate high poly mesh",
+            "pre": {
+                "deliverables": {
+                    "decimatedMeshFile": "baseMeshName & '-decimated-' & $lowercase(tool) & '.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "highPolyMeshFile",
+                "outputMeshFile": "deliverables.decimatedMeshFile",
+                "numFaces": "numFaces",
+                "cleanup": true,
+                "preserveTexCoords": false,
+                "preserveBoundaries": true,
+                "tool": "tool"
+            },
+            "success": "inspectMesh ? 'inspect-decimated' : 'delivery'",
+            "failure": "$failure"
+        },
+        "inspect-decimated": {
+            "task": "InspectMesh",
+            "pre": {
+                "deliverables": {
+                    "decimatedReportFile": "baseMeshName & '-decimated-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshFile": "deliverables.decimatedMeshFile",
+                "reportFile": "deliverables.decimatedReportFile"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

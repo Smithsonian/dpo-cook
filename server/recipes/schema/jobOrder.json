@@ -1,0 +1,89 @@
+{
+    "$id": "https://schemas.3d.si.edu/cook/jobOrder.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+
+    "title": "Smithsonian 3D Processing Recipe",
+
+    "definitions": {
+        "primitiveValue": {
+            "$id": "#primitiveValue",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "recipeParameter": {
+            "$id": "#recipeParameter",
+            "oneOf": [
+                {
+                    "$ref": "#primitiveValue"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#primitiveValue"
+                    }
+                },
+                {
+                    "type": "object",
+                    "items": {
+                        "$ref": "#primitiveValue"
+                    }
+
+                }
+            ]
+        }
+    },
+
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "minLength": 1
+        },
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "clientId": {
+            "type": "string",
+            "minLength": 1
+        },
+        "recipeId": {
+            "type": "string",
+            "minLength": 1
+        },
+        "parameters": {
+            "type": "object",
+            "additionalParameters": {
+                "$ref": "#recipeParameter"
+            }
+        },
+        "priority": {
+            "type": "string",
+            "enum": [
+                "high",
+                "normal"
+            ]
+        },
+        "submission": {
+            "type": "string",
+            "format": "date-time"
+        }
+    },
+    "required": [
+        "id",
+        "name",
+        "clientId",
+        "recipeId",
+        "parameters"
+    ],
+    "additionalProperties": false
+}
