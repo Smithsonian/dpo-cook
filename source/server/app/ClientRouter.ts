@@ -41,7 +41,7 @@ export default class ClientRouter
     protected staticDir: string;
 
 
-    constructor(jobManager: JobManager, httpServer: http.Server, staticDir: string)
+    constructor(jobManager: JobManager, httpServer: http.Server, dirs: { files: string })
     {
         this.onLogMessage = this.onLogMessage.bind(this);
 
@@ -50,7 +50,7 @@ export default class ClientRouter
 
         this.realtimeServer = io.listen(httpServer);
         this.connections = [];
-        this.staticDir = staticDir;
+        this.staticDir = dirs.files;
 
         this.setupRouter();
         this.setupRealtime();

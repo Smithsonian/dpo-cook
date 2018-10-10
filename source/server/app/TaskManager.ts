@@ -19,6 +19,10 @@ import * as fs from "fs";
 import * as path from "path";
 import * as commentJSON from "comment-json";
 
+import { Dictionary } from "@ff/core/types";
+
+import * as jsonLoader from "../utils/jsonLoader";
+
 import Tool, { IToolConfiguration, IToolOptions } from "./Tool";
 import Task, { ITaskParameters } from "./Task";
 import Job from "./Job";
@@ -30,19 +34,20 @@ export default class TaskManager
 {
     private taskTypes: {};
     protected toolTypes: { [id:string]: typeof Tool };
-    protected toolConfigurations: { [id:string]: IToolConfiguration };
+    protected toolConfigurations: Dictionary<IToolConfiguration>;
 
-    constructor(toolsConfigFilePath: string)
+    constructor(dirs: { base: string, tools: string, tasks: string })
     {
         this.taskTypes = {};
         this.toolTypes = {};
-        this.toolConfigurations = {};
 
-        const tasksDir = path.resolve(__dirname, "../tasks");
-        const toolsDir = path.resolve(__dirname, "../tools");
+        const schemaDir = path.resolve(dirs.base, "schemas/");
+        const toolsSchemaPath = path.resolve(schemaDir, "tools.schema.json");
+        const toolsFilePath = path.resolve(dirs.base, "tools.json");
+        this.toolConfigurations = jsonLoader.validate(toolsFilePath, toolsSchemaPath, true);
 
-        this.loadTools(toolsDir, toolsConfigFilePath);
-        this.loadTasks(tasksDir);
+        this.loadTools(dirs.tools);
+        this.loadTasks(dirs.tasks);
     }
 
     createTask(taskName: string, parameters: ITaskParameters, context: Job): Task
@@ -89,27 +94,7 @@ export default class TaskManager
         console.log(`Tasks loaded: ${count}`);
     }
 
-    protected loadTools(toolsDir: string, toolsConfigFilePath: string)
-    {
-        let jsonConfig = "";
-
-        try {
-            jsonConfig = fs.readFileSync(toolsConfigFilePath, "utf8");
-        }
-        catch (e) {
-            throw new ConfigurationError(`failed to read tool configuration file '${toolsConfigFilePath}'`);
-        }
-
-        this.toolConfigurations = commentJSON.parse(jsonConfig, null, true);
-
-        if (!this.toolConfigurations) {
-            throw new ConfigurationError(`failed to parse tool configuration file '${toolsConfigFilePath}'`);
-        }
-
-        this.configureTools(toolsDir);
-    }
-
-    protected configureTools(toolsDir: string)
+    protected loadTools(toolsDir: string)
     {
         const toolFiles = fs.readdirSync(toolsDir);
         let count = 0;

@@ -33,8 +33,6 @@ import {
     TTaskState
 } from "common/types";
 
-import globals from "./globals";
-
 import TaskManager from "./TaskManager";
 import { IRecipeReport } from "../tasks/RecipeTask";
 import { ITaskLogEvent } from "./TaskLogger";
@@ -128,7 +126,7 @@ export default class JobManager extends Publisher<JobManager>
     protected workDir: string;
     protected jobOrderValidator: ValidateFunction;
 
-    constructor(configDir: string, workDir: string, recipeDir: string)
+    constructor(dirs: { base: string, schemas: string, work: string, tools: string, tasks: string, recipes: string })
     {
         super();
         this.addEvent("log");
@@ -137,12 +135,12 @@ export default class JobManager extends Publisher<JobManager>
 
         this.jobs = {};
 
-        this.clientManager = new ClientManager(path.resolve(configDir, "clients.json"));
-        this.taskManager = new TaskManager(path.resolve(configDir, "tools.json"));
-        this.recipeManager = new RecipeManager(recipeDir);
-        this.workDir = workDir;
+        this.clientManager = new ClientManager(dirs);
+        this.taskManager = new TaskManager(dirs);
+        this.recipeManager = new RecipeManager(dirs);
+        this.workDir = dirs.work;
 
-        const jobOrderSchemaPath = path.resolve(globals.recipesDir, "schema/jobOrder.json");
+        const jobOrderSchemaPath = path.resolve(dirs.schemas, "jobOrder.schema.json");
         const jobOrderSchema = JSON.parse(fs.readFileSync(jobOrderSchemaPath, "utf8"));
         this.jobOrderValidator = jsonValidator.compile(jobOrderSchema);
     }
@@ -318,9 +316,9 @@ export default class JobManager extends Publisher<JobManager>
         };
     }
 
-    getJobInfoList(clientId: string): IJobInfo[]
+    getJobInfoList(clientId?: string): IJobInfo[]
     {
-        if (!this.clientManager.hasClient(clientId)) {
+        if (clientId && !this.clientManager.hasClient(clientId)) {
             return [];
         }
 
@@ -328,7 +326,7 @@ export default class JobManager extends Publisher<JobManager>
 
         return jobList.filter(job => {
             const report = job.data.report;
-            return report.clientId === clientId;
+            return !clientId || report.clientId === clientId;
         })
         .map(job => {
             const report = job.data.report;
@@ -357,6 +355,37 @@ export default class JobManager extends Publisher<JobManager>
     getRecipeInfoList(): IRecipeInfo[]
     {
         return this.recipeManager.getRecipeInfoList();
+    }
+
+    getState()
+    {
+        const jobInfos = this.getJobInfoList();
+        const jobs = {
+            total: jobInfos.length,
+            created: jobInfos.filter(job => job.state === "created").length,
+            waiting: jobInfos.filter(job => job.state === "waiting").length,
+            running: jobInfos.filter(job => job.state === "running").length,
+            done: jobInfos.filter(job => job.state === "done").length,
+            error: jobInfos.filter(job => job.state === "error").length,
+            cancelled: jobInfos.filter(job => job.state === "cancelled").length,
+        };
+
+        const clients = [];
+        this.clientManager.getClients().forEach(client => {
+            const clientJobs = jobInfos.filter(jobInfo => jobInfo.clientId === client.id);
+            if (clientJobs.length > 0) {
+                clients.push({
+                    name: client.name,
+                    idleJobs: clientJobs.filter(job => job.state !== "running").map(job => job.id),
+                    runningJobs: clientJobs.filter(job => job.state === "running").map(job => job.id)
+                });
+            }
+        });
+
+        return {
+            jobs,
+            clients
+        };
     }
 
     protected onLogEvent(event: ITaskLogEvent)

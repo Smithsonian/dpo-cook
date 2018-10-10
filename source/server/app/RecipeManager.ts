@@ -25,7 +25,6 @@ const jsonValidator = new Ajv({ useDefaults: true, allErrors: true });
 
 import { IRecipe, IRecipeInfo } from "common/types";
 
-import globals from "./globals";
 import { ConfigurationError } from "./Errors";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,18 +36,20 @@ type RecipeDict = { [id:string]: IRecipe };
  */
 export default class RecipeManager
 {
+    protected recipeDir: string;
     protected recipes: RecipeDict;
     protected validator: ValidateFunction;
 
-    constructor(recipeDir: string)
+    constructor(dirs: { recipes: string, schemas: string })
     {
+        this.recipeDir = dirs.recipes;
         this.recipes = {};
 
-        const recipeSchemaFilePath = path.resolve(globals.recipesDir, "schema/recipe.json");
+        const recipeSchemaFilePath = path.resolve(dirs.schemas, "recipe.schema.json");
         const recipeSchema = JSON.parse(fs.readFileSync(recipeSchemaFilePath, "utf8"));
         this.validator = jsonValidator.compile(recipeSchema);
 
-        this.loadRecipes(recipeDir);
+        this.loadRecipes();
     }
 
     /**
@@ -137,16 +138,15 @@ export default class RecipeManager
 
     /**
      * Loads all available recipes in the given folder.
-     * @param {string} recipeDir Directory to load recipes from.
      */
-    protected loadRecipes(recipeDir: string)
+    protected loadRecipes()
     {
-        const fileNames = fs.readdirSync(recipeDir);
+        const fileNames = fs.readdirSync(this.recipeDir);
         let count = 0;
 
         fileNames.forEach(recipeFile => {
             if (path.extname(recipeFile) === ".json") {
-                const recipePath = path.resolve(globals.recipesDir, recipeFile);
+                const recipePath = path.resolve(this.recipeDir, recipeFile);
                 let recipe;
 
                 try {

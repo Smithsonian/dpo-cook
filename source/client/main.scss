@@ -72,15 +72,20 @@ html {
   height: 20px;
 }
 
-.button.overlay {
+.overlay-buttons {
   position: absolute;
-  right: 18px;
-  bottom: 18px;
-  width: 44px;
-  height: 44px;
-  padding: 5px 0;
-  border-radius: 44px;
-  font-size: 25px;
+  right: 14px;
+  bottom: 12px;
+
+  .button {
+    display: inline-block;
+    width: 44px;
+    height: 44px;
+    margin: 4px;
+    padding: 5px 0;
+    border-radius: 44px;
+    font-size: 25px;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -163,6 +168,8 @@ html {
   ul {
     margin: 0 4px !important;
   }
+
+
 }
 
 .job-list-view {

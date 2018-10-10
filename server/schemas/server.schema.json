@@ -1,0 +1,12 @@
+{
+    "$id": "https://schemas.3d.si.edu/cook/server.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+
+    "title": "Server Configuration",
+    "description": "Configuration file for the Smithsonian Cook Processing Service",
+
+    "type": "object",
+    "properties": {
+
+    }
+}

@@ -180,7 +180,7 @@ export default class ClientApplication extends React.Component<IClientApplicatio
 
         if (!props.reset && this.localStorage) {
             clientId = this.localStorage.getItem("processing-client-id");
-            const jsonLayout = this.localStorage.getItem("dockable-layout");
+            const jsonLayout = this.localStorage.getItem("dockable-layout2");
             layout = jsonLayout ? JSON.parse(jsonLayout) : layout;
         }
 
@@ -189,7 +189,7 @@ export default class ClientApplication extends React.Component<IClientApplicatio
 
         if (this.localStorage) {
             this.dockableController.on("change", () => {
-                window.localStorage.setItem("dockable-layout", JSON.stringify(this.dockableController.getLayout()));
+                window.localStorage.setItem("dockable-layout2", JSON.stringify(this.dockableController.getLayout()));
             });
         }
 
@@ -207,7 +207,8 @@ export default class ClientApplication extends React.Component<IClientApplicatio
             {
                 id: "machine-info", factory: () =>
                     <JsonDocumentView
-                        document={this.state.machineInfo} />
+                        document={this.state.machineInfo}
+                        onRefresh={() => this.fetchMachineState()}/>
             },
             {
                 id: "job-list", factory: () =>
@@ -221,7 +222,8 @@ export default class ClientApplication extends React.Component<IClientApplicatio
             {
                 id: "job-details", factory: () =>
                     <JsonDocumentView
-                        document={this.getJobById(this.state.jobId)} />
+                        document={this.getJobById(this.state.jobId)}
+                        onRefresh={() => this.fetchJobInfo(this.state.jobId)}/>
             },
             {
                 id: "create-job", factory: () =>
@@ -239,7 +241,8 @@ export default class ClientApplication extends React.Component<IClientApplicatio
             {
                 id: "report-details", factory: () =>
                     <JsonDocumentView
-                        document={this.state.report} />
+                        document={this.state.report}
+                        onRefresh={() => this.fetchReport(this.state.jobId)}/>
             },
             {
                 id: "recipe-details", factory: () =>
@@ -259,8 +262,8 @@ export default class ClientApplication extends React.Component<IClientApplicatio
         this.fetchRecipeList();
         this.fetchJobList();
 
-        this.shortTimerHandle = window.setInterval(this.onShortTimer, 2000);
-        this.longTimerHandle = window.setInterval(this.onLongTimer, 4000);
+        this.shortTimerHandle = window.setInterval(this.onShortTimer, 3000);
+        this.longTimerHandle = window.setInterval(this.onLongTimer, 6000);
     }
 
     componentWillUnmount()
@@ -311,6 +314,7 @@ export default class ClientApplication extends React.Component<IClientApplicatio
     {
         this.fetchJobList();
         this.fetchReport(this.state.jobId);
+        this.fetchMachineState();
     }
 
     protected onSettingChange(event: ILineEditBlurEvent)

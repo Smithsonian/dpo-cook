@@ -15,9 +15,10 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "nodemonConfig": {
-        "delay": "1000",
+        "delay": "500",
         "watch": [
             "server/bin",
+            "server/bin/app",
             "node_modules/@ff"
         ]
     },

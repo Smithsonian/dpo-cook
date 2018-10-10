@@ -54,6 +54,8 @@ export default class ApiRouter
                     res.status(201).json({});
                 })
                 .catch(error => {
+                    console.log("\nError while processing POST", req.url);
+                    console.error(error);
                     res.status(error.status || 500).json({ error: error.message });
                 });
         });
@@ -63,6 +65,7 @@ export default class ApiRouter
             const jobId = req.params.jobId;
             jobManager.runJob(clientId, jobId)
                 .catch(error => {
+                    console.log("\nError while processing PATCH", req.url);
                     console.error(error);
                 });
 
@@ -77,6 +80,8 @@ export default class ApiRouter
                 res.json({});
             })
             .catch(error => {
+                console.log("\nError while processing PATCH", req.url);
+                console.error(error);
                 res.status(error.status || 500).json({ error: error.message });
             });
         });
@@ -85,14 +90,19 @@ export default class ApiRouter
         this.router.delete("/clients/:clientId/jobs/:jobId", (req, res) => {
             const clientId = req.params.clientId;
             const jobId = req.params.jobId;
+            console.log("DELETE", req.url, "jobManager.removeJob");
             this.jobManager.removeJob(clientId, jobId)
-                .then(() =>
-                    this.assetServer.revokeAccess(jobId)
-                )
+                .then(() => {
+                    console.log("DELETE", req.url, "assetServer.revokeAccess");
+                    return this.assetServer.revokeAccess(jobId);
+                })
                 .then(() => {
                     res.json({});
+                    console.log("DELETE", req.url, "response sent");
                 })
                 .catch(error => {
+                    console.log("\nError while processing DELETE", req.url);
+                    console.error(error);
                     res.status(error.status || 500).json({ error: error.message });
                 });
         });
@@ -100,6 +110,10 @@ export default class ApiRouter
         // retrieve status information about all jobs
         this.router.get("/clients/:clientId/jobs", (req, res) => {
             const clientId = req.params.clientId;
+            if (!clientId) {
+                return res.status(500).json({ error: `invalid client id: ${clientId}`});
+            }
+
             const jobInfos = jobManager.getJobInfoList(clientId);
             res.json(jobInfos);
         });
@@ -142,5 +156,11 @@ export default class ApiRouter
             }
             return res.json(recipe);
         });
+
+        // machine state
+        this.router.get("/machine", (req, res) => {
+            const state = jobManager.getState();
+            return res.json(state);
+        })
     }
 }

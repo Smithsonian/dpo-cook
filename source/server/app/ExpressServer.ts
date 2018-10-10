@@ -23,8 +23,6 @@ import * as cookieParser from "cookie-parser";
 import * as session from "express-session";
 import { v2 as webDAVServer } from "webdav-server";
 
-import { Router } from "express";
-
 import uniqueId from "../utils/uniqueId";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,19 +70,25 @@ export default class ExpressServer
         this.server = new http.Server(this.app);
     }
 
-    use(baseRoute: string, router: { router: Router })
-    {
-        if (router.router) {
-            this.app.use(baseRoute, router.router);
-        }
-    }
-
     setup()
     {
-        this.addLogging();
-        this.addStaticServer();
-        this.addParsing();
-        //this.addSessions();
+        const app = this.app;
+        const config = this.config;
+
+        if (config.enableLogging) {
+            this.app.use(morgan("tiny"));
+        }
+
+        if (config.staticDir) {
+            this.app.use(config.staticRoute, express.static(config.staticDir));
+        }
+
+        // parse cookies
+        app.use(cookieParser(this.config.secret));
+
+        // parse json and urlencoded request bodies into req.body
+        app.use(bodyParser.json());
+        app.use(bodyParser.urlencoded({ extended: true }));
     }
 
     start()
@@ -98,34 +102,6 @@ export default class ExpressServer
         this.server.listen(port, () => {
             console.info(`\nServer ready and listening on port ${port}`);
         });
-    }
-
-    addLogging()
-    {
-        // logging middleware
-        if (this.config.enableDevMode) {
-            this.app.use(morgan("tiny"));
-        }
-    }
-
-    addStaticServer()
-    {
-        // serve static files
-        if (this.config.staticDir) {
-            this.app.use(this.config.staticRoute, express.static(this.config.staticDir));
-        }
-    }
-
-    addParsing()
-    {
-        const app = this.app;
-
-        // parse cookies
-        app.use(cookieParser(this.config.secret));
-
-        // parse json and urlencoded request bodies into req.body
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({ extended: true }));
     }
 
     addSessions()

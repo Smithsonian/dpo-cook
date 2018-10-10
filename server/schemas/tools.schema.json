@@ -1,0 +1,12 @@
+{
+    "$id": "https://schemas.3d.si.edu/cook/tools.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+
+    "title": "Tools Configuration",
+    "description": "Configuration file for the tools used by the Smithsonian Cook Processing Service",
+
+    "type": "object",
+    "properties": {
+
+    }
+}

@@ -30,11 +30,11 @@ export default class AssetServer
     protected activeJobs: { [id:string]: any };
     protected workDir: string;
 
-    constructor(webDAVPort: number, ftpPort: number, workDir: string)
+    constructor(dirs: { work: string })
     {
         this.router = Router();
 
-        this.webDAVServer = new webdav.WebDAVServer({ port: webDAVPort });
+        this.webDAVServer = new webdav.WebDAVServer(/* { port: webDAVPort } */);
 
         this.webDAVServer.afterRequest((req, next) => {
             // Display the method, the URI, the returned status code and the returned message
@@ -44,7 +44,7 @@ export default class AssetServer
         });
 
         this.activeJobs = {};
-        this.workDir = workDir;
+        this.workDir = dirs.work;
 
         this.setupRouter();
     }
@@ -54,15 +54,15 @@ export default class AssetServer
         this.router.use(webdav.extensions.express("/", this.webDAVServer));
     }
 
-    start(): Promise<void>
-    {
-        return new Promise((resolve, reject) => {
-            this.webDAVServer.start(() => {
-                console.log(`WebDAV server listening on port ${this.webDAVServer.options.port}`);
-                resolve();
-            });
-        });
-    }
+    // start(): Promise<void>
+    // {
+    //     return new Promise((resolve, reject) => {
+    //         this.webDAVServer.start(() => {
+    //             console.log(`WebDAV server listening on port ${this.webDAVServer.options.port}`);
+    //             resolve();
+    //         });
+    //     });
+    // }
 
     grantAccess(jobId: string): Promise<void>
     {

@@ -21,6 +21,7 @@ import JSONTree from "react-json-tree";
 import FlexContainer from "@ff/react/FlexContainer";
 import FlexItem from "@ff/react/FlexItem";
 import Button from "@ff/react/Button";
+import FlexSpacer from "@ff/react/FlexSpacer";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -29,6 +30,7 @@ export interface IJsonDocumentViewProps
 {
     className?: string;
     document: {};
+    onRefresh?: () => void;
 }
 
 export default class JsonDocumentView extends React.Component<IJsonDocumentViewProps, {}>
@@ -44,6 +46,7 @@ export default class JsonDocumentView extends React.Component<IJsonDocumentViewP
         super(props);
 
         this.onTapCopy = this.onTapCopy.bind(this);
+        this.onTapRefresh = this.onTapRefresh.bind(this);
 
         // hidden input element for clipboard copy operation
         this.hiddenElement = document.createElement("textarea");
@@ -102,10 +105,17 @@ export default class JsonDocumentView extends React.Component<IJsonDocumentViewP
                     </FlexItem>
                 </FlexContainer>
 
-                <Button
-                    className="button overlay"
-                    icon="fa fas fa-copy"
-                    onTap={this.onTapCopy}/>
+                <div className="overlay-buttons">
+                    <Button
+                        className="button"
+                        icon="fa fas fa-sync-alt"
+                        onTap={this.onTapRefresh}/>
+
+                    <Button
+                        className="button"
+                        icon="fa fas fa-copy"
+                        onTap={this.onTapCopy}/>
+                </div>
 
             </React.Fragment>
         );
@@ -117,5 +127,12 @@ export default class JsonDocumentView extends React.Component<IJsonDocumentViewP
         this.hiddenElement.value = text;
         this.hiddenElement.select();
         window.document.execCommand("copy");
+    }
+
+    protected onTapRefresh()
+    {
+        if (this.props.onRefresh) {
+            this.props.onRefresh();
+        }
     }
 }

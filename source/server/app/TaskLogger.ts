@@ -150,6 +150,7 @@ export default class TaskLogger
         }
         else {
             this.logFileName = "";
+            this.logStream = null;
         }
     }
 

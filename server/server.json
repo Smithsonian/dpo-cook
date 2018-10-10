@@ -1,0 +1,13 @@
+{
+    "directories": {
+        "work": "work/",
+        "recipes": "recipes/",
+        "files": "static/",
+        "tools": "bin/tools/",
+        "tasks": "bin/tasks/"
+    },
+
+    "ports": {
+        "server": 8000
+    }
+}

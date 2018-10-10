@@ -16,30 +16,39 @@
  */
 
 import * as fs from "fs";
+import * as path from "path";
 import * as commentJSON from "comment-json";
+
+import { Dictionary } from "@ff/core/types";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-type ClientDict = { [id:string]: IClient };
-
 export interface IClient
 {
+    id: string;
     name: string;
 }
 
 export default class ClientManager
 {
-    protected clients: ClientDict;
+    protected clients: Dictionary<IClient>;
 
-    constructor(clientFilePath: string)
+    constructor(dirs: { base: string })
     {
         this.clients = {};
+
+        const clientFilePath = path.resolve(dirs.base, "clients.json");
         this.loadClients(clientFilePath);
     }
 
     hasClient(clientId: string): boolean
     {
         return this.clients[clientId] !== undefined;
+    }
+
+    getClients(): IClient[]
+    {
+        return Object.keys(this.clients).map(key => this.clients[key]);
     }
 
     protected loadClients(clientFilePath: string)
@@ -53,12 +62,16 @@ export default class ClientManager
             throw new Error(`failed to read client file from ${clientFilePath}`);
         }
 
-        this.clients = commentJSON.parse(jsonClients, null, true);
-
-        if (!this.clients) {
+        const clientDict = commentJSON.parse(jsonClients, null, true);
+        if (!clientDict) {
             throw new Error("failed to parse client file");
         }
 
-        console.log(`Clients loaded: ${Object.keys(this.clients).length}`);
+        this.clients = {};
+        Object.keys(clientDict).map(id => {
+            this.clients[id] = { id, name: clientDict[id].name };
+        });
+
+        console.log(`Clients loaded: ${this.getClients().length}`);
     }
 }

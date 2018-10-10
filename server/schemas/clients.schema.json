@@ -1,0 +1,12 @@
+{
+    "$id": "https://schemas.3d.si.edu/cook/clients.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+
+    "title": "Clients Configuration",
+    "description": "List of clients with access to the Smithsonian Cook Processing Service",
+
+    "type": "object",
+    "properties": {
+
+    }
+}

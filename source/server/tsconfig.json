@@ -7,6 +7,7 @@
         "target": "ES2016",
         "module": "commonjs",
         "sourceMap": true,
+        "resolveJsonModule": true,
 
         "outDir": "../../server/bin",
         "baseUrl": "../../server/bin/node_modules",
@@ -15,7 +16,8 @@
         "index.ts"
     ],
     "include": [
-        "tools"
+        "tools",
+        "tasks"
     ],
     "exclude": [
         "node_modules",
