@@ -19,8 +19,15 @@ import * as sourceMapSupport from "source-map-support";
 sourceMapSupport.install();
 
 import * as path from "path";
-process.env.NODE_PATH = path.resolve(__dirname, "../shared");
-require("module").Module._initPaths();
 
 import CLIProcessor from "./app/CliProcessor";
-new CLIProcessor(process.argv, /* debug */ true);
+
+////////////////////////////////////////////////////////////////////////////////
+
+console.info("\nCook CLI - Home Cooked Processing Recipes");
+console.info("Copyright 2018 Smithsonian Institution");
+console.info("License: http://www.apache.org/licenses/LICENSE-2.0");
+console.info();
+
+const baseDir = path.resolve(__dirname, "..");
+new CLIProcessor(baseDir, process.argv, /* debug */ true);

@@ -22,25 +22,39 @@ import * as moment from "moment";
 import * as table from "markdown-table";
 
 import uniqueId from "../utils/uniqueId";
-import globals from "./globals";
 
 import JobManager, { IJobOrder } from "./JobManager";
+import * as jsonLoader from "../utils/jsonLoader";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export default class CliProcessor
 {
+    protected baseDir: string;
     protected debug: boolean;
     protected jobManager: JobManager;
 
-    constructor(argv: string[], debug: boolean = false)
+    constructor(baseDir: string, argv: string[], debug: boolean = false)
     {
+        this.baseDir = baseDir;
         this.debug = debug;
 
-        console.info("\nCook CLI - Home Cooked Processing Recipes");
-        console.info("Copyright 2018 Smithsonian Institution");
-        console.info("License: http://www.apache.org/licenses/LICENSE-2.0");
-        console.info();
+        const schemaDir = path.resolve(baseDir, "schemas/");
+        const configSchemaPath = path.resolve(schemaDir, "server.schema.json");
+        const configFilePath = path.resolve(baseDir, "server.json");
+        const config = jsonLoader.validate<any>(configFilePath, configSchemaPath, true);
+
+        const { work, recipes, files, tools, tasks } = config.directories;
+
+        const dirs = {
+            base: baseDir,
+            schemas: schemaDir,
+            work: path.resolve(baseDir, work),
+            recipes: path.resolve(baseDir, recipes),
+            files: path.resolve(baseDir, files),
+            tools: path.resolve(baseDir, tools),
+            tasks: path.resolve(baseDir, tasks)
+        };
 
         const args = minimist(argv.slice(2));
 
@@ -49,7 +63,7 @@ export default class CliProcessor
             process.exit(0);
         }
 
-        this.jobManager = new JobManager(globals.rootDir, globals.workDir, globals.recipesDir);
+        this.jobManager = new JobManager(dirs);
         console.info();
 
         if (args.l || args.list) {
@@ -65,9 +79,11 @@ export default class CliProcessor
         const jobOrder = this.parseJob(args);
 
         // add job to job queue, use current working directory for log files
-        this.jobManager.createJob(jobOrder, globals.currentDir)
+        this.jobManager.createJob(jobOrder, process.cwd())
             .then(() =>
                 this.jobManager.runJob("cli", jobOrder.id))
+            .then(() =>
+                this.jobManager.removeJob("cli", jobOrder.id))
             .then(() => {
                 console.info("\nJob successfully completed\n");
                 process.exit(0);

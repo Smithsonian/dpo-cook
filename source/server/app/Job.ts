@@ -150,7 +150,7 @@ export default class Job extends Publisher<Job>
         this.jobDirCreated = true;
     }
 
-    protected deleteJobDir()
+    deleteJobDir()
     {
         if (this.jobDirCreated && this.jobDir) {
             rimraf.sync(this.jobDir);
