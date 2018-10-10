@@ -12,3 +12,4 @@ server/static/app/
 .DS_Store
 server/tools.json
 server/clients.json
+server/server.json
