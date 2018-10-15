@@ -27,7 +27,7 @@ export interface IFixMeshTaskParameters extends ITaskParameters
 {
     /** Input mesh file name. */
     inputMeshFile: string;
-    /** Output mesh file name. */
+    /** Fixed (output) mesh file name. */
     outputMeshFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;

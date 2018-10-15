@@ -36,12 +36,9 @@ export interface ILogTaskParameters extends ITaskParameters
 
 /**
  * Provides logging facilities (log to console, log to file, write report to file).
- * Log files are written to the special log directory, not to the current work directory,
- * albeit the log directory can be the same as the work directory. In that case, make
- * sure the work directory is not automatically deleted, otherwise the log files are lost.
  *
  * Log files can't be delivered to the client using the delivery task since they are
- * not completed at this time.
+ * incomplete at the time the delivery task runs.
  *
  * Parameters: [[ILogTaskParameters]]
  */

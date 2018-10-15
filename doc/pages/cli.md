@@ -15,11 +15,17 @@ Additionally, you can specify additional parameters on the command line. The def
 parameters in the recipe are overridden by parameters in the parameter file, which
 in turn are overridden by parameters specified on the command line.
 
-    Usage:
-      cook <recipe> [parameter-file]  executes a recipe using the given (optional) parameter file
-      --param=value                   overrides individual parameters in the parameter file
-      -l, --list                      lists all available recipes
-      -i, --info <recipe>             displays information about a recipe
-      -h, --help                      displays this message
+```bash
+Usage:
+  cook <recipe> [parameter-file]  executes a recipe using the given (optional) parameter file
+  --param=value                   overrides individual parameters in the parameter file
+  -l, --list                      lists all available recipes
+  -i, --info <recipe>             displays information about a recipe
+  -h, --help                      displays this message
+```
 
 ### Examples
+
+```bash
+cook web-ready --highPolyMeshFile=some_model.obj
+```

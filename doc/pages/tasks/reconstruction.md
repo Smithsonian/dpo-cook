@@ -1,5 +1,9 @@
 # Task: Reconstruction
 
+### Important
+
+Task not available yet.
+
 ### Description
 
 Uses RealityCapture photogrammetry software to create a 3D model from a set of 2D images.

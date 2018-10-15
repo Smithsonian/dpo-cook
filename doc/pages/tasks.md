@@ -1,30 +1,29 @@
 # Tasks
 
-### High Level, Logging
+#### High Level, Logging
 
 | Task                          | Description                                                                                                                                                                                                                                               |
 |-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [Job](tasks/job.md)           | Executes a processing job. A job consists of a recipe and a set of parameters applied to the recipe.Provides status information while processing, and an extensive job report.                                                                            |
-| [Log](tasks/log.md)           | Provides logging facilities (log to console, log to file, write report to file).                                                                                                                                                                          |
-| [Pipeline](tasks/pipeline.md) | Executes a linear sequence of tasks.                                                                                                                                                                                                                      |
 | [Recipe](tasks/recipe.md)     | Executes a recipe as a sequence of tasks. Execution order depends on success or failure of each task.Task execution is fully parameterized. Each recipe provides a global set of parameters that can be usedto control and orchestrate the various tasks. |
+| [Pipeline](tasks/pipeline.md) | Executes a linear sequence of tasks.                                                                                                                                                                                                                      |
+| [Log](tasks/log.md)           | Provides logging facilities (log to console, log to file, write report to file).                                                                                                                                                                          |
 
-### File Operations
+#### File Operations
 
 | Task                                    | Description                                                                                       |
 |-----------------------------------------|---------------------------------------------------------------------------------------------------|
-| [Pickup](tasks/pickup.md)               | Copies files from a local client directory to the processing server's work directory.             |
-| [Delivery](tasks/delivery.md)           | Copies files from the processing server's work directory to a local client directory.             |
 | [FileCopy](tasks/fileCopy.md)           | Generic file copy.                                                                                |
 | [FileOperation](tasks/fileOperation.md) | Provides operations for renaming and deleting files, and creating, renaming and deleting folders. |
+| [Pickup](tasks/pickup.md)               | Copies files from a local client directory to the processing server's work directory.             |
+| [Delivery](tasks/delivery.md)           | Copies files from the processing server's work directory to a local client directory.             |
 
-### Photogrammetry
+#### Photogrammetry
 
 | Task                                      | Description                                                                                      |
 |-------------------------------------------|--------------------------------------------------------------------------------------------------|
 | [Reconstruction](tasks/reconstruction.md) | Uses RealityCapture photogrammetry software to create a 3D model from a set of 2D images.        |
 
-### Mesh Processing
+#### Mesh Processing
 
 | Task                                  | Description                                                                                                                 |
 |---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
@@ -35,25 +34,25 @@
 | [Remesh](tasks/remesh.md)             | Creates a new, regular mesh for an object.                                                                                  |
 | [UnwrapMesh](tasks/unwrapMesh.md)     | Creates a UV atlas for a mesh. Internally works with Rizom Labs Unfold, Uknit (hosted on 3ds Max),and InstantUV (Mops CLI). |
 
-### Mesh Analysis
+#### Mesh Analysis
 
 | Task                                | Description                                                                         |
 |-------------------------------------|-------------------------------------------------------------------------------------|
 | [InspectMesh](tasks/inspectMesh.md) | Provides mesh analysis (manifoldness, watertight, dimensions, center, volume, etc.) |
 
-## Texture Generation
+#### Texture Generation
 
 | Task                          | Description                                                                                                      |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------|
 | [BakeMaps](tasks/bakeMaps.md) | Bakes various features to textures by projecting them from a high poly mesh onto the UV spaceof a low poly mesh. |
 
-## Image Processing
+#### Image Processing
 
 | Task                                          | Description                                                                        |
 |-----------------------------------------------|------------------------------------------------------------------------------------|
 | [ConvertImage](tasks/convertImage.md)         | Convert images to various file formats using ImageMagick.                          |
 | [CombineOcclusion](tasks/combineOcclusion.md) | Combines three occlusion maps into one RGB map using red, green and blue channels. |
 
-## Image Analysis
+#### Image Analysis
 
 No tasks available yet.

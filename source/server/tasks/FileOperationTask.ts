@@ -28,8 +28,11 @@ import Task, { ITaskParameters } from "../app/Task";
 
 export interface IFileOperationTaskParameters extends ITaskParameters
 {
+    /** Operation to be performed. */
     operation: "DeleteFile" | "RenameFile" | "CreateFolder" | "DeleteFolder";
+    /** Name of the file the operation should be performed on. */
     name: string;
+    /** For "RenameFile" only: new file name. */
     newName?: string;
 }
 

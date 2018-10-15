@@ -36,7 +36,7 @@ export interface IRemeshTaskParameters extends ITaskParameters
 }
 
 /**
- * Creates a new, regular mesh for an object.
+ * Generates a new, regular mesh for an object.
  *
  * Tool: [[InstantMeshesTool]],
  * Parameters: [[IRemeshTaskParameters]]

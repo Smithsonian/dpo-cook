@@ -32,26 +32,47 @@ export type TUnwrapMethod =
 export type TUnwrapTool =
     "Unfold" | "Unknit" | "Mops";
 
-
+/** Parameters for [[UnwrapMeshTask]] */
 export interface IUnwrapMeshTaskParameters extends ITaskParameters
 {
+    /** Input mesh file name. */
     inputMeshFile: string;
+    /** Output mesh file name. */
     outputMeshFile: string;
-    saveObj?: boolean; // unfold only
-    saveFbx?: boolean; // unfold only
-    saveCollada?: boolean; // unfold only
-    decimate?: boolean; // only possible with mops
+    /** Unfold only: saves the mesh as (additional) OBJ file. */
+    saveObj?: boolean;
+    /** Unfold only: saves the mesh as (additional) FBX file. */
+    saveFbx?: boolean;
+    /** Unfold only: saves the mesh as (additional) Collada file. */
+    saveCollada?: boolean;
+    /** Mops only: indicates whether the mesh should be decimated before unwrapping. */
+    decimate?: boolean;
+    /** Mops only: if decimation is enabled, the target number of faces. */
     numFaces?: number;
+    /** The size of the texture maps that will be baked (needed to calculate the gap between patches). */
     mapSize: number;
+    /** A number between 0 and 1 specifying how aggressively the mesh surface is segmented. Default is 0.5. */
     segmentationStrength?: number,
+    /** A number between 0 and 1 specifying how tightly the patches should be packed. Default is 0.5. */
     packEffort?: number,
+    /** Unfold only: decides whether handles can be cut during segmentation. */
     cutHandles?: boolean,
+    /** Mops only: the algorithm to be used for unwrapping: "conformal", "fastConformal", "isometric", "forwardBijective", "fixedBoundary". */
     unwrapMethod?: TUnwrapMethod,
+    /** Unwrapping tool is run in debug mode. For Unfold: tool doesn't close after it's done. */
     debug?: boolean,
+    /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number,
+    /** Tool to be used for unwrapping, options are "Unfold", "Mops", "Unknit". Default is "Unfold". */
     tool?: TUnwrapTool;
 }
 
+/**
+ * Unwraps a mesh's surface onto a plane and generates a set of texture coordinates for map baking.
+ *
+ * - Parameters: [[IUnwrapMeshTaskParameters]].
+ * - Tools: [[UnfoldTool]], [[MopsTool]], [[UnknitTool]].
+ */
 export default class UnwrapMeshTask extends Task
 {
     static readonly description = "creates a new UV map for a mesh.";

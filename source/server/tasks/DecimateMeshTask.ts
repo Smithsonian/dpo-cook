@@ -42,10 +42,10 @@ export interface IDecimateMeshTaskParameters extends ITaskParameters
     preserveTopology?: boolean;
     /** Preserves mesh boundaries if true, i.e. doesn't remove boundary vertices (default: true). */
     preserveBoundaries?: boolean;
-    /** Meshlab only: Removes components smaller than the given size. Example: "2%" */
-    minComponentSize?: string | number;
     /** Meshlab only: Preserves texture coordinates during decimation. */
     preserveTexCoords?: boolean;
+    /** Meshlab only: Removes components smaller than the given size. Example: "2%" */
+    minComponentSize?: string | number;
     /** Meshlab only: Re-computes vertex normals of the decimated mesh. */
     computeVertexNormals?: boolean;
     /** Meshlab only: Performs mesh inspection and generates a report. If a string is given, writes report to file. */
