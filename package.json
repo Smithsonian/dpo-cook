@@ -4,6 +4,8 @@
     "description": "Smithsonian DPO Cook - 3D Model/Geometry/Texture Processing Server",
     "scripts": {
         "start": "npm run server",
+        "start-service": "node server/scripts/start-service.js",
+        "stop-service": "node server/scripts/stop-service.js",
         "server": "nodemon server/bin/index.js",
         "watch": "concurrently \"cd source/client && webpack --watch\" \"tsc -b source/server -w\" \"nodemon server/bin/index.js\"",
         "build": "concurrently \"npm run build-server\" \"npm run build-client\"",
