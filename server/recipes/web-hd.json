@@ -2,7 +2,7 @@
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
     "description": "Generates high definition (1M, 8k) web asset",
-    "version": "2",
+    "version": "3",
     "start": "log",
 
     "parameterSchema": {
@@ -40,7 +40,7 @@
             },
             "numFaces": {
                 "type": "integer",
-                "minimum": 1000,
+                "minimum": 10000,
                 "multipleOf": 1000,
                 "default": 1000000
             },
@@ -54,7 +54,7 @@
                 "type": "number",
                 "minimum": 0,
                 "maximum": 1,
-                "default": 0.5
+                "default": 0.6
             },
             "packEffort": {
                 "type": "number",
@@ -88,19 +88,19 @@
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100,
-                "default": 79
+                "default": 89
             },
             "occlusionMapQuality": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100,
-                "default": 59
+                "default": 69
             },
             "normalMapQuality": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100,
-                "default": 69
+                "default": 79
             },
             "tangentSpaceNormals": {
                 "type": "boolean",
@@ -159,8 +159,9 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": true,
-                "preserveTexCoords": false,
+                "preserveTopology": true,
                 "preserveBoundaries": true,
+                "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
                 "inspectMesh": "deliverables.inspectionReport",
                 "timeout": 1200
@@ -216,7 +217,7 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "autoRayDistance": "$max($result.inspection.scene.geometry.size) * 0.01"
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
             },
             "success": "'bake'",
             "failure": "$failure"
@@ -275,22 +276,22 @@
                 "outputImageFile": "baseMeshMapName & '-diffuse.jpg'",
                 "quality": "diffuseMapQuality"
             },
-            "success": "'web-asset'",
-            "failure": "'web-asset'"
+            "success": "'model-glb'",
+            "failure": "'model-glb'"
         },
-        "web-asset": {
+        "model-glb": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset": "baseMeshMapName & '-web-hd.glb'",
+                    "webAssetGlb": "baseMeshMapName & '-web-hd.glb'",
                     "diffuseMap": "bakeDiffuse ? (baseMeshMapName & '-diffuse.jpg') : ''",
                     "occlusionMap": "bakeOcclusion ? (baseMeshMapName & '-occlusion.jpg') : ''",
                     "normalMap": "bakeNormals ? (baseMeshMapName & '-normals.jpg') : ''"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAsset",
+                "outputFile": "deliverables.webAssetGlb",
                 "meshFile": "deliverables.unwrappedMesh",
                 "diffuseMapFile": "deliverables.diffuseMap",
                 "occlusionMapFile": "deliverables.occlusionMap",
@@ -301,19 +302,20 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'web-asset-2'",
+            "success": "'web-asset-gltf'",
             "failure": "$failure"
         },
-        "web-asset-2": {
+        "web-asset-gltf": {
             "task": "WebAsset",
             "description": "Create glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset2": "baseMeshMapName & '-web-hd.gltf'"
+                    "webAssetGltf": "baseMeshMapName & '-web-hd.gltf'",
+                    "webAssetBin": "baseMeshMapName & '-web-hd.bin'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAsset2",
+                "outputFile": "deliverables.webAssetGltf",
                 "meshFile": "deliverables.unwrappedMesh",
                 "diffuseMapFile": "deliverables.diffuseMap",
                 "occlusionMapFile": "deliverables.occlusionMap",

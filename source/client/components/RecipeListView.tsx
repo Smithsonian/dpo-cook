@@ -37,7 +37,7 @@ export interface IRecipeListViewProps
 export default class RecipeListView extends React.Component<IRecipeListViewProps, {}>
 {
     static defaultProps: Partial<IRecipeListViewProps> = {
-        className: "recipe-list",
+        className: "sc-recipe-list-view",
         selectedRecipeId: ""
     };
 
@@ -58,7 +58,7 @@ export default class RecipeListView extends React.Component<IRecipeListViewProps
 
             const attribs = {
                 key: recipe.id,
-                className: "tr selectable" + (isSelected ? " selected" : ""),
+                className: "sc-tr sc-selectable" + (isSelected ? " sc-selected" : ""),
                 data: row,
                 onClick: () => this.onRecipeClick(recipe.id)
             };
@@ -67,7 +67,7 @@ export default class RecipeListView extends React.Component<IRecipeListViewProps
         });
 
         const tableArgs = {
-            className: "table",
+            className: "sc-table",
             noDataText: "No recipes available"
         };
 
@@ -78,7 +78,7 @@ export default class RecipeListView extends React.Component<IRecipeListViewProps
                 direction="vertical" >
 
                 <FlexItem
-                    className="scroll-wrapper">
+                    className="sc-scroll-wrapper">
                     <Table {...tableArgs} >
                         {tableRows}
                     </Table>

@@ -55,7 +55,7 @@ interface IJobCreateViewState
 export default class JobCreateView extends React.Component<IJobCreateViewProps, IJobCreateViewState>
 {
     static defaultProps: Partial<IJobCreateViewProps> = {
-        className: "create-job-view"
+        className: "sc-create-job-view"
     };
 
     static getDerivedStateFromProps(props: IJobCreateViewProps, state: IJobCreateViewState)
@@ -149,7 +149,7 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
             const text = value !== undefined ? String(value) : "";
 
             return(<tr key={name}>
-                <td className="name">
+                <td className="sc-name">
                     {name}
                     </td>
                 <td>
@@ -162,7 +162,7 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
                 <td>
                     {isFile ? <Badge type="file">File</Badge> : null}
                     {isRequired ? <Badge warning>Required</Badge> : null}
-                    <span className="default-value">{defaultValue}</span>
+                    <span className="sc-default-value">{defaultValue}</span>
                 </td>
             </tr>);
         });
@@ -188,7 +188,7 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
                 direction="vertical" >
 
                 <FlexItem
-                    className="header"
+                    className="sc-header"
                     grow={0}>
 
                     <FlexContainer
@@ -220,15 +220,15 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
                         />
 
                     </FlexContainer>
-                    <Label className="description">
+                    <Label className="sc-description">
                         Using Recipe <Badge>{recipe.name}</Badge> - {recipe.description}
                     </Label>
                 </FlexItem>
 
                 <FlexItem
-                    className="scroll-wrapper">
+                    className="sc-scroll-wrapper">
 
-                    <table className="table parameters">
+                    <table className="sc-table sc-parameters">
                         <colgroup>
                             <col className="name"/>
                             <col className="input"/>

@@ -31,13 +31,11 @@ import * as jsonLoader from "../utils/jsonLoader";
 export default class CliProcessor
 {
     protected baseDir: string;
-    protected debug: boolean;
     protected jobManager: JobManager;
 
-    constructor(baseDir: string, argv: string[], debug: boolean = false)
+    constructor(baseDir: string, argv: string[])
     {
         this.baseDir = baseDir;
-        this.debug = debug;
 
         const schemaDir = path.resolve(baseDir, "schemas/");
         const configSchemaPath = path.resolve(schemaDir, "server.schema.json");
@@ -76,6 +74,12 @@ export default class CliProcessor
             process.exit(0);
         }
 
+        let debug = !!args.d;
+        if (debug) {
+            delete args.d;
+            console.log("***** Cook running in debug mode *****");
+        }
+
         const jobOrder = this.parseJob(args);
 
         // add job to job queue, use current working directory for log files
@@ -83,7 +87,7 @@ export default class CliProcessor
             .then(() =>
                 this.jobManager.runJob("cli", jobOrder.id))
             .then(() =>
-                this.jobManager.removeJob("cli", jobOrder.id))
+                this.jobManager.removeJob("cli", jobOrder.id, /* keep temp dir */ debug))
             .then(() => {
                 console.info("\nJob successfully completed\n");
                 process.exit(0);
@@ -183,6 +187,7 @@ export default class CliProcessor
             "Usage:",
             "cook recipe [paramFile]  executes a recipe using the given (optional) parameter file",
             " --param=value           overrides individual parameters in the parameter file",
+            " -d                      debug mode, keeps temp directory",
             " -l, --list              lists all available recipes",
             " -i, --info <recipe>     displays information about a recipe",
             " -h, --help              displays this message",

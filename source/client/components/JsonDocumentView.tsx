@@ -21,7 +21,6 @@ import JSONTree from "react-json-tree";
 import FlexContainer from "@ff/react/FlexContainer";
 import FlexItem from "@ff/react/FlexItem";
 import Button from "@ff/react/Button";
-import FlexSpacer from "@ff/react/FlexSpacer";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -36,7 +35,7 @@ export interface IJsonDocumentViewProps
 export default class JsonDocumentView extends React.Component<IJsonDocumentViewProps, {}>
 {
     static defaultProps: Partial<IJsonDocumentViewProps> = {
-        className: "json-document-view"
+        className: "sc-json-document-view"
     };
 
     protected hiddenElement: HTMLTextAreaElement;
@@ -95,7 +94,7 @@ export default class JsonDocumentView extends React.Component<IJsonDocumentViewP
                     direction="vertical" >
 
                     <FlexItem
-                        className="scroll-wrapper">
+                        className="sc-scroll-wrapper">
 
                         <JSONTree
                             data={document}
@@ -105,14 +104,14 @@ export default class JsonDocumentView extends React.Component<IJsonDocumentViewP
                     </FlexItem>
                 </FlexContainer>
 
-                <div className="overlay-buttons">
+                <div className="sc-overlay-buttons">
                     <Button
-                        className="button"
+                        className="ff-button"
                         icon="fa fas fa-sync-alt"
                         onTap={this.onTapRefresh}/>
 
                     <Button
-                        className="button"
+                        className="ff-button"
                         icon="fa fas fa-copy"
                         onTap={this.onTapCopy}/>
                 </div>

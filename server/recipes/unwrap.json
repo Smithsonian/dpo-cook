@@ -35,12 +35,14 @@
             },
             "numFaces": {
                 "type": "integer",
-                "minimum": 100,
+                "minimum": 10000,
+                "multipleOf": 1000,
                 "default": 100000
             },
             "mapSize": {
                 "type": "integer",
-                "multipleOf": 128,
+                "minimum": 128,
+                "maximum": 8192,
                 "default": 4096
             },
             "segmentationStrength": {

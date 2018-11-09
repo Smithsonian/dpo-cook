@@ -41,7 +41,7 @@ interface ILogViewState
 export default class LogView extends React.Component<ILogViewProps, ILogViewState>
 {
     static defaultProps: Partial<ILogViewProps> = {
-        className: "log-view"
+        className: "sc-log-view"
     };
 
     protected socket: io.Socket;
@@ -105,11 +105,11 @@ export default class LogView extends React.Component<ILogViewProps, ILogViewStat
             const sender = event.sender ? `'${event.sender}' ` : "";
 
             log.push(<div key={i} className="entry">
-                <span className="time">{time}&nbsp;</span>
-                <span className="level">{level}&nbsp;</span>
-                <span className="module">{module}&nbsp;</span>
-                <span className="sender">{sender}&nbsp;</span>
-                <span className="message">{event.message}</span>
+                <span className="sc-time">{time}&nbsp;</span>
+                <span className="sc-level">{level}&nbsp;</span>
+                <span className="sc-module">{module}&nbsp;</span>
+                <span className="sc-sender">{sender}&nbsp;</span>
+                <span className="sc-message">{event.message}</span>
             </div>);
         }
 
@@ -121,7 +121,7 @@ export default class LogView extends React.Component<ILogViewProps, ILogViewStat
                 direction="vertical" >
 
                 <FlexItem
-                    className="scroll-wrapper"
+                    className="sc-scroll-wrapper"
                     elementRef={this.ref}>
                     {log}
                 </FlexItem>

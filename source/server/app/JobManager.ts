@@ -245,7 +245,7 @@ export default class JobManager extends Publisher<JobManager>
         });
     }
 
-    removeJob(clientId: string, jobId: string): Promise<void>
+    removeJob(clientId: string, jobId: string, keepTempDir?: boolean): Promise<void>
     {
         return Promise.resolve().then(() => {
 
@@ -254,7 +254,7 @@ export default class JobManager extends Publisher<JobManager>
                 throw new Error(`unknown job id: '${jobId}'`);
             }
 
-            return job.destroy().then(() => {
+            return job.destroy(keepTempDir).then(() => {
                 job.off("log", this.onLogEvent);
                 delete this.jobs[jobId];
             });

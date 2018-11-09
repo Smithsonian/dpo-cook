@@ -2,7 +2,7 @@
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
     "description": "Generates thumbnail web asset",
-    "version": "3",
+    "version": "4",
     "start": "log",
 
     "parameterSchema": {
@@ -40,21 +40,21 @@
             },
             "numFaces": {
                 "type": "integer",
-                "minimum": 1000,
+                "minimum": 10000,
                 "multipleOf": 1000,
-                "default": 25000
+                "default": 50000
             },
             "mapSize": {
                 "type": "integer",
                 "minimum": 128,
                 "maximum": 8192,
-                "default": 512
+                "default": 1024
             },
             "segmentationStrength": {
                 "type": "number",
                 "minimum": 0,
                 "maximum": 1,
-                "default": 0.8
+                "default": 0.9
             },
             "packEffort": {
                 "type": "number",
@@ -158,6 +158,7 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": true,
+                "preserveTopology": true,
                 "preserveTexCoords": false,
                 "preserveBoundaries": true,
                 "computeVertexNormals": "tangentSpaceNormals",
@@ -215,7 +216,7 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "autoRayDistance": "$max($result.inspection.scene.geometry.size) * 0.01"
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
             },
             "success": "'bake'",
             "failure": "$failure"
@@ -274,22 +275,22 @@
                 "outputImageFile": "baseMeshMapName & '-diffuse.jpg'",
                 "quality": "diffuseMapQuality"
             },
-            "success": "'web-asset'",
-            "failure": "'web-asset'"
+            "success": "'model-glb'",
+            "failure": "'model-glb'"
         },
-        "web-asset": {
+        "model-glb": {
             "task": "WebAsset",
-            "description": "Create glTF asset",
+            "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset": "baseMeshMapName & '-web.glb'",
+                    "webAssetGlb": "baseMeshMapName & '-web-thumb.glb'",
                     "diffuseMap": "bakeDiffuse ? (baseMeshMapName & '-diffuse.jpg') : ''",
                     "occlusionMap": "bakeOcclusion ? (baseMeshMapName & '-occlusion.jpg') : ''",
                     "normalMap": "bakeNormals ? (baseMeshMapName & '-normals.jpg') : ''"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAsset",
+                "outputFile": "deliverables.webAssetGlb",
                 "meshFile": "deliverables.unwrappedMesh",
                 "diffuseMapFile": "deliverables.diffuseMap",
                 "occlusionMapFile": "deliverables.occlusionMap",

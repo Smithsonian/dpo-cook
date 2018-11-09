@@ -29,14 +29,34 @@
                 ],
                 "default": "none"
             },
-            "inspectMesh": {
-                "type": "boolean",
-                "default": false
-            },
             "numFaces": {
                 "type": "integer",
                 "minimum": 100,
                 "default": 125000
+            },
+            "cleanup": {
+                "type": "boolean",
+                "default": true
+            },
+            "preserveTopology": {
+                "type": "boolean",
+                "default": true
+            },
+            "preserveBoundaries": {
+                "type": "boolean",
+                "default": true
+            },
+            "preserveTexCoords": {
+                "type": "boolean",
+                "default": false
+            },
+            "computeVertexNormals": {
+                "type": "boolean",
+                "default": true
+            },
+            "inspectMesh": {
+                "type": "boolean",
+                "default": false
             },
             "tool": {
                 "type": "string",
@@ -99,10 +119,13 @@
                 "inputMeshFile": "highPolyMeshFile",
                 "outputMeshFile": "deliverables.decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": true,
-                "preserveTexCoords": false,
-                "preserveBoundaries": true,
-                "tool": "tool"
+                "cleanup": "cleanup",
+                "preserveTopology": "preserveTopology",
+                "preserveBoundaries": "preserveBoundaries",
+                "preserveTexCoords": "preserveTexCoords",
+                "computeVertexNormals": "computeVertexNormals",
+                "tool": "tool",
+                "timeout": 1200
             },
             "success": "inspectMesh ? 'inspect-decimated' : 'delivery'",
             "failure": "$failure"

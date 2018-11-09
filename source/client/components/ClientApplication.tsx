@@ -280,16 +280,16 @@ export default class ClientApplication extends React.Component<IClientApplicatio
                 position="fill" >
 
                 <FlexContainer
-                    className="title-bar"
+                    className="sc-title-bar"
                     direction="horizontal"
                     shrink={0}
                     grow={0}
                     alignItems="center" >
 
-                    <img className="logo" src="/static/images/cook-logo-250px.png"/>
-                    <Label className="label byline">
+                    <img className="sc-logo" src="/static/images/cook-logo-250px.png"/>
+                    <Label className="ff-label sc-byline">
                         Smithsonian 3D Foundation Project<br/>
-                        Processing API Client Version 2018-10-10
+                        Processing API Client Version 2018-11-09
                     </Label>
                     <FlexItem/>
                     <Label>Client ID</Label>

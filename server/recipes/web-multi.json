@@ -2,7 +2,7 @@
     "id": "721d459c-af09-4525-a28b-e71a89439282",
     "name": "web-multi",
     "description": "Generates multi-level web assets",
-    "version": "3",
+    "version": "4",
     "start": "log",
 
     "parameterSchema": {
@@ -38,9 +38,13 @@
                 "type": "boolean",
                 "default": false
             },
+            "cleanupMesh": {
+                "type": "boolean",
+                "default": true
+            },
             "numFaces": {
                 "type": "integer",
-                "minimum": 1000,
+                "minimum": 10000,
                 "multipleOf": 1000,
                 "default": 250000
             },
@@ -158,9 +162,10 @@
                 "inputMeshFile": "highPolyMeshFile",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": true,
-                "preserveTexCoords": false,
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
                 "preserveBoundaries": true,
+                "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
                 "inspectMesh": "deliverables.inspectionReport",
                 "timeout": 1200
@@ -194,23 +199,20 @@
             "task": "UnwrapMesh",
             "description": "Unwrap mesh using Unfold",
             "pre": {
-                "unwrappedMeshFileBase": "baseMeshName & '-unwrapped'"
+                "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped.fbx'",
+                "deliverables": {
+                    "unwrappedMesh": "baseMeshName & '-unwrapped.obj'"
+                }
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "unwrappedMeshFileBase",
+                "outputMeshFile": "deliverables.unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSize",
                 "segmentationStrength": "segmentationStrength",
                 "packEffort": "packEffort",
                 "timeout": 900
-            },
-            "post": {
-                "unwrappedMeshFbxFile": "unwrappedMeshFileBase & '.fbx'",
-                "deliverables": {
-                    "unwrappedMesh": "unwrappedMeshFileBase & '.obj'"
-                }
             },
             "success": "'inspect-unwrapped'",
             "failure": "$failure"
@@ -223,7 +225,7 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "autoRayDistance": "$max($result.inspection.scene.geometry.size) * 0.01"
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
             },
             "success": "'bake'",
             "failure": "$failure"
@@ -292,18 +294,6 @@
                 "quality": "occlusionMapQuality",
                 "resize": 1024
             },
-            "success": "'reduce-occlusion-map-0k'",
-            "failure": "$failure"
-        },
-        "reduce-occlusion-map-0k": {
-            "task": "ConvertImage",
-            "description": "Convert Occlusion Map",
-            "parameters": {
-                "inputImageFile": "deliverables.occlusionMapMaster",
-                "outputImageFile": "baseMeshName & '-512-occlusion.jpg'",
-                "quality": "occlusionMapQuality",
-                "resize": 512
-            },
             "success": "'convert-normal-map'",
             "failure": "$failure"
         },
@@ -339,19 +329,7 @@
                 "quality": "normalMapQuality",
                 "resize": 1024
             },
-            "success": "'reduce-normal-map-0k'",
-            "failure": "$failure"
-        },
-        "reduce-normal-map-0k": {
-            "task": "ConvertImage",
-            "description": "Convert Normal Map",
-            "parameters": {
-                "inputImageFile": "deliverables.normalMapMaster",
-                "outputImageFile": "baseMeshName & '-512-normals.jpg'",
-                "quality": "normalMapQuality",
-                "resize": 512
-            },
-            "success": "bakeDiffuse ? 'convert-diffuse-map' : 'web-asset-0k'",
+            "success": "bakeDiffuse ? 'convert-diffuse-map' : 'model-glb-1k'",
             "failure": "$failure"
         },
         "convert-diffuse-map": {
@@ -386,48 +364,10 @@
                 "quality": "diffuseMapQuality",
                 "resize": 1024
             },
-            "success": "'reduce-diffuse-map-0k'",
+            "success": "'model-glb-1k'",
             "failure": "$failure"
         },
-        "reduce-diffuse-map-0k": {
-            "task": "ConvertImage",
-            "description": "Convert Diffuse Map",
-            "parameters": {
-                "inputImageFile": "deliverables.diffuseMapMaster",
-                "outputImageFile": "baseMeshName & '-512-diffuse.jpg'",
-                "quality": "diffuseMapQuality",
-                "resize": 512
-            },
-            "success": "'web-asset-0k'",
-            "failure": "$failure"
-        },
-        "web-asset-0k": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset",
-            "pre": {
-                "deliverables": {
-                    "webAsset0k": "baseMeshName & '-512-web.glb'",
-                    "diffuseMap0k": "bakeDiffuse ? (baseMeshName & '-512-diffuse.jpg') : ''",
-                    "occlusionMap0k": "baseMeshName & '-512-occlusion.jpg'",
-                    "normalMap0k": "baseMeshName & '-512-normals.jpg'"
-                }
-            },
-            "parameters": {
-                "outputFile": "deliverables.webAsset0k",
-                "meshFile": "deliverables.unwrappedMesh",
-                "diffuseMapFile": "deliverables.diffuseMap0k",
-                "occlusionMapFile": "deliverables.occlusionMap0k",
-                "normalMapFile": "deliverables.normalMap0k",
-                "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": true,
-                "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
-            },
-            "success": "'web-asset-1k'",
-            "failure": "$failure"
-        },
-        "web-asset-1k": {
+        "model-glb-1k": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
@@ -450,10 +390,10 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'web-asset-2k'",
+            "success": "'model-glb-2k'",
             "failure": "$failure"
         },
-        "web-asset-2k": {
+        "model-glb-2k": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
@@ -476,10 +416,10 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'web-asset-high'",
+            "success": "'model-glb-high'",
             "failure": "$failure"
         },
-        "web-asset-high": {
+        "model-glb-high": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {

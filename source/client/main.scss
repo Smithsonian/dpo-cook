@@ -61,23 +61,23 @@ html {
 ////////////////////////////////////////////////////////////////////////////////
 // ELEMENTS
 
-.scroll-wrapper {
+.sc-scroll-wrapper {
   overflow-y: auto;
 }
 
-.line-edit {
+.ff-line-edit {
   tab-index: 0;
   background: $color-background;
   color: $color-text;
   height: 20px;
 }
 
-.overlay-buttons {
+.sc-overlay-buttons {
   position: absolute;
   right: 14px;
   bottom: 12px;
 
-  .button {
+  .ff-button {
     display: inline-block;
     width: 44px;
     height: 44px;
@@ -91,7 +91,7 @@ html {
 ////////////////////////////////////////////////////////////////////////////////
 // TABLE
 
-.table {
+.sc-table {
   width: 100%;
   border-spacing: 0;
   font-size: 0.9em;
@@ -102,11 +102,11 @@ html {
     }
   }
 
-  .tr.selectable {
+  .sc-tr.sc-selectable {
     cursor: pointer;
   }
 
-  .tr.selected {
+  .sc-tr.sc-selected {
     background: $color-selection;
   }
 
@@ -132,49 +132,47 @@ html {
 ////////////////////////////////////////////////////////////////////////////////
 // PANELS
 
-.title-bar {
+.sc-title-bar {
   height: 50px;
   padding: 10px 4px;
   border-bottom: 1px solid $color-background-darker;
   background: $color-background-dark;
 
-  .logo {
+  .sc-logo {
     height: 32px;
     margin: 0 24px 0 4px;
   }
-  .byline {
+  .sc-byline {
     font-size: 0.9em;
     color: $color-text-disabled;
   }
 
-  .control {
+  .ff-control {
     margin: 0 4px;
   }
 
-  .line-edit {
+  .ff-line-edit {
     max-width: 350px;
   }
 }
 
-.dockable-view {
+.ff-dock-view {
   @include full-size;
   background: $color-background-dark;
 }
 
-.json-document-view {
+.sc-json-document-view {
   font-family: "Consolas", "Source Code Pro", monospace;
   font-size: 0.95em;
 
   ul {
     margin: 0 4px !important;
   }
-
-
 }
 
-.job-list-view {
-  .table {
-    .button {
+.sc-job-list-view {
+  .sc-table {
+    .ff-button {
       margin: 0 0 0 4px;
       background: transparent;
       font-size: 1.1em;
@@ -182,87 +180,87 @@ html {
       &:hover {
         color: $color-text;
       }
-      &.disabled {
+      &.ff-disabled {
         color: $color-icon-disabled;
       }
     }
   }
 }
 
-.create-job-view {
-  .header {
+.sc-create-job-view {
+  .sc-header {
     padding: 2px 4px 12px 4px;
     border-bottom: 1px solid $color-background;
     background: $color-background-dark;
 
-    .control {
+    .ff-control {
       margin: 5px 0;
     }
 
-    .line-edit {
+    .ff-line-edit {
       margin: 0 12px 0 6px;
     }
 
-    .button {
+    .ff-button {
       background: transparent;
       font-size: 1.5em;
       color: $color-icon;
       &:hover {
         color: $color-text;
       }
-      &.disabled {
+      &.ff-disabled {
         color: $color-icon-disabled;
       }
     }
   }
 
-  .parameters {
-    .name {
+  .sc-parameters {
+    .sc-name {
       width: 20%;
       text-align: right;
     }
-    .input {
+    .sc-input {
       width: 45%;
     }
-    .default {
+    .sc-default {
       width: 35%;
     }
-    .file-drop-target {
-      .line-edit {
+    .ff-file-drop-target {
+      .ff-line-edit {
         box-sizing: border-box;
         background: #5c445c;
       }
 
-      &.targeted .line-edit {
+      &.ff-targeted .ff-line-edit {
         background: #846b84;
         border: 1px dashed $color-text;
       }
     }
-    .badge {
+    .ff-badge {
       margin-right: 6px;
 
-      &.file {
+      &.ff-file {
         background: #992e99;
       }
     }
-    .default-value {
+    .sc-default-value {
       font-style: italic;
     }
   }
 }
 
-.log-view {
+.sc-log-view {
   font-family: "Consolas", "Source Code Pro", monospace;
   font-size: 0.95em;
 
-  .entry {
+  .sc-entry {
     margin: 1px 0;
 
     &:nth-child(2n+1) {
       background: darken($color-background-dark, 2%);
     }
 
-    .level, .sender {
+    .sc-level, .sc-sender {
       color: #c8b18c;
     }
   }

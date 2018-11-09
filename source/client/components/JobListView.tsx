@@ -48,7 +48,7 @@ interface IJobListViewState
 export default class JobListView extends React.Component<IJobListViewProps, IJobListViewState>
 {
     static defaultProps: Partial<IJobListViewProps> = {
-        className: "job-list-view",
+        className: "sc-job-list-view",
         selectedJobId: ""
     };
 
@@ -96,7 +96,7 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
 
             const rowAttribs = {
                 key: job.id,
-                className: "tr selectable" + (isSelected ? " selected" : ""),
+                className: "sc-tr sc-selectable" + (isSelected ? " sc-selected" : ""),
                 onClick: () => this.onClickJob(job.id)
             };
 
@@ -134,7 +134,7 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
         });
 
         const tableAttribs: any = {
-            className: "table",
+            className: "sc-table",
             sortable: true,
             noDataText: "No jobs in queue"
         };
@@ -146,7 +146,7 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
                 direction="vertical" >
 
                 <FlexItem
-                    className="scroll-wrapper">
+                    className="sc-scroll-wrapper">
                     <Table {...tableAttribs} >
                         {tableRows}
                     </Table>

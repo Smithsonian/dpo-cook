@@ -111,11 +111,13 @@ export default class Job extends Publisher<Job>
             });
     }
 
-    destroy(): Promise<void>
+    destroy(keepTempDir?: boolean): Promise<void>
     {
         return this.cancel()
             .then(() => {
-                this.deleteJobDir();
+                if (!keepTempDir) {
+                    this.deleteJobDir();
+                }
             });
     }
 

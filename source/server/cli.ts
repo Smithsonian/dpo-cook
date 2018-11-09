@@ -30,4 +30,4 @@ console.info("License: http://www.apache.org/licenses/LICENSE-2.0");
 console.info();
 
 const baseDir = path.resolve(__dirname, "..");
-new CLIProcessor(baseDir, process.argv, /* debug */ true);
+new CLIProcessor(baseDir, process.argv);
