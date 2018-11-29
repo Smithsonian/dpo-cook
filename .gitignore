@@ -6,6 +6,7 @@ doc/source/
 server/bin/
 server/work/
 server/static/app/
+server/recipes-vz/
 
 # FILES
 *.log
