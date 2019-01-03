@@ -248,10 +248,11 @@ export interface IRecipeStep
     task: string;
     description: string;
     parameters: ITaskParameters;
+    skip?: string;
     pre?: { [id: string]: string },
     post?: { [id: string]: string },
-    success: string | "success" | "failure";
-    failure: string | "success" | "failure";
+    success: string | "$success" | "$failure";
+    failure: string | "$success" | "$failure";
 }
 
 

@@ -265,6 +265,17 @@ export default class RecipeTask extends Task
 
         let task;
         try {
+            // parse skip expression if exists
+            const skip = step.skip ? this.parseExpression(step.skip, `${stepName}.skip`) : false;
+
+            if (skip) {
+                this.logTaskEvent("info", `step '${stepName}' skipped (skip expression resolved to true)`);
+
+                // execute success step
+                const successStep = this.parseExpression(step.success, `${stepName}.success`);
+                return this.executeStep(successStep);
+            }
+
             // parse pre-step expressions
             this.parseRecursive(step.pre, input, `${stepName}.pre`);
 

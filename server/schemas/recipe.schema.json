@@ -167,6 +167,12 @@
                     "type": "string",
                     "minLength": 1
                 },
+                "skip": {
+                    "title": "skip expression",
+                    "description": "primitive value or JSONata expression; skips recipe step if evaluated to true",
+                    "type": "string",
+                    "minLength": 1
+                },
                 "parameters": {
                     "title": "task parameters",
                     "description": "primitive value or JSONata expression; strings must be put in quotes",
