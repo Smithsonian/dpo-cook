@@ -328,7 +328,7 @@
                 "itemFile": "deliverables.item",
                 "metaDataFile": "metaDataFile",
                 "units": "units",
-                "derivativeQuality": "Thumb",
+                "derivativeQuality": "'Thumb'",
                 "modelFile": "deliverables.webAssetGlb"
             },
             "success": "'delivery'",

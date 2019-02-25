@@ -412,8 +412,8 @@
                 "itemFile": "deliverables.item",
                 "metaDataFile": "metaDataFile",
                 "units": "units",
-                "derivativeQuality": "Highest",
-                "modelFile": "deliverables.webAssetGltf"
+                "derivativeQuality": "'Highest'",
+                "modelFile": "deliverables.webAssetGlb"
             },
             "success": "'delivery'",
             "failure": "$failure"

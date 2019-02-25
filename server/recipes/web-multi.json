@@ -420,7 +420,7 @@
                 "itemFile": "deliverables.item",
                 "metaDataFile": "metaDataFile",
                 "units": "units",
-                "derivativeQuality": "Low",
+                "derivativeQuality": "'Low'",
                 "modelFile": "deliverables.webAsset1k"
             },
             "success": "'model-glb-2k'",
@@ -457,7 +457,7 @@
             "description": "Add 2k web model to item.json descriptor file",
             "parameters": {
                 "itemFile": "deliverables.item",
-                "derivativeQuality": "Medium",
+                "derivativeQuality": "'Medium'",
                 "modelFile": "deliverables.webAsset2k"
             },
             "success": "'model-glb-high'",
@@ -494,7 +494,7 @@
             "description": "Add high web model to item.json descriptor file",
             "parameters": {
                 "itemFile": "deliverables.item",
-                "derivativeQuality": "High",
+                "derivativeQuality": "'High'",
                 "modelFile": "deliverables.webAsset4k"
             },
             "success": "'delivery'",
