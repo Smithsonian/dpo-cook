@@ -19,31 +19,34 @@ import * as fs from "fs";
 import * as path from "path";
 import * as child_process from "child_process"
 
-import Publisher, { IPublisherEvent } from "@ff/core/Publisher";
+import Publisher, { ITypedEvent }  from "@ff/core/Publisher";
 import { IToolOptions, IToolReport, IToolScript, TToolState } from "common/types";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export { IToolOptions, IToolScript, TToolState };
 
-export interface IToolStartEvent extends IPublisherEvent<Tool>
+export interface IToolStartEvent
 {
     time: Date;
+    sender: Tool;
 }
 
-export interface IToolExitEvent extends IPublisherEvent<Tool>
+export interface IToolExitEvent
 {
     time: Date;
     error?: Error;
+    sender: Tool;
 }
 
 export type TToolMessageLevel = "debug" | "info" | "warning" | "error";
 
-export interface IToolMessageEvent extends IPublisherEvent<Tool>
+export interface IToolMessageEvent
 {
     time: Date;
     level: TToolMessageLevel;
     message: string;
+    sender: Tool;
 }
 
 export interface IToolConfiguration
@@ -58,7 +61,7 @@ export interface IToolConfiguration
     timeout: number;
 }
 
-export default class Tool extends Publisher<Tool>
+export default class Tool extends Publisher
 {
     static readonly type: string = "Tool";
     static configuration: IToolConfiguration;

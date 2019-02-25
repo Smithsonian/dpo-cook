@@ -289,7 +289,7 @@ export default class ClientApplication extends React.Component<IClientApplicatio
                     <img className="sc-logo" src="/static/images/cook-logo-250px.png"/>
                     <Label className="ff-label sc-byline">
                         Smithsonian 3D Foundation Project<br/>
-                        Processing API Client Version 2018-11-29
+                        Processing API Client Version 2019-02-25
                     </Label>
                     <FlexItem/>
                     <Label>Client ID</Label>
@@ -364,18 +364,17 @@ export default class ClientApplication extends React.Component<IClientApplicatio
         }
 
         fetch.json(`/clients/${clientId}/jobs/${jobId}`, "GET")
-        .then(result => {
-            if (result.ok) {
+            .then(result => {
                 this.setState(prevState => {
                     const jobInfos = prevState.jobInfos;
                     const index = jobInfos.findIndex(jobInfo => jobInfo.id === jobId);
                     if (index >= 0) {
-                        jobInfos[index] = result.json;
+                        jobInfos[index] = result;
                     }
                     return { jobInfos };
                 });
-            }
-        });
+            })
+            .catch();
     }
 
     protected fetchJobList()
@@ -386,18 +385,17 @@ export default class ClientApplication extends React.Component<IClientApplicatio
         }
 
         fetch.json(`/clients/${clientId}/jobs`, "GET")
-        .then(result => {
-            if (result.ok) {
+            .then(result => {
                 this.setState(prevState => {
                     // if no job is selected, select first job
-                    const firstJob = result.json[0];
+                    const firstJob = result[0];
                     return {
-                        jobInfos: result.json,
+                        jobInfos: result,
                         jobId: prevState.jobId || (firstJob ? firstJob.id : "")
                     };
                 });
-            }
-        });
+            })
+            .catch();
     }
 
     protected fetchReport(jobId: string)
@@ -408,45 +406,37 @@ export default class ClientApplication extends React.Component<IClientApplicatio
         }
 
         fetch.json(`/clients/${clientId}/jobs/${jobId}/report`, "GET")
-        .then(result => {
-            if (result.ok) {
-                this.setState({ report: result.json });
-            }
-        });
+            .then(result => this.setState({ report: result }))
+            .catch();
     }
 
     protected fetchRecipeList()
     {
         fetch.json("/recipes", "GET")
-        .then(result => {
-            if (result.ok) {
-                this.setState({ recipeInfos: result.json });
-                const firstRecipe = result.json[0];
+            .then(result => {
+                this.setState({ recipeInfos: result });
+                const firstRecipe = result[0];
                 if (!this.state.recipe && firstRecipe) {
                     this.fetchRecipe(firstRecipe.id);
                 }
-            }
-        });
+            })
+            .catch();
     }
 
     protected fetchRecipe(recipeId: string)
     {
         fetch.json(`recipes/${recipeId}`, "GET")
-        .then(result => {
-            if (result.ok) {
-                this.setState({ recipe: result.json });
-            }
-        });
+            .then(result => {
+                this.setState({ recipe: result });
+            })
+            .catch();
     }
 
     protected fetchMachineState()
     {
         fetch.json("/machine", "GET")
-            .then(result => {
-                if (result.ok) {
-                    this.setState({ machineInfo: result.json });
-                }
-            })
+            .then(result => this.setState({ machineInfo: result }))
+            .catch();
     }
 
     protected getJobById(id: string): IJobInfo

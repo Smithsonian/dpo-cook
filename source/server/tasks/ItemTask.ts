@@ -67,8 +67,8 @@ export default class ItemTask extends Task
         properties: {
             itemFile: { type: "string", minLength: 1 },
             metaDataFile: { type: "string" },
-            units: { type: "string", enum: [ "mm", "cm", "m", "in", "ft" ] },
-            derivativeUsage: { type: "string", enum: [ "Web", "Print", "Editorial" ] },
+            units: { type: "string", enum: [ "mm", "cm", "m", "in", "ft", "yd" ] },
+            derivativeUsage: { type: "string", enum: [ "Web2D", "Web3D", "Print", "Editorial" ] },
             derivativeQuality: { type: "string", enum: [ "Thumb", "Low", "Medium", "High", "Highest", "LOD", "Stream"] },
             modelFile: { type: "string" },
             meshFile: { type: "string" },
@@ -77,7 +77,7 @@ export default class ItemTask extends Task
             normalMapFile: { type: "string" },
         },
         required: [
-            "outputItemFile"
+            "itemFile"
         ],
         additionalProperties: false
     };
@@ -165,8 +165,9 @@ export default class ItemTask extends Task
         }
 
         // files given but derivative not found: create one
-        if (hasFile && !derivative) {
+        if (!derivative) {
             derivative = { usage, quality, assets: [] };
+            derivatives.push(derivative);
         }
 
         const assets = derivative.assets;
@@ -196,7 +197,9 @@ export default class ItemTask extends Task
         if (params.metaDataFile) {
             const metaDataPath = path.resolve(this.context.jobDir, params.metaDataFile);
             mods.push(fs.readFile(metaDataPath, "utf8").then(json => {
+                console.log(json);
                 const meta = JSON.parse(json);
+                console.log(meta);
                 const keys = Object.keys(meta);
                 if (keys.length > 0) {
                     item.meta = item.meta || {};

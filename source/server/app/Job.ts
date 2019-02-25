@@ -43,7 +43,7 @@ export interface IJobOptions
     logDir?: string;
 }
 
-export default class Job extends Publisher<Job>
+export default class Job extends Publisher
 {
     readonly manager: TaskManager;
     readonly logger: any;

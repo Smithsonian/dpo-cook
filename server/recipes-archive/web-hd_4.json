@@ -2,7 +2,7 @@
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
     "description": "Generates high definition (1M, 8k) web asset",
-    "version": "5",
+    "version": "4",
     "start": "log",
 
     "parameterSchema": {
@@ -28,16 +28,6 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "itemFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "metaDataFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
             "pickupPath": {
                 "type": "string",
                 "minLength": 1
@@ -53,11 +43,6 @@
                     "local"
                 ],
                 "default": "none"
-            },
-            "units": {
-                "type": "string",
-                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
-                "default": "cm"
             },
             "inspectMesh": {
                 "type": "boolean",
@@ -396,24 +381,6 @@
                 "compressionLevel": 10,
                 "embedMaps": false,
                 "writeBinary": false
-            },
-            "success": "'update-item'",
-            "failure": "$failure"
-        },
-        "update-item": {
-            "task": "Item",
-            "description": "Add web model to item.json descriptor file",
-            "pre": {
-                "deliverables": {
-                    "item": "$firstTrue(itemFile, baseName & '-item.json')"
-                }
-            },
-            "parameters": {
-                "itemFile": "deliverables.item",
-                "metaDataFile": "metaDataFile",
-                "units": "units",
-                "derivativeQuality": "Highest",
-                "modelFile": "deliverables.webAssetGltf"
             },
             "success": "'delivery'",
             "failure": "$failure"

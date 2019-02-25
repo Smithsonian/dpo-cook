@@ -2,7 +2,7 @@
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
     "description": "Generates thumbnail web asset",
-    "version": "4",
+    "version": "5",
     "start": "log",
 
     "parameterSchema": {
@@ -18,6 +18,16 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "itemFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "metaDataFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "pickupPath": {
                 "type": "string",
                 "minLength": 1
@@ -28,11 +38,13 @@
             },
             "transportMethod": {
                 "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
+                "enum": [ "none", "local" ],
                 "default": "none"
+            },
+            "units": {
+                "type": "string",
+                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
+                "default": "cm"
             },
             "inspectMesh": {
                 "type": "boolean",
@@ -300,6 +312,24 @@
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
+            },
+            "success": "'update-item'",
+            "failure": "$failure"
+        },
+        "update-item": {
+            "task": "Item",
+            "description": "Add web model to item.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "item": "$firstTrue(itemFile, baseName & '-item.json')"
+                }
+            },
+            "parameters": {
+                "itemFile": "deliverables.item",
+                "metaDataFile": "metaDataFile",
+                "units": "units",
+                "derivativeQuality": "Thumb",
+                "modelFile": "deliverables.webAssetGlb"
             },
             "success": "'delivery'",
             "failure": "$failure"

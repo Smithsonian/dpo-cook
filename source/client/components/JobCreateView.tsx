@@ -363,12 +363,7 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
             return Promise.reject(new Error("Client ID not set."));
         }
 
-        return fetch.json("/job", "POST", this.state.jobOrder)
-            .then(result => {
-                if (!result.ok) {
-                    throw new Error(result.json.error);
-                }
-            });
+        return fetch.json("/job", "POST", this.state.jobOrder);
     }
 
     protected uploadFiles(files: File[], jobId: string): Promise<any>
@@ -378,9 +373,7 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
 
         this.setState({ isUploading: true });
 
-        return Promise.all(files.map(file =>
-            fetch.file(`${webDAVUrl}/${file.name}`, "PUT", file)
-        ))
+        return Promise.all(files.map(file => fetch.file(`${webDAVUrl}/${file.name}`, "PUT", file, false)))
         .then(() => {
             this.setState({ isUploading: false });
         })

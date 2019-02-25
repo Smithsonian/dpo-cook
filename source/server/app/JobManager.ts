@@ -116,7 +116,7 @@ export interface IJobInfo
 }
 
 
-export default class JobManager extends Publisher<JobManager>
+export default class JobManager extends Publisher
 {
     protected jobs: { [id: string]: Job };
 

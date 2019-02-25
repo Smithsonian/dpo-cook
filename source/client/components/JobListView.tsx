@@ -180,10 +180,8 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
         }
 
         fetch.json(`/clients/${clientId}/jobs/${event.id}/run`, "PATCH")
-        .then(result => {
-            if (!result.ok) {
-                alert(`SERVER ERROR ${result.status}:\n${result.json.error}`);
-            }
+        .catch(error => {
+            alert(`SERVER ERROR\n${error.message}`);
         });
     }
 
@@ -196,10 +194,8 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
         }
 
         fetch.json(`/clients/${clientId}/jobs/${event.id}/cancel`, "PATCH")
-        .then(result => {
-            if (!result.ok) {
-                alert(`SERVER ERROR ${result.status}:\n${result.json.error}`);
-            }
+        .catch(error => {
+            alert(`SERVER ERROR\n${error.message}`);
         });
     }
 
@@ -219,10 +215,8 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
         this.props.onJobRemove(jobId);
 
         fetch.json(`/clients/${clientId}/jobs/${jobId}`, "DELETE")
-        .then(result => {
-            if (!result.ok) {
-                alert(`SERVER ERROR ${result.status}:\n${result.json.error}`);
-            }
+        .catch(error => {
+            alert(`SERVER ERROR\n${error.message}`);
         });
     }
 }

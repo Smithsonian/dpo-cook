@@ -2,7 +2,7 @@
     "id": "721d459c-af09-4525-a28b-e71a89439282",
     "name": "web-multi",
     "description": "Generates multi-level web assets",
-    "version": "4",
+    "version": "5",
     "start": "log",
 
     "parameterSchema": {
@@ -14,6 +14,16 @@
                 "format": "file"
             },
             "highPolyDiffuseMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "metaDataFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "itemFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -33,6 +43,11 @@
                     "local"
                 ],
                 "default": "none"
+            },
+            "units": {
+                "type": "string",
+                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
+                "default": "cm"
             },
             "inspectMesh": {
                 "type": "boolean",
@@ -390,6 +405,24 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
+            "success": "'update-item-1k'",
+            "failure": "$failure"
+        },
+        "update-item-1k": {
+            "task": "Item",
+            "description": "Add 1k web model to item.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "item": "$firstTrue(itemFile, baseName & '-item.json')"
+                }
+            },
+            "parameters": {
+                "itemFile": "deliverables.item",
+                "metaDataFile": "metaDataFile",
+                "units": "units",
+                "derivativeQuality": "Low",
+                "modelFile": "deliverables.webAsset1k"
+            },
             "success": "'model-glb-2k'",
             "failure": "$failure"
         },
@@ -416,6 +449,17 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
+            "success": "'update-item-2k'",
+            "failure": "$failure"
+        },
+        "update-item-2k": {
+            "task": "Item",
+            "description": "Add 2k web model to item.json descriptor file",
+            "parameters": {
+                "itemFile": "deliverables.item",
+                "derivativeQuality": "Medium",
+                "modelFile": "deliverables.webAsset2k"
+            },
             "success": "'model-glb-high'",
             "failure": "$failure"
         },
@@ -441,6 +485,17 @@
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
+            },
+            "success": "'update-item-high'",
+            "failure": "$failure"
+        },
+        "update-item-high": {
+            "task": "Item",
+            "description": "Add high web model to item.json descriptor file",
+            "parameters": {
+                "itemFile": "deliverables.item",
+                "derivativeQuality": "High",
+                "modelFile": "deliverables.webAsset4k"
             },
             "success": "'delivery'",
             "failure": "$failure"
