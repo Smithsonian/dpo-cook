@@ -329,7 +329,9 @@
                 "metaDataFile": "metaDataFile",
                 "units": "units",
                 "derivativeQuality": "'Thumb'",
-                "modelFile": "deliverables.webAssetGlb"
+                "modelFile": "deliverables.webAssetGlb",
+                "numFaces": "numFaces",
+                "mapSize": "mapSize"
             },
             "success": "'delivery'",
             "failure": "$failure"

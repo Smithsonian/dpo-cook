@@ -421,7 +421,9 @@
                 "metaDataFile": "metaDataFile",
                 "units": "units",
                 "derivativeQuality": "'Low'",
-                "modelFile": "deliverables.webAsset1k"
+                "modelFile": "deliverables.webAsset1k",
+                "numFaces": "numFaces",
+                "mapSize": 1024
             },
             "success": "'model-glb-2k'",
             "failure": "$failure"
@@ -458,7 +460,9 @@
             "parameters": {
                 "itemFile": "deliverables.item",
                 "derivativeQuality": "'Medium'",
-                "modelFile": "deliverables.webAsset2k"
+                "modelFile": "deliverables.webAsset2k",
+                "numFaces": "numFaces",
+                "mapSize": 2048
             },
             "success": "'model-glb-high'",
             "failure": "$failure"
@@ -495,7 +499,9 @@
             "parameters": {
                 "itemFile": "deliverables.item",
                 "derivativeQuality": "'High'",
-                "modelFile": "deliverables.webAsset4k"
+                "modelFile": "deliverables.webAsset4k",
+                "numFaces": "numFaces",
+                "mapSize": 4096
             },
             "success": "'delivery'",
             "failure": "$failure"

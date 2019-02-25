@@ -50,6 +50,10 @@ export interface IItemTaskParameters extends ITaskParameters
     occlusionMapFile?: string;
     /** File name of the normal map to be added to the derivative. */
     normalMapFile?: string;
+    /** Number of faces. Will be added to model and geometry assets. */
+    numFaces?: number;
+    /** Map size. Will be added to model, image, and texture assets. */
+    mapSize?: number;
 }
 
 /**
@@ -75,11 +79,13 @@ export default class ItemTask extends Task
             diffuseMapFile: { type: "string" },
             occlusionMapFile: { type: "string" },
             normalMapFile: { type: "string" },
+            numFaces: { type: "integer" },
+            mapSize: { type: "integer" },
         },
         required: [
-            "itemFile"
+            "itemFile",
         ],
-        additionalProperties: false
+        additionalProperties: false,
     };
 
     static readonly parameterValidator =
@@ -176,22 +182,45 @@ export default class ItemTask extends Task
         const mods: Promise<any>[] = [];
 
         if (params.modelFile) {
-            mods.push(this.updateAsset(assets, "Model", params.modelFile));
+            mods.push(this.updateAsset(assets, "Model", params.modelFile).then(asset => {
+                if (params.numFaces > 0) {
+                    asset.numFaces = params.numFaces;
+                }
+                if (params.mapSize > 0) {
+                    asset.imageSize = params.mapSize;
+                }
+            }));
         }
         if (params.meshFile) {
-            mods.push(this.updateAsset(assets, "Geometry", params.meshFile));
+            mods.push(this.updateAsset(assets, "Geometry", params.meshFile).then(asset => {
+                if (params.numFaces > 0) {
+                    asset.numFaces = params.numFaces;
+                }
+            }));
         }
         if (params.diffuseMapFile) {
-            mods.push(this.updateAsset(assets, "Texture", params.diffuseMapFile)
-                .then(asset => { asset.mapType = "Color"; return asset; }));
+            mods.push(this.updateAsset(assets, "Texture", params.diffuseMapFile).then(asset => {
+                asset.mapType = "Color";
+                if (params.mapSize > 0) {
+                    asset.imageSize = params.mapSize;
+                }
+            }));
         }
         if (params.occlusionMapFile) {
-            mods.push(this.updateAsset(assets, "Texture", params.occlusionMapFile)
-            .then(asset => { asset.mapType = "Occlusion"; return asset; }));
+            mods.push(this.updateAsset(assets, "Texture", params.occlusionMapFile).then(asset => {
+                asset.mapType = "Occlusion";
+                if (params.mapSize > 0) {
+                    asset.imageSize = params.mapSize;
+                }
+            }));
         }
         if (params.normalMapFile) {
-            mods.push(this.updateAsset(assets, "Texture", params.normalMapFile)
-            .then(asset => { asset.mapType = "Normal"; return asset; }));
+            mods.push(this.updateAsset(assets, "Texture", params.normalMapFile).then(asset => {
+                asset.mapType = "Normal";
+                if (params.mapSize > 0) {
+                    asset.imageSize = params.mapSize;
+                }
+            }));
         }
 
         if (params.metaDataFile) {

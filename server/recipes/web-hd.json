@@ -278,7 +278,7 @@
                 "bakeTest": "bakeTest",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": "tangentSpaceNormals",
-                "timeout": 1500
+                "timeout": 2500
             },
             "success": "'convert-diffuse-map'",
             "failure": "$failure"
@@ -413,7 +413,9 @@
                 "metaDataFile": "metaDataFile",
                 "units": "units",
                 "derivativeQuality": "'Highest'",
-                "modelFile": "deliverables.webAssetGlb"
+                "modelFile": "deliverables.webAssetGlb",
+                "numFaces": "numFaces",
+                "mapSize": "mapSize"
             },
             "success": "'delivery'",
             "failure": "$failure"
