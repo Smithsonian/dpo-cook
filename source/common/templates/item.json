@@ -1,0 +1,43 @@
+{
+    "type": "3d-item",
+    "meta": {
+    },
+    "process": {
+    },
+    "explorer": {
+        "ui": {
+            "logo": true,
+            "annotations": true,
+            "reader": true
+        },
+        "controller": {
+            "type": "orbit",
+            "orbit": {
+                "offset": [ 0, 0, 100 ],
+                "minOffset": [ "-Infinity", "-Infinity", 0.1 ],
+                "maxOffset": [ "Infinity", "Infinity", 1000 ],
+                "orientation": [ 0, 0, 0 ],
+                "minOrientation": [ -90, "-Infinity", "-Infinity" ],
+                "maxOrientation": [ 90, "Infinity", "Infinity" ]
+            }
+        },
+        "template": {
+
+        }
+    },
+    "model": {
+        "units": "cm",
+        "derivatives": [],
+        "boundingBox": {
+            "min": [-220.54, -565.58, -353.17],
+            "max": [340.64, 460.87, 378.81]
+        },
+        "transform": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    },
+    "documents": {
+        "documents": []
+    },
+    "annotations": {
+        "annotations": []
+    }
+}

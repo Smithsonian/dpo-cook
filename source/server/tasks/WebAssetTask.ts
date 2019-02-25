@@ -22,20 +22,38 @@ import Task, { ITaskParameters } from "../app/Task";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IWebAssetTaskOptions extends ITaskParameters
+/** Parameters for [[WebAssetTask]]. */
+export interface IWebAssetTaskParameters extends ITaskParameters
 {
+    /** File name of the resulting web asset. */
     outputFile: string;
+    /** File name of the input mesh to be added to the web asset. */
     meshFile: string;
+    /** File name of the diffuse map to be added to the web asset. */
     diffuseMapFile?: string;
+    /** File name of the occlusion map to be added to the web asset. */
     occlusionMapFile?: string;
+    /** File name of the normal map to be added to the web asset. */
     normalMapFile?: string;
+    /** True to use object space normals, false for tangent space normals. */
     objectSpaceNormals?: boolean;
+    /** True if geometry should be compressed using the DRACO mesh compressor. */
     useCompression?: boolean;
+    /** Compression level for DRACO mesh compression, range 0 - 10, default: 10. */
     compressionLevel?: number;
+    /** True if map data should be embedded in the asset file, false if maps are embedded by reference only. */
     embedMaps?: boolean;
+    /** True if the asset should be written in binary format (.glb), false for a text .gltf file. */
     writeBinary?: boolean;
 }
 
+/**
+ * Combines mesh and map data into a GLTF web asset. The asset can be written in JSON or binary format,
+ * with optionally embedded maps and DRACO-compressed mesh data.
+ *
+ * Parameters: [[IWebAssetTaskParameters]].
+ * Tool: [[MeshSmithTool]].
+ */
 export default class WebAssetTask extends Task
 {
     static readonly description = "Creates glTF/glb web assets including mesh and textures.";
@@ -64,7 +82,7 @@ export default class WebAssetTask extends Task
     static readonly parameterValidator =
         Task.jsonValidator.compile(WebAssetTask.parameterSchema);
 
-    constructor(options: IWebAssetTaskOptions, context: Job)
+    constructor(options: IWebAssetTaskParameters, context: Job)
     {
         super(options, context);
 

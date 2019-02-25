@@ -68,10 +68,10 @@ export default class FileOperationTask extends Task
         return new Promise((resolve, reject) => {
 
             this.startTask();
-            const options = this.parameters as IFileOperationTaskParameters;
-            const filePath = path.resolve(this.context.jobDir, options.name);
+            const params = this.parameters as IFileOperationTaskParameters;
+            const filePath = path.resolve(this.context.jobDir, params.name);
 
-            switch(options.operation) {
+            switch(params.operation) {
                 case "DeleteFile":
                     fs.unlink(filePath, err => {
                         if (err) {
@@ -87,10 +87,10 @@ export default class FileOperationTask extends Task
                     break;
 
                 case "RenameFile":
-                    if (!options.newName) {
+                    if (!params.newName) {
                         return reject("Rename file operation requires 'newName' parameter to be set.");
                     }
-                    const newFilePath = path.resolve(this.context.jobDir, options.newName);
+                    const newFilePath = path.resolve(this.context.jobDir, params.newName);
                     mkdirp(path.dirname(newFilePath), err => {
                         if (err) {
                             err = new Error(`Rename file "${filePath}" failed: ${err.toString()}`);

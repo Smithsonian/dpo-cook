@@ -74,11 +74,11 @@ export default class FileCopyTask extends Task
     {
         this.startTask();
 
-        const options = this.parameters as IFileCopyTaskParameters;
+        const params = this.parameters as IFileCopyTaskParameters;
 
-        return Promise.all(options.files.map(fileName => {
-            const sourceFilePath = path.resolve(options.sourcePath, fileName);
-            const destinationFilePath = path.resolve(options.destinationPath, fileName);
+        return Promise.all(params.files.map(fileName => {
+            const sourceFilePath = path.resolve(params.sourcePath, fileName);
+            const destinationFilePath = path.resolve(params.destinationPath, fileName);
             return this.copyFile(sourceFilePath, destinationFilePath);
         })).then(() => {
             this.endTask(null, "done");
