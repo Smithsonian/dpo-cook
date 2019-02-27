@@ -82,8 +82,9 @@ export default class DeliveryTask extends Task
     {
         this.startTask();
 
-        const options = this.parameters as IDeliveryTaskParameters;
-        const files = options.files;
+        const params = this.parameters as IDeliveryTaskParameters;
+        const files = params.files;
+
         const filesToCopy = [];
         const fileMap = {};
 
@@ -99,7 +100,7 @@ export default class DeliveryTask extends Task
 
         this.report.result.files = fileMap;
 
-        if (options.method === "none") {
+        if (params.method === "none") {
             this.logTaskEvent("debug", "file delivery skipped");
             this.endTask(null, "done");
             return Promise.resolve();
@@ -107,26 +108,30 @@ export default class DeliveryTask extends Task
 
         let remoteClient;
 
-        if (options.method === "webDAV") {
+        if (params.method === "webDAV") {
             remoteClient = webDAV(
-                options.path,
-                options.credentials.user,
-                options.credentials.password
+                params.path,
+                params.credentials.user,
+                params.credentials.password
             );
+        }
+
+        if (filesToCopy.length === 0) {
+            this.logTaskEvent("debug", "files array is empty, nothing to deliver");
         }
 
         return Promise.all(filesToCopy.map(fileName => {
             const sourceFilePath = path.resolve(this.context.jobDir, fileName);
 
-            if (options.method === "local") {
-                const destinationFilePath = path.resolve(options.path, fileName);
+            if (params.method === "local") {
+                const destinationFilePath = path.resolve(params.path, fileName);
                 return this.copyFile(sourceFilePath, destinationFilePath);
             }
-            else if (options.method === "webDAV") {
-                return this.copyRemoteFile(remoteClient, options.path, fileName, sourceFilePath);
+            else if (params.method === "webDAV") {
+                return this.copyRemoteFile(remoteClient, params.path, fileName, sourceFilePath);
             }
             else {
-                throw new Error(`unsupported transport method: ${options.method}`);
+                throw new Error(`unsupported transport method: ${params.method}`);
             }
         })).then(() => {
             this.endTask(null, "done");

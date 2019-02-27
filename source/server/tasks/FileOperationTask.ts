@@ -26,6 +26,7 @@ import Task, { ITaskParameters } from "../app/Task";
 
 ////////////////////////////////////////////////////////////////////////////////
 
+/** Parameters for [[FileOperationTask]]. */
 export interface IFileOperationTaskParameters extends ITaskParameters
 {
     /** Operation to be performed. */
@@ -36,6 +37,12 @@ export interface IFileOperationTaskParameters extends ITaskParameters
     newName?: string;
 }
 
+/**
+ * Executes file operations including delete, rename, create folder,
+ * and delete folder.
+ *
+ * Parameters: [[IFileOperationTaskParameters]].
+ */
 export default class FileOperationTask extends Task
 {
     static readonly description = "Executes file system operations including " +

@@ -1,0 +1,75 @@
+{
+    "id": "8855dd5d-4c6e-47ec-935b-f0a6c49631cd",
+    "name": "migrate-legacy",
+    "description": "Converts Legacy viewer models to Voyager items/presentations",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "modelId": {
+                "type": "integer"
+            },
+            "pickupPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            }
+        },
+        "required": [
+            "modelId"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "pre": {
+                "baseName": "'legacy-' & modelId"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "logFile": "baseName & '-log.txt'",
+                "reportFile": "baseName & '-report.json'"
+            },
+            "success": "'migrate'",
+            "failure": "$failure"
+        },
+        "migrate": {
+            "task": "MigrateLegacy",
+            "pre": {
+                "delivery": {
+                }
+            },
+            "parameters": {
+                "modelId": "modelId"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "delivery"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

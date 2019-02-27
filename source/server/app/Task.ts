@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { promises as fs } from "fs";
 import * as moment from "moment";
 import * as table from "markdown-table";
 
@@ -328,6 +329,18 @@ export default class Task
         }
 
         return path.resolve(this.context.jobDir, fileName);
+    }
+
+    protected async writeFile(fileName: string, content: string | Buffer): Promise<void>
+    {
+        const path = this.getFilePath(fileName);
+
+        if (typeof content === "string") {
+            await fs.writeFile(path, content, "utf8");
+        }
+        else {
+            await fs.writeFile(path, content);
+        }
     }
 
     protected dumpProperties(props, rows?, propPath?)

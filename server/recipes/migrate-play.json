@@ -1,0 +1,79 @@
+{
+    "id": "8a2e8556-3c39-48a2-b432-591f480b7d69",
+    "name": "migrate-play",
+    "description": "Converts Play boxes to Voyager items/presentations",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "boxId": {
+                "type": "integer"
+            },
+            "pickupPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            }
+        },
+        "required": [
+            "boxId"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "pre": {
+                "baseName": "'play-' & boxId"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "logFile": "baseName & '-log.txt'",
+                "reportFile": "baseName & '-report.json'"
+            },
+            "success": "'migrate'",
+            "failure": "$failure"
+        },
+        "migrate": {
+            "task": "MigratePlay",
+            "pre": {
+                "delivery": {
+                }
+            },
+            "parameters": {
+                "boxId": "boxId",
+                "baseName": "baseName"
+            },
+            "post": {
+                "delivery": "$result.files"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "delivery"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
