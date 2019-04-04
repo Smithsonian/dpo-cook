@@ -73,23 +73,23 @@ export default class MigratePlayTask extends Task
     {
         const params = this.parameters as IMigratePlayTaskParameters;
         const boxId = params.boxId;
-        const baseName = params.baseName || `play-${boxId}`;
+        const baseName = params.baseName || "";
         const resultFiles: any = this.result.files = {};
 
         const payloadURL = `${MigratePlayTask.playPayloadLocation}${boxId}_payload.json`;
         const payload = await fetch.json(payloadURL, "GET") as IPlayPayloadInfo;
 
-        resultFiles.payload = `${baseName}-payload.json`;
+        resultFiles.payload = `${baseName}payload.json`;
         await this.writeFile(resultFiles.payload, JSON.stringify(payload, null, 2));
 
         // fetch and write thumbnail image
         const thumbImage = await fetch.buffer(payload.message.pubThumb, "GET");
-        resultFiles.thumbImage = `${baseName}-image-thumb.jpg`;
+        resultFiles.thumbImage = `${baseName}image-thumb.jpg`;
         await this.writeFile(resultFiles.thumbImage, Buffer.from(thumbImage));
 
         // fetch and write preview image
         const previewImage = await fetch.buffer(payload.message.pubPreview, "GET");
-        resultFiles.previewImage = `${baseName}-image-preview.jpg`;
+        resultFiles.previewImage = `${baseName}image-preview.jpg`;
         await this.writeFile(resultFiles.previewImage, Buffer.from(previewImage));
 
         // compose box base URL
@@ -100,7 +100,7 @@ export default class MigratePlayTask extends Task
 
         // fetch and write bake.json
         const bake = await fetch.json(boxBaseURL + "bake.json", "GET") as IPlayBake;
-        resultFiles.bake = `${baseName}-bake.json`;
+        resultFiles.bake = `${baseName}bake.json`;
         await this.writeFile(resultFiles.bake, JSON.stringify(bake, null, 2));
 
         // fetch and write all assets
@@ -108,8 +108,8 @@ export default class MigratePlayTask extends Task
         const promises = assetKeys.map(key => {
             const asset = bake.assets[key];
             const assetURL = `${cdnBaseURL}${asset.files["original"]}`;
-            const fileName = `${baseName}-${asset.name}`;
-            resultFiles[fileName] = fileName;
+            const fileName = `${baseName}${asset.name}`;
+            resultFiles[asset.name] = fileName;
 
             if (asset.type === "json") {
                 return fetch.json(assetURL, "GET").then(data => this.writeFile(fileName, JSON.stringify(data, null, 2)));
@@ -120,14 +120,6 @@ export default class MigratePlayTask extends Task
         });
 
         await Promise.all(promises);
-
-        // fetch and write config.json
-        //const configJson = await fetch.json(boxBaseURL + "config.json", "GET");
-        //resultFiles.config = `${baseName}-config.json`;
-        //await this.writeFile(resultFiles.config, JSON.stringify(configJson, null, 2));
-
-
-        const pubHTML = await fetch.text(payloadURL, "GET");
 
     }
 }
