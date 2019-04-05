@@ -2,7 +2,7 @@
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
     "description": "Generates high definition (1M, 8k) web asset",
-    "version": "5",
+    "version": "6",
     "start": "log",
 
     "parameterSchema": {
@@ -28,7 +28,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "itemFile": {
+            "documentFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -397,19 +397,19 @@
                 "embedMaps": false,
                 "writeBinary": false
             },
-            "success": "'update-item'",
+            "success": "'update-document'",
             "failure": "$failure"
         },
-        "update-item": {
-            "task": "Item",
-            "description": "Add web model to item.json descriptor file",
+        "update-document": {
+            "task": "Document",
+            "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "item": "$firstTrue(itemFile, baseName & '-item.json')"
+                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
                 }
             },
             "parameters": {
-                "itemFile": "deliverables.item",
+                "documentFile": "deliverables.document",
                 "metaDataFile": "metaDataFile",
                 "units": "units",
                 "derivativeQuality": "'Highest'",

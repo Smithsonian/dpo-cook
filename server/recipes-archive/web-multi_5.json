@@ -2,7 +2,7 @@
     "id": "721d459c-af09-4525-a28b-e71a89439282",
     "name": "web-multi",
     "description": "Generates multi-level web assets",
-    "version": "6",
+    "version": "5",
     "start": "log",
 
     "parameterSchema": {
@@ -23,7 +23,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "documentFile": {
+            "itemFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -405,19 +405,19 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'update-document-1k'",
+            "success": "'update-item-1k'",
             "failure": "$failure"
         },
-        "update-document-1k": {
-            "task": "Document",
-            "description": "Add 1k web model to document.json descriptor file",
+        "update-item-1k": {
+            "task": "Item",
+            "description": "Add 1k web model to item.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
+                    "item": "$firstTrue(itemFile, baseName & '-item.json')"
                 }
             },
             "parameters": {
-                "documentFile": "deliverables.document",
+                "itemFile": "deliverables.item",
                 "metaDataFile": "metaDataFile",
                 "units": "units",
                 "derivativeQuality": "'Low'",
@@ -451,14 +451,14 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'update-document-2k'",
+            "success": "'update-item-2k'",
             "failure": "$failure"
         },
-        "update-document-2k": {
-            "task": "Document",
-            "description": "Add 2k web model to document.json descriptor file",
+        "update-item-2k": {
+            "task": "Item",
+            "description": "Add 2k web model to item.json descriptor file",
             "parameters": {
-                "documentFile": "deliverables.document",
+                "itemFile": "deliverables.item",
                 "derivativeQuality": "'Medium'",
                 "modelFile": "deliverables.webAsset2k",
                 "numFaces": "numFaces",
@@ -490,14 +490,14 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'update-document-high'",
+            "success": "'update-item-high'",
             "failure": "$failure"
         },
-        "update-document-high": {
-            "task": "Document",
-            "description": "Add high web model to document.json descriptor file",
+        "update-item-high": {
+            "task": "Item",
+            "description": "Add high web model to item.json descriptor file",
             "parameters": {
-                "documentFile": "deliverables.document",
+                "itemFile": "deliverables.item",
                 "derivativeQuality": "'High'",
                 "modelFile": "deliverables.webAsset4k",
                 "numFaces": "numFaces",

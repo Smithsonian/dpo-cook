@@ -23,18 +23,19 @@ import clone from "@ff/core/clone";
 import Job from "../app/Job";
 import Task, { ITaskParameters } from "../app/Task";
 
-import { IItem, TUnitType, TDerivativeUsage, TDerivativeQuality, IAsset, TAssetType } from "../types/item";
+import { IDocument, TUnitType } from "../types/document";
+import { TDerivativeUsage, TDerivativeQuality, IAsset, TAssetType } from "../types/model";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/** Parameters for [[ItemTask]]. */
-export interface IItemTaskParameters extends ITaskParameters
+/** Parameters for [[DocumentTask]]. */
+export interface IDocumentTaskParameters extends ITaskParameters
 {
-    /** File name of the item to be created/modified. */
-    itemFile?: string;
-    /** File name with meta data to be embedded in the item file. */
+    /** File name of the document to be created/modified. */
+    documentFile?: string;
+    /** File name with meta data to be embedded in the document file. */
     metaDataFile?: string;
-    /** Units to be set for the item's model. */
+    /** Units to be set for the document's model. */
     units?: TUnitType;
     /** Usage of the derivative to be added or modified. */
     derivativeUsage?: TDerivativeUsage;
@@ -57,19 +58,19 @@ export interface IItemTaskParameters extends ITaskParameters
 }
 
 /**
- * Creates and modifies item.json descriptor files, as used by the Smithsonian Voyager 3D Explorer.
- * If the value of a parameter is an empty string, the corresponding item.json data is removed.
+ * Creates and modifies document.json descriptor files, as used by the Smithsonian Voyager 3D Explorer.
+ * If the value of a parameter is an empty string, the corresponding document.json data is removed.
  *
- * Parameters: [[IItemTaskParameters]].
+ * Parameters: [[IDocumentTaskParameters]].
  */
-export default class ItemTask extends Task
+export default class DocumentTask extends Task
 {
-    static readonly description = "Creates and modifies item.json descriptor files.";
+    static readonly description = "Creates and modifies document.json descriptor files.";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
-            itemFile: { type: "string", minLength: 1 },
+            documentFile: { type: "string", minLength: 1 },
             metaDataFile: { type: "string" },
             units: { type: "string", enum: [ "mm", "cm", "m", "in", "ft", "yd" ] },
             derivativeUsage: { type: "string", enum: [ "Web2D", "Web3D", "Print", "Editorial" ] },
@@ -83,28 +84,38 @@ export default class ItemTask extends Task
             mapSize: { type: "integer" },
         },
         required: [
-            "itemFile",
+            "documentFile",
         ],
         additionalProperties: false,
     };
 
     static readonly parameterValidator =
-        Task.jsonValidator.compile(ItemTask.parameterSchema);
+        Task.jsonValidator.compile(DocumentTask.parameterSchema);
 
-    protected static readonly defaultItem: IItem = {
-        info: {
-            type: "application/si-dpo-3d.item+json",
-            copyright: "(c) Smithsonian Institution, all rights reserved",
-            generator: "Cook Item Parser",
-            version: "1.3",
+    protected static readonly defaultDocument: IDocument = {
+        asset: {
+            "type": "application/si-dpo-3d.document+json",
+            "version": "1.0",
+            "generator": "Voyager",
+            "copyright": "(c) Smithsonian Institution. All rights reserved."
         },
-        model: {
-            units: "cm",
-            derivatives: [],
-        }
+        "scene": 0,
+        "scenes": [{
+            "name": "Scene",
+            "units": "cm",
+            "nodes": [0]
+        }],
+        "nodes": [{
+            "name": "Model",
+            "model": 0
+        }],
+        "models": [{
+            "units": "cm",
+            "derivatives": []
+        }]
     };
 
-    constructor(params: IItemTaskParameters, context: Job)
+    constructor(params: IDocumentTaskParameters, context: Job)
     {
         super(params, context);
     }
@@ -113,38 +124,42 @@ export default class ItemTask extends Task
     {
         this.startTask();
 
-        return this.readOrCreateItem()
-            .then(item => this.modifyItem(item))
-            .then(item => this.writeItem(item))
-            .then(() => this.endTask(null, "done"))
-            .catch(error => {
-                this.endTask(error, "error");
-                throw error;
-            });
-    }
-
-    protected readOrCreateItem(): Promise<IItem>
-    {
-        const params = this.parameters as IItemTaskParameters;
-        const itemFilePath = path.resolve(this.context.jobDir, params.itemFile);
-
-        return fs.readFile(itemFilePath, "utf8").then(json => {
-            // successfully read file: parse JSON and return item
-            return JSON.parse(json) as IItem;
-        }).catch(err => {
-            // error while reading the item file: create new item
-            return clone(ItemTask.defaultItem);
+        return this.readOrCreateDocument()
+        .then(document => this.modifyDocument(document))
+        .then(document => this.writeDocument(document))
+        .then(() => this.endTask(null, "done"))
+        .catch(error => {
+            this.endTask(error, "error");
+            throw error;
         });
     }
 
-    protected modifyItem(item: IItem): Promise<IItem>
+    protected readOrCreateDocument(): Promise<IDocument>
     {
-        const params = this.parameters as IItemTaskParameters;
-        const model = item.model;
-        const derivatives = item.model.derivatives;
+        const params = this.parameters as IDocumentTaskParameters;
+        const documentFilePath = path.resolve(this.context.jobDir, params.documentFile);
+
+        return fs.readFile(documentFilePath, "utf8").then(json => {
+            // successfully read file: parse JSON and return document
+            return JSON.parse(json) as IDocument;
+        }).catch(err => {
+            // error while reading the document file: create new document
+            return clone(DocumentTask.defaultDocument);
+        });
+    }
+
+    protected modifyDocument(document: IDocument): Promise<IDocument>
+    {
+        const params = this.parameters as IDocumentTaskParameters;
+        const scene = document.scenes[0];
+        const node = document.nodes.find(node => node.model !== undefined);
+        const model = document.models[node.model];
+
+        const derivatives = model.derivatives;
 
         // model units
         if (params.units) {
+            scene.units = params.units;
             model.units = params.units;
         }
 
@@ -162,12 +177,12 @@ export default class ItemTask extends Task
         // derivative specified and exists, but no files given: remove derivative
         if (derivative && params.derivativeQuality && !hasFile) {
             derivatives.splice(derivatives.indexOf(derivative), 1);
-            return Promise.resolve(item);
+            return Promise.resolve(document);
         }
 
         // no asset files given, no further modifications
         if (!hasFile) {
-            return Promise.resolve(item);
+            return Promise.resolve(document);
         }
 
         // files given but derivative not found: create one
@@ -231,13 +246,24 @@ export default class ItemTask extends Task
                 console.log(meta);
                 const keys = Object.keys(meta);
                 if (keys.length > 0) {
-                    item.meta = item.meta || {};
-                    keys.forEach(key => item.meta[key] = meta[key]);
+                    let info;
+                    if (isFinite(node.info)) {
+                        info = document.infos[node.info];
+                    }
+                    else {
+                        info = {};
+                        document.infos = document.infos || [];
+                        node.info = document.infos.length;
+                        document.infos.push(info);
+                    }
+
+                    info.meta = info.meta || {};
+                    keys.forEach(key => info.meta[key] = meta[key]);
                 }
             }));
         }
 
-        return Promise.all(mods).then(() => item);
+        return Promise.all(mods).then(() => document);
     }
 
     protected updateAsset(assets: IAsset[], type: TAssetType, fileName: string): Promise<IAsset>
@@ -258,12 +284,12 @@ export default class ItemTask extends Task
         });
     }
 
-    protected writeItem(item: IItem): Promise<void>
+    protected writeDocument(document: IDocument): Promise<void>
     {
-        const params = this.parameters as IItemTaskParameters;
-        const itemFilePath = path.resolve(this.context.jobDir, params.itemFile);
-        const json = JSON.stringify(item);
+        const params = this.parameters as IDocumentTaskParameters;
+        const documentFilePath = path.resolve(this.context.jobDir, params.documentFile);
+        const json = JSON.stringify(document);
 
-        return fs.writeFile(itemFilePath, json, "utf8");
+        return fs.writeFile(documentFilePath, json, "utf8");
     }
 }

@@ -2,7 +2,7 @@
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
     "description": "Generates thumbnail web asset",
-    "version": "5",
+    "version": "6",
     "start": "log",
 
     "parameterSchema": {
@@ -18,7 +18,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "itemFile": {
+            "documentFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -313,19 +313,19 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'update-item'",
+            "success": "'update-document'",
             "failure": "$failure"
         },
-        "update-item": {
-            "task": "Item",
-            "description": "Add web model to item.json descriptor file",
+        "update-document": {
+            "task": "Document",
+            "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "item": "$firstTrue(itemFile, baseName & '-item.json')"
+                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
                 }
             },
             "parameters": {
-                "itemFile": "deliverables.item",
+                "documentFile": "deliverables.document",
                 "metaDataFile": "metaDataFile",
                 "units": "units",
                 "derivativeQuality": "'Thumb'",
