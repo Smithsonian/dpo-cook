@@ -41,6 +41,10 @@
                 "enum": [ "none", "local" ],
                 "default": "none"
             },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
+            },
             "units": {
                 "type": "string",
                 "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
@@ -130,9 +134,9 @@
             "task": "Log",
             "description": "Start logging to file",
             "pre": {
-                "baseName": "$baseName(highPolyMeshFile)",
-                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
-                "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)",
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)",
+                "baseMeshMapName": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFaces, mapSize)",
                 "bakeDiffuse": "$exists(highPolyDiffuseMapFile)"
             },
             "parameters": {
