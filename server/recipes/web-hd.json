@@ -202,8 +202,7 @@
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
-                "inspectMesh": "deliverables.inspectionReport",
-                "timeout": 1200
+                "inspectMesh": "deliverables.inspectionReport"
             },
             "success": "'unwrap-unfold'",
             "failure": "'decimate-mops'"
@@ -220,7 +219,6 @@
                 "numFaces": "numFaces",
                 "cleanup": true,
                 "preserveBoundaries": true,
-                "timeout": 600,
                 "tool": "'Mops'"
             },
             "success": "'unwrap-unfold'",

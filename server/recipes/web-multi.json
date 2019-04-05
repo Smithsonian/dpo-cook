@@ -187,8 +187,7 @@
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
-                "inspectMesh": "deliverables.inspectionReport",
-                "timeout": 1200
+                "inspectMesh": "deliverables.inspectionReport"
             },
             "post": {
                 "deliverables": {
@@ -209,7 +208,6 @@
                 "numFaces": "numFaces",
                 "cleanup": true,
                 "preserveBoundaries": true,
-                "timeout": 600,
                 "tool": "Mops"
             },
             "success": "'unwrap-unfold'",
@@ -231,8 +229,7 @@
                 "saveObj": true,
                 "mapSize": "mapSize",
                 "segmentationStrength": "segmentationStrength",
-                "packEffort": "packEffort",
-                "timeout": 900
+                "packEffort": "packEffort"
             },
             "success": "'inspect-unwrapped'",
             "failure": "$failure"
