@@ -96,7 +96,7 @@ export default class DocumentTask extends Task
         asset: {
             "type": "application/si-dpo-3d.document+json",
             "version": "1.0",
-            "generator": "Voyager",
+            "generator": "Cook",
             "copyright": "(c) Smithsonian Institution. All rights reserved."
         },
         "scene": 0,
