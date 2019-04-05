@@ -162,7 +162,8 @@
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
                     "lowPolyMeshFile": "lowPolyMeshFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile"
+                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
+                    "documentFile": "documentFile"
                 }
             },
             "success": "'decimate-meshlab'",

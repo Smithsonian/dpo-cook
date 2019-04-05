@@ -177,7 +177,8 @@
                     "highPolyMeshFile": "highPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
                     "decimatedMeshFile": "decimatedMeshFile",
-                    "unwrappedMeshFile": "unwrappedMeshFile"
+                    "unwrappedMeshFile": "unwrappedMeshFile",
+                    "documentFile": "documentFile"
                 }
             },
             "success": "unwrappedMeshFile ? 'inspect-unwrapped': (decimatedMeshFile ? 'unwrap-unfold' : 'decimate-meshlab')",

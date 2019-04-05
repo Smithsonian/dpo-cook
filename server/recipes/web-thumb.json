@@ -154,7 +154,8 @@
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile"
+                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
+                    "documentFile": "documentFile"
                 }
             },
             "success": "'decimate-meshlab'",
