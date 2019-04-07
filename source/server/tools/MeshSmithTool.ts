@@ -138,13 +138,13 @@ export default class MeshSmithTool extends Tool
         };
 
         if (options.diffuseMapFile) {
-            config.gltfx.diffuseMap = this.getFilePath(options.diffuseMapFile);
+            config.gltfx.diffuseMap = options.diffuseMapFile; // use relative path
         }
         if (options.occlusionMapFile) {
-            config.gltfx.occlusionMap = this.getFilePath(options.occlusionMapFile);
+            config.gltfx.occlusionMap = options.occlusionMapFile; // use relative path
         }
         if (options.normalMapFile) {
-            config.gltfx.normalMap = this.getFilePath(options.normalMapFile);
+            config.gltfx.normalMap = options.normalMapFile; // use relative path
         }
 
         if (!options.format && outputFilePath) {
