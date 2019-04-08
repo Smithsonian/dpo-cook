@@ -35,6 +35,9 @@ export interface IMeshSmithToolOptions extends IToolOptions
     scale?: number;
     translate?: [number, number, number];
     matrix?: number[];
+    alignX?: string;
+    alignY?: string;
+    alignZ?: string;
     useCompression?: boolean;
     diffuseMapFile?: string;
     occlusionMapFile?: string;
@@ -123,6 +126,9 @@ export default class MeshSmithTool extends Tool
             scale: options.scale,
             translate: options.translate,
             matrix: options.matrix,
+            alignX: options.alignX === "start" ? -1 : (options.alignX === "end" ? 1 : 0),
+            alignY: options.alignY === "start" ? -1 : (options.alignY === "end" ? 1 : 0),
+            alignZ: options.alignZ === "start" ? -1 : (options.alignZ === "end" ? 1 : 0),
             gltfx: {
                 useCompression: options.useCompression,
                 objectSpaceNormals: options.objectSpaceNormals,
@@ -138,13 +144,13 @@ export default class MeshSmithTool extends Tool
         };
 
         if (options.diffuseMapFile) {
-            config.gltfx.diffuseMap = options.diffuseMapFile; // use relative path
+            config.gltfx.diffuseMap = this.getFilePath(options.diffuseMapFile);
         }
         if (options.occlusionMapFile) {
-            config.gltfx.occlusionMap = options.occlusionMapFile; // use relative path
+            config.gltfx.occlusionMap = this.getFilePath(options.occlusionMapFile);
         }
         if (options.normalMapFile) {
-            config.gltfx.normalMap = options.normalMapFile; // use relative path
+            config.gltfx.normalMap = this.getFilePath(options.normalMapFile);
         }
 
         if (!options.format && outputFilePath) {

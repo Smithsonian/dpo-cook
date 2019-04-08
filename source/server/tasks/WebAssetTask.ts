@@ -35,6 +35,10 @@ export interface IWebAssetTaskParameters extends ITaskParameters
     occlusionMapFile?: string;
     /** File name of the normal map to be added to the web asset. */
     normalMapFile?: string;
+    /** Centers object if true, i.e. aligns object with origin. */
+    alignCenter?: boolean;
+    /** Centers object and aligns it with y-origin if true. */
+    alignFloor?: boolean;
     /** True to use object space normals, false for tangent space normals. */
     objectSpaceNormals?: boolean;
     /** True if geometry should be compressed using the DRACO mesh compressor. */
@@ -66,6 +70,8 @@ export default class WebAssetTask extends Task
             diffuseMapFile: { type: "string", default: "" },
             occlusionMapFile: { type: "string", default: "" },
             normalMapFile: { type: "string", default: "" },
+            alignCenter: { type: "boolean", default: false },
+            alignFloor: { type: "boolean", default: false },
             objectSpaceNormals: { type: "boolean", default: false },
             useCompression: { type: "boolean", default: false },
             compressionLevel: { type: "integer", minimum: 0, maximum: 10, default: 10 },
@@ -98,6 +104,17 @@ export default class WebAssetTask extends Task
             compressionLevel: options.compressionLevel,
             embedMaps: options.embedMaps
         };
+
+        if (options.alignCenter) {
+            toolOptions.alignX = "center";
+            toolOptions.alignY = "center";
+            toolOptions.alignZ = "center";
+        }
+        if (options.alignFloor) {
+            toolOptions.alignX = "center";
+            toolOptions.alignY = "start";
+            toolOptions.alignZ = "center";
+        }
 
         this.addTool("MeshSmith", toolOptions);
     }
