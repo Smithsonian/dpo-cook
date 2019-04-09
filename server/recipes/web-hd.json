@@ -2,7 +2,7 @@
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
     "description": "Generates high definition (1M, 8k) web asset",
-    "version": "6",
+    "version": "7",
     "start": "log",
 
     "parameterSchema": {
@@ -57,6 +57,11 @@
             "baseName": {
                 "type": "string",
                 "minLength": 1
+            },
+            "modelIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
             },
             "units": {
                 "type": "string",
@@ -414,6 +419,8 @@
             "parameters": {
                 "documentFile": "deliverables.document",
                 "metaDataFile": "metaDataFile",
+                "modelIndex": "modelIndex",
+                "modelName": "baseName",
                 "units": "units",
                 "derivativeQuality": "'Highest'",
                 "modelFile": "deliverables.webAssetGlb",

@@ -2,7 +2,7 @@
     "id": "fe41067a-4d36-4fe2-ba40-658b7c244511",
     "name": "web-medium",
     "description": "Generates medium quality (250k, 2k) web asset",
-    "version": "1",
+    "version": "2",
     "start": "log",
 
     "parameterSchema": {
@@ -57,6 +57,11 @@
             "baseName": {
                 "type": "string",
                 "minLength": 1
+            },
+            "modelIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
             },
             "units": {
                 "type": "string",
@@ -414,6 +419,8 @@
             "parameters": {
                 "documentFile": "deliverables.document",
                 "metaDataFile": "metaDataFile",
+                "modelIndex": "modelIndex",
+                "modelName": "baseName",
                 "units": "units",
                 "derivativeQuality": "'Highest'",
                 "modelFile": "deliverables.webAssetGlb",

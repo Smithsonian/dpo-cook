@@ -23,7 +23,9 @@ import clone from "@ff/core/clone";
 import Job from "../app/Job";
 import Task, { ITaskParameters } from "../app/Task";
 
-import { IDocument, TUnitType } from "../types/document";
+import { IDocument, INode, TUnitType } from "../types/document";
+import { IModel } from "../types/model";
+
 import { TDerivativeUsage, TDerivativeQuality, IAsset, TAssetType } from "../types/model";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +37,10 @@ export interface IDocumentTaskParameters extends ITaskParameters
     documentFile?: string;
     /** File name with meta data to be embedded in the document file. */
     metaDataFile?: string;
+    /** Index of the model to be modified. */
+    modelIndex?: number;
+    /** Name of the document model. */
+    modelName?: string;
     /** Units to be set for the document's model. */
     units?: TUnitType;
     /** Usage of the derivative to be added or modified. */
@@ -72,6 +78,8 @@ export default class DocumentTask extends Task
         properties: {
             documentFile: { type: "string", minLength: 1 },
             metaDataFile: { type: "string" },
+            modelIndex: { type: "integer", minimum: 0 },
+            modelName: { type: "string" },
             units: { type: "string", enum: [ "mm", "cm", "m", "in", "ft", "yd" ] },
             derivativeUsage: { type: "string", enum: [ "Web2D", "Web3D", "Print", "Editorial" ] },
             derivativeQuality: { type: "string", enum: [ "Thumb", "Low", "Medium", "High", "Highest", "LOD", "Stream"] },
@@ -103,16 +111,7 @@ export default class DocumentTask extends Task
         "scenes": [{
             "name": "Scene",
             "units": "cm",
-            "nodes": [0]
         }],
-        "nodes": [{
-            "name": "Model",
-            "model": 0
-        }],
-        "models": [{
-            "units": "cm",
-            "derivatives": []
-        }]
     };
 
     constructor(params: IDocumentTaskParameters, context: Job)
@@ -151,17 +150,57 @@ export default class DocumentTask extends Task
     protected modifyDocument(document: IDocument): Promise<IDocument>
     {
         const params = this.parameters as IDocumentTaskParameters;
-        const scene = document.scenes[0];
-        const node = document.nodes.find(node => node.model !== undefined);
-        const model = document.models[node.model];
+        const scene = document.scenes[document.scene];
+
+        if (!scene) {
+            throw new Error("malformed document, missing scene");
+        }
+
+        const nodes = document.nodes || (document.nodes = []);
+        const models = document.models || (document.models = []);
+
+        let modelIndex = params.modelIndex;
+        let model: IModel = models[modelIndex];
+        let node: INode = null;
+
+        if (model) {
+            // if model already exists, find corresponding node
+            node = document.nodes.find(node => node.model === params.modelIndex);
+            if (!node) {
+                throw new Error("malformed document, model not referenced by node");
+            }
+        }
+        else {
+            // create new model
+            model = { units: "cm", derivatives: [] };
+            modelIndex = models.length;
+            models.push(model);
+
+            // create new node
+            node = { name: "Model", model: modelIndex };
+            const nodeIndex = nodes.length;
+            nodes.push(node);
+
+            // add new node to main document scene
+            scene.nodes = scene.nodes || [];
+            scene.nodes.push(nodeIndex);
+        }
+
+        if (params.modelName) {
+            node.name = params.modelName;
+        }
+
+        // assign given units to model and scene
+        if (params.units) {
+            model.units = params.units;
+            scene.units = params.units;
+        }
+        // or, if units not given, adapt model units from scene
+        else if (!model.units) {
+            model.units = scene.units;
+        }
 
         const derivatives = model.derivatives;
-
-        // model units
-        if (params.units) {
-            scene.units = params.units;
-            model.units = params.units;
-        }
 
         // derivative operations
         const hasFile = params.modelFile || params.meshFile ||
