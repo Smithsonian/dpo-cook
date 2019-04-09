@@ -394,7 +394,7 @@
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset1k": "baseMeshName & '-1024-web.glb'",
+                    "webAsset1k": "baseMeshName & '-1024-web-low.glb'",
                     "diffuseMap1k": "bakeDiffuse ? (baseMeshName & '-1024-diffuse.jpg') : ''",
                     "occlusionMap1k": "baseMeshName & '-1024-occlusion.jpg'",
                     "normalMap1k": "baseMeshName & '-1024-normals.jpg'"
@@ -442,7 +442,7 @@
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset2k": "baseMeshName & '-2048-web.glb'",
+                    "webAsset2k": "baseMeshName & '-2048-web-medium.glb'",
                     "diffuseMap2k": "bakeDiffuse ? (baseMeshName & '-2048-diffuse.jpg') : ''",
                     "occlusionMap2k": "baseMeshName & '-2048-occlusion.jpg'",
                     "normalMap2k": "baseMeshName & '-2048-normals.jpg'"
@@ -482,7 +482,7 @@
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset4k": "baseMeshMapName & '-web.glb'",
+                    "webAsset4k": "baseMeshMapName & '-web-high.glb'",
                     "diffuseMap4k": "bakeDiffuse ? (baseMeshMapName & '-diffuse.jpg') : ''",
                     "occlusionMap4k": "baseMeshMapName & '-occlusion.jpg'",
                     "normalMap4k": "baseMeshMapName & '-normals.jpg'"
