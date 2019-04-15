@@ -281,23 +281,23 @@ export default class DocumentTask extends Task
             const metaDataPath = path.resolve(this.context.jobDir, params.metaDataFile);
             mods.push(fs.readFile(metaDataPath, "utf8").then(json => {
                 console.log(json);
-                const meta = JSON.parse(json);
-                console.log(meta);
-                const keys = Object.keys(meta);
+                const metaData = JSON.parse(json);
+                console.log(metaData);
+                const keys = Object.keys(metaData);
                 if (keys.length > 0) {
-                    let info;
-                    if (isFinite(node.info)) {
-                        info = document.infos[node.info];
+                    let meta;
+                    if (isFinite(node.meta)) {
+                        meta = document.metas[node.meta];
                     }
                     else {
-                        info = {};
-                        document.infos = document.infos || [];
-                        node.info = document.infos.length;
-                        document.infos.push(info);
+                        meta = {};
+                        document.metas = document.metas || [];
+                        node.meta = document.metas.length;
+                        document.metas.push(meta);
                     }
 
-                    info.meta = info.meta || {};
-                    keys.forEach(key => info.meta[key] = meta[key]);
+                    meta.collection = meta.collection || {};
+                    keys.forEach(key => meta.collection[key] = metaData[key]);
                 }
             }));
         }
