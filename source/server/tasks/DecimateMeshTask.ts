@@ -149,6 +149,7 @@ export default class DecimateMeshTask extends Task
                 toolOptions.filters.unshift(
                     { name: "RemoveUnreferencedVertices" },
                     { name: "RemoveDuplicateVertices" },
+                    { name: "RemoveDuplicateFaces" },
                     { name: "RemoveZeroAreaFaces" }
                 );
             }
