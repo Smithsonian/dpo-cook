@@ -2,7 +2,7 @@
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
     "description": "Generates thumbnail web asset",
-    "version": "7",
+    "version": "8",
     "start": "log",
 
     "parameterSchema": {
@@ -160,7 +160,8 @@
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "documentFile": "documentFile"
+                    "documentFile": "documentFile",
+                    "metaDataFile": "metaDataFile"
                 }
             },
             "success": "'decimate-meshlab'",

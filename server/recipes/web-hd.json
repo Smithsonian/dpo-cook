@@ -2,7 +2,7 @@
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
     "description": "Generates high definition (1M, 8k) web asset",
-    "version": "7",
+    "version": "8",
     "start": "log",
 
     "parameterSchema": {
@@ -183,7 +183,8 @@
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
                     "decimatedMeshFile": "decimatedMeshFile",
                     "unwrappedMeshFile": "unwrappedMeshFile",
-                    "documentFile": "documentFile"
+                    "documentFile": "documentFile",
+                    "metaDataFile": "metaDataFile"
                 }
             },
             "success": "unwrappedMeshFile ? 'inspect-unwrapped': (decimatedMeshFile ? 'unwrap-unfold' : 'decimate-meshlab')",

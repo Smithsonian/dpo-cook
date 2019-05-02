@@ -2,7 +2,7 @@
     "id": "721d459c-af09-4525-a28b-e71a89439282",
     "name": "web-multi",
     "description": "Generates multi-level web assets",
-    "version": "7",
+    "version": "8",
     "start": "log",
 
     "parameterSchema": {
@@ -168,7 +168,8 @@
                     "highPolyMeshFile": "highPolyMeshFile",
                     "lowPolyMeshFile": "lowPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "documentFile": "documentFile"
+                    "documentFile": "documentFile",
+                    "metaDataFile": "metaDataFile"
                 }
             },
             "success": "'decimate-meshlab'",

@@ -2,7 +2,7 @@
     "id": "5490a618-4ebd-4763-a96a-abb9062c786b",
     "name": "webasset",
     "description": "Create glTF web asset",
-    "version": "1",
+    "version": "2",
     "start": "pickup",
 
     "parameterSchema": {
@@ -23,7 +23,32 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "emissiveMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "metallicRoughnessMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "normalMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "zoneMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "documentFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "metaDataFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -47,6 +72,16 @@
             "baseName": {
                 "type": "string",
                 "minLength": 1
+            },
+            "modelIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
+            },
+            "units": {
+                "type": "string",
+                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
+                "default": "cm"
             },
             "alignCenter": {
                 "type": "boolean",
@@ -89,7 +124,12 @@
                     "meshFile": "meshFile",
                     "diffuseMapFile": "diffuseMapFile",
                     "occlusionMapFile": "occlusionMapFile",
-                    "normalMapFile": "normalMapFile"
+                    "emissiveMapFile": "emissiveMapFile",
+                    "metallicRoughnessMapFile": "metallicRoughnessMapFile",
+                    "normalMapFile": "normalMapFile",
+                    "zoneMapFile": "zoneMapFile",
+                    "documentFile": "documentFile",
+                    "metaDataFile": "metaDataFile"
                 }
             },
             "success": "'web-asset-glb'",
@@ -109,7 +149,12 @@
                 "meshFile": "meshFile",
                 "diffuseMapFile": "diffuseMapFile",
                 "occlusionMapFile": "occlusionMapFile",
+                "emissiveMapFile": "emissiveMapFile",
+                "metallicRoughnessMapFile": "metallicRoughnessMapFile",
                 "normalMapFile": "normalMapFile",
+                "zoneMapFile": "zoneMapFile",
+                "alignCenter": "alignCenter",
+                "alignFloor": "alignFloor",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": true,
                 "compressionLevel": 10,
@@ -135,7 +180,10 @@
                 "meshFile": "meshFile",
                 "diffuseMapFile": "diffuseMapFile",
                 "occlusionMapFile": "occlusionMapFile",
+                "emissiveMapFile": "emissiveMapFile",
+                "metallicRoughnessMapFile": "metallicRoughnessMapFile",
                 "normalMapFile": "normalMapFile",
+                "zoneMapFile": "zoneMapFile",
                 "alignCenter": "alignCenter",
                 "alignFloor": "alignFloor",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -143,6 +191,28 @@
                 "compressionLevel": 10,
                 "embedMaps": false,
                 "writeBinary": false
+            },
+            "success": "'update-document'",
+            "failure": "$failure"
+        },
+        "update-document": {
+            "task": "Document",
+            "description": "Add web model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.document",
+                "metaDataFile": "metaDataFile",
+                "modelIndex": "modelIndex",
+                "modelName": "baseName",
+                "units": "units",
+                "derivativeQuality": "'Thumb'",
+                "modelFile": "deliverables.webAssetGlb",
+                "numFaces": "numFaces",
+                "mapSize": "mapSize"
             },
             "success": "'delivery'",
             "failure": "$failure"

@@ -38,12 +38,17 @@ export interface IMeshSmithToolOptions extends IToolOptions
     alignX?: string;
     alignY?: string;
     alignZ?: string;
-    useCompression?: boolean;
+    metallicFactor?: number;
+    roughnessFactor?: number;
     diffuseMapFile?: string;
     occlusionMapFile?: string;
+    emissiveMapFile?: string;
+    metallicRoughnessMapFile?: string;
     normalMapFile?: string;
+    zoneMapFile?: string;
     objectSpaceNormals?: boolean;
     embedMaps?: boolean;
+    useCompression?: boolean;
     positionQuantizationBits?: number;
     texCoordsQuantizationBits?: number;
     normalsQuantizationBits?: number;
@@ -56,6 +61,8 @@ export default class MeshSmithTool extends Tool
     static readonly type: string = "MeshSmithTool";
 
     protected static readonly defaultOptions: Partial<IMeshSmithToolOptions> = {
+        metallicFactor: 0.1,
+        roughnessFactor: 0.8,
         positionQuantizationBits: 14,
         texCoordsQuantizationBits: 12,
         normalsQuantizationBits: 10,
@@ -130,6 +137,8 @@ export default class MeshSmithTool extends Tool
             alignY: options.alignY === "start" ? -1 : (options.alignY === "end" ? 1 : 0),
             alignZ: options.alignZ === "start" ? -1 : (options.alignZ === "end" ? 1 : 0),
             gltfx: {
+                metallicFactor: options.metallicFactor,
+                roughnessFactor: options.roughnessFactor,
                 useCompression: options.useCompression,
                 objectSpaceNormals: options.objectSpaceNormals,
                 embedMaps: options.embedMaps
@@ -149,8 +158,17 @@ export default class MeshSmithTool extends Tool
         if (options.occlusionMapFile) {
             config.gltfx.occlusionMap = this.getFilePath(options.occlusionMapFile);
         }
+        if (options.emissiveMapFile) {
+            config.gltfx.emissiveMap = this.getFilePath(options.emissiveMapFile);
+        }
+        if (options.metallicRoughnessMapFile) {
+            config.gltfx.metallicRoughnessMap = this.getFilePath(options.metallicRoughnessMapFile);
+        }
         if (options.normalMapFile) {
             config.gltfx.normalMap = this.getFilePath(options.normalMapFile);
+        }
+        if (options.zoneMapFile) {
+            config.gltfx.zoneMap = this.getFilePath(options.zoneMapFile);
         }
 
         if (!options.format && outputFilePath) {

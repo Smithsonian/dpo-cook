@@ -33,8 +33,18 @@ export interface IWebAssetTaskParameters extends ITaskParameters
     diffuseMapFile?: string;
     /** File name of the occlusion map to be added to the web asset. */
     occlusionMapFile?: string;
+    /** File name of the emissive map to be added to the web asset. */
+    emissiveMapFile?: string;
+    /** File name of the metallic-roughness map to be added to the web asset. */
+    metallicRoughnessMapFile?: string;
     /** File name of the normal map to be added to the web asset. */
     normalMapFile?: string;
+    /** File name of the zone map to be added to the web asset. */
+    zoneMapFile?: string;
+    /** The metalness factor for the PBR material. */
+    metallicFactor?: number;
+    /** The roughness factor for the PBR material. */
+    roughnessFactor?: number;
     /** Centers object if true, i.e. aligns object with origin. */
     alignCenter?: boolean;
     /** Centers object and aligns it with y-origin if true. */
@@ -69,7 +79,12 @@ export default class WebAssetTask extends Task
             meshFile: { type: "string", minLength: 1 },
             diffuseMapFile: { type: "string", default: "" },
             occlusionMapFile: { type: "string", default: "" },
+            emissiveMapFile: { type: "string", default: "" },
+            metallicRoughnessMapFile: { type: "string", default: "" },
             normalMapFile: { type: "string", default: "" },
+            zoneMapFile: { type: "string", default: "" },
+            metallicFactor: { type: "number", default: 0.1 },
+            roughnessFactor: { type: "number", default: 0.8 },
             alignCenter: { type: "boolean", default: false },
             alignFloor: { type: "boolean", default: false },
             objectSpaceNormals: { type: "boolean", default: false },
@@ -96,9 +111,14 @@ export default class WebAssetTask extends Task
             inputFile: options.meshFile,
             outputFile: options.outputFile,
             format: options.writeBinary ? "glbx" : "gltfx",
+            metallicFactor: options.metallicFactor,
+            roughnessFactor: options.roughnessFactor,
             diffuseMapFile: options.diffuseMapFile,
             occlusionMapFile: options.occlusionMapFile,
+            emissiveMapFile: options.emissiveMapFile,
+            metallicRoughnessMapFile: options.metallicRoughnessMapFile,
             normalMapFile: options.normalMapFile,
+            zoneMapFile: options.zoneMapFile,
             objectSpaceNormals: options.objectSpaceNormals,
             useCompression: options.useCompression,
             compressionLevel: options.compressionLevel,
