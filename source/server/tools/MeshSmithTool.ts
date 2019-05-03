@@ -129,13 +129,7 @@ export default class MeshSmithTool extends Tool
             joinVertices: options.joinVertices,
             stripNormals: options.stripNormals,
             stripTexCoords: options.stripTexCoords,
-            swizzle: options.swizzle,
-            scale: options.scale,
-            translate: options.translate,
-            matrix: options.matrix,
-            alignX: options.alignX === "start" ? -1 : (options.alignX === "end" ? 1 : 0),
-            alignY: options.alignY === "start" ? -1 : (options.alignY === "end" ? 1 : 0),
-            alignZ: options.alignZ === "start" ? -1 : (options.alignZ === "end" ? 1 : 0),
+
             gltfx: {
                 metallicFactor: options.metallicFactor,
                 roughnessFactor: options.roughnessFactor,
@@ -151,6 +145,29 @@ export default class MeshSmithTool extends Tool
                 compressionLevel: options.compressionLevel
             }
         };
+
+        if (options.swizzle) {
+            config.swizzle = options.swizzle;
+        }
+        if (options.scale !== undefined && options.scale !== 1.0) {
+            config.scale = options.scale;
+        }
+        if (options.translate) {
+            config.translate = options.translate;
+        }
+        if (options.matrix) {
+            config.matrix = options.matrix;
+        }
+
+        if (options.alignX) {
+            config.alignX = options.alignX === "start" ? -1 : (options.alignX === "end" ? 1 : 0);
+        }
+        if (options.alignY) {
+            config.alignY = options.alignY === "start" ? -1 : (options.alignY === "end" ? 1 : 0);
+        }
+        if (options.alignZ) {
+            config.alignZ = options.alignZ === "start" ? -1 : (options.alignZ === "end" ? 1 : 0);
+        }
 
         if (options.diffuseMapFile) {
             config.gltfx.diffuseMap = this.getFilePath(options.diffuseMapFile);
