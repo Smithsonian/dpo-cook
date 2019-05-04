@@ -6,6 +6,7 @@ doc/source/
 server/bin/
 server/work/
 server/static/app/
+server/static/libs/
 server/recipes-vz/
 
 # FILES

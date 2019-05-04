@@ -63,6 +63,9 @@ export default class ClientRouter
         this.router.get("/", (req, res) => {
             res.sendFile(path.resolve(this.staticDir, "index.html"));
         });
+        this.router.get("/local", (req, res) => {
+            res.sendFile(path.resolve(this.staticDir, "local.html"));
+        });
     }
 
     protected setupRealtime()
