@@ -1,6 +1,6 @@
 /**
  * 3D Foundation Project
- * Copyright 2018 Smithsonian Institution
+ * Copyright 2019 Smithsonian Institution
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import CLIProcessor from "./app/CliProcessor";
 ////////////////////////////////////////////////////////////////////////////////
 
 console.info("\nCook CLI - Home Cooked Processing Recipes");
-console.info("Copyright 2018 Smithsonian Institution");
+console.info("Copyright 2019 Smithsonian Institution");
 console.info("License: http://www.apache.org/licenses/LICENSE-2.0");
 console.info();
 

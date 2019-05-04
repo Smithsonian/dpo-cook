@@ -1,6 +1,6 @@
 /**
  * 3D Foundation Project
- * Copyright 2018 Smithsonian Institution
+ * Copyright 2019 Smithsonian Institution
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -289,7 +289,7 @@ export default class ClientApplication extends React.Component<IClientApplicatio
                     <img className="sc-logo" src="/static/images/cook-logo-250px.png"/>
                     <Label className="ff-label sc-byline">
                         Smithsonian 3D Foundation Project<br/>
-                        Processing API Client Version 2019-04-05
+                        Processing API Client Version 2019-05-04
                     </Label>
                     <FlexItem/>
                     <Label>Client ID</Label>
