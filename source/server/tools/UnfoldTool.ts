@@ -113,7 +113,7 @@ export default class UnfoldTool extends Tool
             `ZomCut({PrimType="Edge"})`,
 
             `-- unwrap --`,
-            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=${options.unfoldIterations}, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=${!options.unfoldNoBorderIntersections}, TriangleFlips=${!options.unfoldNoTriangleFlips}})`,
+            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=${options.unfoldIterations}, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=${!!options.unfoldNoBorderIntersections}, TriangleFlips=${!!options.unfoldNoTriangleFlips}})`,
 
             `-- pack --`,
             `ZomIslandGroups({Mode="DistributeInTilesByBBox", MergingPolicy=8322})`,

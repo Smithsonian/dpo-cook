@@ -2,7 +2,7 @@
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
     "description": "Generates thumbnail web asset",
-    "version": "8",
+    "version": "9",
     "start": "log",
 
     "parameterSchema": {
@@ -14,6 +14,11 @@
                 "format": "file"
             },
             "highPolyDiffuseMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "intermediateMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -58,6 +63,10 @@
             "inspectMesh": {
                 "type": "boolean",
                 "default": false
+            },
+            "cleanupMesh": {
+                "type": "boolean",
+                "default": true
             },
             "numFaces": {
                 "type": "integer",
@@ -160,6 +169,7 @@
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
+                    "intermediateMeshFile": "intermediateMeshFile",
                     "documentFile": "documentFile",
                     "metaDataFile": "metaDataFile"
                 }
@@ -177,13 +187,13 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "$firstTrue(intermediateMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": true,
+                "cleanup": "cleanupMesh",
                 "preserveTopology": true,
-                "preserveTexCoords": false,
                 "preserveBoundaries": true,
+                "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
                 "inspectMesh": "deliverables.inspectionReport"
             },
@@ -200,7 +210,7 @@
                 "inputMeshFile": "highPolyMeshFile",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": true,
+                "cleanup": "cleanupMesh",
                 "preserveBoundaries": true,
                 "tool": "'Mops'"
             },

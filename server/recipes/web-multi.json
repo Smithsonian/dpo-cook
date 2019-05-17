@@ -2,7 +2,7 @@
     "id": "721d459c-af09-4525-a28b-e71a89439282",
     "name": "web-multi",
     "description": "Generates multi-level web assets",
-    "version": "8",
+    "version": "9",
     "start": "log",
 
     "parameterSchema": {
@@ -18,12 +18,17 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "metaDataFile": {
+            "intermediateMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
             "documentFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "metaDataFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -38,10 +43,7 @@
             },
             "transportMethod": {
                 "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
+                "enum": [ "none", "local" ],
                 "default": "none"
             },
             "baseName": {
@@ -166,8 +168,8 @@
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
-                    "lowPolyMeshFile": "lowPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
+                    "intermediateMeshFile": "intermediateMeshFile",
                     "documentFile": "documentFile",
                     "metaDataFile": "metaDataFile"
                 }
@@ -185,7 +187,7 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "$firstTrue(intermediateMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": "cleanupMesh",
@@ -194,10 +196,6 @@
                 "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
                 "inspectMesh": "deliverables.inspectionReport"
-            },
-            "post": {
-                "deliverables": {
-                }
             },
             "success": "'unwrap-unfold'",
             "failure": "'decimate-mops'"
@@ -212,7 +210,7 @@
                 "inputMeshFile": "highPolyMeshFile",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": true,
+                "cleanup": "cleanupMesh",
                 "preserveBoundaries": true,
                 "tool": "Mops"
             },

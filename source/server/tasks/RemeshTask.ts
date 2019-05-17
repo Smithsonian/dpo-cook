@@ -31,6 +31,8 @@ export interface IRemeshTaskParameters extends ITaskParameters
     outputMeshFile: string;
     /** Target number of faces for the new mesh. */
     numFaces: number;
+    /** Generates a quad-only mesh if true. */
+    quadsOnly?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
@@ -51,6 +53,7 @@ export default class RemeshTask extends Task
             inputMeshFile: { type: "string", minLength: 1 },
             outputMeshFile: { type: "string", minLength: 1 },
             numFaces: { type: "integer", minimum: 100 },
+            quadsOnly: { type: "boolean" },
             timeout: { type: "integer", minimum: 0, default: 0 }
         },
         required: [
@@ -71,6 +74,7 @@ export default class RemeshTask extends Task
             inputMeshFile: params.inputMeshFile,
             outputMeshFile: params.outputMeshFile,
             faceCount: params.numFaces,
+            dominant: !params.quadsOnly,
             timeout: params.timeout
         };
 

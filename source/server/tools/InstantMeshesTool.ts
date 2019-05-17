@@ -28,9 +28,9 @@ export interface IInstantMeshesToolOptions extends IToolOptions
     smooth?: number;
     rosy?: number;
     posy?: number;
-    deterministic?: any;
-    dominant?: any;
-    intrinsic?: any;
+    deterministic?: boolean;
+    dominant?: boolean;
+    intrinsic?: boolean;
 }
 
 export default class InstantMeshesTool extends Tool
