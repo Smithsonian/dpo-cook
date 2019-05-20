@@ -18,7 +18,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "intermediateMeshFile": {
+            "processMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -169,7 +169,7 @@
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "intermediateMeshFile": "intermediateMeshFile",
+                    "processMeshFile": "processMeshFile",
                     "documentFile": "documentFile",
                     "metaDataFile": "metaDataFile"
                 }
@@ -187,7 +187,7 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(intermediateMeshFile, highPolyMeshFile)",
+                "inputMeshFile": "$firstTrue(processMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": "cleanupMesh",

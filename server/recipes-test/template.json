@@ -23,11 +23,12 @@
             },
             "transportMethod": {
                 "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
+                "enum": [ "none", "local" ],
                 "default": "none"
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
             }
         },
         "required": [
@@ -40,9 +41,12 @@
         "log": {
             "task": "Log",
             "description": "Enable logging services",
+            "pre": {
+                "baseName": "$baseName($firstTrue(baseName, someFile))"
+            },
             "parameters": {
                 "logToConsole": true,
-                "reportFile": "$baseName(someFile) & '-report.json'"
+                "reportFile": "baseName & 'some-report.json'"
             },
             "success": "'pickup'",
             "failure": "$failure"
@@ -64,6 +68,9 @@
             "task": "Dummy",
             "description": "Dummy Task",
             "pre": {
+                "deliverables": {
+                    "this": "that.file"
+                }
             },
             "parameters": {
                 "outcome": "success",
