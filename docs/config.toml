@@ -35,6 +35,8 @@ pygmentsUseClasses = true
 [params]
     mainSections = ["docs", "tasks", "tools", "recipes"]
     github_link = "https://github.com/smithsonian/dpo-cook"
+    github_logo = "/images/github.svg"
+    smithsonian_logo = "/images/si-digitization-logo-neg.svg"
     google_analytics_id=""
     homepage_button_link = "/docs"
     homepage_button_text = "Start Cooking"
