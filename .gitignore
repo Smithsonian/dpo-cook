@@ -2,12 +2,17 @@
 .idea/
 .vscode/
 node_modules/
-doc/source/
+
 server/bin/
 server/work/
 server/static/app/
 server/static/libs/
 server/recipes-vz/
+
+doc/source/
+
+docs/resources/
+docs/themes/hugo-whisper-theme/exampleSite/
 
 # FILES
 *.log

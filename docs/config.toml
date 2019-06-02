@@ -1,0 +1,58 @@
+baseURL = "https://smithsonian.github.io/dpo-cook"
+languageCode = "en-us"
+title = "Cook Documentation"
+#theme = "hugo-whisper-theme"
+
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+pygmentsUseClasses = true
+
+[[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+
+[[menu.main]]
+    name = "Cook"
+    url = "/docs/"
+    weight = 2
+
+[[menu.main]]
+    name = "Recipes"
+    url = "/recipes/"
+    weight = 3
+
+[[menu.main]]
+    name = "Tasks"
+    url = "/tasks/"
+    weight = 4
+
+[[menu.main]]
+    name = "Tools"
+    url = "/tools/"
+    weight = 5
+
+[params]
+    mainSections = ["docs", "tasks", "tools", "recipes"]
+    github_link = "https://github.com/smithsonian/dpo-cook"
+    google_analytics_id=""
+    homepage_button_link = "/docs"
+    homepage_button_text = "Start Cooking"
+    homepage_intro = "3D Model/Geometry/Texture Processing Server."
+    homepage_image = "/images/cook-webui-1.png"
+
+[params.homepage_meta_tags]
+    meta_description = "3D Model/Geometry/Texture Processing Server."
+    meta_og_title = "Smithsonian Cook"
+    meta_og_type = "website"
+    meta_og_url = "https://3d.si.edu"
+    # meta_og_image = "https://raw.githubusercontent.com/smithsonian/dpo-cook/master/docs/....png"
+    meta_og_description = "3D Model/Geometry/Texture Processing Server."
+    meta_twitter_card = "summary"
+    meta_twitter_site = "@3D_Digi_SI"
+    meta_twitter_creator = "@3D_Digi_SI"
+
+[params.logo]
+    mobile = "/images/cook-logo.svg"
+    standard  = "/images/cook-logo.svg"
+

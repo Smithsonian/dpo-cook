@@ -34,12 +34,8 @@ Currently, the Cook can be operated in three ways:
 - Web-based user interface
 - Command line interface
 
-
 ### Documentation
 
 This project, including its documentation, is under active development.
 
-- [Getting Started](doc/pages/getting-started.md) - prerequisites, installation and configuration
-- [Recipes](doc/pages/recipes.md) - a quick introduction into writing processing recipes
-- [Tasks](doc/pages/tasks.md) - list of available recipe tasks
-- [Tools](doc/pages/tools.md) - list of supported tools
+- [Documentation Home](https://smithsonian.github.io/dpo-cook)

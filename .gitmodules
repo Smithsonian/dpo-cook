@@ -10,3 +10,7 @@
 [submodule "libs/ff-browser"]
 	path = libs/ff-browser
 	url = https://github.com/framelab/ff-browser
+[submodule "docs/public"]
+	path = docs/public
+	url = https://github.com/smithsonian/dpo-cook
+	branch = gh-pages
