@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tools on Cook Documentation</title>
+    <link>https://smithsonian.github.io/dpo-cook/tools/</link>
+    <description>Recent content in Tools on Cook Documentation</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://smithsonian.github.io/dpo-cook/tools/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Overview</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/overview/</guid>
+      <description>3rd party tool installation and configuration.</description>
+    </item>
+    
+    <item>
+      <title>Image Magick</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/image-magick/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/image-magick/</guid>
+      <description>Image manipulation and conversion tool.</description>
+    </item>
+    
+    <item>
+      <title>Instant Meshes</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</guid>
+      <description>Remeshing tool, generates high quality, field-aligned, quad-dominant meshes.</description>
+    </item>
+    
+    <item>
+      <title>MeshSmith</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</guid>
+      <description>Mesh conversion tool based on the Assimp library.</description>
+    </item>
+    
+    <item>
+      <title>Meshfix</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/meshfix/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/meshfix/</guid>
+      <description>Automatic mesh healing and repairing tool.</description>
+    </item>
+    
+    <item>
+      <title>Meshlab</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/meshlab/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/meshlab/</guid>
+      <description>Mesh manipulation tool.</description>
+    </item>
+    
+    <item>
+      <title>RapidCompact</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</guid>
+      <description>All-in-one mesh simplification, UV unwrapping, and map baking tool.</description>
+    </item>
+    
+    <item>
+      <title>Rizom UV</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</guid>
+      <description>UV unwrapping tool.</description>
+    </item>
+    
+    <item>
+      <title>XNormal</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/xnormal/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/xnormal/</guid>
+      <description>Texture baking tool.</description>
+    </item>
+    
+  </channel>
+</rss>

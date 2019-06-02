@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Smithsonian Cook on Cook Documentation</title>
+    <link>https://smithsonian.github.io/dpo-cook/</link>
+    <description>Recent content in Smithsonian Cook on Cook Documentation</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 02 Jun 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://smithsonian.github.io/dpo-cook/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Getting Started</title>
+      <link>https://smithsonian.github.io/dpo-cook/docs/getting-started/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/docs/getting-started/</guid>
+      <description>Prerequisites, installation and configuration.</description>
+    </item>
+    
+    <item>
+      <title>Overview</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/overview/</guid>
+      <description>List of available recipe tasks grouped by category.</description>
+    </item>
+    
+    <item>
+      <title>Overview</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/overview/</guid>
+      <description>3rd party tool installation and configuration.</description>
+    </item>
+    
+    <item>
+      <title>Image Magick</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/image-magick/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/image-magick/</guid>
+      <description>Image manipulation and conversion tool.</description>
+    </item>
+    
+    <item>
+      <title>Log</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/log/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/log/</guid>
+      <description>Logging facilities.</description>
+    </item>
+    
+    <item>
+      <title>Pickup</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/pickup/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/pickup/</guid>
+      <description>Grabs input files from the client.</description>
+    </item>
+    
+    <item>
+      <title>Recipe: web-thumb</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/web-thumb/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/web-thumb/</guid>
+      <description>Generates thumbnail web asset</description>
+    </item>
+    
+    <item>
+      <title>Delivery</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/delivery/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/delivery/</guid>
+      <description>Delivers result files to the client.</description>
+    </item>
+    
+    <item>
+      <title>Instant Meshes</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</guid>
+      <description>Remeshing tool, generates high quality, field-aligned, quad-dominant meshes.</description>
+    </item>
+    
+    <item>
+      <title>Recipe: web-multi</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/web-multi/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/web-multi/</guid>
+      <description>Generates low, medium, and high quality web assets.</description>
+    </item>
+    
+    <item>
+      <title>Web API</title>
+      <link>https://smithsonian.github.io/dpo-cook/docs/web-api/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/docs/web-api/</guid>
+      <description>Controlling the Cook via RESTful web API.</description>
+    </item>
+    
+    <item>
+      <title>Recipe: web-hd</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/web-hd/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/web-hd/</guid>
+      <description>Generates highest quality web asset.</description>
+    </item>
+    
+    <item>
+      <title>Web UI</title>
+      <link>https://smithsonian.github.io/dpo-cook/docs/web-ui/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/docs/web-ui/</guid>
+      <description>Controlling the Cook via web user interface.</description>
+    </item>
+    
+    <item>
+      <title>CLI</title>
+      <link>https://smithsonian.github.io/dpo-cook/docs/cli/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/docs/cli/</guid>
+      <description>Controlling the Cook via command line interface.</description>
+    </item>
+    
+    <item>
+      <title>Writing recipes</title>
+      <link>https://smithsonian.github.io/dpo-cook/docs/writing-recipes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/docs/writing-recipes/</guid>
+      <description>Learn how to write your own recipes.</description>
+    </item>
+    
+    <item>
+      <title>BakeMaps</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/bake-maps/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/bake-maps/</guid>
+      <description>Bakes various mesh features to a texture.</description>
+    </item>
+    
+    <item>
+      <title>CleanupMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/cleanup-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/cleanup-mesh/</guid>
+      <description>Uses a combination of Meshlab filters to clean a mesh.</description>
+    </item>
+    
+    <item>
+      <title>CombineOcclusion</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/combine-occlusion/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/combine-occlusion/</guid>
+      <description>Combines 3 separate occlusion maps into one RGB texture.</description>
+    </item>
+    
+    <item>
+      <title>ConvertImage</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/convert-image/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/convert-image/</guid>
+      <description>Converts image files between different formats.</description>
+    </item>
+    
+    <item>
+      <title>ConvertMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/convert-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/convert-mesh/</guid>
+      <description>Converts geometric mesh data between various file formats.</description>
+    </item>
+    
+    <item>
+      <title>DecimateMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/decimate-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/decimate-mesh/</guid>
+      <description>Reduces the size of a mesh by simplifying its structure.</description>
+    </item>
+    
+    <item>
+      <title>FileCopy</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/file-copy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/file-copy/</guid>
+      <description>Copies files from a source directory to a destination directory.</description>
+    </item>
+    
+    <item>
+      <title>FileOperation</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/file-operation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/file-operation/</guid>
+      <description>Operations on files and folders.</description>
+    </item>
+    
+    <item>
+      <title>FixMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/fix-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/fix-mesh/</guid>
+      <description>Uses the MeshFix tool to heal a mesh using a number of heuristics.</description>
+    </item>
+    
+    <item>
+      <title>InspectMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</guid>
+      <description>Inspects a mesh file and provides a detailed report with topological, geometric, and statistical information.</description>
+    </item>
+    
+    <item>
+      <title>MeshSmith</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</guid>
+      <description>Mesh conversion tool based on the Assimp library.</description>
+    </item>
+    
+    <item>
+      <title>Meshfix</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/meshfix/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/meshfix/</guid>
+      <description>Automatic mesh healing and repairing tool.</description>
+    </item>
+    
+    <item>
+      <title>Meshlab</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/meshlab/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/meshlab/</guid>
+      <description>Mesh manipulation tool.</description>
+    </item>
+    
+    <item>
+      <title>RapidCompact</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</guid>
+      <description>All-in-one mesh simplification, UV unwrapping, and map baking tool.</description>
+    </item>
+    
+    <item>
+      <title>Recipe</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/recipe/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/recipe/</guid>
+      <description>Executes a processing recipe.</description>
+    </item>
+    
+    <item>
+      <title>Remesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/remesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/remesh/</guid>
+      <description>Generates a new, regular mesh.</description>
+    </item>
+    
+    <item>
+      <title>Rizom UV</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</guid>
+      <description>UV unwrapping tool.</description>
+    </item>
+    
+    <item>
+      <title>UnwrapMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/unwrap-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/unwrap-mesh/</guid>
+      <description>Generates new UV coordinates by unwrapping a mesh onto a flat surface.</description>
+    </item>
+    
+    <item>
+      <title>WebAsset</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/web-asset/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/web-asset/</guid>
+      <description>Generates gltf and glb web assets.</description>
+    </item>
+    
+    <item>
+      <title>XNormal</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/xnormal/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/xnormal/</guid>
+      <description>Texture baking tool.</description>
+    </item>
+    
+  </channel>
+</rss>
