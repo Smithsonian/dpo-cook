@@ -18,7 +18,7 @@
 import Job from "../app/Job";
 
 import { IMeshlabToolOptions } from "../tools/MeshlabTool";
-import { IMopsToolOptions } from "../tools/MopsTool";
+import { IRapidCompactToolOptions } from "../tools/RapidCompactTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import Tool from "../app/Tool";
@@ -52,15 +52,15 @@ export interface IDecimateMeshTaskParameters extends ITaskParameters
     inspectMesh?: string | boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Tool to use for decimation (default: "Meshlab"). */
-    tool?: "Meshlab" | "Mops";
+    /** Tool to use for decimation ("Meshlab" or "RapidCompact", default: "Meshlab"). */
+    tool?: "Meshlab" | "RapidCompact";
 }
 
 /**
  * Reduces the complexity of a geometric mesh by reducing the number of vertices.
  *
  * Parameters: [[IDecimateMeshTaskParameters]]
- * Tools: [[MeshlabTool]], [[MopsTool]]
+ * Tools: [[MeshlabTool]], [[RapidCompactTool]]
  */
 export default class DecimateMeshTask extends Task
 {
@@ -80,7 +80,7 @@ export default class DecimateMeshTask extends Task
             computeVertexNormals: { type: "boolean", default: false },
             inspectMesh: { oneOf:[ { type: "string" }, { type: "boolean" }]},
             timeout: { type: "integer", default: 0 },
-            tool: { type: "string", enum: [ "Meshlab", "Mops" ], default: "Meshlab" }
+            tool: { type: "string", enum: [ "Meshlab", "RapidCompact" ], default: "Meshlab" }
         },
         required: [
             "inputMeshFile",
@@ -162,8 +162,8 @@ export default class DecimateMeshTask extends Task
 
             this.addTool("Meshlab", toolOptions);
         }
-        else if (params.tool === "Mops") {
-            const toolOptions: IMopsToolOptions = {
+        else if (params.tool === "RapidCompact") {
+            const toolOptions: IRapidCompactToolOptions = {
                 inputMeshFile: params.inputMeshFile,
                 outputMeshFile: params.outputMeshFile,
                 mode: "decimate",
@@ -173,7 +173,7 @@ export default class DecimateMeshTask extends Task
                 timeout: params.timeout
             };
 
-            this.addTool("Mops", toolOptions);
+            this.addTool("RapidCompact", toolOptions);
         }
         else {
             throw new Error("DecimateMeshTask.constructor - unknown tool: " + params.tool);

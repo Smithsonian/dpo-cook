@@ -1,7 +1,7 @@
 {
     "id": "967ed977-055e-41c8-a836-b1372be3b3ca",
     "name": "unwrap",
-    "description": "Unwrap decimated mesh using Unfold",
+    "description": "Unwrap decimated mesh using RizomUV",
     "version": "2",
     "start": "pickup",
 
@@ -64,11 +64,11 @@
             "tool": {
                 "type": "string",
                 "enum": [
-                    "Unfold",
+                    "RizomUV",
                     "Unknit",
-                    "Mops"
+                    "RapidCompact"
                 ],
-                "default": "Unfold"
+                "default": "RizomUV"
             }
         },
         "required": [
@@ -100,11 +100,11 @@
         },
         "unwrap": {
             "task": "UnwrapMesh",
-            "description": "Unwrap mesh using Unfold",
+            "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "deliverables": {
                     "unwrappedMeshObjFile": "baseMeshName & '-unwrapped-' & $lowercase(tool) & '.obj'",
-                    "unwrappedMeshFbxFile": "tool = 'Unfold' ? baseMeshName & '-unwrapped-' & $lowercase(tool) & '.fbx' : ''"
+                    "unwrappedMeshFbxFile": "tool = 'RizomUV' ? baseMeshName & '-unwrapped-' & $lowercase(tool) & '.fbx' : ''"
                 }
             },
             "parameters": {

@@ -17,9 +17,9 @@
 
 import Job from "../app/Job";
 
-import { IUnfoldToolOptions } from "../tools/UnfoldTool";
+import { IRizomUVToolOptions } from "../tools/RizomUVTool";
 import { IUnknitToolOptions } from "../tools/UnknitTool";
-import { IMopsToolOptions } from "../tools/MopsTool";
+import { IRapidCompactToolOptions } from "../tools/RapidCompactTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 
@@ -30,7 +30,7 @@ const limit = (n, min, max) => n < min ? min : (n > max ? max: n);
 export type TUnwrapMethod =
     "conformal" | "fastConformal" | "isometric" | "forwardBijective" | "fixedBoundary";
 export type TUnwrapTool =
-    "Unfold" | "Unknit" | "Mops";
+    "RizomUV" | "Unknit" | "RapidCompact";
 
 /** Parameters for [[UnwrapMeshTask]] */
 export interface IUnwrapMeshTaskParameters extends ITaskParameters
@@ -39,15 +39,15 @@ export interface IUnwrapMeshTaskParameters extends ITaskParameters
     inputMeshFile: string;
     /** Output mesh file name. */
     outputMeshFile: string;
-    /** Unfold only: saves the mesh as (additional) OBJ file. */
+    /** RizomUV only: saves the mesh as (additional) OBJ file. */
     saveObj?: boolean;
-    /** Unfold only: saves the mesh as (additional) FBX file. */
+    /** RizomUV only: saves the mesh as (additional) FBX file. */
     saveFbx?: boolean;
-    /** Unfold only: saves the mesh as (additional) Collada file. */
+    /** RizomUV only: saves the mesh as (additional) Collada file. */
     saveCollada?: boolean;
-    /** Mops only: indicates whether the mesh should be decimated before unwrapping. */
+    /** RapidCompact only: indicates whether the mesh should be decimated before unwrapping. */
     decimate?: boolean;
-    /** Mops only: if decimation is enabled, the target number of faces. */
+    /** RapidCompact only: if decimation is enabled, the target number of faces. */
     numFaces?: number;
     /** The size of the texture maps that will be baked (needed to calculate the gap between patches). */
     mapSize: number;
@@ -55,15 +55,15 @@ export interface IUnwrapMeshTaskParameters extends ITaskParameters
     segmentationStrength?: number,
     /** A number between 0 and 1 specifying how tightly the patches should be packed. Default is 0.5. */
     packEffort?: number,
-    /** Unfold only: decides whether handles can be cut during segmentation. */
+    /** RizomUV only: decides whether handles can be cut during segmentation. */
     cutHandles?: boolean,
-    /** Mops only: the algorithm to be used for unwrapping: "conformal", "fastConformal", "isometric", "forwardBijective", "fixedBoundary". */
+    /** RapidCompact only: the algorithm to be used for unwrapping: "conformal", "fastConformal", "isometric", "forwardBijective", "fixedBoundary". */
     unwrapMethod?: TUnwrapMethod,
-    /** Unwrapping tool is run in debug mode. For Unfold: tool doesn't close after it's done. */
+    /** Unwrapping tool is run in debug mode. For RizomUV: tool doesn't close after it's done. */
     debug?: boolean,
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number,
-    /** Tool to be used for unwrapping, options are "Unfold", "Mops", "Unknit". Default is "Unfold". */
+    /** Tool to be used for unwrapping, options are "RizomUV", "RapidCompact", "Unknit". Default is "RizomUV". */
     tool?: TUnwrapTool;
 }
 
@@ -71,7 +71,7 @@ export interface IUnwrapMeshTaskParameters extends ITaskParameters
  * Unwraps a mesh's surface onto a plane and generates a set of texture coordinates for map baking.
  *
  * - Parameters: [[IUnwrapMeshTaskParameters]].
- * - Tools: [[UnfoldTool]], [[MopsTool]], [[UnknitTool]].
+ * - Tools: [[RizomUVTool]], [[RapidCompactTool]], [[UnknitTool]].
  */
 export default class UnwrapMeshTask extends Task
 {
@@ -100,8 +100,8 @@ export default class UnwrapMeshTask extends Task
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: {
                 type: "string",
-                enum: [ "Unfold", "Unknit", "Mops" ],
-                default: "Unfold"
+                enum: [ "RizomUV", "Unknit", "RapidCompact" ],
+                default: "RizomUV"
             }
         },
         required: [
@@ -122,7 +122,7 @@ export default class UnwrapMeshTask extends Task
         const packEffort = parseFloat(params.packEffort.toString());
 
         switch(params.tool) {
-            case "Unfold":
+            case "RizomUV":
                 const cutSegmentationStrength = limit(segmentationStrength, 0, 1);
 
                 const index = limit(Math.trunc(packEffort * 5), 0, 4);
@@ -133,7 +133,7 @@ export default class UnwrapMeshTask extends Task
                 const packMutations = mutations[index];
                 const packRotateStep = steps[index];
 
-                const unfoldOptions: IUnfoldToolOptions = {
+                const rizomUVOptions: IRizomUVToolOptions = {
                     inputMeshFile: params.inputMeshFile,
                     outputMeshFile: params.outputMeshFile,
                     saveObj: params.saveObj,
@@ -147,13 +147,13 @@ export default class UnwrapMeshTask extends Task
                     timeout: params.timeout
                 };
 
-                this.addTool("Unfold", unfoldOptions);
+                this.addTool("RizomUV", rizomUVOptions);
                 break;
 
-            case "Mops":
+            case "RapidCompact":
                 const chartAngleDeg = limit(60 + segmentationStrength * 120, 60, 180);
 
-                const mopsOptions: IMopsToolOptions = {
+                const rpdOptions: IRapidCompactToolOptions = {
                     inputMeshFile: params.inputMeshFile,
                     outputMeshFile: params.outputMeshFile,
                     mode: params.decimate ? "decimate-unwrap" : "unwrap",
@@ -168,10 +168,10 @@ export default class UnwrapMeshTask extends Task
                     if (!params.numFaces) {
                         throw new Error("for decimation, target number of faces (numFaces) must be specified");
                     }
-                    mopsOptions.numFaces = params.numFaces;
+                    rpdOptions.numFaces = params.numFaces;
                 }
 
-                this.addTool("Mops", mopsOptions);
+                this.addTool("RapidCompact", rpdOptions);
                 break;
 
             case "Unknit":

@@ -92,12 +92,12 @@
                 "computeVertexNormals": "tangentSpaceNormals",
                 "inspectMesh": "deliverables.inspectionReport"
             },
-            "success": "'unwrap-unfold'",
-            "failure": "'decimate-mops'"
+            "success": "'unwrap-rizom'",
+            "failure": "'decimate-rapid'"
         },
-        "unwrap-unfold": {
+        "unwrap-rizom": {
             "task": "UnwrapMesh",
-            "description": "Unwrap mesh using Unfold",
+            "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "deliverables": {
                     "unwrappedMeshObj": "baseMeshName & '-unwrapped.obj'",

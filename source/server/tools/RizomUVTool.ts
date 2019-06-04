@@ -22,7 +22,7 @@ import Tool, { IToolOptions, IToolScript } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IUnfoldToolOptions extends IToolOptions
+export interface IRizomUVToolOptions extends IToolOptions
 {
     inputMeshFile: string;
     outputMeshFile: string;
@@ -31,9 +31,9 @@ export interface IUnfoldToolOptions extends IToolOptions
     saveCollada?: boolean;
     cutSegmentationStrength?: number;
     cutHandles?: boolean;
-    unfoldIterations?: number;
-    unfoldNoTriangleFlips?: boolean;
-    unfoldNoBorderIntersections?: boolean;
+    rizomIterations?: number;
+    rizomNoTriangleFlips?: boolean;
+    rizomNoBorderIntersections?: boolean;
     packResolution?: number;
     packMutations?: number;
     packMargin?: number;
@@ -43,16 +43,16 @@ export interface IUnfoldToolOptions extends IToolOptions
     packRotateStep?: number;
 }
 
-export default class UnfoldTool extends Tool
+export default class RizomUVTool extends Tool
 {
-    static readonly type: string = "UnfoldTool";
+    static readonly type: string = "RizomUVTool";
 
-    protected static readonly defaultOptions: Partial<IUnfoldToolOptions> = {
+    protected static readonly defaultOptions: Partial<IRizomUVToolOptions> = {
         cutSegmentationStrength: 0.65,
         cutHandles: false,
-        unfoldIterations: 5,
-        unfoldNoTriangleFlips: true,
-        unfoldNoBorderIntersections: true,
+        rizomIterations: 5,
+        rizomNoTriangleFlips: true,
+        rizomNoBorderIntersections: true,
         packResolution: 500,
         packMutations: 1,
         packMargin: 2/1024,
@@ -73,7 +73,7 @@ export default class UnfoldTool extends Tool
 
     private writeToolScript(): Promise<IToolScript>
     {
-        const options = this.options as IUnfoldToolOptions;
+        const options = this.options as IRizomUVToolOptions;
 
         const inputFilePath = this.getFilePath(options.inputMeshFile);
         if (!inputFilePath) {
@@ -113,7 +113,7 @@ export default class UnfoldTool extends Tool
             `ZomCut({PrimType="Edge"})`,
 
             `-- unwrap --`,
-            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=${options.unfoldIterations}, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=${!!options.unfoldNoBorderIntersections}, TriangleFlips=${!!options.unfoldNoTriangleFlips}})`,
+            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=${options.rizomIterations}, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=${!!options.rizomNoBorderIntersections}, TriangleFlips=${!!options.rizomNoTriangleFlips}})`,
 
             `-- pack --`,
             `ZomIslandGroups({Mode="DistributeInTilesByBBox", MergingPolicy=8322})`,
@@ -125,7 +125,7 @@ export default class UnfoldTool extends Tool
             `ZomQuit()`
         ].join("\n");
 
-        const scriptFileName = "_unfold_" + uniqueId() + ".lua";
+        const scriptFileName = "_rizomuv_" + uniqueId() + ".lua";
         const scriptFilePath = this.getFilePath(scriptFileName);
 
         return this.writeFile(scriptFilePath, scriptContent);

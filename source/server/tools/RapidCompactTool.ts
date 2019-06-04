@@ -24,20 +24,20 @@ import Tool, { IToolOptions, TToolState } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export type TMopsMode =
+export type TRapidCompactMode =
     "decimate" | "unwrap" | "decimate-unwrap" | "bake";
-export type TMopsUnwrapMethod =
+export type TRapidCompactUnwrapMethod =
     "conformal" | "fastConformal" | "isometric" | "forwardBijective" | "fixedBoundary";
 
-export interface IMopsToolOptions extends IToolOptions
+export interface IRapidCompactToolOptions extends IToolOptions
 {
     highPolyMeshFile?: string;
     lowPolyMeshFile?: string;
     inputMeshFile?: string;
     outputMeshFile?: string;
-    mode: TMopsMode;
+    mode: TRapidCompactMode;
     numFaces?: number;
-    unwrapMethod?: TMopsUnwrapMethod;
+    unwrapMethod?: TRapidCompactUnwrapMethod;
     cutAngleDeg?: number;
     chartAngleDeg?: number;
     chartPadding?: number;
@@ -51,11 +51,11 @@ export interface IMopsToolOptions extends IToolOptions
     removeDuplicateVertices?: boolean;
 }
 
-export default class MopsTool extends Tool
+export default class RapidCompactTool extends Tool
 {
-    static readonly type: string = "MopsTool";
+    static readonly type: string = "RapidCompactTool";
 
-    protected static readonly defaultOptions: Partial<IMopsToolOptions> = {
+    protected static readonly defaultOptions: Partial<IRapidCompactToolOptions> = {
         mode: "unwrap",
         unwrapMethod: "forwardBijective",
         cutAngleDeg: 95, // 95
@@ -71,7 +71,7 @@ export default class MopsTool extends Tool
 
     run(): Promise<void>
     {
-        const options = this.options as IMopsToolOptions;
+        const options = this.options as IRapidCompactToolOptions;
         const { optionString, configFilePath } = this.configureOptions();
 
         let command = `"${this.configuration.executable}" --read_config "${configFilePath}"`;
@@ -80,7 +80,7 @@ export default class MopsTool extends Tool
             const highPolyMesh = this.getFilePath(options.highPolyMeshFile);
             const lowPolyMesh = this.getFilePath(options.lowPolyMeshFile);
 
-            command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${optionString} -e _mops_dummy.obj`;
+            command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${optionString} -e _rpd_dummy.obj`;
         }
         else {
             const inputFilePath = this.getFilePath(options.inputMeshFile);
@@ -98,11 +98,11 @@ export default class MopsTool extends Tool
             return;
         }
 
-        const options = this.options as IMopsToolOptions;
+        const options = this.options as IRapidCompactToolOptions;
 
         if (options.mode === "bake") {
-            this.removeFile("_mops_dummy.obj");
-            this.removeFile("_mops_dummy.mtl");
+            this.removeFile("_rpd_dummy.obj");
+            this.removeFile("_rpd_dummy.mtl");
 
             const mapBaseName = options.mapBaseName;
             const ext = path.extname(mapBaseName);
@@ -118,10 +118,10 @@ export default class MopsTool extends Tool
 
     private configureOptions(): { optionString: string, configFilePath: string }
     {
-        const options = this.options as IMopsToolOptions;
+        const options = this.options as IRapidCompactToolOptions;
         let opts = [];
 
-        const config = Object.assign({}, MopsTool.defaultConfig);
+        const config = Object.assign({}, RapidCompactTool.defaultConfig);
 
         if (options.mode === "decimate" || options.mode === "decimate-unwrap") {
 
@@ -170,8 +170,8 @@ export default class MopsTool extends Tool
         }
 
 
-        // write mops config file
-        const configFileName = "_mops_" + uniqueId() + ".json";
+        // write RapidCompact config file
+        const configFileName = "_rapidcompact_" + uniqueId() + ".json";
         const configFilePath = this.getFilePath(configFileName);
 
         fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));

@@ -2,7 +2,7 @@
     "id": "5490a618-4ebd-4763-a96a-abb9062c786b",
     "name": "webasset",
     "description": "Create glTF web asset",
-    "version": "2",
+    "version": "3",
     "start": "pickup",
 
     "parameterSchema": {
@@ -102,6 +102,10 @@
             "generateGltf": {
                 "type": "boolean",
                 "default": true
+            },
+            "useCompression": {
+                "type": "boolean",
+                "default": true
             }
         },
         "required": [
@@ -156,7 +160,7 @@
                 "alignCenter": "alignCenter",
                 "alignFloor": "alignFloor",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": true,
+                "useCompression": "useCompression",
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
@@ -210,7 +214,7 @@
                 "modelName": "baseName",
                 "units": "units",
                 "derivativeQuality": "'Thumb'",
-                "modelFile": "deliverables.webAssetGlb",
+                "modelFile": "$firstTrue(deliverables.webAssetGlb, deliverables.webAssetGltf)",
                 "numFaces": "numFaces",
                 "mapSize": "mapSize"
             },

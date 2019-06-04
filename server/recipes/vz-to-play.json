@@ -237,12 +237,12 @@
                 "tool": "'Mops'"
             },
             "success": "'convert-obj'",
-            "failure": "'unwrap-unfold'"
+            "failure": "'unwrap-rizom'"
         },
 
-        "unwrap-unfold": {
+        "unwrap-rizom": {
             "task": "UnwrapMesh",
-            "description": "Unwrap mesh using Unfold",
+            "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "unwrappedMeshFile": "baseMeshName & '-unwrapped.obj'",
                 "unwrappedMeshFileFbx": "baseMeshName & '-unwrapped.fbx'"
@@ -254,7 +254,7 @@
                 "segmentationStrength": "segmentationStrength",
                 "packEffort": "packEffort",
                 "timeout": 600,
-                "tool": "'Unfold'"
+                "tool": "'RizomUV'"
             },
             "success": "'convert-fbx'",
             "failure": "'unwrap-mops-b'"

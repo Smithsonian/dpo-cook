@@ -174,7 +174,7 @@
                 "deliverables": {
                 }
             },
-            "success": "'unwrap-unfold'",
+            "success": "'unwrap-rizom'",
             "failure": "'decimate-mops'"
         },
         "decimate-mops": {
@@ -192,12 +192,12 @@
                 "timeout": 600,
                 "tool": "Mops"
             },
-            "success": "'unwrap-unfold'",
+            "success": "'unwrap-rizom'",
             "failure": "$failure"
         },
-        "unwrap-unfold": {
+        "unwrap-rizom": {
             "task": "UnwrapMesh",
-            "description": "Unwrap mesh using Unfold",
+            "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped.fbx'",
                 "deliverables": {

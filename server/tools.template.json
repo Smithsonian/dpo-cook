@@ -1,68 +1,68 @@
 {
   "FBX2glTF": {
-      "executable": "C:\\Tools\\FBX2glTF.exe",
-      "version": "2.0",
-      "maxInstances": 1,
-      "timeout": 60 // 1 minute
-    },
-    "ImageMagick": {
-      "executable": "C:\\Libraries\\imagemagick-7.0.7\\magick.exe",
-      "version": "7.0.7",
-      "maxInstances": 1,
-      "timeout": 600 // 10 minutes
-    },
-    "InstantMeshes": {
-      "executable": "C:\\Tools\\Instant Meshes.exe",
-      "version": "",
-      "maxInstances": 1,
-      "timeout": 900 // 15 minutes
-    },
-    "MeshSmith": {
-      "executable": "D:\\Development\\meshsmith\\bin\\release\\MeshSmith.exe",
-      "version": "2018-08-13",
-      "maxInstances": 1,
-      "timeout": 600 // 10 minutes
-    },
-    "Meshfix": {
-      "executable": "C:\\Tools\\MeshFix.exe",
-      "version": "",
-      "maxInstances": 1,
-      "timeout": 600 // 10 minutes
-    },
-    "Meshlab": {
-      "executable": "C:\\Tools\\MeshlabMini\\meshlabserver.exe",
-      "version": "2018.04",
-      "maxInstances": 1,
-      "timeout": 1800 // 30 minutes
-    },
-    "Mops": {
-      "executable": "C:\\Program Files\\MOPS CLI 1.3.0\\mops.exe",
-      "version": "1.3.0",
-      "maxInstances": 1,
-      "timeout": 900 // 15 minutes
-    },
-"RealityCapture": {
-  "executable": "C:\\Program Files\\Capturing Reality\\RealityCapture\\RealityCapture.exe",
-  "version": "1.0.3.4658",
-  "maxInstances": 1,
-  "timeout": 0 // never
-},
-"Unfold": {
-  "executable": "C:\\Program Files\\Rizom Lab\\RizomUV VS RS 2018.0\\rizomuv.exe",
-  "version": "2018.0.95.g2dc3615",
-  "maxInstances": 1,
-  "timeout": 1200 // 20 minutes
-},
-"Unknit": {
-  "executable": "C:\\Program Files\\Autodesk\\3ds Max 2016\\3dsmax.exe",
-  "version": "2016",
-  "maxInstances": 1,
-  "timeout": 1200 // 20 minutes
-},
-"XNormal": {
-  "executable": "C:\\Program Files\\xNormal\\3.19.3\\x64\\xNormal.exe",
-  "version": "3.19.3.39669",
-  "maxInstances": 1,
-  "timeout": 900 // 15 minutes
-}
+    "executable": "C:\\Tools\\FBX2glTF.exe",
+    "version": "2.0",
+    "maxInstances": 1,
+    "timeout": 60 // 1 minute
+  },
+  "ImageMagick": {
+    "executable": "C:\\Program Files\\ImageMagick-7.0.7-Q16\\magick.exe",
+    "version": "7.0.7",
+    "maxInstances": 1,
+    "timeout": 600 // 10 minutes
+  },
+  "InstantMeshes": {
+    "executable": "C:\\Tools\\Instant Meshes.exe",
+    "version": "",
+    "maxInstances": 1,
+    "timeout": 1200 // 20 minutes
+  },
+  "MeshSmith": {
+    "executable": "C:\\Tools\\MeshSmith\\MeshSmith.exe",
+    "version": "2019-05-04",
+    "maxInstances": 3,
+    "timeout": 600 // 10 minutes
+  },
+  "Meshfix": {
+    "executable": "C:\\Tools\\MeshFix.exe",
+    "version": "v2.1",
+    "maxInstances": 1,
+    "timeout": 600 // 10 minutes
+  },
+  "Meshlab": {
+    "executable": "C:\\Tools\\MeshlabMini\\meshlabserver.exe",
+    "version": "2019-05-02",
+    "maxInstances": 3,
+    "timeout": 1800 // 30 minutes
+  },
+  "RapidCompact": {
+    "executable": "C:\\Program Files\\RapidCompact CLI 1.6.0\\rpdx.exe",
+    "version": "1.6",
+    "maxInstances": 3,
+    "timeout": 900 // 15 minutes
+  },
+  "RealityCapture": {
+    "executable": "C:\\Program Files\\Capturing Reality\\RealityCapture\\RealityCapture.exe",
+    "version": "1.0.3.4658",
+    "maxInstances": 1,
+    "timeout": 0 // never
+  },
+  "RizomUV": {
+    "executable": "C:\\Program Files\\Rizom Lab\\RizomUV VS RS 2018.0\\rizomuv.exe",
+    "version": "RizomUV.2018.0.171.gee18910.master",
+    "maxInstances": 2,
+    "timeout": 1200 // 20 minutes
+  },
+  "Unknit": {
+    "executable": "C:\\Program Files\\Autodesk\\3ds Max 2016\\3dsmax.exe",
+    "version": "2016",
+    "maxInstances": 1,
+    "timeout": 1200 // 20 minutes
+  },
+  "XNormal": {
+    "executable": "C:\\Program Files\\xNormal\\3.19.3\\x64\\xNormal.exe",
+    "version": "3.19.3.39669",
+    "maxInstances": 1,
+    "timeout": 1500 // 25 minutes
+  }
 }

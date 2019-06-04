@@ -1,8 +1,8 @@
 {
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
-    "description": "Generates high definition (1M, 8k) web asset",
-    "version": "8",
+    "description": "Generates high definition (500k, 8k) web asset",
+    "version": "9",
     "start": "log",
 
     "parameterSchema": {
@@ -18,12 +18,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "decimatedMeshFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "unwrappedMeshFile": {
+            "processedMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -48,10 +43,7 @@
             },
             "transportMethod": {
                 "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
+                "enum": [ "none", "local" ],
                 "default": "none"
             },
             "baseName": {
@@ -72,11 +64,15 @@
                 "type": "boolean",
                 "default": false
             },
+            "cleanupMesh": {
+                "type": "boolean",
+                "default": false
+            },
             "numFaces": {
                 "type": "integer",
                 "minimum": 10000,
                 "multipleOf": 1000,
-                "default": 1000000
+                "default": 500000
             },
             "mapSize": {
                 "type": "integer",
@@ -140,11 +136,11 @@
                 "type": "boolean",
                 "default": true
             },
-            "generateBinary": {
+            "packContainer": {
                 "type": "boolean",
                 "default": true
             },
-            "generateGltf": {
+            "useCompression": {
                 "type": "boolean",
                 "default": true
             }
@@ -158,7 +154,7 @@
     "steps": {
         "log": {
             "task": "Log",
-            "description": "Start logging to file",
+            "description": "Enable logging services",
             "pre": {
                 "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
                 "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)",
@@ -181,13 +177,12 @@
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "decimatedMeshFile": "decimatedMeshFile",
-                    "unwrappedMeshFile": "unwrappedMeshFile",
+                    "processedMeshFile": "processedMeshFile",
                     "documentFile": "documentFile",
                     "metaDataFile": "metaDataFile"
                 }
             },
-            "success": "unwrappedMeshFile ? 'inspect-unwrapped': (decimatedMeshFile ? 'unwrap-unfold' : 'decimate-meshlab')",
+            "success": "'decimate-meshlab'",
             "failure": "$failure"
         },
         "decimate-meshlab": {
@@ -200,46 +195,48 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": true,
+                "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
                 "inspectMesh": "deliverables.inspectionReport"
             },
-            "success": "'unwrap-unfold'",
-            "failure": "'decimate-mops'"
+            "success": "'unwrap-rizom'",
+            "failure": "'decimate-rapid'"
         },
-        "decimate-mops": {
+        "decimate-rapid": {
             "task": "DecimateMesh",
-            "description": "Decimate mesh using Mops",
+            "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-mops.obj'"
+                "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": true,
+                "cleanup": "cleanupMesh",
                 "preserveBoundaries": true,
-                "tool": "'Mops'"
+                "tool": "'RapidCompact'"
             },
-            "success": "'unwrap-unfold'",
+            "success": "'unwrap-rizom'",
             "failure": "$failure"
         },
-        "unwrap-unfold": {
+        "unwrap-rizom": {
             "task": "UnwrapMesh",
-            "description": "Unwrap mesh using Unfold",
+            "description": "Unwrap mesh using RizomUV",
             "pre": {
-                "unwrappedMeshFile": "baseMeshName & '-unwrapped.obj'",
-                "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped.fbx'"
+                "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped.fbx'",
+                "deliverables": {
+                    "unwrappedMesh": "baseMeshName & '-unwrapped.obj'"
+                }
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "unwrappedMeshFile",
+                "outputMeshFile": "deliverables.unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSize",
@@ -253,17 +250,12 @@
         "inspect-unwrapped": {
             "task": "InspectMesh",
             "description": "Calculate mesh size and max. ray distance for bake",
-            "pre": {
-                "deliverables": {
-                    "unwrappedMeshFile": "unwrappedMeshFile"
-                }
-            },
             "parameters": {
-                "meshFile": "deliverables.unwrappedMeshFile",
+                "meshFile": "deliverables.unwrappedMesh",
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.02"
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
             },
             "success": "'bake'",
             "failure": "$failure"
@@ -277,7 +269,7 @@
             "parameters": {
                 "highPolyMeshFile": "highPolyMeshFile",
                 "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                "lowPolyUnwrappedMeshFile": "$firstTrue(unwrappedMeshFbxFile, deliverables.unwrappedMeshFile)",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
                 "mapSize": "mapSize",
                 "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
@@ -288,6 +280,14 @@
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": "tangentSpaceNormals",
                 "timeout": 2500
+            },
+            "post": {
+                "deliverables": {
+                    "diffuseMapUncompressed": "bakeDiffuse ? (baseMeshMapName & '-diffuse.png') : ''",
+                    "occlusionMapUncompressed": "bakeOcclusion ? (baseMeshMapName & '-occlusion.png') : ''",
+                    "normalMapUncompressed": "bakeNormals ? (baseMeshMapName & '-normals.png') : ''",
+                    "testMap": "bakeTest ? (baseMeshMapName & '-test.png') : ''"
+                }
             },
             "success": "'convert-diffuse-map'",
             "failure": "$failure"
@@ -302,7 +302,7 @@
                 }
             },
             "parameters": {
-                "inputImageFile": "baseMeshMapName & '-diffuse.png'",
+                "inputImageFile": "deliverables.diffuseMapUncompressed",
                 "outputImageFile": "deliverables.diffuseMap",
                 "quality": "diffuseMapQuality"
             },
@@ -319,7 +319,7 @@
                 }
             },
             "parameters": {
-                "inputImageFile": "baseMeshMapName & '-occlusion.png'",
+                "inputImageFile": "deliverables.occlusionMapUncompressed",
                 "outputImageFile": "deliverables.occlusionMap",
                 "quality": "occlusionMapQuality"
             },
@@ -336,75 +336,33 @@
                 }
             },
             "parameters": {
-                "inputImageFile": "baseMeshMapName & '-normals.png'",
+                "inputImageFile": "deliverables.normalMapUncompressed",
                 "outputImageFile": "deliverables.normalMap",
                 "quality": "normalMapQuality"
             },
-            "success": "'convert-test-map'",
+            "success": "'web-asset'",
             "failure": "$failure"
         },
-        "convert-test-map": {
-            "task": "ConvertImage",
-            "description": "Convert Test Map",
-            "skip": "$not(bakeTest)",
-            "pre": {
-                "deliverables": {
-                    "testMap": "baseMeshMapName & '-test.jpg'"
-                }
-            },
-            "parameters": {
-                "inputImageFile": "baseMeshMapName & '-test.png'",
-                "outputImageFile": "deliverables.testMap",
-                "quality": "diffuseMapQuality"
-            },
-            "success": "'model-glb'",
-            "failure": "$failure"
-        },
-        "model-glb": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset",
-            "skip": "$not(generateBinary)",
-            "pre": {
-                "deliverables": {
-                    "webAssetGlb": "baseMeshMapName & '-web-hd.glb'"
-                }
-            },
-            "parameters": {
-                "outputFile": "deliverables.webAssetGlb",
-                "meshFile": "deliverables.unwrappedMeshFile",
-                "diffuseMapFile": "deliverables.diffuseMap",
-                "occlusionMapFile": "deliverables.occlusionMap",
-                "normalMapFile": "deliverables.normalMap",
-                "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": true,
-                "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
-            },
-            "success": "'web-asset-gltf'",
-            "failure": "$failure"
-        },
-        "web-asset-gltf": {
+        "web-asset": {
             "task": "WebAsset",
             "description": "Create glTF asset",
-            "skip": "$not(generateGltf)",
             "pre": {
                 "deliverables": {
-                    "webAssetGltf": "baseMeshMapName & '-web-hd.gltf'",
-                    "webAssetBin": "baseMeshMapName & '-web-hd.bin'"
+                    "webAsset": "baseMeshMapName & (packContainer ? '-highest.glb' : '-highest.gltf')",
+                    "webAssetBin": "baseMeshMapName & (packContainer ? '' : '-highest.bin')"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetGltf",
-                "meshFile": "deliverables.unwrappedMeshFile",
+                "outputFile": "deliverables.webAsset",
+                "meshFile": "deliverables.unwrappedMesh",
                 "diffuseMapFile": "deliverables.diffuseMap",
                 "occlusionMapFile": "deliverables.occlusionMap",
                 "normalMapFile": "deliverables.normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": false,
+                "useCompression": "useCompression",
                 "compressionLevel": 10,
-                "embedMaps": false,
-                "writeBinary": false
+                "embedMaps": "packContainer",
+                "writeBinary": "packContainer"
             },
             "success": "'update-document'",
             "failure": "$failure"
@@ -424,7 +382,7 @@
                 "modelName": "baseName",
                 "units": "units",
                 "derivativeQuality": "'Highest'",
-                "modelFile": "deliverables.webAssetGlb",
+                "modelFile": "deliverables.webAsset",
                 "numFaces": "numFaces",
                 "mapSize": "mapSize"
             },
