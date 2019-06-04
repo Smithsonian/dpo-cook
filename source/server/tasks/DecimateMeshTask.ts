@@ -169,7 +169,8 @@ export default class DecimateMeshTask extends Task
                 mode: "decimate",
                 numFaces: params.numFaces,
                 removeDuplicateVertices: params.cleanup,
-                preserveBoundary: params.preserveBoundaries,
+                preserveTopology: params.preserveTopology,
+                preserveBoundaries: params.preserveBoundaries,
                 timeout: params.timeout
             };
 

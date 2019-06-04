@@ -59,6 +59,7 @@
         "morgan": "^1.9.1",
         "node-fetch": "^2.6.0",
         "nodemon": "^1.19.1",
+        "os-utils": "0.0.14",
         "react-json-tree": "^0.11.2",
         "reactable": "^1.1.0",
         "rimraf": "^2.6.3",

@@ -60,14 +60,6 @@
                 "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
                 "default": "cm"
             },
-            "inspectMesh": {
-                "type": "boolean",
-                "default": false
-            },
-            "cleanupMesh": {
-                "type": "boolean",
-                "default": false
-            },
             "numFaces": {
                 "type": "integer",
                 "minimum": 10000,
@@ -79,6 +71,19 @@
                 "minimum": 128,
                 "maximum": 8192,
                 "default": 4096
+            },
+            "inspectMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "cleanupMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "decimationTool": {
+                "type": "string",
+                "enum": [ "Meshlab", "RapidCompact" ],
+                "default": "RapidCompact"
             },
             "segmentationStrength": {
                 "type": "number",
@@ -102,7 +107,7 @@
             },
             "bakeTest": {
                 "type": "boolean",
-                "default": false
+                "default": true
             },
             "maxRayDistance": {
                 "type": "number",
@@ -188,31 +193,24 @@
                     "metaDataFile": "metaDataFile"
                 }
             },
-            "success": "'decimate-meshlab'",
+            "success": "'inspect-mesh'",
             "failure": "$failure"
         },
-        "decimate-meshlab": {
-            "task": "DecimateMesh",
-            "description": "Decimate mesh using Meshlab",
+        "inspect-mesh": {
+            "task": "InspectMesh",
+            "description": "Inspect mesh health and statistics",
+            "skip": "$not(inspectMesh)",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-meshlab.obj'",
                 "deliverables": {
                     "inspectionReport": "inspectMesh ? baseName & '-inspection.json' : ''"
                 }
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
-                "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFaces",
-                "cleanup": "cleanupMesh",
-                "preserveTopology": true,
-                "preserveBoundaries": true,
-                "preserveTexCoords": false,
-                "computeVertexNormals": "tangentSpaceNormals",
-                "inspectMesh": "deliverables.inspectionReport"
+                "meshFile": "highPolyMeshFile",
+                "reportFile": "deliverables.inspectionReport"
             },
-            "success": "'unwrap-rizom'",
-            "failure": "'decimate-rapid'"
+            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid' : 'decimate-meshlab'",
+            "failure": "$failure"
         },
         "decimate-rapid": {
             "task": "DecimateMesh",
@@ -225,8 +223,28 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": "cleanupMesh",
+                "preserveTopology": true,
                 "preserveBoundaries": true,
                 "tool": "'RapidCompact'"
+            },
+            "success": "'unwrap-rizom'",
+            "failure": "'decimate-meshlab'"
+        },
+        "decimate-meshlab": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using Meshlab",
+            "pre": {
+                "decimatedMeshFile": "baseMeshName & '-decimated-meshlab.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFaces",
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "preserveTexCoords": false,
+                "computeVertexNormals": "tangentSpaceNormals"
             },
             "success": "'unwrap-rizom'",
             "failure": "$failure"
