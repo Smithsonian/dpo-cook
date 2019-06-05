@@ -370,7 +370,7 @@
             "pre": {
                 "deliverables": {
                     "webAsset": "baseMeshMapName & (packContainer ? '-thumb.glb' : '-thumb.gltf')",
-                    "webAssetBin": "baseMeshMapName & (packContainer ? '' : '-thumb.bin')"
+                    "webAssetBin": "packContainer ? '' : (baseMeshMapName & '-thumb.bin')"
                 }
             },
             "parameters": {

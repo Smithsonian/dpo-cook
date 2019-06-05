@@ -372,7 +372,7 @@
             "pre": {
                 "deliverables": {
                     "webAssetHigh": "baseMeshMapNameHigh & (packContainer ? '-high.glb' : '-high.gltf')",
-                    "webAssetHighBin": "baseMeshMapNameHigh & (packContainer ? '' : '-high.bin')"
+                    "webAssetHighBin": "packContainer ? '' : (baseMeshMapNameHigh & '-high.bin')"
                 }
             },
             "parameters": {
@@ -470,7 +470,7 @@
             "pre": {
                 "deliverables": {
                     "webAssetMedium": "baseMeshMapNameMedium & (packContainer ? '-medium.glb' : '-medium.gltf')",
-                    "webAssetMediumBin": "baseMeshMapNameMedium & (packContainer ? '' : '-medium.bin')"
+                    "webAssetMediumBin": "packContainer ? '' : (baseMeshMapNameMedium & '-medium.bin')"
                 }
             },
             "parameters": {
@@ -562,7 +562,7 @@
             "pre": {
                 "deliverables": {
                     "webAssetLow": "baseMeshMapNameLow & (packContainer ? '-low.glb' : '-low.gltf')",
-                    "webAssetLowBin": "baseMeshMapNameLow & (packContainer ? '' : '-low.bin')"
+                    "webAssetLowBin": "packContainer ? '' : (baseMeshMapNameLow & '-low.bin')"
                 }
             },
             "parameters": {

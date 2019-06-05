@@ -3,10 +3,33 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
 
     "title": "Tools Configuration",
-    "description": "Configuration file for the tools used by the Smithsonian Cook Processing Service",
+    "description": "Configuration file for the tools used by the Smithsonian Cook Processing Service.",
 
     "type": "object",
-    "properties": {
-
+    "additionalProperties": {
+        "description": "key/object pairs where the key corresponds to the tool name.",
+        "type": "object",
+        "properties": {
+            "executable": {
+                "description": "path to the tool executable",
+                "type": "string",
+                "minLength": 1
+            },
+            "version": {
+                "description": "tool version, will be recorded in reports, logs, etc.",
+                "type": "string",
+                "minLength": 1
+            },
+            "maxInstances": {
+                "description": "maximum number of instances this tool can run simultaneously.",
+                "type": "integer",
+                "minimum": 1
+            },
+            "timeout": {
+                "description": "maximum number of seconds this tool is allowed to run.",
+                "type": "integer",
+                "minimum": 1
+            }
+        }
     }
 }

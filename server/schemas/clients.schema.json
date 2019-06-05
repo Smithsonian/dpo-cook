@@ -1,12 +1,24 @@
 {
-    "$id": "https://schemas.3d.si.edu/cook/clients.json",
+    "$id": "https://schemas.3d.si.edu/cook/clients.schema.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
 
     "title": "Clients Configuration",
-    "description": "List of clients with access to the Smithsonian Cook Processing Service",
+    "description": "List of clients with access to the Smithsonian Cook Processing Service.",
 
     "type": "object",
-    "properties": {
+    "additionalProperties": {
+        "title": "Client",
+        "description": "Key/value pair where the key is a UUID identifying the client.",
 
+        "type": "object",
+        "properties": {
+            "name": {
+                "description": "Name identifying the client. The name is used for informal purposes in reports, etc.",
+                "type": "string",
+                "minLength": 1
+            }
+        },
+        "required": [ "name" ],
+        "additionalProperties": true
     }
 }

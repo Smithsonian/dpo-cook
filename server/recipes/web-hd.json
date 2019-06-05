@@ -367,7 +367,7 @@
             "pre": {
                 "deliverables": {
                     "webAsset": "baseMeshMapName & (packContainer ? '-highest.glb' : '-highest.gltf')",
-                    "webAssetBin": "baseMeshMapName & (packContainer ? '' : '-highest.bin')"
+                    "webAssetBin": "packContainer ? '' : (baseMeshMapName & '-highest.bin')"
                 }
             },
             "parameters": {

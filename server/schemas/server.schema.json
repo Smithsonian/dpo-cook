@@ -1,12 +1,57 @@
 {
-    "$id": "https://schemas.3d.si.edu/cook/server.json",
+    "$id": "https://schemas.3d.si.edu/cook/server.schema.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
 
     "title": "Server Configuration",
-    "description": "Configuration file for the Smithsonian Cook Processing Service",
+    "description": "Configuration file for the Smithsonian Cook Processing Service.",
 
     "type": "object",
     "properties": {
+        "directories": {
+            "type": "object",
+            "properties": {
+                "work": {
+                    "description": "path to the work folder where temporary data is stored.",
+                    "type": "string",
+                    "minLength": 1,
+                    "default": "work/"
+                },
+                "recipes": {
+                    "description": "path to the folder where recipes are stored.",
+                    "type": "string",
+                    "minLength": 1,
+                    "default": "recipes/"
+                },
+                "static": {
+                    "description": "path to the folder where static files for the client UI are stored.",
+                    "type": "string",
+                    "minLength": 1,
+                    "default": "static/"
+                },
+                "tasks": {
+                    "description": "path to the folder that holds task plugins.",
+                    "type": "string",
+                    "minLength": 1,
+                    "default": "tasks/"
 
+                },
+                "tools": {
+                    "description": "path to the folder that holds tool plugins.",
+                    "type": "string",
+                    "minLength": 1,
+                    "default": "tools/"
+                }
+            }
+        },
+        "ports": {
+            "type": "object",
+            "properties": {
+                "server": {
+                    "description": "port for API and web UI access.",
+                    "type": "integer",
+                    "default": 8000
+                }
+            }
+        }
     }
 }

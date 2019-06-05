@@ -1,0 +1,129 @@
+{
+    "$id": "https://schemas.3d.si.edu/cook/job-report.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+
+    "title": "Job Report",
+    "description": "Report and log about the execution of a processing job.",
+
+    "definitions": {
+        "stepReport": {
+            "$id": "#stepReport",
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "primitiveValue": {
+            "$id": "#primitiveValue",
+            "oneOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "recipeParameter": {
+            "$id": "#recipeParameter",
+            "oneOf": [
+                {
+                    "$ref": "#primitiveValue"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#primitiveValue"
+                    }
+                },
+                {
+                    "type": "object",
+                    "items": {
+                        "$ref": "#primitiveValue"
+                    }
+
+                }
+            ]
+        }
+    },
+
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "Job identifier.",
+            "type": "string",
+            "minLength": 1
+        },
+        "name": {
+            "description": "Job name.",
+            "type": "string",
+            "minLength": 1
+        },
+        "clientId": {
+            "description": "Id of the client ordering the job.",
+            "type": "string",
+            "minLength": 1
+        },
+        "priority": {
+            "description": "Job execution priority.",
+            "type": "string",
+            "enum": [
+                "high",
+                "normal",
+                "low"
+            ]
+        },
+        "recipe": {
+            "$ref": "./recipe.schema.json"
+        },
+        "parameters": {
+            "description": "Parameters for the recipe.",
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#recipeParameter"
+            }
+        },
+        "submission": {
+            "description": "Submission date as ISO formatted string.",
+            "type": "string",
+            "format": "date-time"
+        },
+        "start": {
+            "description": "Job start date/time as ISO formatted string. Contains an empty string if the job has not started yet.",
+            "type": "string",
+            "format": "date-time"
+        },
+        "end": {
+            "description": "Job end date/time as ISO formatted string. Contains an empty string if the job has not ended yet.",
+            "type": "string",
+            "format": "date-time"
+        },
+        "duration": {
+            "description": "Duration of the job in seconds. Value is zero if the job is still running",
+            "type": "integer"
+        },
+        "state": {
+            "description": "Job state.",
+            "type": "string",
+            "enum": [ "created", "waiting", "running", "done", "error", "cancelled" ]
+        },
+        "step": {
+            "description": "Name of the recipe step currently executed.",
+            "type": "string"
+        },
+        "error": {
+            "description": "Error message in case of an error. Empty string otherwise",
+            "type": "string"
+        },
+        "steps": {
+            "description": "Log messages about each recipe step in order of execution.",
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/stepReport"
+            }
+        }
+    }
+}
