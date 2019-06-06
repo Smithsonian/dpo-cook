@@ -188,8 +188,13 @@ export default class ApiClient
         return Promise.all(filePaths.map(path => this.uploadFile(jobId, path)));
     }
 
-    async uploadFile(jobId: string, filePath: string)
+    async uploadFile(jobId: string, filePath: string): Promise<void>
     {
+        if (!fs.existsSync(filePath)) {
+            console.log(`skipping upload, file not existing: ${filePath}`);
+            return Promise.resolve();
+        }
+
         const stream = fs.createReadStream(filePath);
         const endpoint = this.machineAddress + "/" + jobId + "/" + filePath;
 
