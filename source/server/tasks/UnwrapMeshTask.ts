@@ -126,7 +126,7 @@ export default class UnwrapMeshTask extends Task
                 const cutSegmentationStrength = limit(segmentationStrength, 0, 1);
 
                 const index = limit(Math.trunc(packEffort * 5), 0, 4);
-                const mutations = [ 1, 2, 2, 3, 3 ];
+                const mutations = [ 1, 1, 2, 2, 2 ];
                 const steps = [ 90, 45, 30, 30, 15 ];
 
                 const packResolution = limit(100 + packEffort * 800, 100, 900);
