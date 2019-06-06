@@ -17,6 +17,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+import { Dictionary } from "@ff/core/types";
+
 export type TJobPriority = "high" | "normal" | "low";
 export type TLogLevel = "debug" | "info" | "warning" | "error";
 export type TTaskState = "created" | "waiting" | "running" | "done" | "error" | "cancelled";
@@ -226,21 +228,27 @@ export interface IRecipeInfo
 /** Full recipe.  */
 export interface IRecipe extends IRecipeInfo
 {
-    parameterSchema: object;
+    parameterSchema: {
+        type: "object";
+        properties: Dictionary<any>;
+        required: string[];
+        additionalProperties: false;
+    }
+
     start: string;
     steps: { [name: string]: IRecipeStep }
 }
 
-export interface IRecipe
-{
-    id: string;
-    name: string;
-    description?: string;
-    version?: string;
-    parameterSchema: object;
-    start: string;
-    steps: { [name: string]: IRecipeStep }
-}
+// export interface IRecipe
+// {
+//     id: string;
+//     name: string;
+//     description?: string;
+//     version?: string;
+//     parameterSchema: object;
+//     start: string;
+//     steps: { [name: string]: IRecipeStep }
+// }
 
 /** Single step in a recipe. */
 export interface IRecipeStep

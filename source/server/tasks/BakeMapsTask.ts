@@ -18,7 +18,7 @@
 import Job from "../app/Job";
 
 import { IXNormalToolOptions } from "../tools/XNormalTool";
-import { IMopsToolOptions } from "../tools/MopsTool";
+import { IRapidCompactToolOptions } from "../tools/RapidCompactTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 
@@ -61,8 +61,8 @@ export interface IBakeMapsTaskParameters extends ITaskParameters
     tangentSpaceNormals?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Baking tool to use: [[XNormalTool]] or [[MopsTool]]. */
-    tool?: "XNormal" | "Mops";
+    /** Baking tool to use: [[XNormalTool]] or [[RapidCompactTool]]. */
+    tool?: "XNormal" | "RapidCompact";
 }
 
 /**
@@ -97,7 +97,7 @@ export default class BakeMapsTask extends Task
             occlusionAttQuadratic: { type: "number", minimum: 0, maximum: 1, default: 0 },
             tangentSpaceNormals: { type: "boolean", default: false },
             timeout: { type: "integer", minimum: 0, default: 0 },
-            tool: { type: "string", enum: [ "XNormal", "Mops" ], default: "XNormal" }
+            tool: { type: "string", enum: [ "XNormal", "RapidCompact" ], default: "XNormal" }
         },
         required: [
             "highPolyMeshFile",
@@ -115,8 +115,8 @@ export default class BakeMapsTask extends Task
     {
         super(params, context);
 
-        if (params.tool === "Mops") {
-            this.setupMops(params);
+        if (params.tool === "RapidCompact") {
+            this.setupRapidCompact(params);
         }
         else {
             this.setupXNormal(params);
@@ -151,11 +151,11 @@ export default class BakeMapsTask extends Task
         this.addTool("XNormal", toolOptions);
     }
 
-    protected setupMops(parameters: IBakeMapsTaskParameters)
+    protected setupRapidCompact(parameters: IBakeMapsTaskParameters)
     {
         const mapBaseName = parameters.mapBaseName;
 
-        const toolOptions: IMopsToolOptions = {
+        const toolOptions: IRapidCompactToolOptions = {
             mode: "bake",
             mapBaseName,
             mapSize: parameters.mapSize,
@@ -164,6 +164,6 @@ export default class BakeMapsTask extends Task
             timeout: parameters.timeout
         };
 
-        this.addTool("Mops", toolOptions);
+        this.addTool("RapidCompact", toolOptions);
     }
 }

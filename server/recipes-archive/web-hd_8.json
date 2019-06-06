@@ -2,7 +2,7 @@
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
     "description": "Generates high definition (1M, 8k) web asset",
-    "version": "5",
+    "version": "8",
     "start": "log",
 
     "parameterSchema": {
@@ -28,7 +28,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "itemFile": {
+            "documentFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -53,6 +53,15 @@
                     "local"
                 ],
                 "default": "none"
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "modelIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
             },
             "units": {
                 "type": "string",
@@ -151,9 +160,9 @@
             "task": "Log",
             "description": "Start logging to file",
             "pre": {
-                "baseName": "$baseName(highPolyMeshFile)",
-                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
-                "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)",
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)",
+                "baseMeshMapName": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFaces, mapSize)",
                 "bakeDiffuse": "$exists(highPolyDiffuseMapFile)"
             },
             "parameters": {
@@ -173,7 +182,9 @@
                     "highPolyMeshFile": "highPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
                     "decimatedMeshFile": "decimatedMeshFile",
-                    "unwrappedMeshFile": "unwrappedMeshFile"
+                    "unwrappedMeshFile": "unwrappedMeshFile",
+                    "documentFile": "documentFile",
+                    "metaDataFile": "metaDataFile"
                 }
             },
             "success": "unwrappedMeshFile ? 'inspect-unwrapped': (decimatedMeshFile ? 'unwrap-rizom' : 'decimate-meshlab')",
@@ -197,8 +208,7 @@
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
-                "inspectMesh": "deliverables.inspectionReport",
-                "timeout": 1200
+                "inspectMesh": "deliverables.inspectionReport"
             },
             "success": "'unwrap-rizom'",
             "failure": "'decimate-rapid'"
@@ -215,7 +225,6 @@
                 "numFaces": "numFaces",
                 "cleanup": true,
                 "preserveBoundaries": true,
-                "timeout": 600,
                 "tool": "'RapidCompact'"
             },
             "success": "'unwrap-rizom'",
@@ -397,20 +406,22 @@
                 "embedMaps": false,
                 "writeBinary": false
             },
-            "success": "'update-item'",
+            "success": "'update-document'",
             "failure": "$failure"
         },
-        "update-item": {
-            "task": "Item",
-            "description": "Add web model to item.json descriptor file",
+        "update-document": {
+            "task": "Document",
+            "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "item": "$firstTrue(itemFile, baseName & '-item.json')"
+                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
                 }
             },
             "parameters": {
-                "itemFile": "deliverables.item",
+                "documentFile": "deliverables.document",
                 "metaDataFile": "metaDataFile",
+                "modelIndex": "modelIndex",
+                "modelName": "baseName",
                 "units": "units",
                 "derivativeQuality": "'Highest'",
                 "modelFile": "deliverables.webAssetGlb",

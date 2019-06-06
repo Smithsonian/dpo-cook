@@ -140,7 +140,7 @@ export default class JobManager extends Publisher
         this.recipeManager = new RecipeManager(dirs);
         this.workDir = dirs.work;
 
-        const jobOrderSchemaPath = path.resolve(dirs.schemas, "jobOrder.schema.json");
+        const jobOrderSchemaPath = path.resolve(dirs.schemas, "job-order.schema.json");
         const jobOrderSchema = JSON.parse(fs.readFileSync(jobOrderSchemaPath, "utf8"));
         this.jobOrderValidator = jsonValidator.compile(jobOrderSchema);
     }

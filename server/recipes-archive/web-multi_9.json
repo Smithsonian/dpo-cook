@@ -2,7 +2,7 @@
     "id": "721d459c-af09-4525-a28b-e71a89439282",
     "name": "web-multi",
     "description": "Generates multi-level web assets",
-    "version": "4",
+    "version": "8",
     "start": "log",
 
     "parameterSchema": {
@@ -14,6 +14,16 @@
                 "format": "file"
             },
             "highPolyDiffuseMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "metaDataFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "documentFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -33,6 +43,20 @@
                     "local"
                 ],
                 "default": "none"
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "modelIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
+            },
+            "units": {
+                "type": "string",
+                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
+                "default": "cm"
             },
             "inspectMesh": {
                 "type": "boolean",
@@ -122,9 +146,9 @@
             "task": "Log",
             "description": "Start logging to file",
             "pre": {
-                "baseName": "$baseName(highPolyMeshFile)",
-                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
-                "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)",
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)",
+                "baseMeshMapName": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFaces, mapSize)",
                 "bakeDiffuse": "$exists(highPolyDiffuseMapFile)"
             },
             "parameters": {
@@ -143,7 +167,9 @@
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
                     "lowPolyMeshFile": "lowPolyMeshFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile"
+                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
+                    "documentFile": "documentFile",
+                    "metaDataFile": "metaDataFile"
                 }
             },
             "success": "'decimate-meshlab'",
@@ -167,21 +193,20 @@
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
                 "computeVertexNormals": "tangentSpaceNormals",
-                "inspectMesh": "deliverables.inspectionReport",
-                "timeout": 1200
+                "inspectMesh": "deliverables.inspectionReport"
             },
             "post": {
                 "deliverables": {
                 }
             },
             "success": "'unwrap-rizom'",
-            "failure": "'decimate-mops'"
+            "failure": "'decimate-rapid'"
         },
-        "decimate-mops": {
+        "decimate-rapid": {
             "task": "DecimateMesh",
-            "description": "Decimate mesh using Mops",
+            "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-mops.obj'"
+                "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
             },
             "parameters": {
                 "inputMeshFile": "highPolyMeshFile",
@@ -189,8 +214,7 @@
                 "numFaces": "numFaces",
                 "cleanup": true,
                 "preserveBoundaries": true,
-                "timeout": 600,
-                "tool": "Mops"
+                "tool": "RapidCompact"
             },
             "success": "'unwrap-rizom'",
             "failure": "$failure"
@@ -211,8 +235,7 @@
                 "saveObj": true,
                 "mapSize": "mapSize",
                 "segmentationStrength": "segmentationStrength",
-                "packEffort": "packEffort",
-                "timeout": 900
+                "packEffort": "packEffort"
             },
             "success": "'inspect-unwrapped'",
             "failure": "$failure"
@@ -372,7 +395,7 @@
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset1k": "baseMeshName & '-1024-web.glb'",
+                    "webAsset1k": "baseMeshName & '-1024-web-low.glb'",
                     "diffuseMap1k": "bakeDiffuse ? (baseMeshName & '-1024-diffuse.jpg') : ''",
                     "occlusionMap1k": "baseMeshName & '-1024-occlusion.jpg'",
                     "normalMap1k": "baseMeshName & '-1024-normals.jpg'"
@@ -390,6 +413,28 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
+            "success": "'update-document-1k'",
+            "failure": "$failure"
+        },
+        "update-document-1k": {
+            "task": "Document",
+            "description": "Add 1k web model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.document",
+                "metaDataFile": "metaDataFile",
+                "modelIndex": "modelIndex",
+                "modelName": "baseName",
+                "units": "units",
+                "derivativeQuality": "'Low'",
+                "modelFile": "deliverables.webAsset1k",
+                "numFaces": "numFaces",
+                "mapSize": 1024
+            },
             "success": "'model-glb-2k'",
             "failure": "$failure"
         },
@@ -398,7 +443,7 @@
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset2k": "baseMeshName & '-2048-web.glb'",
+                    "webAsset2k": "baseMeshName & '-2048-web-medium.glb'",
                     "diffuseMap2k": "bakeDiffuse ? (baseMeshName & '-2048-diffuse.jpg') : ''",
                     "occlusionMap2k": "baseMeshName & '-2048-occlusion.jpg'",
                     "normalMap2k": "baseMeshName & '-2048-normals.jpg'"
@@ -416,6 +461,20 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
+            "success": "'update-document-2k'",
+            "failure": "$failure"
+        },
+        "update-document-2k": {
+            "task": "Document",
+            "description": "Add 2k web model to document.json descriptor file",
+            "parameters": {
+                "documentFile": "deliverables.document",
+                "modelIndex": "modelIndex",
+                "derivativeQuality": "'Medium'",
+                "modelFile": "deliverables.webAsset2k",
+                "numFaces": "numFaces",
+                "mapSize": 2048
+            },
             "success": "'model-glb-high'",
             "failure": "$failure"
         },
@@ -424,7 +483,7 @@
             "description": "Create binary, compressed, embedded glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset4k": "baseMeshMapName & '-web.glb'",
+                    "webAsset4k": "baseMeshMapName & '-web-high.glb'",
                     "diffuseMap4k": "bakeDiffuse ? (baseMeshMapName & '-diffuse.jpg') : ''",
                     "occlusionMap4k": "baseMeshMapName & '-occlusion.jpg'",
                     "normalMap4k": "baseMeshMapName & '-normals.jpg'"
@@ -441,6 +500,20 @@
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
+            },
+            "success": "'update-document-high'",
+            "failure": "$failure"
+        },
+        "update-document-high": {
+            "task": "Document",
+            "description": "Add high web model to document.json descriptor file",
+            "parameters": {
+                "documentFile": "deliverables.document",
+                "modelIndex": "modelIndex",
+                "derivativeQuality": "'High'",
+                "modelFile": "deliverables.webAsset4k",
+                "numFaces": "numFaces",
+                "mapSize": 4096
             },
             "success": "'delivery'",
             "failure": "$failure"

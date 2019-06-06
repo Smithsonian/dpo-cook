@@ -17,7 +17,8 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import * as child_process from "child_process"
+import * as child_process from "child_process";
+import * as osUtils from "os-utils";
 
 import Publisher, { ITypedEvent }  from "@ff/core/Publisher";
 import { IToolOptions, IToolReport, IToolScript, TToolState } from "common/types";
@@ -164,40 +165,47 @@ export default class Tool extends Publisher
         return new Promise((resolve, reject) => {
 
             // tool instances available? then run immediately
-            if (this.type.instances < this.configuration.maxInstances) {
-                return this.runInstance(command, script)
+            osUtils.cpuUsage(usage => {
+                //console.log("CPU usage = %s", usage);
+                if (this.type.instances < this.configuration.maxInstances && usage < 0.9) {
+                    return this.runInstance(command, script)
                     .then(() =>
                         resolve()
                     )
                     .catch(err =>
                         reject(err)
                     );
-            }
-
-            // set an interval timer and wait for an instance to become available
-            this.report.execution.state = "waiting";
-
-            handler = setInterval(() => {
-                // if cancellation has been requested, abort waiting
-                if (this.requestCancel) {
-                    this.requestCancel = false;
-                    clearInterval(handler);
-                    this.report.execution.state = "cancelled";
-                    resolve();
                 }
 
-                // start polling; if an instance becomes available, run the tool
-                if (this.type.instances < this.configuration.maxInstances) {
-                    clearInterval(handler);
-                    return this.runInstance(command, script)
-                        .then(() =>
-                            resolve()
-                        )
-                        .catch(err =>
-                            reject(err)
-                        );
-                }
-            }, 1000);
+                // set an interval timer and wait for an instance to become available
+                this.report.execution.state = "waiting";
+
+                handler = setInterval(() => {
+                    // if cancellation has been requested, abort waiting
+                    if (this.requestCancel) {
+                        this.requestCancel = false;
+                        clearInterval(handler);
+                        this.report.execution.state = "cancelled";
+                        resolve();
+                    }
+
+                    osUtils.cpuUsage(usage => {
+                        //console.log("Waiting, CPU usage = %s", usage);
+
+                        // start polling; if an instance becomes available, run the tool
+                        if (this.type.instances < this.configuration.maxInstances && usage < 0.9) {
+                            clearInterval(handler);
+                            return this.runInstance(command, script)
+                            .then(() =>
+                                resolve()
+                            )
+                            .catch(err =>
+                                reject(err)
+                            );
+                        }
+                    });
+                }, 2000);
+            });
         });
     }
 

@@ -50,6 +50,7 @@ export default class MeshlabTool extends Tool
         "RemoveDuplicateVertices": { name: "Remove Duplicate Vertices" },
         "RemoveZeroAreaFaces": { name: "Remove Zero Area Faces" },
         "RemoveDuplicateFaces": { name: "Remove Duplicate Faces" },
+        "RemoveIsolatedFoldedFaces": { name: "Remove Isolated Folded Faces by Edge Flip" },
         "RemoveIsolatedPieces": { name: "Remove Isolated pieces (wrt Diameter)" },
         "ComputeFaceNormals": { name: "Re-Compute Face Normals" },
         "ComputeVertexNormals": { name: "Re-Compute Vertex Normals" },

@@ -24,20 +24,20 @@ import Tool, { IToolOptions, TToolState } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export type TMopsMode =
+export type TRapidCompactMode =
     "decimate" | "unwrap" | "decimate-unwrap" | "bake";
-export type TMopsUnwrapMethod =
+export type TRapidCompactUnwrapMethod =
     "conformal" | "fastConformal" | "isometric" | "forwardBijective" | "fixedBoundary";
 
-export interface IMopsToolOptions extends IToolOptions
+export interface IRapidCompactToolOptions extends IToolOptions
 {
     highPolyMeshFile?: string;
     lowPolyMeshFile?: string;
     inputMeshFile?: string;
     outputMeshFile?: string;
-    mode: TMopsMode;
+    mode: TRapidCompactMode;
     numFaces?: number;
-    unwrapMethod?: TMopsUnwrapMethod;
+    unwrapMethod?: TRapidCompactUnwrapMethod;
     cutAngleDeg?: number;
     chartAngleDeg?: number;
     chartPadding?: number;
@@ -46,16 +46,17 @@ export interface IMopsToolOptions extends IToolOptions
     bakeOcclusion?: boolean;
     occlusionRays?: number;
     tangentSpaceNormals?: boolean;
-    preserveBoundary?: boolean;
+    preserveTopology?: boolean;
+    preserveBoundaries?: boolean;
     collapseUnconnectedVertices?: boolean;
     removeDuplicateVertices?: boolean;
 }
 
-export default class MopsTool extends Tool
+export default class RapidCompactTool extends Tool
 {
-    static readonly type: string = "MopsTool";
+    static readonly type: string = "RapidCompactTool";
 
-    protected static readonly defaultOptions: Partial<IMopsToolOptions> = {
+    protected static readonly defaultOptions: Partial<IRapidCompactToolOptions> = {
         mode: "unwrap",
         unwrapMethod: "forwardBijective",
         cutAngleDeg: 95, // 95
@@ -64,14 +65,15 @@ export default class MopsTool extends Tool
         bakeOcclusion: false,
         occlusionRays: 128,
         tangentSpaceNormals: false,
-        preserveBoundary: true,
+        preserveTopology: true,
+        preserveBoundaries: true,
         collapseUnconnectedVertices: true,
         removeDuplicateVertices: false
     };
 
     run(): Promise<void>
     {
-        const options = this.options as IMopsToolOptions;
+        const options = this.options as IRapidCompactToolOptions;
         const { optionString, configFilePath } = this.configureOptions();
 
         let command = `"${this.configuration.executable}" --read_config "${configFilePath}"`;
@@ -80,7 +82,7 @@ export default class MopsTool extends Tool
             const highPolyMesh = this.getFilePath(options.highPolyMeshFile);
             const lowPolyMesh = this.getFilePath(options.lowPolyMeshFile);
 
-            command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${optionString} -e _mops_dummy.obj`;
+            command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${optionString} -e _rpd_dummy.obj`;
         }
         else {
             const inputFilePath = this.getFilePath(options.inputMeshFile);
@@ -98,11 +100,11 @@ export default class MopsTool extends Tool
             return;
         }
 
-        const options = this.options as IMopsToolOptions;
+        const options = this.options as IRapidCompactToolOptions;
 
         if (options.mode === "bake") {
-            this.removeFile("_mops_dummy.obj");
-            this.removeFile("_mops_dummy.mtl");
+            this.removeFile("_rpd_dummy.obj");
+            this.removeFile("_rpd_dummy.mtl");
 
             const mapBaseName = options.mapBaseName;
             const ext = path.extname(mapBaseName);
@@ -118,10 +120,11 @@ export default class MopsTool extends Tool
 
     private configureOptions(): { optionString: string, configFilePath: string }
     {
-        const options = this.options as IMopsToolOptions;
+        const options = this.options as IRapidCompactToolOptions;
         let opts = [];
 
-        const config = Object.assign({}, MopsTool.defaultConfig);
+        // initialize configuration with a copy of the default configuration
+        const config = Object.assign({}, RapidCompactTool.defaultConfig);
 
         if (options.mode === "decimate" || options.mode === "decimate-unwrap") {
 
@@ -130,7 +133,8 @@ export default class MopsTool extends Tool
             }
             opts.push("--decimate f:" + options.numFaces);
 
-            config["decimation:boundaryPreservationFactor"] = options.preserveBoundary ? 1.0 : 0.5;
+            config["decimation:preserveTopology"] = options.preserveTopology;
+            config["decimation:boundaryPreservationFactor"] = options.preserveBoundaries ? 1.0 : 0.5;
             config["decimation:collapseUnconnectedVertices"] = options.collapseUnconnectedVertices;
         }
         if (options.mode === "unwrap" || options.mode === "decimate-unwrap") {
@@ -170,8 +174,8 @@ export default class MopsTool extends Tool
         }
 
 
-        // write mops config file
-        const configFileName = "_mops_" + uniqueId() + ".json";
+        // write RapidCompact config file
+        const configFileName = "_rapidcompact_" + uniqueId() + ".json";
         const configFilePath = this.getFilePath(configFileName);
 
         fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
@@ -193,37 +197,48 @@ export default class MopsTool extends Tool
         "baking:forcedDisplacementMax": 0,
         "baking:forcedDisplacementMin": 0,
         "baking:generateDisplacement": false,
+        "baking:generateNormal": true,
         "baking:normalMapResolution": 2048,
         "baking:occlusionMapResolution": 2048,
+        "baking:sampleCount": 1,
         "baking:tangentSpaceNormals": true,
         "decimation:boundaryPreservationFactor": 0.5,
-        "decimation:collapseDistanceThreshold": 0.050000000000000003,
+        "decimation:collapseDistanceThreshold": 0.05,
         "decimation:collapseUnconnectedVertices": true,
-        "decimation:defaultTargetParameter": "v:10000",
+        "decimation:defaultTarget": "f:20000",
         "decimation:method": "quadric",
+        "decimation:preserveTopology": false,
+        "decimation:qualityWeight": 0,
+        "decimation:recomputeNormals": true,
         "export:baseColorMapFormat": "jpg",
+        "export:centerModel": false,
         "export:displacementMapFormat": "jpg",
         "export:displacementToNormalMapAlpha": false,
+        "export:emissiveMapFormat": "jpg",
+        "export:metallicMapFormat": "jpg",
         "export:normalMapFormat": "jpg",
         "export:occlusionMapFormat": "jpg",
         "export:preferBinaryFormat": true,
+        "export:roughnessMapFormat": "jpg",
+        "export:textureMapFilePrefix": "",
+        "export:unlitMaterials": false,
+        "general:maxConcurrentThreads": 0,
+        "general:normalsHardAngleDeg": 180,
         "import:rotateZUp": false,
-        "inpainting:enabled": true,
         "inpainting:radius": 32,
         "logging:infoLevel": 3,
         "material:defaultBaseColor": "1 1 1",
-        "material:defaultMetallic": 0,
-        "material:defaultRoughness": 0.85999999999999999,
+        "material:defaultMetallic": 0.2,
+        "material:defaultRoughness": 0.4,
         "packing:chartPadding": 0.00048828125,
-        "packing:minValidChartSize": 0.001953125,
         "rendering:background": "transparent",
         "rendering:imageHeight": 1024,
         "rendering:imageWidth": 1024,
         "rendering:showBackFaces": false,
-        "segmentation:chartAngleDeg": 160,
-        "segmentation:cutAngleDeg": 85,
+        "segmentation:chartAngleDeg": 130,
+        "segmentation:cutAngleDeg": 88,
         "segmentation:maxPrimitivesPerChart": 10000,
         "unwrapping:cutOverlappingPieces": true,
-        "unwrapping:method": "fastConformal"
-    }
+        "unwrapping:method": "isometric"
+    };
 }

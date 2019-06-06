@@ -2,7 +2,7 @@
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
     "description": "Generates thumbnail web asset",
-    "version": "9",
+    "version": "10",
     "start": "log",
 
     "parameterSchema": {
@@ -18,7 +18,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "intermediateMeshFile": {
+            "processedMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -60,25 +60,30 @@
                 "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
                 "default": "cm"
             },
+            "numFaces": {
+                "type": "integer",
+                "minimum": 5000,
+                "multipleOf": 1000,
+                "default": 20000
+            },
+            "mapSize": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 8192,
+                "default": 512
+            },
             "inspectMesh": {
                 "type": "boolean",
                 "default": false
             },
             "cleanupMesh": {
                 "type": "boolean",
-                "default": true
+                "default": false
             },
-            "numFaces": {
-                "type": "integer",
-                "minimum": 10000,
-                "multipleOf": 1000,
-                "default": 50000
-            },
-            "mapSize": {
-                "type": "integer",
-                "minimum": 128,
-                "maximum": 8192,
-                "default": 1024
+            "decimationTool": {
+                "type": "string",
+                "enum": [ "Meshlab", "RapidCompact" ],
+                "default": "RapidCompact"
             },
             "segmentationStrength": {
                 "type": "number",
@@ -102,7 +107,7 @@
             },
             "bakeTest": {
                 "type": "boolean",
-                "default": false
+                "default": true
             },
             "maxRayDistance": {
                 "type": "number",
@@ -135,6 +140,14 @@
             "tangentSpaceNormals": {
                 "type": "boolean",
                 "default": true
+            },
+            "packContainer": {
+                "type": "boolean",
+                "default": true
+            },
+            "useCompression": {
+                "type": "boolean",
+                "default": true
             }
         },
         "required": [
@@ -146,7 +159,7 @@
     "steps": {
         "log": {
             "task": "Log",
-            "description": "Start logging to file",
+            "description": "Enable logging services",
             "pre": {
                 "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
                 "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)",
@@ -169,57 +182,70 @@
                 "files": {
                     "highPolyMeshFile": "highPolyMeshFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "intermediateMeshFile": "intermediateMeshFile",
+                    "processedMeshFile": "processedMeshFile",
                     "documentFile": "documentFile",
                     "metaDataFile": "metaDataFile"
                 }
             },
-            "success": "'decimate-meshlab'",
+            "success": "'inspect-mesh'",
             "failure": "$failure"
         },
-        "decimate-meshlab": {
-            "task": "DecimateMesh",
-            "description": "Decimate mesh using Meshlab",
+        "inspect-mesh": {
+            "task": "InspectMesh",
+            "description": "Inspect mesh health and statistics",
+            "skip": "$not(inspectMesh)",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-meshlab.obj'",
                 "deliverables": {
                     "inspectionReport": "inspectMesh ? baseName & '-inspection.json' : ''"
                 }
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(intermediateMeshFile, highPolyMeshFile)",
+                "meshFile": "highPolyMeshFile",
+                "reportFile": "deliverables.inspectionReport"
+            },
+            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid' : 'decimate-meshlab'",
+            "failure": "$failure"
+        },
+        "decimate-rapid": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using RapidCompact",
+            "pre": {
+                "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFaces",
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "tool": "'RapidCompact'"
+            },
+            "success": "'unwrap-rizom'",
+            "failure": "'decimate-meshlab'"
+        },
+        "decimate-meshlab": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using Meshlab",
+            "pre": {
+                "decimatedMeshFile": "baseMeshName & '-decimated-meshlab.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
-                "computeVertexNormals": "tangentSpaceNormals",
-                "inspectMesh": "deliverables.inspectionReport"
+                "computeVertexNormals": "tangentSpaceNormals"
             },
-            "success": "'unwrap-unfold'",
-            "failure": "'decimate-mops'"
-        },
-        "decimate-mops": {
-            "task": "DecimateMesh",
-            "description": "Decimate mesh using Mops",
-            "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-mops.obj'"
-            },
-            "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
-                "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFaces",
-                "cleanup": "cleanupMesh",
-                "preserveBoundaries": true,
-                "tool": "'Mops'"
-            },
-            "success": "'unwrap-unfold'",
+            "success": "'unwrap-rizom'",
             "failure": "$failure"
         },
-        "unwrap-unfold": {
+        "unwrap-rizom": {
             "task": "UnwrapMesh",
-            "description": "Unwrap mesh using Unfold",
+            "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped.fbx'",
                 "deliverables": {
@@ -241,12 +267,13 @@
         "inspect-unwrapped": {
             "task": "InspectMesh",
             "description": "Calculate mesh size and max. ray distance for bake",
+            "skip": "maxRayDistance > 0",
             "parameters": {
                 "meshFile": "deliverables.unwrappedMesh",
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
+                "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
             },
             "success": "'bake'",
             "failure": "$failure"
@@ -263,7 +290,7 @@
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
                 "mapSize": "mapSize",
-                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "maxRayDistance": "maxRayDistance",
                 "bakeDiffuse": "bakeDiffuse",
                 "bakeOcclusion": "bakeOcclusion",
                 "bakeNormals": "bakeNormals",
@@ -272,64 +299,91 @@
                 "tangentSpaceNormals": "tangentSpaceNormals",
                 "timeout": 900
             },
+            "post": {
+                "temp": {
+                    "diffuseMapUncompressed": "bakeDiffuse ? (baseMeshMapName & '-diffuse.png') : ''",
+                    "occlusionMapUncompressed": "bakeOcclusion ? (baseMeshMapName & '-occlusion.png') : ''",
+                    "normalMapUncompressed": "bakeNormals ? (baseMeshMapName & '-normals.png') : ''"
+                },
+                "deliverables": {
+                    "testMap": "bakeTest ? (baseMeshMapName & '-test.png') : ''"
+                }
+            },
+            "success": "'convert-diffuse-map'",
+            "failure": "$failure"
+        },
+        "convert-diffuse-map": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map",
+            "skip": "$not(bakeDiffuse)",
+            "pre": {
+                "temp": {
+                    "diffuseMap": "baseMeshMapName & '-diffuse.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "temp.diffuseMapUncompressed",
+                "outputImageFile": "temp.diffuseMap",
+                "quality": "diffuseMapQuality"
+            },
             "success": "'convert-occlusion-map'",
             "failure": "$failure"
         },
         "convert-occlusion-map": {
             "task": "ConvertImage",
             "description": "Convert Occlusion Map",
+            "skip": "$not(bakeOcclusion)",
+            "pre": {
+                "temp": {
+                    "occlusionMap": "baseMeshMapName & '-occlusion.jpg'"
+                }
+            },
             "parameters": {
-                "inputImageFile": "baseMeshMapName & '-occlusion.png'",
-                "outputImageFile": "baseMeshMapName & '-occlusion.jpg'",
+                "inputImageFile": "temp.occlusionMapUncompressed",
+                "outputImageFile": "temp.occlusionMap",
                 "quality": "occlusionMapQuality"
             },
             "success": "'convert-normal-map'",
-            "failure": "'convert-normal-map'"
+            "failure": "$failure"
         },
         "convert-normal-map": {
             "task": "ConvertImage",
             "description": "Convert Normal Map",
-            "parameters": {
-                "inputImageFile": "baseMeshMapName & '-normals.png'",
-                "outputImageFile": "baseMeshMapName & '-normals.jpg'",
-                "quality": "normalMapQuality"
-            },
-            "success": "'convert-diffuse-map'",
-            "failure": "'convert-diffuse-map'"
-        },
-        "convert-diffuse-map": {
-            "task": "ConvertImage",
-            "description": "Convert Diffuse Map",
-            "parameters": {
-                "inputImageFile": "baseMeshMapName & '-diffuse.png'",
-                "outputImageFile": "baseMeshMapName & '-diffuse.jpg'",
-                "quality": "diffuseMapQuality"
-            },
-            "success": "'model-glb'",
-            "failure": "'model-glb'"
-        },
-        "model-glb": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset",
+            "skip": "$not(bakeNormals)",
             "pre": {
-                "deliverables": {
-                    "webAssetGlb": "baseMeshMapName & '-web-thumb.glb'",
-                    "diffuseMap": "bakeDiffuse ? (baseMeshMapName & '-diffuse.jpg') : ''",
-                    "occlusionMap": "bakeOcclusion ? (baseMeshMapName & '-occlusion.jpg') : ''",
-                    "normalMap": "bakeNormals ? (baseMeshMapName & '-normals.jpg') : ''"
+                "temp": {
+                    "normalMap": "baseMeshMapName & '-normals.jpg'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetGlb",
+                "inputImageFile": "temp.normalMapUncompressed",
+                "outputImageFile": "temp.normalMap",
+                "quality": "normalMapQuality"
+            },
+            "success": "'web-asset'",
+            "failure": "$failure"
+        },
+
+        "web-asset": {
+            "task": "WebAsset",
+            "description": "Create glTF asset",
+            "pre": {
+                "deliverables": {
+                    "webAsset": "baseMeshMapName & (packContainer ? '-thumb.glb' : '-thumb.gltf')",
+                    "webAssetBin": "packContainer ? '' : (baseMeshMapName & '-thumb.bin')"
+                }
+            },
+            "parameters": {
+                "outputFile": "deliverables.webAsset",
                 "meshFile": "deliverables.unwrappedMesh",
-                "diffuseMapFile": "deliverables.diffuseMap",
-                "occlusionMapFile": "deliverables.occlusionMap",
-                "normalMapFile": "deliverables.normalMap",
+                "diffuseMapFile": "temp.diffuseMap",
+                "occlusionMapFile": "temp.occlusionMap",
+                "normalMapFile": "temp.normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": true,
+                "useCompression": "useCompression",
                 "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
+                "embedMaps": "packContainer",
+                "writeBinary": "packContainer"
             },
             "success": "'update-document'",
             "failure": "$failure"
@@ -349,7 +403,7 @@
                 "modelName": "baseName",
                 "units": "units",
                 "derivativeQuality": "'Thumb'",
-                "modelFile": "deliverables.webAssetGlb",
+                "modelFile": "deliverables.webAsset",
                 "numFaces": "numFaces",
                 "mapSize": "mapSize"
             },

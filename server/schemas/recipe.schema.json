@@ -1,8 +1,9 @@
 {
-    "$id": "https://schemas.3d.si.edu/cook/recipe.json",
+    "$id": "https://schemas.3d.si.edu/cook/recipe.schema.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
 
-    "title": "Smithsonian 3D Processing Recipe",
+    "title": "Processing Recipe",
+    "description": "Smithsonian Cook 3D processing recipe, describing a series of processing steps.",
 
     "definitions": {
         "primitiveValue": {
@@ -158,54 +159,55 @@
             "type": "object",
             "properties": {
                 "task": {
-                    "description": "name of the task to be executed in this step",
+                    "description": "name of the task to be executed in this step.",
                     "type": "string",
                     "minLength": 1
                 },
                 "description": {
-                    "description": "descriptive text for this recipe step",
+                    "description": "descriptive text for this recipe step.",
                     "type": "string",
                     "minLength": 1
                 },
                 "skip": {
                     "title": "skip expression",
-                    "description": "primitive value or JSONata expression; skips recipe step if evaluated to true",
+                    "description": "primitive value or JSONata expression; skips recipe step if evaluated to true.",
                     "type": "string",
                     "minLength": 1
                 },
                 "parameters": {
                     "title": "task parameters",
-                    "description": "primitive value or JSONata expression; strings must be put in quotes",
+                    "description": "parameters for the task to be executed in this step.",
                     "type": "object",
                     "additionalProperties": {
+                        "description": "key is the parameter name, value is a primitive value or JSONata expression; string literals must be put in quotes.",
                         "$ref": "#taskParameter"
                     }
                 },
                 "pre": {
                     "title": "variables defined before task is started",
-                    "description": "primitive value or JSONata expression; strings must be put in quotes",
                     "type": "object",
                     "additionalProperties": {
+                        "description": "key is the variable name, value is a primitive value or JSONata expression; string literals must be put in quotes.",
                         "$ref": "#taskParameter"
                     }
                 },
                 "post": {
                     "title": "variables defined after task is done",
-                    "description": "primitive value or JSONata expression; strings must be put in quotes",
                     "type": "object",
                     "additionalProperties": {
+                        "description": "key is the variable name, value is a primitive value or JSONata expression; string literals must be put in quotes.",
                         "$ref": "#taskParameter"
                     }
                 },
                 "success": {
-                    "title": "name of next step to be executed in case of success",
-                    "description": "name as string or JSONata expression; string must be put in quotes",
+                    "title": "name of next step to be executed in case of success, or '$success' to terminate the recipe with success.",
+                    "description": "name as string or JSONata expression; string literals must be put in quotes.",
                     "type": "string",
                     "minLength": 1
                 },
                 "failure": {
-                    "title": "name of next step to be executed in case of failure",
-                    "description": "name as string or JSONata expression; string must be put in quotes",
+                    "title": "name of next step to be executed in case of failure, or '$failure' to terminate the recipe with failure.",
+                    "description": "name as string or JSONata expression; string literals must be put in quotes.",
                     "type": "string",
                     "minLength": 1
                 }

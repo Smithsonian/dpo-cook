@@ -189,14 +189,14 @@
                 "deliverables": {
                 }
             },
-            "success": "'unwrap-unfold'",
-            "failure": "'decimate-mops'"
+            "success": "'unwrap-rizom'",
+            "failure": "'decimate-rapid'"
         },
-        "decimate-mops": {
+        "decimate-rapid": {
             "task": "DecimateMesh",
-            "description": "Decimate mesh using Mops",
+            "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-mops.obj'"
+                "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
             },
             "parameters": {
                 "inputMeshFile": "highPolyMeshFile",
@@ -205,14 +205,14 @@
                 "cleanup": true,
                 "preserveBoundaries": true,
                 "timeout": 600,
-                "tool": "Mops"
+                "tool": "RapidCompact"
             },
-            "success": "'unwrap-unfold'",
+            "success": "'unwrap-rizom'",
             "failure": "$failure"
         },
-        "unwrap-unfold": {
+        "unwrap-rizom": {
             "task": "UnwrapMesh",
-            "description": "Unwrap mesh using Unfold",
+            "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped.fbx'",
                 "deliverables": {

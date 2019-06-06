@@ -3,6 +3,7 @@
 .vscode/
 node_modules/
 
+cli/
 server/bin/
 server/work/
 server/static/app/

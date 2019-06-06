@@ -289,7 +289,7 @@ export default class ClientApplication extends React.Component<IClientApplicatio
                     <img className="sc-logo" src="/static/images/cook-logo-250px.png"/>
                     <Label className="ff-label sc-byline">
                         Smithsonian 3D Foundation Project<br/>
-                        Processing API Client Version 2019-05-04
+                        Processing API Client Version 2019-06-05
                     </Label>
                     <FlexItem/>
                     <Label>Client ID</Label>
