@@ -297,7 +297,7 @@
                 "bakeTest": "bakeTest",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": "tangentSpaceNormals",
-                "timeout": 2500
+                "timeout": 3600
             },
             "post": {
                 "deliverables": {
