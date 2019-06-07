@@ -71,7 +71,7 @@ export default class XNormalTool extends Tool
 
     protected onExit(time: Date, error: Error, code: number, endState: TToolState)
     {
-        if (!error) {
+        if (!error && endState === "done") {
             const options = this.options as IXNormalToolOptions;
             const mapPath = this.getFilePath(options.mapBaseName);
             const mapExt = path.extname(mapPath);
