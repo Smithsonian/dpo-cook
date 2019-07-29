@@ -32,12 +32,14 @@ export interface IMeshSmithToolOptions extends IToolOptions
     stripNormals?: boolean;
     stripTexCoords?: boolean;
     swizzle?: string;
-    scale?: number;
-    translate?: [number, number, number];
-    matrix?: number[];
     alignX?: string;
     alignY?: string;
     alignZ?: string;
+    translateX?: number;
+    translateY?: number;
+    translateZ?: number;
+    scale?: number;
+    matrix?: number[];
     metallicFactor?: number;
     roughnessFactor?: number;
     diffuseMapFile?: string;
@@ -149,16 +151,6 @@ export default class MeshSmithTool extends Tool
         if (options.swizzle) {
             config.swizzle = options.swizzle;
         }
-        if (options.scale !== undefined && options.scale !== 1.0) {
-            config.scale = options.scale;
-        }
-        if (options.translate) {
-            config.translate = options.translate;
-        }
-        if (options.matrix) {
-            config.matrix = options.matrix;
-        }
-
         if (options.alignX) {
             config.alignX = options.alignX === "start" ? -1 : (options.alignX === "end" ? 1 : 0);
         }
@@ -167,6 +159,19 @@ export default class MeshSmithTool extends Tool
         }
         if (options.alignZ) {
             config.alignZ = options.alignZ === "start" ? -1 : (options.alignZ === "end" ? 1 : 0);
+        }
+        if (options.translateX || options.translateY || options.translateZ) {
+            config.translate = [
+                options.translateX || 0,
+                options.translateY || 0,
+                options.translateZ || 0,
+            ];
+        }
+        if (options.scale !== undefined && options.scale !== 1.0) {
+            config.scale = options.scale;
+        }
+        if (options.matrix) {
+            config.matrix = options.matrix;
         }
 
         if (options.diffuseMapFile) {
@@ -189,7 +194,7 @@ export default class MeshSmithTool extends Tool
         }
 
         if (!options.format && outputFilePath) {
-            const extension = path.extname(outputFilePath);
+            const extension = path.extname(outputFilePath).toLowerCase();
             switch(extension) {
                 case ".dae":
                     config.format = "collada"; break;

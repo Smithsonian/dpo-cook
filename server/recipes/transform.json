@@ -1,0 +1,127 @@
+{
+    "id": "c55feac5-5e12-4d61-ac34-a62aa2f378ac",
+    "name": "transform",
+    "description": "Converts and transforms a mesh",
+    "version": "1",
+    "start": "pickup",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "inputMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputMeshFile": {
+                "type": "string",
+                "minLength": 1
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "swizzle": {
+                "type": "string",
+                "minLength": 6,
+                "maxLength": 6
+            },
+            "alignX": {
+                "type": "string",
+                "enum": [ "start", "end", "center" ]
+            },
+            "alignY": {
+                "type": "string",
+                "enum": [ "start", "end", "center" ]
+            },
+            "alignZ": {
+                "type": "string",
+                "enum": [ "start", "end", "center" ]
+            },
+            "translateX": {
+                "type": "number"
+            },
+            "translateY": {
+                "type": "number"
+            },
+            "translateZ": {
+                "type": "number"
+            },
+            "scale": {
+                "type": "number"
+            },
+            "joinVertices": {
+                "type": "boolean",
+                "default": false
+            },
+            "stripNormals": {
+                "type": "boolean",
+                "default": false
+            },
+            "stripTexCoords": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "required": [
+            "inputMeshFile"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "pre": {
+                "baseName": "$baseName($firstTrue(baseName, inputMeshFile))"
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "inputMeshFile": "inputMeshFile"
+                }
+            },
+            "success": "'transform'",
+            "failure": "$failure"
+        },
+        "transform": {
+            "task": "ConvertMesh",
+            "description": "Convert and transform mesh",
+            "pre": {
+                "deliverables": {
+                    "transformedMeshFile": "$firstTrue(outputMeshFile, baseName & ',-transformed.obj')"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "inputMeshFile",
+                "outputMeshFile": "deliverables.transformedMeshFile",
+                "swizzle": "swizzle",
+                "alignX": "alignX",
+                "alignY": "alignY",
+                "alignZ": "alignZ",
+                "translateX": "translateX",
+                "translateY": "translateY",
+                "translateZ": "translateZ",
+                "scale": "scale",
+                "joinVertices": "joinVertices",
+                "stripNormals": "stripNormals",
+                "stripTexCoords": "stripTexCoords"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

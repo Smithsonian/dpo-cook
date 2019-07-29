@@ -8,18 +8,18 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "highPolyMeshFile": {
+            "inputMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "baseName": {
+            "outputMeshFile": {
                 "type": "string",
                 "minLength": 1
             },
-            "flipY": {
-                "type": "boolean",
-                "default": false
+            "baseName": {
+                "type": "string",
+                "minLength": 1
             },
             "numFaces": {
                 "type": "integer",
@@ -33,7 +33,7 @@
             }
         },
         "required": [
-            "highPolyMeshFile"
+            "inputMeshFile"
         ],
         "additionalProperties": false
     },
@@ -43,30 +43,15 @@
             "task": "Pickup",
             "description": "Fetch input files from client",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
-                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)"
+                "baseName": "$baseName($firstTrue(baseName, inputMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, inputMeshFile), numFaces)"
             },
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "highPolyMeshFile": "highPolyMeshFile"
+                    "inputMeshFile": "inputMeshFile"
                 }
-            },
-            "success": "'transform'",
-            "failure": "$failure"
-        },
-        "transform": {
-            "task": "ConvertMesh",
-            "description": "Rotate mesh upside-down",
-            "skip": "$not(flipY)",
-            "pre": {
-                "transformedMeshFile": "baseName & '-transformed.obj'"
-            },
-            "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
-                "outputMeshFile": "transformedMeshFile",
-                "swizzle": "'X-Y-Z+'"
             },
             "success": "'remesh'",
             "failure": "$failure"
@@ -76,13 +61,14 @@
             "description": "Generate a new quad-based mesh",
             "pre": {
                 "deliverables": {
-                    "remeshedFile": "baseMeshName & '-remeshed.obj'"
+                    "remeshedMeshFile": "$firstTrue(outputMeshFile, baseMeshName & '-remeshed.obj')"
                 }
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(transformedMeshFile, highPolyMeshFile)",
-                "outputMeshFile": "deliverables.remeshedFile",
-                "numFaces": "numFaces"
+                "inputMeshFile": "inputMeshFile",
+                "outputMeshFile": "deliverables.remeshedMeshFile",
+                "numFaces": "numFaces",
+                "quadsOnly": "quadsOnly"
             },
             "success": "'delivery'",
             "failure": "$failure"
