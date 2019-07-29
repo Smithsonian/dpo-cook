@@ -2,7 +2,7 @@
     "id": "711d1d55-f318-4723-93d9-e30166c8c0bb",
     "name": "remesh",
     "description": "Samples the existing mesh and generates a new quad mesh",
-    "version": "1",
+    "version": "2",
     "start": "pickup",
 
     "parameterSchema": {
@@ -13,22 +13,13 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [ "none", "local" ],
-                "default": "none"
-            },
             "baseName": {
                 "type": "string",
                 "minLength": 1
+            },
+            "flipY": {
+                "type": "boolean",
+                "default": false
             },
             "numFaces": {
                 "type": "integer",
@@ -77,6 +68,18 @@
                 "inputMeshFile": "highPolyMeshFile",
                 "outputMeshFile": "deliverables.remeshedFile",
                 "numFaces": "numFaces"
+            },
+            "success": "'transform'",
+            "failure": "$failure"
+        },
+        "transform": {
+            "task": "ConvertMesh",
+            "description": "Rotate mesh upside-down",
+            "skip": "$not(flipY)",
+            "parameters": {
+                "inputMeshFile": "deliverables.remeshedFile",
+                "outputMeshFile": "deliverables.remeshedFile",
+                "swizzle": "'X-Y-Z+'"
             },
             "success": "'delivery'",
             "failure": "$failure"

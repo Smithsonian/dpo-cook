@@ -23,19 +23,6 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [ "none", "local" ],
-                "default": "none"
-            },
             "numFaces": {
                 "type": "integer",
                 "minimum": 10000,
@@ -113,7 +100,7 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
             },
             "success": "'bake'",
             "failure": "$failure"

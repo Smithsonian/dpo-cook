@@ -1,8 +1,8 @@
 {
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
-    "description": "Generates thumbnail web asset",
-    "version": "10",
+    "description": "Generates thumbnail (20k faces, 512x512 maps) web asset",
+    "version": "11",
     "start": "log",
 
     "parameterSchema": {
@@ -33,32 +33,9 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [ "none", "local" ],
-                "default": "none"
-            },
             "baseName": {
                 "type": "string",
                 "minLength": 1
-            },
-            "modelIndex": {
-                "type": "integer",
-                "minimum": 0,
-                "default": 0
-            },
-            "units": {
-                "type": "string",
-                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
-                "default": "cm"
             },
             "numFaces": {
                 "type": "integer",
@@ -72,9 +49,23 @@
                 "maximum": 8192,
                 "default": 512
             },
+            "modelIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
+            },
+            "units": {
+                "type": "string",
+                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
+                "default": "cm"
+            },
             "inspectMesh": {
                 "type": "boolean",
                 "default": false
+            },
+            "remeshFaces": {
+                "type": "integer",
+                "default": 0
             },
             "cleanupMesh": {
                 "type": "boolean",
@@ -203,6 +194,26 @@
                 "meshFile": "highPolyMeshFile",
                 "reportFile": "deliverables.inspectionReport"
             },
+            "success": "'remesh'",
+            "failure": "$failure"
+        },
+        "remesh": {
+            "task": "Remesh",
+            "description": "Generate a new quad-based mesh",
+            "skip": "remeshFaces < 1",
+            "pre": {
+                "deliverables": {
+                    "remeshedMeshFile": "$baseMeshName(baseName, remeshFaces) & '-remeshed.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "outputMeshFile": "deliverables.remeshedFile",
+                "numFaces": "remeshFaces"
+            },
+            "post": {
+                "processedMeshFile": "deliverables.remeshedMeshFile"
+            },
             "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid' : 'decimate-meshlab'",
             "failure": "$failure"
         },
@@ -273,7 +284,7 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.002"
+                "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
             },
             "success": "'bake'",
             "failure": "$failure"
