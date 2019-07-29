@@ -5,7 +5,7 @@
     "scripts": {
         "start": "pm2 start server/bin/index.js --name cook",
         "stop": "pm2 delete cook",
-        "watch": "concurrently \"cd source/client && webpack --watch\" \"tsc -b source/cli -w\" \"tsc -b source/server -w\" \"pm2 start server/bin/index.js --watch --name cook\"",
+        "watch": "concurrently \"cd source/client && webpack --watch\" \"tsc -b source/cli -w\" \"tsc -b source/server -w\" \"nodemon server/bin/index.js\"",
         "monitor": "pm2 monit",
         "build": "concurrently \"npm run build-server\" \"npm run build-client\" \"npm run build-cli\"",
         "build-client": "cd source/client && webpack && cd ../..",

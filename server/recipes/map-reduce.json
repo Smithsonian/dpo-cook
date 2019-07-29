@@ -1,0 +1,347 @@
+{
+    "id": "5e20fb01-b9c9-4856-81bb-9cf868ed576d",
+    "name": "map-reduce",
+    "description": "Generates a pyramid of maps where each image is half the size of the previous one.",
+    "version": "1",
+    "start": "diffuse-4096",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "diffuseMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "occlusionMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "normalMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "extraMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
+            }
+        },
+        "required": [
+            "baseName"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "diffuse-4096": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map 4096",
+            "skip": "$not(diffuseMapFile)",
+            "pre": {
+                "diffuseMapBaseName": "$baseName($firstTrue(baseName, diffuseMapFile))",
+                "deliverables": {
+                    "diffuseMap4096": "diffuseMapBaseName & '-diffuse-4096.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "diffuseMapFile",
+                "outputImageFile": "deliverables.diffuseMap4096",
+                "quality": 79,
+                "resize": 4096
+            },
+            "success": "'diffuse-2048'",
+            "failure": "$failure"
+        },
+        "diffuse-2048": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map 2048",
+            "skip": "$not(diffuseMapFile)",
+            "pre": {
+                "deliverables": {
+                    "diffuseMap2048": "diffuseMapBaseName & '-diffuse-2048.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "diffuseMapFile",
+                "outputImageFile": "deliverables.diffuseMap2048",
+                "quality": 79,
+                "resize": 2048
+            },
+            "success": "'diffuse-1024'",
+            "failure": "$failure"
+        },
+        "diffuse-1024": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map 1024",
+            "skip": "$not(diffuseMapFile)",
+            "pre": {
+                "deliverables": {
+                    "diffuseMap1024": "diffuseMapBaseName & '-diffuse-1024.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "diffuseMapFile",
+                "outputImageFile": "deliverables.diffuseMap1024",
+                "quality": 79,
+                "resize": 1024
+            },
+            "success": "'diffuse-512'",
+            "failure": "$failure"
+        },
+        "diffuse-512": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map 512",
+            "skip": "$not(diffuseMapFile)",
+            "pre": {
+                "deliverables": {
+                    "diffuseMap512": "diffuseMapBaseName & '-diffuse-512.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "diffuseMapFile",
+                "outputImageFile": "deliverables.diffuseMap512",
+                "quality": 59,
+                "resize": 512
+            },
+            "success": "'occlusion-4096'",
+            "failure": "$failure"
+        },
+        "occlusion-4096": {
+            "task": "ConvertImage",
+            "description": "Convert Occlusion Map 4096",
+            "skip": "$not(occlusionMapFile)",
+            "pre": {
+                "occlusionMapBaseName": "$baseName($firstTrue(baseName, occlusionMapFile))",
+                "deliverables": {
+                    "occlusionMap4096": "occlusionMapBaseName & '-occlusion-4096.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "occlusionMapFile",
+                "outputImageFile": "deliverables.occlusionMap4096",
+                "quality": 59,
+                "resize": 4096
+            },
+            "success": "'occlusion-2048'",
+            "failure": "$failure"
+        },
+        "occlusion-2048": {
+            "task": "ConvertImage",
+            "description": "Convert Occlusion Map 2048",
+            "skip": "$not(occlusionMapFile)",
+            "pre": {
+                "deliverables": {
+                    "occlusionMap2048": "occlusionMapBaseName & '-occlusion-2048.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "occlusionMapFile",
+                "outputImageFile": "deliverables.occlusionMap2048",
+                "quality": 59,
+                "resize": 2048
+            },
+            "success": "'occlusion-1024'",
+            "failure": "$failure"
+        },
+        "occlusion-1024": {
+            "task": "ConvertImage",
+            "description": "Convert Occlusion Map 1024",
+            "skip": "$not(occlusionMapFile)",
+            "pre": {
+                "deliverables": {
+                    "occlusionMap1024": "occlusionMapBaseName & '-occlusion-1024.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "occlusionMapFile",
+                "outputImageFile": "deliverables.occlusionMap1024",
+                "quality": 59,
+                "resize": 1024
+            },
+            "success": "'occlusion-512'",
+            "failure": "$failure"
+        },
+        "occlusion-512": {
+            "task": "ConvertImage",
+            "description": "Convert Occlusion Map 512",
+            "skip": "$not(occlusionMapFile)",
+            "pre": {
+                "deliverables": {
+                    "occlusionMap512": "occlusionMapBaseName & '-occlusion-512.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "occlusionMapFile",
+                "outputImageFile": "deliverables.occlusionMap512",
+                "quality": 59,
+                "resize": 512
+            },
+            "success": "'normals-4096'",
+            "failure": "$failure"
+        },
+        "normals-4096": {
+            "task": "ConvertImage",
+            "description": "Convert Normal Map 4096",
+            "skip": "$not(normalMapFile)",
+            "pre": {
+                "normalMapBaseName": "$baseName($firstTrue(baseName, normalMapFile))",
+                "deliverables": {
+                    "normalMap4096": "normalMapBaseName & '-normals-4096.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "normalMapFile",
+                "outputImageFile": "deliverables.normalMap4096",
+                "quality": 89,
+                "resize": 4096
+            },
+            "success": "'normals-2048'",
+            "failure": "$failure"
+        },
+        "normals-2048": {
+            "task": "ConvertImage",
+            "description": "Convert Normal Map 2048",
+            "skip": "$not(normalMapFile)",
+            "pre": {
+                "deliverables": {
+                    "normalMap2048": "normalMapBaseName & '-normals-2048.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "normalMapFile",
+                "outputImageFile": "deliverables.normalMap2048",
+                "quality": 89,
+                "resize": 2048
+            },
+            "success": "'normals-1024'",
+            "failure": "$failure"
+        },
+        "normals-1024": {
+            "task": "ConvertImage",
+            "description": "Convert Normal Map 1024",
+            "skip": "$not(normalMapFile)",
+            "pre": {
+                "deliverables": {
+                    "normalMap1024": "normalMapBaseName & '-normals-1024.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "normalMapFile",
+                "outputImageFile": "deliverables.normalMap1024",
+                "quality": 89,
+                "resize": 1024
+            },
+            "success": "'normals-512'",
+            "failure": "$failure"
+        },
+        "normals-512": {
+            "task": "ConvertImage",
+            "description": "Convert Normal Map 512",
+            "skip": "$not(normalMapFile)",
+            "pre": {
+                "deliverables": {
+                    "normalMap512": "normalMapBaseName & '-normals-512.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "normalMapFile",
+                "outputImageFile": "deliverables.normalMap512",
+                "quality": 69,
+                "resize": 512
+            },
+            "success": "'extra-4096'",
+            "failure": "$failure"
+        },
+        "extra-4096": {
+            "task": "ConvertImage",
+            "description": "Convert Extra Map 4096",
+            "skip": "$not(extraMapFile)",
+            "pre": {
+                "extraMapBaseName": "$baseName($firstTrue(baseName, extraMapFile))",
+                "deliverables": {
+                    "extraMap4096": "extraMapBaseName & '-extra-4096.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "extraMapFile",
+                "outputImageFile": "deliverables.extraMap4096",
+                "quality": 79,
+                "resize": 4096
+            },
+            "success": "'extra-2048'",
+            "failure": "$failure"
+        },
+        "extra-2048": {
+            "task": "ConvertImage",
+            "description": "Convert Extra Map 2048",
+            "skip": "$not(extraMapFile)",
+            "pre": {
+                "deliverables": {
+                    "extraMap2048": "extraMapBaseName & '-extra-2048.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "extraMapFile",
+                "outputImageFile": "deliverables.extraMap2048",
+                "quality": 79,
+                "resize": 2048
+            },
+            "success": "'extra-1024'",
+            "failure": "$failure"
+        },
+        "extra-1024": {
+            "task": "ConvertImage",
+            "description": "Convert Extra Map 1024",
+            "skip": "$not(extraMapFile)",
+            "pre": {
+                "deliverables": {
+                    "extraMap1024": "extraMapBaseName & '-extra-1024.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "extraMapFile",
+                "outputImageFile": "deliverables.extraMap1024",
+                "quality": 79,
+                "resize": 1024
+            },
+            "success": "'extra-512'",
+            "failure": "$failure"
+        },
+        "extra-512": {
+            "task": "ConvertImage",
+            "description": "Convert Extra Map 512",
+            "skip": "$not(extraMapFile)",
+            "pre": {
+                "deliverables": {
+                    "extraMap512": "extraMapBaseName & '-extra-512.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "extraMapFile",
+                "outputImageFile": "deliverables.extraMap512",
+                "quality": 59,
+                "resize": 512
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

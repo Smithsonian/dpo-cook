@@ -33,10 +33,7 @@
             },
             "transportMethod": {
                 "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
+                "enum": [ "none", "local" ],
                 "default": "none"
             },
             "numFaces": {
@@ -110,6 +107,7 @@
         "inspect-unwrapped": {
             "task": "InspectMesh",
             "description": "Calculate mesh size and max. ray distance for bake",
+            "skip": "maxRayDistance > 0",
             "parameters": {
                 "meshFile": "lowPolyUnwrappedMeshFile",
                 "tool": "'MeshSmith'"
