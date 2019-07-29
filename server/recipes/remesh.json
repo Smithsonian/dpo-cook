@@ -53,6 +53,21 @@
                     "highPolyMeshFile": "highPolyMeshFile"
                 }
             },
+            "success": "'transform'",
+            "failure": "$failure"
+        },
+        "transform": {
+            "task": "ConvertMesh",
+            "description": "Rotate mesh upside-down",
+            "skip": "$not(flipY)",
+            "pre": {
+                "transformedMeshFile": "baseName & '-transformed.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "highPolyMeshFile",
+                "outputMeshFile": "transformedMeshFile",
+                "swizzle": "'X-Y-Z+'"
+            },
             "success": "'remesh'",
             "failure": "$failure"
         },
@@ -65,21 +80,9 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "$firstTrue(transformedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "deliverables.remeshedFile",
                 "numFaces": "numFaces"
-            },
-            "success": "'transform'",
-            "failure": "$failure"
-        },
-        "transform": {
-            "task": "ConvertMesh",
-            "description": "Rotate mesh upside-down",
-            "skip": "$not(flipY)",
-            "parameters": {
-                "inputMeshFile": "deliverables.remeshedFile",
-                "outputMeshFile": "deliverables.remeshedFile",
-                "swizzle": "'X-Y-Z+'"
             },
             "success": "'delivery'",
             "failure": "$failure"
