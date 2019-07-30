@@ -15,11 +15,11 @@
     "executable": "C:\\Tools\\Instant Meshes.exe",
     "version": "",
     "maxInstances": 1,
-    "timeout": 1200 // 20 minutes
+    "timeout": 900 // 15 minutes
   },
   "MeshSmith": {
     "executable": "C:\\Tools\\MeshSmith\\MeshSmith.exe",
-    "version": "2019-05-04",
+    "version": "v0.6.4, 2019-05-04",
     "maxInstances": 3,
     "timeout": 600 // 10 minutes
   },
@@ -31,7 +31,7 @@
   },
   "Meshlab": {
     "executable": "C:\\Tools\\MeshlabMini\\meshlabserver.exe",
-    "version": "2019-05-02",
+    "version": "v2019.5, 2019-05-02",
     "maxInstances": 3,
     "timeout": 1800 // 30 minutes
   },
@@ -49,20 +49,14 @@
   },
   "RizomUV": {
     "executable": "C:\\Program Files\\Rizom Lab\\RizomUV VS RS 2018.0\\rizomuv.exe",
-    "version": "RizomUV.2018.0.171.gee18910.master",
+    "version": "RizomUV_VSRS.2018.0.85.g41754c4.master",
     "maxInstances": 2,
-    "timeout": 1200 // 20 minutes
-  },
-  "Unknit": {
-    "executable": "C:\\Program Files\\Autodesk\\3ds Max 2016\\3dsmax.exe",
-    "version": "2016",
-    "maxInstances": 1,
-    "timeout": 1200 // 20 minutes
+    "timeout": 1800 // 30 minutes
   },
   "XNormal": {
     "executable": "C:\\Program Files\\xNormal\\3.19.3\\x64\\xNormal.exe",
     "version": "3.19.3.39669",
     "maxInstances": 1,
-    "timeout": 1500 // 25 minutes
+    "timeout": 2700 // 45 minutes
   }
 }
