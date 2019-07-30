@@ -93,7 +93,7 @@
         "react-dom": "^16.8.6",
         "sass-loader": "^7.1.0",
         "source-map-loader": "^0.2.4",
-        "typedoc": "^0.14.2",
+        "typedoc": "^0.15.0",
         "typescript": "3.3.3333",
         "webpack": "^4.32.2",
         "webpack-cli": "^3.3.2"
