@@ -13,22 +13,6 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
-                "default": "none"
-            },
             "baseName": {
                 "type": "string",
                 "minLength": 1

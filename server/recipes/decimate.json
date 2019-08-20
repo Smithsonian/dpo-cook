@@ -13,30 +13,18 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "pickupPath": {
+            "baseName": {
                 "type": "string",
                 "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
-                "default": "none"
             },
             "numFaces": {
                 "type": "integer",
                 "minimum": 100,
-                "default": 125000
+                "default": 250000
             },
-            "cleanup": {
+            "cleanupMesh": {
                 "type": "boolean",
-                "default": true
+                "default": false
             },
             "preserveTopology": {
                 "type": "boolean",
@@ -62,9 +50,9 @@
                 "type": "string",
                 "enum": [
                     "Meshlab",
-                    "Mops"
+                    "RapidCompact"
                 ],
-                "default": "Meshlab"
+                "default": "RapidCompact"
             }
         },
         "required": [
@@ -79,8 +67,8 @@
             "task": "Pickup",
             "description": "Fetch input files from client",
             "pre": {
-                "baseName": "$baseName(highPolyMeshFile)",
-                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)"
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)"
             },
             "parameters": {
                 "method": "transportMethod",
@@ -89,12 +77,13 @@
                     "highPolyMeshFile": "highPolyMeshFile"
                 }
             },
-            "success": "inspectMesh ? 'inspect-highpoly' : 'decimate'",
+            "success": "'inspect-highpoly'",
             "failure": "$failure"
         },
         "inspect-highpoly": {
             "task": "InspectMesh",
             "description": "Inspect high poly mesh using Meshlab",
+            "skip": "$not(inspectMesh)",
             "pre": {
                 "deliverables": {
                     "highPolyReportFile": "baseName & '-highpoly-inspection.json'"
@@ -119,7 +108,7 @@
                 "inputMeshFile": "highPolyMeshFile",
                 "outputMeshFile": "deliverables.decimatedMeshFile",
                 "numFaces": "numFaces",
-                "cleanup": "cleanup",
+                "cleanup": "cleanupMesh",
                 "preserveTopology": "preserveTopology",
                 "preserveBoundaries": "preserveBoundaries",
                 "preserveTexCoords": "preserveTexCoords",
@@ -132,6 +121,8 @@
         },
         "inspect-decimated": {
             "task": "InspectMesh",
+            "description": "Inspect decimated mesh using Meshlab",
+            "skip": "$not(inspectMesh)",
             "pre": {
                 "deliverables": {
                     "decimatedReportFile": "baseMeshName & '-decimated-inspection.json'"

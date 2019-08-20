@@ -138,7 +138,7 @@ export default class Tool extends Publisher
                     clearInterval(waitHandler);
                     return resolve();
                 }
-            }, 100);
+            }, 200);
         });
     }
 

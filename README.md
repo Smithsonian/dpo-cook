@@ -32,7 +32,9 @@ Currently, the Cook can be operated in three ways:
 
 - Restful web API
 - Web-based user interface
-- Command line interface
+- Remote command line interface
+
+The remote CLI is no longer part of this repository. You can find it here: https://github.com/Smithsonian/dpo-cook-cli.git
 
 ### Documentation
 

@@ -44,12 +44,22 @@ export interface IConvertMeshTaskParameters extends ITaskParameters
     useCompression?: boolean;
     /** FBX2glTF only: recompute normals. For valid options see [[TFBX2glTFComputeNormals]]. */
     computeNormals?: TFBX2glTFComputeNormals;
-    /** MeshSmith only: scales the mesh by the given factor if set. */
-    scale?: number;
-    /** MeshSmith only: translates the mesh by the given vector if set. */
-    translate?: [ number, number, number ];
     /** MeshSmith only: Custom swizzle operation if set. Example: "X+Z+Y-". */
     swizzle?: string;
+    /** MeshSmith only: aligns the mesh along the x-axis, options are "start", "end", "center". */
+    alignX?: string;
+    /** MeshSmith only: aligns the mesh along the y-axis, options are "start", "end", "center". */
+    alignY?: string;
+    /** MeshSmith only: aligns the mesh along the z-axis, options are "start", "end", "center". */
+    alignZ?: string;
+    /** MeshSmith only: translates the mesh on the x-axis. */
+    translateX?: number;
+    /** MeshSmith only: translates the mesh on the y-axis. */
+    translateY?: number;
+    /** MeshSmith only: translates the mesh on the z-axis. */
+    translateZ?: number;
+    /** MeshSmith only: scales the mesh by the given factor if set. */
+    scale?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Default tool is MeshSmith. Specify another tool if needed. */
@@ -78,15 +88,14 @@ export default class ConvertMeshTask extends Task
             joinVertices: { type: "boolean", default: false },
             useCompression: { type: "boolean", default: false },
             computeNormals: { type: "string", enum: [ "never", "broken", "missing", "always" ]},
-            scale: { type: "number", minimum: 0, default: undefined },
-            translate: {
-                type: "array",
-                items: { type: "number" },
-                minItems: 3,
-                maxItems: 3,
-                default: undefined
-            },
             swizzle: { type: "string", default: undefined },
+            alignX: { type: "string", enum: [ "start", "end", "center" ]},
+            alignY: { type: "string", enum: [ "start", "end", "center" ]},
+            alignZ: { type: "string", enum: [ "start", "end", "center" ]},
+            translateX: { type: "number" },
+            translateY: { type: "number" },
+            translateZ: { type: "number" },
+            scale: { type: "number", minimum: 0, default: undefined },
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "MeshSmith", "FBX2glTF", "Meshlab" ], default: "MeshSmith" }
         },
@@ -142,9 +151,14 @@ export default class ConvertMeshTask extends Task
                 stripNormals: params.stripNormals,
                 stripTexCoords: params.stripTexCoords,
                 joinVertices: params.joinVertices,
-                scale: params.scale,
-                translate: params.translate,
                 swizzle: params.swizzle,
+                alignX: params.alignX,
+                alignY: params.alignY,
+                alignZ: params.alignZ,
+                translateX: params.translateX,
+                translateY: params.translateY,
+                translateZ: params.translateZ,
+                scale: params.scale,
                 useCompression: params.useCompression,
                 timeout: params.timeout
             };
