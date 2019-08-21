@@ -1,8 +1,8 @@
 {
     "id": "721d459c-af09-4525-a28b-e71a89439282",
     "name": "web-multi",
-    "description": "Generates multi-level (150k faces, 1k, 2k, 4k maps) web assets",
-    "version": "11",
+    "description": "Generates multi-level (150k faces, 1k, 2k, 4k maps) glTF/GLB web assets",
+    "version": "12",
     "start": "log",
 
     "parameterSchema": {
@@ -166,23 +166,6 @@
             "parameters": {
                 "logToConsole": true,
                 "reportFile": "baseMeshName & '-web-multi-report.json'"
-            },
-            "success": "'pickup'",
-            "failure": "$failure"
-        },
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "highPolyMeshFile": "highPolyMeshFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "processedMeshFile": "processedMeshFile",
-                    "documentFile": "documentFile",
-                    "metaDataFile": "metaDataFile"
-                }
             },
             "success": "'inspect-mesh'",
             "failure": "$failure"
@@ -406,7 +389,7 @@
             "description": "Add web model to document.json descriptor file (high)",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
+                    "document": "$firstTrue(documentFile, baseName & '.svx.json')"
                 }
             },
             "parameters": {
@@ -612,8 +595,8 @@
             "task": "Delivery",
             "description": "Send result files back to client",
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "method": "none",
+                "path": "$currentDir",
                 "files": "deliverables"
             },
             "success": "$success",

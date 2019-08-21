@@ -3,7 +3,7 @@
     "name": "bake",
     "description": "Bake diffuse, occlusion, normal maps",
     "version": "1",
-    "start": "pickup",
+    "start": "inspect-unwrapped",
 
     "parameterSchema": {
         "type": "object",
@@ -22,6 +22,10 @@
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
             },
             "numFaces": {
                 "type": "integer",
@@ -57,6 +61,24 @@
                 "maximum": 512,
                 "default": 128
             },
+            "diffuseMapQuality": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 89
+            },
+            "occlusionMapQuality": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 69
+            },
+            "normalMapQuality": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 79
+            },
             "tangentSpaceNormals": {
                 "type": "boolean",
                 "default": true
@@ -70,27 +92,6 @@
     },
 
     "steps": {
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
-            "pre": {
-                "baseName": "$baseName(highPolyMeshFile)",
-                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
-                "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)",
-                "bakeDiffuse": "$exists(highPolyDiffuseMapFile)"
-            },
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "highPolyMeshFile": "highPolyMeshFile",
-                    "lowPolyUnwrappedMeshFile": "lowPolyUnwrappedMeshFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile"
-                }
-            },
-            "success": "'inspect-unwrapped'",
-            "failure": "$failure"
-        },
         "inspect-unwrapped": {
             "task": "InspectMesh",
             "description": "Calculate mesh size and max. ray distance for bake",
@@ -109,6 +110,10 @@
             "task": "BakeMaps",
             "description": "Bake diffuse, normal and occlusion maps using xNormal",
             "pre": {
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
+                "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)",
+                "bakeDiffuse": "$exists(highPolyDiffuseMapFile)",
                 "mapBaseName": "baseMeshMapName & '.png'"
             },
             "parameters": {
@@ -134,15 +139,66 @@
                     "testMap": "bakeTest ? (baseMeshMapName & '-test.png') : ''"
                 }
             },
+            "success": "'convert-diffuse-map'",
+            "failure": "$failure"
+        },
+        "convert-diffuse-map": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map",
+            "skip": "$not(bakeDiffuse)",
+            "pre": {
+                "deliverables": {
+                    "diffuseMap": "baseMeshMapName & '-diffuse.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.diffuseMapMaster",
+                "outputImageFile": "deliverables.diffuseMap",
+                "quality": "diffuseMapQuality"
+            },
             "success": "'convert-occlusion-map'",
+            "failure": "$failure"
+        },
+        "convert-occlusion-map": {
+            "task": "ConvertImage",
+            "description": "Convert Occlusion Map",
+            "skip": "$not(bakeOcclusion)",
+            "pre": {
+                "deliverables": {
+                    "occlusionMap": "baseMeshMapName & '-occlusion.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.occlusionMapMaster",
+                "outputImageFile": "deliverables.occlusionMap",
+                "quality": "occlusionMapQuality"
+            },
+            "success": "'convert-normal-map'",
+            "failure": "$failure"
+        },
+        "convert-normal-map": {
+            "task": "ConvertImage",
+            "description": "Convert Normal Map",
+            "skip": "$not(bakeNormals)",
+            "pre": {
+                "deliverables": {
+                    "normalMap": "baseMeshMapName & '-normals.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.normalMapMaster",
+                "outputImageFile": "deliverables.normalMap",
+                "quality": "normalMapQuality"
+            },
+            "success": "'delivery'",
             "failure": "$failure"
         },
         "delivery": {
             "task": "Delivery",
             "description": "Send result files back to client",
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "method": "none",
+                "path": "$currentDir",
                 "files": "deliverables"
             },
             "success": "$success",

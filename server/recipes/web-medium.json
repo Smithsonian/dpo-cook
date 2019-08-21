@@ -1,8 +1,8 @@
 {
     "id": "fe41067a-4d36-4fe2-ba40-658b7c244511",
     "name": "web-medium",
-    "description": "Generates medium quality (150k faces, 2k maps) web asset",
-    "version": "4",
+    "description": "Generates medium quality (150k faces, 2k maps) glTF/GLB web asset",
+    "version": "5",
     "start": "log",
 
     "parameterSchema": {
@@ -170,24 +170,6 @@
             "parameters": {
                 "logToConsole": true,
                 "reportFile": "baseMeshMapName & '-web-medium-report.json'"
-            },
-            "success": "'pickup'",
-            "failure": "$failure"
-        },
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "highPolyMeshFile": "highPolyMeshFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "processedMeshFile": "processedMeshFile",
-                    "decimatedMeshFile": "decimatedMeshFile",
-                    "unwrappedMeshFile": "unwrappedMeshFile",
-                    "documentFile": "documentFile"
-                }
             },
             "success": "unwrappedMeshFile ? 'inspect-unwrapped': (decimatedMeshFile ? 'unwrap-rizom' : 'remesh')",
             "failure": "$failure"
@@ -399,7 +381,7 @@
             "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
+                    "document": "$firstTrue(documentFile, baseName & '.svx.json')"
                 }
             },
             "parameters": {
@@ -420,8 +402,8 @@
             "task": "Delivery",
             "description": "Send result files back to client",
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "method": "none",
+                "path": "$currentDir",
                 "files": "deliverables"
             },
             "success": "$success",

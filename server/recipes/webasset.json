@@ -2,7 +2,7 @@
     "id": "5490a618-4ebd-4763-a96a-abb9062c786b",
     "name": "webasset",
     "description": "Create glTF web asset",
-    "version": "3",
+    "version": "4",
     "start": "pickup",
 
     "parameterSchema": {
@@ -188,7 +188,7 @@
             "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
+                    "document": "$firstTrue(documentFile, baseName & '.svx.json')"
                 }
             },
             "parameters": {

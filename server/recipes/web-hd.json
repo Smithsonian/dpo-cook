@@ -1,8 +1,8 @@
 {
     "id": "c3825c38-27ab-4909-8d9e-928182199c03",
     "name": "web-hd",
-    "description": "Generates high definition (500k faces, 8k maps) web asset",
-    "version": "11",
+    "description": "Generates high definition (500k faces, 8k maps) glTF/GLB web asset",
+    "version": "12",
     "start": "log",
 
     "parameterSchema": {
@@ -160,23 +160,6 @@
             "parameters": {
                 "logToConsole": true,
                 "reportFile": "baseMeshMapName & '-web-hd-report.json'"
-            },
-            "success": "'pickup'",
-            "failure": "$failure"
-        },
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "highPolyMeshFile": "highPolyMeshFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "processedMeshFile": "processedMeshFile",
-                    "documentFile": "documentFile",
-                    "metaDataFile": "metaDataFile"
-                }
             },
             "success": "'inspect-mesh'",
             "failure": "$failure"
@@ -401,7 +384,7 @@
             "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, baseName & '-document.json')"
+                    "document": "$firstTrue(documentFile, baseName & '.svx.json')"
                 }
             },
             "parameters": {
@@ -422,8 +405,8 @@
             "task": "Delivery",
             "description": "Send result files back to client",
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "method": "none",
+                "path": "$currentDir",
                 "files": "deliverables"
             },
             "success": "$success",
