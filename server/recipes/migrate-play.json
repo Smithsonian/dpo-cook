@@ -2,7 +2,7 @@
     "id": "8a2e8556-3c39-48a2-b432-591f480b7d69",
     "name": "migrate-play",
     "description": "Converts Play boxes to Voyager items/presentations",
-    "version": "1",
+    "version": "2",
     "start": "log",
 
     "parameterSchema": {
@@ -14,22 +14,6 @@
             "baseName": {
                 "type": "string",
                 "minLength": 1
-            },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
-                "default": "none"
             }
         },
         "required": [
@@ -41,6 +25,9 @@
     "steps": {
         "log": {
             "task": "Log",
+            "pre": {
+                "baseName": "baseName ? baseName & '-' : ''"
+            },
             "parameters": {
                 "logToConsole": true,
                 "logFile": "baseName & 'log.txt'",
@@ -52,7 +39,7 @@
         "migrate": {
             "task": "MigratePlay",
             "pre": {
-                "delivery": {
+                "deliverables": {
                 }
             },
             "parameters": {
@@ -60,7 +47,7 @@
                 "baseName": "baseName"
             },
             "post": {
-                "delivery": "$result.files"
+                "deliverables": "$result.files"
             },
             "success": "'delivery'",
             "failure": "$failure"
@@ -95,9 +82,9 @@
             "task": "Delivery",
             "description": "Send result files back to client",
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
-                "files": "delivery"
+                "method": "none",
+                "path": "$currentDir",
+                "files": "deliverables"
             },
             "success": "$success",
             "failure": "$failure"
