@@ -18,7 +18,7 @@
 import * as path from "path";
 import uniqueId from "../utils/uniqueId";
 
-import Tool, { IToolOptions, IToolScript } from "../app/Tool";
+import LegacyTool, { IToolOptions, IToolScript } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +43,7 @@ export interface IRizomUVToolOptions extends IToolOptions
     packRotateStep?: number;
 }
 
-export default class RizomUVTool extends Tool
+export default class RizomUVTool extends LegacyTool
 {
     static readonly type: string = "RizomUVTool";
 

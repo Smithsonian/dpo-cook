@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import Tool, { IToolOptions } from "../app/Tool";
+import LegacyTool, { IToolOptions } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,7 @@ export interface IRealityCaptureToolOptions extends IToolOptions
     inputImageFolderName: string;
 }
 
-export default class RealityCaptureTool extends Tool
+export default class RealityCaptureTool extends LegacyTool
 {
     static readonly type: string = "RealityCaptureTool";
 

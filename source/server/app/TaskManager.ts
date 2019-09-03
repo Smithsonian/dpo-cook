@@ -23,7 +23,7 @@ import { Dictionary } from "@ff/core/types";
 
 import * as jsonLoader from "../utils/jsonLoader";
 
-import Tool, { IToolConfiguration, IToolOptions } from "./Tool";
+import LegacyTool, { IToolConfiguration, IToolOptions } from "./LegacyTool";
 import Task, { ITaskParameters } from "./Task";
 import Job from "./Job";
 import { ConfigurationError } from "./Errors";
@@ -33,7 +33,7 @@ import { ConfigurationError } from "./Errors";
 export default class TaskManager
 {
     private taskTypes: {};
-    protected toolTypes: { [id:string]: typeof Tool };
+    protected toolTypes: { [id:string]: typeof LegacyTool };
     protected toolConfigurations: Dictionary<IToolConfiguration>;
 
     constructor(dirs: { base: string, tools: string, tasks: string })
@@ -103,7 +103,7 @@ export default class TaskManager
             if (path.extname(toolFile) === ".js") {
                 const toolPath = path.resolve(toolsDir, toolFile);
 
-                let toolType: typeof Tool;
+                let toolType: typeof LegacyTool;
                 try {
                     toolType = require(toolPath).default;
                 }

@@ -16,7 +16,7 @@
  */
 
 import * as path from "path";
-import Tool, { IToolOptions } from "../app/Tool";
+import LegacyTool, { IToolOptions } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -27,7 +27,7 @@ export interface IMeshfixToolOptions extends IToolOptions
     joinComponents?: boolean;
 }
 
-export default class MeshfixTool extends Tool
+export default class MeshfixTool extends LegacyTool
 {
     static readonly type: string = "MeshfixTool";
 

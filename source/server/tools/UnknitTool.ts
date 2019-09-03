@@ -16,7 +16,7 @@
  */
 
 import uniqueId from "../utils/uniqueId";
-import Tool, { IToolOptions, IToolScript } from "../app/Tool";
+import LegacyTool, { IToolOptions, IToolScript } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +33,7 @@ export interface IUnknitToolOptions extends IToolOptions
     showUI?: boolean;
 }
 
-export default class UnknitTool extends Tool
+export default class UnknitTool extends LegacyTool
 {
     static readonly type: string = "UnknitTool";
 

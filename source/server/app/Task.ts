@@ -30,12 +30,12 @@ import {
     TTaskEndState
 } from "common/types";
 
-import Tool, {
+import LegacyTool, {
     IToolOptions,
     IToolStartEvent,
     IToolMessageEvent,
     IToolExitEvent
-} from "./Tool";
+} from "./LegacyTool";
 
 import { TLogLevel, ITaskLogEvent } from "./TaskLogger";
 import Job from "./Job";
@@ -58,9 +58,9 @@ export default class Task
     protected context: Job;
     protected parameters: ITaskParameters;
     protected result: { [id:string]: any };
-    protected tools: Tool[];
+    protected tools: LegacyTool[];
 
-    protected currentToolInstance: Tool;
+    protected currentToolInstance: LegacyTool;
     protected requestCancel: boolean;
 
 
@@ -275,7 +275,7 @@ export default class Task
         });
     }
 
-    protected preToolStart(toolInstance: Tool)
+    protected preToolStart(toolInstance: LegacyTool)
     {
         this.currentToolInstance = toolInstance;
 
@@ -284,7 +284,7 @@ export default class Task
         toolInstance.on("exit", this.onToolExit);
     }
 
-    protected postToolExit(toolInstance: Tool)
+    protected postToolExit(toolInstance: LegacyTool)
     {
         toolInstance.off("start", this.onToolStart);
         toolInstance.off("message", this.onToolMessage);

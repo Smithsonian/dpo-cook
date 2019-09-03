@@ -16,7 +16,7 @@
  */
 
 import uniqueId from "../utils/uniqueId";
-import Tool, { IToolOptions, IToolScript, TToolMessageLevel } from "../app/Tool";
+import LegacyTool, { IToolOptions, IToolScript, TToolMessageLevel } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +40,7 @@ export interface IMeshlabToolOptions extends IToolOptions
     filters: MeshlabFilter[];
 }
 
-export default class MeshlabTool extends Tool
+export default class MeshlabTool extends LegacyTool
 {
     static readonly type: string = "MeshlabTool";
 

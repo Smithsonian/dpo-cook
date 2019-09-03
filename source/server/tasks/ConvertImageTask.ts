@@ -17,7 +17,7 @@
 
 import Job from "../app/Job";
 
-import { IImageMagickToolOptions } from "../tools/ImageMagickTool";
+import { IImageMagickToolSettings } from "../tools/ImageMagickTool";
 import Task, { ITaskParameters } from "../app/Task";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ export default class ConvertImageTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IImageMagickToolOptions = {
+        const toolOptions: IImageMagickToolSettings = {
             inputImageFile: params.inputImageFile,
             outputImageFile: params.outputImageFile,
             quality: params.quality,

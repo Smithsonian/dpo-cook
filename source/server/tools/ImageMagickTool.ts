@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import Tool, { IToolOptions } from "../app/Tool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IImageMagickToolOptions extends IToolOptions
+export interface IImageMagickToolSettings extends IToolSettings
 {
     inputImageFile?: string;
     redChannelInputFile?: string;
@@ -42,39 +42,39 @@ export interface IImageMagickToolOptions extends IToolOptions
     channelGamma?: number[];
 }
 
-export default class ImageMagickTool extends Tool
+export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickToolSettings>
 {
-    static readonly type: string = "ImageMagickTool";
+    static readonly toolName = "ImageMagick";
 
-    protected static readonly defaultOptions: Partial<IImageMagickToolOptions> = {
+    protected static readonly defaultSettings: Partial<IImageMagickToolSettings> = {
     };
 
-    run(): Promise<void>
+    async setup(instance: ToolInstance<ImageMagickTool, IImageMagickToolSettings>): Promise<IToolSetup>
     {
-        const options = this.options as IImageMagickToolOptions;
+        const settings = instance.settings;
 
-        const outputImagePath = this.getFilePath(options.outputImageFile);
+        const outputImagePath = instance.getFilePath(settings.outputImageFile);
         if (!outputImagePath) {
             throw new Error("ImageMagickTool: missing output map file");
         }
 
         let operation = "convert";
 
-        if (options.channelCombine) {
-            const redImagePath = this.getFilePath(options.redChannelInputFile);
-            const greenImagePath = this.getFilePath(options.greenChannelInputFile);
-            const blueImagePath = this.getFilePath(options.blueChannelInputFile);
+        if (settings.channelCombine) {
+            const redImagePath = instance.getFilePath(settings.redChannelInputFile);
+            const greenImagePath = instance.getFilePath(settings.greenChannelInputFile);
+            const blueImagePath = instance.getFilePath(settings.blueChannelInputFile);
 
             if (!redImagePath || !greenImagePath || !blueImagePath) {
                 throw new Error("ImageMagickTool.run - missing input map file");
             }
 
             let channelGamma = [ 1.0, 1.0, 1.0 ];
-            if (Array.isArray(options.channelGamma) && options.channelGamma.length === 3) {
-                channelGamma = options.channelGamma;
+            if (Array.isArray(settings.channelGamma) && settings.channelGamma.length === 3) {
+                channelGamma = settings.channelGamma;
             }
 
-            const channelAutoLevel = options.channelNormalize ? "-auto-level" : "";
+            const channelAutoLevel = settings.channelNormalize ? "-auto-level" : "";
 
             operation += [
                 ` ( "${redImagePath}" ${channelAutoLevel} -gamma ${channelGamma[0]} )`,
@@ -83,11 +83,11 @@ export default class ImageMagickTool extends Tool
             ].join("");
         }
         else {
-            const inputImagePath = this.getFilePath(options.inputImageFile);
+            const inputImagePath = instance.getFilePath(settings.inputImageFile);
             operation += ` "${inputImagePath}"`;
         }
 
-        let resize = options.resize || 1.0;
+        let resize = settings.resize || 1.0;
         if (resize <= 2.0 && resize !== 1.0) {
             operation += ` -resize ${Math.round(resize * 100)}%`;
         }
@@ -95,22 +95,23 @@ export default class ImageMagickTool extends Tool
             operation += ` -resize ${Math.round(resize)}`;
         }
 
-        if (options.normalize === true) {
+        if (settings.normalize === true) {
             operation += " -auto-level";
         }
 
-        const gamma = options.gamma || 1.0;
+        const gamma = settings.gamma || 1.0;
         if (gamma !== 1.0) {
             operation += ` -gamma ${gamma}`;
         }
 
-        let quality = options.quality || 70;
+        let quality = settings.quality || 70;
         if (outputImagePath.toLowerCase().endsWith("png")) {
             quality = 100;
         }
         operation += ` -quality ${quality} "${outputImagePath}"`;
 
         const command = `"${this.configuration.executable}" ${operation}`;
-        return this.waitInstance(command);
+
+        return Promise.resolve({ command });
     }
 }

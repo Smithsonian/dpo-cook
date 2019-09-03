@@ -17,7 +17,7 @@
 
 import Job from "../app/Job";
 
-import { IMeshSmithToolOptions } from "../tools/MeshSmithTool";
+import { IMeshSmithToolOptions } from "../tools/MeshSmithLegacyTool";
 import Task, { ITaskParameters } from "../app/Task";
 
 ////////////////////////////////////////////////////////////////////////////////

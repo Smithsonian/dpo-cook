@@ -21,7 +21,7 @@ import { IMeshlabToolOptions } from "../tools/MeshlabTool";
 import { IRapidCompactToolOptions } from "../tools/RapidCompactTool";
 
 import Task, { ITaskParameters } from "../app/Task";
-import Tool from "../app/Tool";
+import LegacyTool from "../app/LegacyTool";
 import MeshlabTool from "../tools/MeshlabTool";
 import * as fs from "fs";
 
@@ -181,7 +181,7 @@ export default class DecimateMeshTask extends Task
         }
     }
 
-    protected postToolExit(toolInstance: Tool)
+    protected postToolExit(toolInstance: LegacyTool)
     {
         super.postToolExit(toolInstance);
 

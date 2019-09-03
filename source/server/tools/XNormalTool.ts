@@ -18,7 +18,7 @@
 import * as path from "path";
 
 import uniqueId from "../utils/uniqueId";
-import Tool, { IToolOptions, IToolScript, TToolState } from "../app/Tool";
+import LegacyTool, { IToolOptions, IToolScript, TToolState } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +46,7 @@ export interface IXNormalToolOptions extends IToolOptions
     bakeTest?: boolean;
 }
 
-export default class XNormalTool extends Tool
+export default class XNormalTool extends LegacyTool
 {
     static readonly type: string = "XNormalTool";
 

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-import Tool, { IToolOptions } from "../app/Tool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export type TFBX2glTFComputeNormals = "never" | "broken" | "missing" | "always";
 
-export interface IFBX2glTFToolOptions extends IToolOptions
+export interface IFBX2glTFToolSettings extends IToolSettings
 {
     inputMeshFile: string;
     outputMeshFile: string;
@@ -32,60 +32,60 @@ export interface IFBX2glTFToolOptions extends IToolOptions
     stripUVs?: boolean;
 }
 
-export default class FBX2glTFTool extends Tool
+export default class FBX2glTFTool extends Tool<FBX2glTFTool, IFBX2glTFToolSettings>
 {
-    static readonly type: string = "FBX2glTFTool";
+    static readonly toolName = "FBX2glTF";
 
-    protected static readonly defaultOptions: Partial<IFBX2glTFToolOptions> = {
+    protected static readonly defaultSettings: Partial<IFBX2glTFToolSettings> = {
         binary: true,
         compress: true,
         stripNormals: false,
         stripUVs: false
     };
 
-    run(): Promise<void>
+    async setup(instance: ToolInstance<FBX2glTFTool, IFBX2glTFToolSettings>): Promise<IToolSetup>
     {
-        const options = this.options as IFBX2glTFToolOptions;
+        const settings = instance.settings;
 
-        const inputFilePath = this.getFilePath(options.inputMeshFile);
+        const inputFilePath = instance.getFilePath(settings.inputMeshFile);
         if (!inputFilePath) {
             throw new Error("missing input mesh file");
         }
 
-        const outputFilePath = this.getFilePath(options.outputMeshFile);
+        const outputFilePath = instance.getFilePath(settings.outputMeshFile);
         if (!outputFilePath) {
             throw new Error("missing output mesh file");
         }
 
-        const optionString = this.getOptionString(options);
+        const options = this.getOptions(settings);
+        const command = `"${this.configuration.executable}" -i "${inputFilePath}" -o "${outputFilePath}" ${options}`;
 
-        const command = `"${this.configuration.executable}" -i "${inputFilePath}" -o "${outputFilePath}" ${optionString}`;
-        return this.waitInstance(command);
+        return Promise.resolve({ command });
     }
 
-    private getOptionString(options: IFBX2glTFToolOptions): string
+    private getOptions(settings: IFBX2glTFToolSettings): string
     {
-        let opts = [];
+        let options = [];
 
-        if (options.binary) {
-            opts.push("--binary");
+        if (settings.binary) {
+            options.push("--binary");
         }
-        if (options.compress) {
-            opts.push("--draco");
+        if (settings.compress) {
+            options.push("--draco");
         }
-        if (options.computeNormals) {
-            opts.push("--compute-normals " + options.computeNormals);
+        if (settings.computeNormals) {
+            options.push("--compute-normals " + settings.computeNormals);
         }
-        if (options.stripNormals || options.stripUVs) {
-            opts.push("--keep-attribute position");
-            if (!options.stripNormals) {
-                opts.push("normal");
+        if (settings.stripNormals || settings.stripUVs) {
+            options.push("--keep-attribute position");
+            if (!settings.stripNormals) {
+                options.push("normal");
             }
-            if (!options.stripUVs) {
-                opts.push("uv0 uv1");
+            if (!settings.stripUVs) {
+                options.push("uv0 uv1");
             }
         }
 
-        return opts.join(" ");
+        return options.join(" ");
     }
 }

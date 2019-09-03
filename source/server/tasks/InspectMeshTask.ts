@@ -19,11 +19,11 @@ import * as fs from "fs";
 
 import Job from "../app/Job";
 
-import Tool from "../app/Tool";
+import LegacyTool from "../app/LegacyTool";
 import MeshlabTool, { IMeshlabToolOptions } from "../tools/MeshlabTool";
 
 import Task, { ITaskParameters } from "../app/Task";
-import { IMeshSmithToolOptions, default as MeshSmithTool } from "../tools/MeshSmithTool";
+import { IMeshSmithToolOptions, default as MeshSmithTool } from "../tools/MeshSmithLegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +103,7 @@ export default class InspectMeshTask extends Task
         }
     }
 
-    protected postToolExit(toolInstance: Tool)
+    protected postToolExit(toolInstance: LegacyTool)
     {
         super.postToolExit(toolInstance);
 

@@ -20,7 +20,7 @@ import * as path from "path";
 
 import uniqueId from "../utils/uniqueId";
 
-import Tool, { IToolOptions, TToolState } from "../app/Tool";
+import LegacyTool, { IToolOptions, TToolState } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -52,7 +52,7 @@ export interface IRapidCompactToolOptions extends IToolOptions
     removeDuplicateVertices?: boolean;
 }
 
-export default class RapidCompactTool extends Tool
+export default class RapidCompactTool extends LegacyTool
 {
     static readonly type: string = "RapidCompactTool";
 

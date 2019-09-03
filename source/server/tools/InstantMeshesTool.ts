@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import Tool, { IToolOptions } from "../app/Tool";
+import LegacyTool, { IToolOptions } from "../app/LegacyTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +33,7 @@ export interface IInstantMeshesToolOptions extends IToolOptions
     intrinsic?: boolean;
 }
 
-export default class InstantMeshesTool extends Tool
+export default class InstantMeshesTool extends LegacyTool
 {
     static readonly type: string = "InstantMeshesTool";
 

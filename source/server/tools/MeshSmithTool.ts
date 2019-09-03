@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
+import * as path from "path";
+import * as fs from "fs-extra";
+
 import uniqueId from "../utils/uniqueId";
 
-import * as path from "path";
-import Tool, { IToolOptions, IToolScript, TToolMessageLevel } from "../app/Tool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IMeshSmithToolOptions extends IToolOptions
+export interface IMeshSmithToolSettings extends IToolSettings
 {
     inputFile: string;
     outputFile?: string;
@@ -58,11 +60,11 @@ export interface IMeshSmithToolOptions extends IToolOptions
     compressionLevel?: number;
 }
 
-export default class MeshSmithTool extends Tool
+export default class MeshSmithTool extends Tool<MeshSmithTool>
 {
-    static readonly type: string = "MeshSmithTool";
+    static readonly toolName = "MeshSmith";
 
-    protected static readonly defaultOptions: Partial<IMeshSmithToolOptions> = {
+    protected static readonly defaultSettings: Partial<IMeshSmithToolSettings> = {
         metallicFactor: 0.1,
         roughnessFactor: 0.8,
         positionQuantizationBits: 14,
@@ -72,128 +74,88 @@ export default class MeshSmithTool extends Tool
         compressionLevel: 10
     };
 
-    inspectionReport: any;
-
-    constructor(options: IMeshSmithToolOptions, jobDir: string)
+    async setup(instance: ToolInstance<MeshSmithTool, IMeshSmithToolSettings>): Promise<IToolSetup>
     {
-        super(options, jobDir);
-        this.inspectionReport = null;
-    }
+        const settings = instance.settings;
 
-    run(): Promise<void>
-    {
-        return this.writeToolScript()
-            .then(script => {
-                const command = `"${this.configuration.executable}" -c "${script.filePath}"`;
-                return this.waitInstance(command, script);
-            });
-    }
-
-    protected onMessage(time: Date, level: TToolMessageLevel, message: string)
-    {
-        super.onMessage(time, level, message);
-
-        message = message.trim();
-        if (message.length < 2 || !message.startsWith("{")) {
-            //super.onMessage(time, level, message);
-            return;
-        }
-
-        try {
-            // MeshSmith outputs json, try to parse the message
-            const parsedMessage = JSON.parse(message);
-            if (parsedMessage.type === "report") {
-                this.inspectionReport = parsedMessage;
-            }
-        }
-        catch (e) {
-            // if parsing fails, output as standard log message
-            super.onMessage(time, level, message);
-        }
-    }
-
-    private writeToolScript(): Promise<IToolScript>
-    {
-        const options = this.options as IMeshSmithToolOptions;
-
-        const inputFilePath = this.getFilePath(options.inputFile);
+        const inputFilePath = instance.getFilePath(settings.inputFile);
         if (!inputFilePath) {
             throw new Error("missing input mesh file");
         }
 
-        const outputFilePath = this.getFilePath(options.outputFile);
+        const outputFilePath = instance.getFilePath(settings.outputFile);
 
         const config: any = {
             input: inputFilePath,
             output: outputFilePath,
-            format: options.format,
-            report: options.report,
-            joinVertices: options.joinVertices,
-            stripNormals: options.stripNormals,
-            stripTexCoords: options.stripTexCoords,
+            format: settings.format,
+            report: settings.report,
+            joinVertices: settings.joinVertices,
+            stripNormals: settings.stripNormals,
+            stripTexCoords: settings.stripTexCoords,
 
             gltfx: {
-                metallicFactor: options.metallicFactor,
-                roughnessFactor: options.roughnessFactor,
-                useCompression: options.useCompression,
-                objectSpaceNormals: options.objectSpaceNormals,
-                embedMaps: options.embedMaps
+                metallicFactor: settings.metallicFactor,
+                roughnessFactor: settings.roughnessFactor,
+                useCompression: settings.useCompression,
+                objectSpaceNormals: settings.objectSpaceNormals,
+                embedMaps: settings.embedMaps
             },
             "compression": {
-                positionQuantizationBits: options.positionQuantizationBits,
-                texCoordsQuantizationBits: options.texCoordsQuantizationBits,
-                normalsQuantizationBits: options.normalsQuantizationBits,
-                genericQuantizationBits: options.genericQuantizationBits,
-                compressionLevel: options.compressionLevel
+                positionQuantizationBits: settings.positionQuantizationBits,
+                texCoordsQuantizationBits: settings.texCoordsQuantizationBits,
+                normalsQuantizationBits: settings.normalsQuantizationBits,
+                genericQuantizationBits: settings.genericQuantizationBits,
+                compressionLevel: settings.compressionLevel
             }
         };
 
-        if (options.swizzle) {
-            config.swizzle = options.swizzle;
+        if (settings.swizzle) {
+            config.swizzle = settings.swizzle;
         }
-        if (options.alignX) {
-            config.alignX = options.alignX === "start" ? -1 : (options.alignX === "end" ? 1 : 0);
+        if (settings.alignX) {
+            config.alignX = settings.alignX === "start" ? -1 : (settings.alignX === "end" ? 1 : 0);
         }
-        if (options.alignY) {
-            config.alignY = options.alignY === "start" ? -1 : (options.alignY === "end" ? 1 : 0);
+        if (settings.alignY) {
+            config.alignY = settings.alignY === "start" ? -1 : (settings.alignY === "end" ? 1 : 0);
         }
-        if (options.alignZ) {
-            config.alignZ = options.alignZ === "start" ? -1 : (options.alignZ === "end" ? 1 : 0);
+        if (settings.alignZ) {
+            config.alignZ = settings.alignZ === "start" ? -1 : (settings.alignZ === "end" ? 1 : 0);
         }
-        if (options.translateX || options.translateY || options.translateZ) {
+        if (settings.translateX || settings.translateY || settings.translateZ) {
             config.translate = [
-                options.translateX || 0,
-                options.translateY || 0,
-                options.translateZ || 0,
+                settings.translateX || 0,
+                settings.translateY || 0,
+                settings.translateZ || 0,
             ];
         }
-        if (options.scale !== undefined && options.scale !== 1.0) {
-            config.scale = options.scale;
+        if (settings.scale !== undefined && settings.scale !== 1.0) {
+            config.scale = settings.scale;
         }
-        if (options.matrix) {
-            config.matrix = options.matrix;
-        }
-
-        if (options.diffuseMapFile) {
-            config.gltfx.diffuseMap = this.getFilePath(options.diffuseMapFile);
-        }
-        if (options.occlusionMapFile) {
-            config.gltfx.occlusionMap = this.getFilePath(options.occlusionMapFile);
-        }
-        if (options.emissiveMapFile) {
-            config.gltfx.emissiveMap = this.getFilePath(options.emissiveMapFile);
-        }
-        if (options.metallicRoughnessMapFile) {
-            config.gltfx.metallicRoughnessMap = this.getFilePath(options.metallicRoughnessMapFile);
-        }
-        if (options.normalMapFile) {
-            config.gltfx.normalMap = this.getFilePath(options.normalMapFile);
-        }
-        if (options.zoneMapFile) {
-            config.gltfx.zoneMap = this.getFilePath(options.zoneMapFile);
+        if (settings.matrix) {
+            config.matrix = settings.matrix;
         }
 
-        if (!options.format && outputFilePath) {
+        if (settings.diffuseMapFile) {
+            config.gltfx.diffuseMap = instance.getFilePath(settings.diffuseMapFile);
+        }
+        if (settings.occlusionMapFile) {
+            config.gltfx.occlusionMap = instance.getFilePath(settings.occlusionMapFile);
+        }
+        if (settings.emissiveMapFile) {
+            config.gltfx.emissiveMap = instance.getFilePath(settings.emissiveMapFile);
+        }
+        if (settings.metallicRoughnessMapFile) {
+            config.gltfx.metallicRoughnessMap = instance.getFilePath(settings.metallicRoughnessMapFile);
+        }
+        if (settings.normalMapFile) {
+            config.gltfx.normalMap = instance.getFilePath(settings.normalMapFile);
+        }
+        if (settings.zoneMapFile) {
+            config.gltfx.zoneMap = instance.getFilePath(settings.zoneMapFile);
+        }
+
+        if (!settings.format && outputFilePath) {
             const extension = path.extname(outputFilePath).toLowerCase();
             switch(extension) {
                 case ".dae":
@@ -214,8 +176,13 @@ export default class MeshSmithTool extends Tool
         }
 
         const scriptFileName = "_meshsmith_" + uniqueId() + ".json";
-        const scriptFilePath = this.getFilePath(scriptFileName);
+        const scriptFilePath = instance.getFilePath(scriptFileName);
+        const scriptContent = JSON.stringify(config, null, 2);
 
-        return this.writeFile(scriptFilePath, JSON.stringify(config, null, 2));
+        return fs.writeFile(scriptFilePath, scriptContent).then(() => ({
+            command: `"${this.configuration.executable}" -c "${scriptFilePath}"`,
+            scriptFilePath,
+            scriptContent
+        }));
     }
 }

@@ -17,7 +17,7 @@
 
 import Job from "../app/Job";
 
-import { IImageMagickToolOptions } from "../tools/ImageMagickTool";
+import { IImageMagickToolSettings } from "../tools/ImageMagickTool";
 import Task, { ITaskParameters } from "../app/Task";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ export default class CombineOcclusionTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IImageMagickToolOptions = {
+        const toolOptions: IImageMagickToolSettings = {
             redChannelInputFile: params.largeMapFile,
             greenChannelInputFile: params.mediumMapFile,
             blueChannelInputFile: params.smallMapFile,
