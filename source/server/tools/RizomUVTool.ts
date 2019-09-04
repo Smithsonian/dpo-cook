@@ -16,13 +16,14 @@
  */
 
 import * as path from "path";
+
 import uniqueId from "../utils/uniqueId";
 
-import LegacyTool, { IToolOptions, IToolScript } from "../app/LegacyTool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IRizomUVToolOptions extends IToolOptions
+export interface IRizomUVToolSettings extends IToolSettings
 {
     inputMeshFile: string;
     outputMeshFile: string;
@@ -43,11 +44,13 @@ export interface IRizomUVToolOptions extends IToolOptions
     packRotateStep?: number;
 }
 
-export default class RizomUVTool extends LegacyTool
-{
-    static readonly type: string = "RizomUVTool";
+export type RizomUVInstance = ToolInstance<RizomUVTool, IRizomUVToolSettings>;
 
-    protected static readonly defaultOptions: Partial<IRizomUVToolOptions> = {
+export default class RizomUVTool extends Tool<RizomUVTool, IRizomUVToolSettings>
+{
+    static readonly toolName = "RizomUV";
+
+    protected static readonly defaultOptions: Partial<IRizomUVToolSettings> = {
         cutSegmentationStrength: 0.65,
         cutHandles: false,
         rizomIterations: 5,
@@ -62,25 +65,16 @@ export default class RizomUVTool extends LegacyTool
         packRotateStep: 30
     };
 
-    run(): Promise<void>
+    async setupInstance(instance: RizomUVInstance): Promise<IToolSetup>
     {
-        return this.writeToolScript()
-            .then(script => {
-                const command = `"${this.configuration.executable}" -cfi "${script.filePath}"`;
-                return this.waitInstance(command, script);
-            });
-    }
+        const settings = instance.settings;
 
-    private writeToolScript(): Promise<IToolScript>
-    {
-        const options = this.options as IRizomUVToolOptions;
-
-        const inputFilePath = this.getFilePath(options.inputMeshFile);
+        const inputFilePath = instance.getFilePath(settings.inputMeshFile);
         if (!inputFilePath) {
             throw new Error("missing input mesh file");
         }
 
-        const outputFilePath = this.getFilePath(options.outputMeshFile);
+        const outputFilePath = instance.getFilePath(settings.outputMeshFile);
         if (!outputFilePath) {
             throw new Error("missing output mesh file");
         }
@@ -90,13 +84,13 @@ export default class RizomUVTool extends LegacyTool
 
         const saveOperations = [];
 
-        if (outputFileExt === ".obj" || options.saveObj) {
+        if (outputFileExt === ".obj" || settings.saveObj) {
             saveOperations.push(`ZomSave({File={Path=${JSON.stringify(outputFileBase + ".obj")}, UVWProps=true, FBX={FormatDescriptor="Alias OBJ (*.obj)"}}, __UpdateUIObjFileName=true})`);
         }
-        if (outputFileExt === ".fbx" || options.saveFbx) {
+        if (outputFileExt === ".fbx" || settings.saveFbx) {
             saveOperations.push(`ZomSave({File={Path=${JSON.stringify(outputFileBase + ".fbx")}, UVWProps=true, FBX={FormatDescriptor="FBX binary (*.fbx)"}}, __UpdateUIObjFileName=true})`);
         }
-        if (outputFileExt === ".dae" || options.saveCollada) {
+        if (outputFileExt === ".dae" || settings.saveCollada) {
             saveOperations.push(`ZomSave({File={Path=${JSON.stringify(outputFileBase + ".dae")}, UVWProps=true, FBX={FormatDescriptor="Collada DAE (*.dae)"}}, __UpdateUIObjFileName=true})`);
         }
 
@@ -104,31 +98,34 @@ export default class RizomUVTool extends LegacyTool
             throw new Error("no save operation specified, result won't be saved");
         }
 
-        const scriptContent = [
+        const content = [
             `ZomResetPrefs(none)`,
             `ZomLoad({File={Path=${JSON.stringify(inputFilePath)}, ImportGroups=true, XYZ=true}, NormalizeUVW=true})`,
 
             `-- auto-select seams using mosaic algorithm --`,
-            `ZomSelect({PrimType="Edge", Select=true, ResetBefore=true, WorkingSetPrimType="Island", ProtectMapName="Protect", FilterIslandVisible=true, Auto={QuasiDevelopable={Developability=${options.cutSegmentationStrength}, IslandPolyNBMin=2, FitCones=false, Straighten=true}, HandleCutter=true, StretchLimiter=true, SkeletonUnoverlap={SegLevel=1, FromRoot=true, Smooth=2}, FlatteningMode=0, SQS=0.0357143, SQP=0.5, AQS=0.000178571, AQP=0.5}})`,
+            `ZomSelect({PrimType="Edge", Select=true, ResetBefore=true, WorkingSetPrimType="Island", ProtectMapName="Protect", FilterIslandVisible=true, Auto={QuasiDevelopable={Developability=${settings.cutSegmentationStrength}, IslandPolyNBMin=2, FitCones=false, Straighten=true}, HandleCutter=true, StretchLimiter=true, SkeletonUnoverlap={SegLevel=1, FromRoot=true, Smooth=2}, FlatteningMode=0, SQS=0.0357143, SQP=0.5, AQS=0.000178571, AQP=0.5}})`,
             //`ZomSelect({PrimType="Edge", Select=true, ResetBefore=true, WorkingSetPrimType="Island", ProtectMapName="Protect", FilterIslandVisible=true, Auto={QuasiDevelopable={Developability=${options.cutSegmentationStrength}, IslandPolyNBMin=1, FitCones=false, Straighten=true}, HandleCutter=${options.cutHandles}}})`,
             `ZomCut({PrimType="Edge"})`,
 
             `-- unwrap --`,
-            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=${options.rizomIterations}, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=${!!options.rizomNoBorderIntersections}, TriangleFlips=${!!options.rizomNoTriangleFlips}})`,
+            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=${settings.rizomIterations}, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=${!!settings.rizomNoBorderIntersections}, TriangleFlips=${!!settings.rizomNoTriangleFlips}})`,
 
             `-- pack --`,
             `ZomIslandGroups({Mode="DistributeInTilesByBBox", MergingPolicy=8322})`,
             `ZomIslandGroups({Mode="DistributeInTilesEvenly", MergingPolicy=8322, UseTileLocks=true, UseIslandLocks=true})`,
-            `ZomPack({ProcessTileSelection=false, RootGroup="RootGroup", RecursionDepth=1, MaxMutations=${options.packMutations}, Resolution=${options.packResolution}, MarginSize=${options.packMargin}, SpacingSize=${options.packSpacing}, Scaling={Mode=2}, Rotate={Min=${options.packRotateMin}, Max=${options.packRotateMax}, Step=${options.packRotateStep}}, Translate=true, LayoutScalingMode=2})`,
+            `ZomPack({ProcessTileSelection=false, RootGroup="RootGroup", RecursionDepth=1, MaxMutations=${settings.packMutations}, Resolution=${settings.packResolution}, MarginSize=${settings.packMargin}, SpacingSize=${settings.packSpacing}, Scaling={Mode=2}, Rotate={Min=${settings.packRotateMin}, Max=${settings.packRotateMax}, Step=${settings.packRotateStep}}, Translate=true, LayoutScalingMode=2})`,
 
             `-- save mesh --`,
             saveOperations.join("\n"),
             `ZomQuit()`
         ].join("\n");
 
-        const scriptFileName = "_rizomuv_" + uniqueId() + ".lua";
-        const scriptFilePath = this.getFilePath(scriptFileName);
+        const fileName = "_rizomuv_" + uniqueId() + ".lua";
+        const command = `"${this.configuration.executable}" -cfi "${instance.getFilePath(fileName)}"`;
 
-        return this.writeFile(scriptFilePath, scriptContent);
+        return instance.writeFile(fileName, content).then(() => ({
+            command,
+            script: { fileName, content }
+        }));
     }
 }

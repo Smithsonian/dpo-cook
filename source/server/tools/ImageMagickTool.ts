@@ -42,6 +42,8 @@ export interface IImageMagickToolSettings extends IToolSettings
     channelGamma?: number[];
 }
 
+export type ImageMagickInstance = ToolInstance<ImageMagickTool, IImageMagickToolSettings>;
+
 export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickToolSettings>
 {
     static readonly toolName = "ImageMagick";
@@ -49,7 +51,7 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
     protected static readonly defaultSettings: Partial<IImageMagickToolSettings> = {
     };
 
-    async setup(instance: ToolInstance<ImageMagickTool, IImageMagickToolSettings>): Promise<IToolSetup>
+    async setupInstance(instance: ImageMagickInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
 

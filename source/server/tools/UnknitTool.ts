@@ -16,11 +16,12 @@
  */
 
 import uniqueId from "../utils/uniqueId";
-import LegacyTool, { IToolOptions, IToolScript } from "../app/LegacyTool";
+
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IUnknitToolOptions extends IToolOptions
+export interface IUnknitToolSettings extends IToolSettings
 {
     inputMeshFile: string;
     outputMeshFile: string;
@@ -33,11 +34,13 @@ export interface IUnknitToolOptions extends IToolOptions
     showUI?: boolean;
 }
 
-export default class UnknitTool extends LegacyTool
-{
-    static readonly type: string = "UnknitTool";
+export type UnknitInstance = ToolInstance<UnknitTool, IUnknitToolSettings>;
 
-    protected static readonly defaultOptions: Partial<IUnknitToolOptions> = {
+export default class UnknitTool extends Tool
+{
+    static readonly toolName = "Unknit";
+
+    protected static readonly defaultOptions: Partial<IUnknitToolSettings> = {
         mapSize: 2048,
         stretchValue: 1,
         packIterations: 40,
@@ -47,28 +50,16 @@ export default class UnknitTool extends LegacyTool
         showUI: false
     };
 
-    run(): Promise<void>
+    async setupInstance(instance: UnknitInstance): Promise<IToolSetup>
     {
-        const options = this.options as IUnknitToolOptions;
-        let silentOptions = options.showUI ? "" : "-q -silent -mip";
+        const settings = instance.settings;
 
-        return this.writeToolScript()
-            .then(script => {
-                const command = `"${this.configuration.executable}" ${silentOptions} -U MAXScript "${script.filePath}"`;
-                return this.waitInstance(command, script);
-            });
-    }
-
-    private writeToolScript(): Promise<IToolScript>
-    {
-        const options = this.options as IUnknitToolOptions;
-
-        const inputFilePath = this.getFilePath(options.inputMeshFile);
+        const inputFilePath = instance.getFilePath(settings.inputMeshFile);
         if (!inputFilePath) {
             throw new Error("missing input mesh file");
         }
 
-        const outputFilePath = this.getFilePath(options.outputMeshFile);
+        const outputFilePath = instance.getFilePath(settings.outputMeshFile);
         if (!outputFilePath) {
             throw new Error("missing output mesh file");
         }
@@ -78,38 +69,43 @@ export default class UnknitTool extends LegacyTool
         const outputFileString = JSON.stringify(outputFilePath);
 
         // MaxScript automation for Autodesk 3ds Max
-        const scriptContent = [
-            "resetMaxFile #noprompt",
-            `importFile ${inputFileString} #noPrompt`,
-            "completeRedraw()",
-            "rollout automation \"Automation Script\"",
-            "(",
-            "  timer clock \"my\" interval:1000",
-            "  on clock tick do",
-            "  (",
-            "    clock.active = false",
-            "    setCommandPanelTaskMode #modify",
-            "    unknitModifier = UVW_Unknit()",
-            "    modPanel.addModToSelection (unknitModifier) ui:on",
-            "    $.modifiers[#UVW_Unknit].packUVs = 1",
-            `    $.modifiers[#UVW_Unknit].stretchValue = ${options.stretchValue}`,
-            "    $.modifiers[#UVW_Unknit].UVChannel = 1",
-            `    $.modifiers[#UVW_Unknit].packSize = ${options.mapSize}`,
-            `    $.modifiers[#UVW_Unknit].packIterations = ${options.packIterations}`,
-            `    $.modifiers[#UVW_Unknit].packRotations = ${options.packRotations}`,
-            `    $.modifiers[#UVW_Unknit].packAllowFlip = ${options.packAllowFlip ? "on" : "off"}`,
-            `    $.modifiers[#UVW_Unknit].packExtend = ${options.packExtend ? "on" : "off"}`,
-            "    completeRedraw()",
-            "    $.modifiers[#UVW_Unknit].Apply()",
-            `    exportFile ${outputFileString} #noPrompt`,
-            "    quitMax #noPrompt",
-            "  )",
-            ")",
-            "createDialog automation"
-        ].join("\n");
+        const script = {
+            fileName: "_3dsmax_unknit_" + uniqueId() + ".ms",
+            content: [
+                "resetMaxFile #noprompt",
+                `importFile ${inputFileString} #noPrompt`,
+                "completeRedraw()",
+                "rollout automation \"Automation Script\"",
+                "(",
+                "  timer clock \"my\" interval:1000",
+                "  on clock tick do",
+                "  (",
+                "    clock.active = false",
+                "    setCommandPanelTaskMode #modify",
+                "    unknitModifier = UVW_Unknit()",
+                "    modPanel.addModToSelection (unknitModifier) ui:on",
+                "    $.modifiers[#UVW_Unknit].packUVs = 1",
+                `    $.modifiers[#UVW_Unknit].stretchValue = ${settings.stretchValue}`,
+                "    $.modifiers[#UVW_Unknit].UVChannel = 1",
+                `    $.modifiers[#UVW_Unknit].packSize = ${settings.mapSize}`,
+                `    $.modifiers[#UVW_Unknit].packIterations = ${settings.packIterations}`,
+                `    $.modifiers[#UVW_Unknit].packRotations = ${settings.packRotations}`,
+                `    $.modifiers[#UVW_Unknit].packAllowFlip = ${settings.packAllowFlip ? "on" : "off"}`,
+                `    $.modifiers[#UVW_Unknit].packExtend = ${settings.packExtend ? "on" : "off"}`,
+                "    completeRedraw()",
+                "    $.modifiers[#UVW_Unknit].Apply()",
+                `    exportFile ${outputFileString} #noPrompt`,
+                "    quitMax #noPrompt",
+                "  )",
+                ")",
+                "createDialog automation"
+            ].join("\n")
+        };
 
-        const scriptFileName = "_3dsmax_unknit_" + uniqueId() + ".ms";
-        const scriptFilePath = this.getFilePath(scriptFileName);
-        return this.writeFile(scriptFilePath, scriptContent);
+        const silentOptions = settings.showUI ? "" : "-q -silent -mip";
+        const scriptFilePath = instance.getFilePath(script.fileName);
+        const command = `"${this.configuration.executable}" ${silentOptions} -U MAXScript "${scriptFilePath}"`;
+
+        return instance.writeFile(script.fileName, script.content).then(() => ({ command, script }));
     }
 }

@@ -32,6 +32,8 @@ export interface IFBX2glTFToolSettings extends IToolSettings
     stripUVs?: boolean;
 }
 
+export type FBX2glTFInstance = ToolInstance<FBX2glTFTool, IFBX2glTFToolSettings>;
+
 export default class FBX2glTFTool extends Tool<FBX2glTFTool, IFBX2glTFToolSettings>
 {
     static readonly toolName = "FBX2glTF";
@@ -43,7 +45,7 @@ export default class FBX2glTFTool extends Tool<FBX2glTFTool, IFBX2glTFToolSettin
         stripUVs: false
     };
 
-    async setup(instance: ToolInstance<FBX2glTFTool, IFBX2glTFToolSettings>): Promise<IToolSetup>
+    async setupInstance(instance: FBX2glTFInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
 
@@ -57,14 +59,6 @@ export default class FBX2glTFTool extends Tool<FBX2glTFTool, IFBX2glTFToolSettin
             throw new Error("missing output mesh file");
         }
 
-        const options = this.getOptions(settings);
-        const command = `"${this.configuration.executable}" -i "${inputFilePath}" -o "${outputFilePath}" ${options}`;
-
-        return Promise.resolve({ command });
-    }
-
-    private getOptions(settings: IFBX2glTFToolSettings): string
-    {
         let options = [];
 
         if (settings.binary) {
@@ -86,6 +80,9 @@ export default class FBX2glTFTool extends Tool<FBX2glTFTool, IFBX2glTFToolSettin
             }
         }
 
-        return options.join(" ");
+        const executable = this.configuration.executable;
+        const command = `"${executable}" -i "${inputFilePath}" -o "${outputFilePath}" ${options.join(" ")}`;
+
+        return Promise.resolve({ command });
     }
 }

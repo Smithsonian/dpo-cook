@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import LegacyTool, { IToolOptions } from "../app/LegacyTool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IInstantMeshesToolOptions extends IToolOptions
+export interface IInstantMeshesToolSettings extends IToolSettings
 {
     inputMeshFile: string;
     outputMeshFile: string;
@@ -33,62 +33,59 @@ export interface IInstantMeshesToolOptions extends IToolOptions
     intrinsic?: boolean;
 }
 
-export default class InstantMeshesTool extends LegacyTool
-{
-    static readonly type: string = "InstantMeshesTool";
+export type InstantMeshesInstance = ToolInstance<InstantMeshesTool, IInstantMeshesToolSettings>;
 
-    protected static readonly defaultOptions: Partial<IInstantMeshesToolOptions> = {
+export default class InstantMeshesTool extends Tool
+{
+    static readonly toolName = "InstantMeshes";
+
+    protected static readonly defaultOptions: Partial<IInstantMeshesToolSettings> = {
     };
 
-    run(): Promise<void>
+    async setupInstance(instance: InstantMeshesInstance): Promise<IToolSetup>
     {
-        const options = this.options as IInstantMeshesToolOptions;
+        const settings = instance.settings;
 
-        const inputFilePath = this.getFilePath(options.inputMeshFile);
+        const inputFilePath = instance.getFilePath(settings.inputMeshFile);
         if (!inputFilePath) {
             throw new Error("missing input mesh file");
         }
 
-        const outputFilePath = this.getFilePath(options.outputMeshFile);
+        const outputFilePath = instance.getFilePath(settings.outputMeshFile);
         if (!outputFilePath) {
             throw new Error("missing output mesh file");
         }
 
-        const optionString = this.getOptionString(options);
+        const options = [];
 
-        const command = `"${this.configuration.executable}" ${optionString} -o "${outputFilePath}" "${inputFilePath}"`;
-        return this.waitInstance(command);
-    }
-
-    private getOptionString(options: IInstantMeshesToolOptions): string
-    {
-        let opts = [];
-
-        if (options.vertexCount !== undefined) {
-            opts.push(`-v ${options.vertexCount}`);
+        if (settings.vertexCount !== undefined) {
+            options.push(`-v ${settings.vertexCount}`);
         }
-        if (options.faceCount !== undefined) {
-            opts.push(`-f ${options.faceCount}`);
+        if (settings.faceCount !== undefined) {
+            options.push(`-f ${settings.faceCount}`);
         }
-        if (options.smooth !== undefined) {
-            opts.push(`-S ${options.smooth}`);
+        if (settings.smooth !== undefined) {
+            options.push(`-S ${settings.smooth}`);
         }
-        if (options.rosy !== undefined) {
-            opts.push(`-r ${options.rosy}`);
+        if (settings.rosy !== undefined) {
+            options.push(`-r ${settings.rosy}`);
         }
-        if (options.posy !== undefined) {
-            opts.push(`-p ${options.posy}`);
+        if (settings.posy !== undefined) {
+            options.push(`-p ${settings.posy}`);
         }
-        if (options.deterministic) {
-            opts.push("-d");
+        if (settings.deterministic) {
+            options.push("-d");
         }
-        if (options.dominant) {
-            opts.push("-D");
+        if (settings.dominant) {
+            options.push("-D");
         }
-        if (options.intrinsic) {
-            opts.push("-i");
+        if (settings.intrinsic) {
+            options.push("-i");
         }
 
-        return opts.join(" ");
+        const executable = this.configuration.executable;
+        const command = `"${executable}" ${options.join(" ")} -o "${outputFilePath}" "${inputFilePath}"`;
+
+        return Promise.resolve({ command });
     }
 }

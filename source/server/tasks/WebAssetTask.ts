@@ -17,8 +17,10 @@
 
 import Job from "../app/Job";
 
-import { IMeshSmithToolOptions } from "../tools/MeshSmithLegacyTool";
+import { IMeshSmithToolSettings } from "../tools/MeshSmithTool";
+
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -68,7 +70,7 @@ export interface IWebAssetTaskParameters extends ITaskParameters
  * Parameters: [[IWebAssetTaskParameters]].
  * Tool: [[MeshSmithTool]].
  */
-export default class WebAssetTask extends Task
+export default class WebAssetTask extends ToolTask
 {
     static readonly description = "Creates glTF/glb web assets including mesh and textures.";
 
@@ -107,7 +109,7 @@ export default class WebAssetTask extends Task
     {
         super(options, context);
 
-        const toolOptions: IMeshSmithToolOptions = {
+        const settings: IMeshSmithToolSettings = {
             inputFile: options.meshFile,
             outputFile: options.outputFile,
             format: options.writeBinary ? "glbx" : "gltfx",
@@ -126,16 +128,16 @@ export default class WebAssetTask extends Task
         };
 
         if (options.alignCenter) {
-            toolOptions.alignX = "center";
-            toolOptions.alignY = "center";
-            toolOptions.alignZ = "center";
+            settings.alignX = "center";
+            settings.alignY = "center";
+            settings.alignZ = "center";
         }
         if (options.alignFloor) {
-            toolOptions.alignX = "center";
-            toolOptions.alignY = "start";
-            toolOptions.alignZ = "center";
+            settings.alignX = "center";
+            settings.alignY = "start";
+            settings.alignZ = "center";
         }
 
-        this.addTool("MeshSmith", toolOptions);
+        this.addTool("MeshSmith", settings);
     }
 }

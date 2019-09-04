@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-import * as fs from "fs";
 import * as path from "path";
 
 import uniqueId from "../utils/uniqueId";
 
-import LegacyTool, { IToolOptions, TToolState } from "../app/LegacyTool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +28,7 @@ export type TRapidCompactMode =
 export type TRapidCompactUnwrapMethod =
     "conformal" | "fastConformal" | "isometric" | "forwardBijective" | "fixedBoundary";
 
-export interface IRapidCompactToolOptions extends IToolOptions
+export interface IRapidCompactToolSettings extends IToolSettings
 {
     highPolyMeshFile?: string;
     lowPolyMeshFile?: string;
@@ -52,11 +51,13 @@ export interface IRapidCompactToolOptions extends IToolOptions
     removeDuplicateVertices?: boolean;
 }
 
-export default class RapidCompactTool extends LegacyTool
-{
-    static readonly type: string = "RapidCompactTool";
+export type RapidCompactInstance = ToolInstance<RapidCompactTool, IRapidCompactToolSettings>;
 
-    protected static readonly defaultOptions: Partial<IRapidCompactToolOptions> = {
+export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompactToolSettings>
+{
+    static readonly toolName = "RapidCompact";
+
+    protected static readonly defaultOptions: Partial<IRapidCompactToolSettings> = {
         mode: "unwrap",
         unwrapMethod: "forwardBijective",
         cutAngleDeg: 95, // 95
@@ -71,102 +72,110 @@ export default class RapidCompactTool extends LegacyTool
         removeDuplicateVertices: false
     };
 
-    run(): Promise<void>
+    async setupInstance(instance: RapidCompactInstance): Promise<IToolSetup>
     {
-        const options = this.options as IRapidCompactToolOptions;
-        const { optionString, configFilePath } = this.configureOptions();
+        return this.configureOptions(instance).then(config => {
 
-        let command = `"${this.configuration.executable}" --read_config "${configFilePath}"`;
+            const settings = instance.settings;
+            const scriptFilePath = instance.getFilePath(config.fileName);
+            let command = `"${this.configuration.executable}" --read_config "${scriptFilePath}"`;
 
-        if (options.mode === "bake") {
-            const highPolyMesh = this.getFilePath(options.highPolyMeshFile);
-            const lowPolyMesh = this.getFilePath(options.lowPolyMeshFile);
+            if (settings.mode === "bake") {
+                const highPolyMesh = instance.getFilePath(settings.highPolyMeshFile);
+                const lowPolyMesh = instance.getFilePath(settings.lowPolyMeshFile);
 
-            command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${optionString} -e _rpd_dummy.obj`;
-        }
-        else {
-            const inputFilePath = this.getFilePath(options.inputMeshFile);
-            const outputFilePath = this.getFilePath(options.outputMeshFile);
+                command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${config.options} -e _rpd_dummy.obj`;
+            }
+            else {
+                const inputFilePath = instance.getFilePath(settings.inputMeshFile);
+                const outputFilePath = instance.getFilePath(settings.outputMeshFile);
 
-            command += ` -i "${inputFilePath}" ${optionString} -e "${outputFilePath}"`;
-        }
+                command += ` -i "${inputFilePath}" ${config.options} -e "${outputFilePath}"`;
+            }
 
-        return this.waitInstance(command);
+            return {
+                command,
+                script: { fileName: config.fileName, content: config.content }
+            };
+        });
     }
 
-    protected onExit(time: Date, error: Error, code: number, endState: TToolState)
+    instanceDidExit(instance: RapidCompactInstance): Promise<unknown>
     {
-        if (error) {
-            return;
+        if (instance.state !== "done") {
+            return Promise.resolve();
         }
 
-        const options = this.options as IRapidCompactToolOptions;
+        const settings = instance.settings;
 
-        if (options.mode === "bake") {
-            this.removeFile("_rpd_dummy.obj");
-            this.removeFile("_rpd_dummy.mtl");
-
-            const mapBaseName = options.mapBaseName;
+        if (settings.mode === "bake") {
+            const mapBaseName = settings.mapBaseName;
             const ext = path.extname(mapBaseName);
             const base = path.basename(mapBaseName, ext);
             const dir = path.dirname(mapBaseName);
             const basePath = path.resolve(dir, base);
 
-            this.renameFile("material0_normal.png", `${basePath}-normals${ext}`);
-            this.renameFile("material0_occlusion.png", `${basePath}-occlusion${ext}`);
-            this.renameFile("material0_basecolor.png", `${basePath}-diffuse${ext}`);
+            const fileTasks = [
+                instance.removeFile("_rpd_dummy.obj"),
+                instance.removeFile("_rpd_dummy.mtl"),
+                instance.renameFile("material0_normal.png", `${basePath}-normals${ext}`),
+                instance.renameFile("material0_occlusion.png", `${basePath}-occlusion${ext}`),
+                instance.renameFile("material0_basecolor.png", `${basePath}-diffuse${ext}`),
+            ];
+
+            return Promise.all(fileTasks);
         }
     }
 
-    private configureOptions(): { optionString: string, configFilePath: string }
+    private configureOptions(instance: RapidCompactInstance)
     {
-        const options = this.options as IRapidCompactToolOptions;
-        let opts = [];
+        const settings = instance.settings;
+        let options = [];
 
         // initialize configuration with a copy of the default configuration
         const config = Object.assign({}, RapidCompactTool.defaultConfig);
 
-        if (options.mode === "decimate" || options.mode === "decimate-unwrap") {
+        if (settings.mode === "decimate" || settings.mode === "decimate-unwrap") {
 
-            if (options.removeDuplicateVertices) {
-                opts.push("--remove_duplicate_vertices");
+            if (settings.removeDuplicateVertices) {
+                options.push("--remove_duplicate_vertices");
             }
-            opts.push("--decimate f:" + options.numFaces);
+            options.push("--decimate f:" + settings.numFaces);
 
-            config["decimation:preserveTopology"] = options.preserveTopology;
-            config["decimation:boundaryPreservationFactor"] = options.preserveBoundaries ? 1.0 : 0.5;
-            config["decimation:collapseUnconnectedVertices"] = options.collapseUnconnectedVertices;
+            config["decimation:preserveTopology"] = settings.preserveTopology;
+            config["decimation:boundaryPreservationFactor"] = settings.preserveBoundaries ? 1.0 : 0.5;
+            config["decimation:collapseUnconnectedVertices"] = settings.collapseUnconnectedVertices;
         }
-        if (options.mode === "unwrap" || options.mode === "decimate-unwrap") {
+        if (settings.mode === "unwrap" || settings.mode === "decimate-unwrap") {
 
-            opts.push("--segment --unwrap");
+            options.push("--segment --unwrap");
 
             // threshold for cutting sharp edges
-            config["segmentation:cutAngleDeg"] = options.cutAngleDeg;
+            config["segmentation:cutAngleDeg"] = settings.cutAngleDeg;
             // number of charts vs stretch: lower = more charts, less stretch
-            config["segmentation:chartAngleDeg"] = options.chartAngleDeg;
+            config["segmentation:chartAngleDeg"] = settings.chartAngleDeg;
             // limit for the number of primitives per chart
             config["segmentation:maxPrimitivesPerChart"] = 10000;
             // unwrapping algorithm
-            config["unwrapping:method"] = options.unwrapMethod;
+            config["unwrapping:method"] = settings.unwrapMethod;
             // padding around each chart, relative value
-            config["packing:chartPadding"] = options.chartPadding;
+            config["packing:chartPadding"] = settings.chartPadding;
             // minimum size of each chart, relative value
             config["packing:minValidChartSize"] = 2 / 1024;
         }
-        if (options.mode === "bake") {
+        if (settings.mode === "bake") {
 
-            opts.push("--bake_maps");
-            config["baking:baseColorMapResolution"] = options.mapSize;
-            config["baking:normalMapResolution"] = options.mapSize;
+            options.push("--bake_maps");
+            config["baking:baseColorMapResolution"] = settings.mapSize;
+            config["baking:normalMapResolution"] = settings.mapSize;
 
-            config["ao:enabled"] = options.bakeOcclusion;
+            config["ao:enabled"] = settings.bakeOcclusion;
             config["ao:replaceMissingAlbedo"] = false;
-            config["baking:occlusionMapResolution"] = options.mapSize;
-            config["inpainting:radius"] = options.mapSize / 512; // 1k = 2, 2k = 4, 4k = 8;
-            config["baking:tangentSpaceNormals"] = options.tangentSpaceNormals;
+            config["baking:occlusionMapResolution"] = settings.mapSize;
+            config["inpainting:radius"] = settings.mapSize / 512; // 1k = 2, 2k = 4, 4k = 8;
+            config["baking:tangentSpaceNormals"] = settings.tangentSpaceNormals;
 
-            const extension = path.extname(options.mapBaseName).substr(1);
+            const extension = path.extname(settings.mapBaseName).substr(1);
             config["export:baseColorMapFormat"] = extension;
             config["export:normalMapFormat"] = extension;
             config["export:occlusionMapFormat"] = extension;
@@ -175,15 +184,10 @@ export default class RapidCompactTool extends LegacyTool
 
 
         // write RapidCompact config file
-        const configFileName = "_rapidcompact_" + uniqueId() + ".json";
-        const configFilePath = this.getFilePath(configFileName);
+        const fileName = "_rapidcompact_" + uniqueId() + ".json";
+        const content = JSON.stringify(config, null, 2);
 
-        fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
-
-        return {
-            optionString: opts.join(" "),
-            configFilePath
-        };
+        return instance.writeFile(fileName, content).then(() => ({ fileName, content, options }));
     }
 
     static defaultConfig = {

@@ -17,8 +17,10 @@
 
 import Job from "../app/Job";
 
-import { IInstantMeshesToolOptions } from "../tools/InstantMeshesTool";
+import { IInstantMeshesToolSettings } from "../tools/InstantMeshesTool";
+
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +45,7 @@ export interface IRemeshTaskParameters extends ITaskParameters
  * Tool: [[InstantMeshesTool]],
  * Parameters: [[IRemeshTaskParameters]]
  */
-export default class RemeshTask extends Task
+export default class RemeshTask extends ToolTask
 {
     static readonly description = "Creates a new, regular mesh for an object.";
 
@@ -70,7 +72,7 @@ export default class RemeshTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IInstantMeshesToolOptions = {
+        const settings: IInstantMeshesToolSettings = {
             inputMeshFile: params.inputMeshFile,
             outputMeshFile: params.outputMeshFile,
             faceCount: params.numFaces,
@@ -78,6 +80,6 @@ export default class RemeshTask extends Task
             timeout: params.timeout
         };
 
-        this.addTool("InstantMeshes", toolOptions);
+        this.addTool("InstantMeshes", settings);
     }
 }

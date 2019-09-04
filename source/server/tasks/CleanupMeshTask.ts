@@ -17,8 +17,10 @@
 
 import Job from "../app/Job";
 
-import { IMeshlabToolOptions } from "../tools/MeshlabTool";
+import { IMeshlabToolSettings } from "../tools/MeshlabTool";
+
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +46,7 @@ export interface ICleanupMeshTaskParameters extends ITaskParameters
  * Parameters: [[ICleanupMeshTaskParameters]].
  * Tool: [[MeshlabTool]].
  */
-export default class CleanupMeshTask extends Task
+export default class CleanupMeshTask extends ToolTask
 {
     static readonly description = "Uses a combination of Meshlab filters to clean a mesh.";
 
@@ -69,7 +71,7 @@ export default class CleanupMeshTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IMeshlabToolOptions = {
+        const settings: IMeshlabToolSettings = {
             inputMeshFile: params.inputMeshFile,
             outputMeshFile: params.outputMeshFile,
             filters: [{
@@ -78,6 +80,6 @@ export default class CleanupMeshTask extends Task
             timeout: params.timeout
         };
 
-        this.addTool("Meshlab", toolOptions);
+        this.addTool("Meshlab", settings);
     }
 }

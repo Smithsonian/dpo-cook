@@ -78,10 +78,8 @@ export default class DeliveryTask extends Task
         super(params, context);
     }
 
-    run(): Promise<void>
+    protected async execute(): Promise<unknown>
     {
-        this.startTask();
-
         const params = this.parameters as IDeliveryTaskParameters;
         const files = params.files;
 
@@ -102,7 +100,6 @@ export default class DeliveryTask extends Task
 
         if (params.method === "none") {
             this.logTaskEvent("debug", "file delivery skipped");
-            this.endTask(null, "done");
             return Promise.resolve();
         }
 
@@ -133,15 +130,10 @@ export default class DeliveryTask extends Task
             else {
                 throw new Error(`unsupported transport method: ${params.method}`);
             }
-        })).then(() => {
-            this.endTask(null, "done");
-        }).catch(err => {
-            this.endTask(err, "error");
-            throw err;
-        });
+        }));
     }
 
-    protected copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>
+    private async copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>
     {
         return new Promise((resolve, reject) => {
             this.logTaskEvent("debug", `copy file: '${sourceFilePath}' to: '${destinationFilePath}'`);
@@ -157,7 +149,7 @@ export default class DeliveryTask extends Task
         });
     }
 
-    protected copyRemoteFile(remoteClient, remoteUrl, remoteFileName: string, sourceFilePath: string): Promise<void>
+    private async copyRemoteFile(remoteClient, remoteUrl, remoteFileName: string, sourceFilePath: string): Promise<void>
     {
         return new Promise((resolve, reject) => {
             this.logTaskEvent("debug", `remote copy file: '${sourceFilePath}' to: '${remoteFileName}'`);

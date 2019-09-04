@@ -16,7 +16,6 @@
  */
 
 import * as path from "path";
-import * as fs from "fs-extra";
 
 import uniqueId from "../utils/uniqueId";
 
@@ -60,7 +59,9 @@ export interface IMeshSmithToolSettings extends IToolSettings
     compressionLevel?: number;
 }
 
-export default class MeshSmithTool extends Tool<MeshSmithTool>
+export type MeshSmithInstance = ToolInstance<MeshSmithTool, IMeshSmithToolSettings>;
+
+export default class MeshSmithTool extends Tool<MeshSmithTool, IMeshSmithToolSettings>
 {
     static readonly toolName = "MeshSmith";
 
@@ -74,7 +75,7 @@ export default class MeshSmithTool extends Tool<MeshSmithTool>
         compressionLevel: 10
     };
 
-    async setup(instance: ToolInstance<MeshSmithTool, IMeshSmithToolSettings>): Promise<IToolSetup>
+    async setupInstance(instance: MeshSmithInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
 
@@ -175,14 +176,12 @@ export default class MeshSmithTool extends Tool<MeshSmithTool>
             }
         }
 
-        const scriptFileName = "_meshsmith_" + uniqueId() + ".json";
-        const scriptFilePath = instance.getFilePath(scriptFileName);
-        const scriptContent = JSON.stringify(config, null, 2);
+        const fileName = "_meshsmith_" + uniqueId() + ".json";
+        const content = JSON.stringify(config, null, 2);
 
-        return fs.writeFile(scriptFilePath, scriptContent).then(() => ({
-            command: `"${this.configuration.executable}" -c "${scriptFilePath}"`,
-            scriptFilePath,
-            scriptContent
+        return instance.writeFile(fileName, content).then(() => ({
+            command: `"${this.configuration.executable}" -c "${instance.getFilePath(fileName)}"`,
+            script: { fileName, content }
         }));
     }
 }

@@ -17,13 +17,13 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import * as commentJSON from "comment-json";
 
 import { Dictionary } from "@ff/core/types";
 
 import * as jsonLoader from "../utils/jsonLoader";
 
-import LegacyTool, { IToolConfiguration, IToolOptions } from "./LegacyTool";
+import Tool, { ToolInstance, IToolSettings, IToolConfiguration } from "./Tool";
+
 import Task, { ITaskParameters } from "./Task";
 import Job from "./Job";
 import { ConfigurationError } from "./Errors";
@@ -33,13 +33,13 @@ import { ConfigurationError } from "./Errors";
 export default class TaskManager
 {
     private taskTypes: {};
-    protected toolTypes: { [id:string]: typeof LegacyTool };
+    protected tools: { [id:string]: Tool };
     protected toolConfigurations: Dictionary<IToolConfiguration>;
 
     constructor(dirs: { base: string, tools: string, tasks: string })
     {
         this.taskTypes = {};
-        this.toolTypes = {};
+        this.tools = {};
 
         const schemaDir = path.resolve(dirs.base, "schemas/");
         const toolsSchemaPath = path.resolve(schemaDir, "tools.schema.json");
@@ -56,14 +56,14 @@ export default class TaskManager
         return new taskType(parameters, context);
     }
 
-    createToolInstance(toolName: string, options: IToolOptions, jobDir: string)
+    createToolInstance(name: string, settings: IToolSettings, jobDir: string): ToolInstance
     {
-        const toolType = this.toolTypes[toolName];
-        if (!toolType) {
+        const tool = this.tools[name];
+        if (!tool) {
             return null;
         }
 
-        return new toolType(options, jobDir);
+        return tool.createInstance(settings, jobDir);
     }
 
     getTaskType(taskName: string): typeof Task
@@ -103,15 +103,15 @@ export default class TaskManager
             if (path.extname(toolFile) === ".js") {
                 const toolPath = path.resolve(toolsDir, toolFile);
 
-                let toolType: typeof LegacyTool;
+                let ToolType: typeof Tool;
                 try {
-                    toolType = require(toolPath).default;
+                    ToolType = require(toolPath).default;
                 }
                 catch(error) {
                     throw new ConfigurationError(`failed to load/parse tool module '${toolFile}': ${error.message}`);
                 }
 
-                const toolName = toolType.type.substr(0, toolType.type.length - 4);
+                const toolName = ToolType.toolName;
                 const config = this.toolConfigurations[toolName];
 
                 if (config) {
@@ -119,8 +119,8 @@ export default class TaskManager
                         throw new ConfigurationError(`executable for tool '${toolName}' not found: '${config.executable}'`);
                     }
 
-                    toolType.configuration = config;
-                    this.toolTypes[toolName] = toolType;
+                    const tool = new ToolType(config);
+                    this.tools[toolName] = tool;
                     count++;
                 }
                 else {

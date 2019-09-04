@@ -70,11 +70,10 @@ export default class FileOperationTask extends Task
         super(params, context);
     }
 
-    run(): Promise<void>
+    protected async execute(): Promise<unknown>
     {
         return new Promise((resolve, reject) => {
 
-            this.startTask();
             const params = this.parameters as IFileOperationTaskParameters;
             const filePath = path.resolve(this.context.jobDir, params.name);
 
@@ -83,12 +82,10 @@ export default class FileOperationTask extends Task
                     fs.unlink(filePath, err => {
                         if (err) {
                             err = new Error(`Delete file "${filePath}" failed: ${err.toString()}`);
-                            this.endTask(err, "error");
                             return reject(err);
                         }
 
                         this.logTaskEvent("debug", `Successfully deleted file "${filePath}"`);
-                        this.endTask(null, "done");
                         return resolve();
                     });
                     break;
@@ -101,19 +98,16 @@ export default class FileOperationTask extends Task
                     mkdirp(path.dirname(newFilePath), err => {
                         if (err) {
                             err = new Error(`Rename file "${filePath}" failed: ${err.toString()}`);
-                            this.endTask(err, "error");
                             return reject(err);
                         }
 
                         fs.rename(filePath, newFilePath, err => {
                             if (err) {
                                 err = new Error(`Rename file "${filePath}" failed: ${err.toString()}`);
-                                this.endTask(err, "error");
                                 return reject(err);
                             }
 
                             this.logTaskEvent("debug", `Successfully renamed file "${filePath}" to "${newFilePath}"`);
-                            this.endTask(null, "done");
                             return resolve();
                         });
                     });
@@ -123,12 +117,10 @@ export default class FileOperationTask extends Task
                     mkdirp(filePath, err => {
                         if (err) {
                             err = new Error(`Create folder "${filePath}" failed: ${err.toString()}`);
-                            this.endTask(err, "error");
                             return reject(err);
                         }
 
                         this.logTaskEvent("debug", `Successfully created folder "${filePath}"`);
-                        this.endTask(null, "done");
                         return resolve();
                     });
                     break;
@@ -136,19 +128,16 @@ export default class FileOperationTask extends Task
                 case "DeleteFolder":
                     if (filePath.length < 4) {
                         const err = new Error(`deletion of folder "${filePath}" refused.`);
-                        this.endTask(err, "error");
                         reject(err);
                     }
 
                     rimraf(filePath, err => {
                         if (err) {
                             err = `Delete folder "${filePath}" failed: ${err.toString()}`;
-                            this.endTask(err, "error");
                             return reject(err);
                         }
 
                         this.logTaskEvent("debug", `Successfully deleted folder "${filePath}"`);
-                        this.endTask(null, "done");
                         return resolve();
                     });
                     break;

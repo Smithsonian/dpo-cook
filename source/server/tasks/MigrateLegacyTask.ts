@@ -62,7 +62,7 @@ export default class MigrateLegacyTask extends Task
         super(params, context);
     }
 
-    async run()
+    protected async execute(): Promise<unknown>
     {
         const params = this.parameters as IMigrateLegacyTaskParameters;
         const modelId = params.modelId;
@@ -70,8 +70,8 @@ export default class MigrateLegacyTask extends Task
         const modelInfoURL = `${MigrateLegacyTask.legacyViewerUrl}/modelinfo/${modelId}`;
         const modelInfo = await fetch.json(modelInfoURL, "GET");
 
-
-
         this.logTaskEvent("info", modelInfo);
+
+        return Promise.resolve();
     }
 }

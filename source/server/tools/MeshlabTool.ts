@@ -16,7 +16,8 @@
  */
 
 import uniqueId from "../utils/uniqueId";
-import LegacyTool, { IToolOptions, IToolScript, TToolMessageLevel } from "../app/LegacyTool";
+
+import Tool, { IToolSettings, IToolSetup, IToolScript, ToolInstance, IToolMessageEvent } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +32,7 @@ export interface MeshlabFilter
     params?: IMeshlabFilterParameters;
 }
 
-export interface IMeshlabToolOptions extends IToolOptions
+export interface IMeshlabToolSettings extends IToolSettings
 {
     inputMeshFile: string;
     outputMeshFile?: string;
@@ -40,9 +41,11 @@ export interface IMeshlabToolOptions extends IToolOptions
     filters: MeshlabFilter[];
 }
 
-export default class MeshlabTool extends LegacyTool
+export type MeshlabInstance = ToolInstance<MeshlabTool, IMeshlabToolSettings>;
+
+export default class MeshlabTool extends Tool
 {
-    static readonly type: string = "MeshlabTool";
+    static readonly toolName = "Meshlab";
 
     protected static readonly filters = {
         "Simplification": { name: "Simplification: Quadric Edge Collapse Decimation" },
@@ -57,80 +60,78 @@ export default class MeshlabTool extends LegacyTool
         "MeshReport": { name: "Generate JSON Report", type: "xml" }
     };
 
-    inspectionReport: any;
+    inspectionReport: any = null;
 
-    constructor(options: IMeshlabToolOptions, jobDir: string)
+
+    async setupInstance(instance: MeshlabInstance): Promise<IToolSetup>
     {
-        super(options, jobDir);
-        this.inspectionReport = null;
-    }
+        const settings = instance.settings;
 
-    run(): Promise<void>
-    {
-        const options = this.options as IMeshlabToolOptions;
-
-        const inputMeshPath = this.getFilePath(options.inputMeshFile);
+        const inputMeshPath = instance.getFilePath(settings.inputMeshFile);
         if (!inputMeshPath) {
             throw new Error("missing input mesh file");
         }
 
-        const outputMeshPath = this.getFilePath(options.outputMeshFile);
+        const outputMeshPath = instance.getFilePath(settings.outputMeshFile);
 
-        return this.writeFilterScript()
+        return this.writeFilterScript(instance)
             .then(script => {
                 let command = `"${this.configuration.executable}" -i "${inputMeshPath}"`;
 
                 if (outputMeshPath) {
                     command += ` -o "${outputMeshPath}"`;
 
-                    if (options.writeNormals || options.writeTexCoords) {
+                    if (settings.writeNormals || settings.writeTexCoords) {
                         command += " -m";
-                        if (options.writeNormals) {
+                        if (settings.writeNormals) {
                             command += " vn";
                         }
-                        if (options.writeTexCoords) {
+                        if (settings.writeTexCoords) {
                             command += " wt";
                         }
                     }
                 }
 
-                command += ` -s "${script.filePath}"`;
+                command += ` -s "${instance.getFilePath(script.fileName)}"`;
 
-                return this.waitInstance(command, script);
+                return {
+                    command,
+                    script
+                };
             });
     }
 
-    protected onMessage(time: Date, level: TToolMessageLevel, message: string)
+    onInstanceMessage(event: IToolMessageEvent)
     {
-        super.onMessage(time, level, message);
+        const { instance, message } = event;
 
         // only handle JSON report data
         if (!message.startsWith("JSON={")) {
             return;
         }
 
+        const results = instance.report.results = instance.report.results || {};
+
         try {
-            this.inspectionReport = JSON.parse(message.substr(5));
+            const inspection = JSON.parse(message.substr(5));
+            results["inspection"] = inspection;
         }
         catch(e) {
-            const message = "failed to parse mesh inspection report";
-            this.inspectionReport = { error: message };
-            this.onMessage(time, "warning", message);
+            const error = "failed to parse mesh inspection report";
+            results["inspection"] = { error };
         }
 
         return true;
     }
 
-    private writeFilterScript(): Promise<IToolScript>
+    private async writeFilterScript(instance: ToolInstance<MeshlabTool, IMeshlabToolSettings>): Promise<IToolScript>
     {
-        const options = this.options as IMeshlabToolOptions;
-
-        const script = [
+        const scriptLines = [
             `<!DOCTYPE FilterScript>`,
             `<FilterScript>`
         ];
 
-        options.filters.forEach(filter => {
+        instance.settings.filters.forEach(filter => {
 
             let filterSteps = MeshlabTool.filters[filter.name];
             if (!filterSteps) {
@@ -143,27 +144,30 @@ export default class MeshlabTool extends LegacyTool
                 const filterType = filterDef.type === "xml" ? "xmlfilter" : "filter";
 
                 if (filter.params) {
-                    script.push(`<${filterType} name="${filterDef.name}">`);
+                    scriptLines.push(`<${filterType} name="${filterDef.name}">`);
                     for (const paramName in filter.params) {
                         const paramValue = filter.params[paramName];
                         if (paramValue === undefined) {
                             return Promise.reject(`value for parameter ${paramName} is undefined`);
                         }
-                        script.push(this.getParameter(paramName, paramValue));
+                        scriptLines.push(this.getParameter(paramName, paramValue));
                     }
-                    script.push(`</${filterType}>`);
+                    scriptLines.push(`</${filterType}>`);
                 }
                 else {
-                    script.push(`<${filterType} name="${filterDef.name}"/>`);
+                    scriptLines.push(`<${filterType} name="${filterDef.name}"/>`);
                 }
             });
         });
 
-        script.push("</FilterScript>");
+        scriptLines.push("</FilterScript>");
 
-        const filterFileName = "_meshlab_" + uniqueId() + ".mlx";
-        const filterFilePath = this.getFilePath(filterFileName);
-        return this.writeFile(filterFilePath, script.join("\n"));
+        const script: IToolScript = {
+            fileName: "_meshlab_" + uniqueId() + ".mlx",
+            content: scriptLines.join("\n"),
+        };
+
+        return instance.writeFile(script.fileName, script.content).then(() => script);
     }
 
     private getParameter(name: string, value: string | number | boolean, type?: string)

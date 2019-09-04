@@ -20,7 +20,6 @@ import * as path from "path";
 
 import clone from "@ff/core/clone";
 
-import Job from "../app/Job";
 import Task, { ITaskParameters } from "../app/Task";
 
 import { IDocument, INode, TUnitType } from "../types/document";
@@ -114,26 +113,14 @@ export default class DocumentTask extends Task
         }],
     };
 
-    constructor(params: IDocumentTaskParameters, context: Job)
+    protected async execute(): Promise<unknown>
     {
-        super(params, context);
-    }
-
-    run(): Promise<void>
-    {
-        this.startTask();
-
         return this.readOrCreateDocument()
         .then(document => this.modifyDocument(document))
-        .then(document => this.writeDocument(document))
-        .then(() => this.endTask(null, "done"))
-        .catch(error => {
-            this.endTask(error, "error");
-            throw error;
-        });
+        .then(document => this.writeDocument(document));
     }
 
-    protected readOrCreateDocument(): Promise<IDocument>
+    private async readOrCreateDocument(): Promise<IDocument>
     {
         const params = this.parameters as IDocumentTaskParameters;
         const documentFilePath = path.resolve(this.context.jobDir, params.documentFile);
@@ -147,7 +134,7 @@ export default class DocumentTask extends Task
         });
     }
 
-    protected modifyDocument(document: IDocument): Promise<IDocument>
+    private async modifyDocument(document: IDocument): Promise<IDocument>
     {
         const params = this.parameters as IDocumentTaskParameters;
         const scene = document.scenes[document.scene];
@@ -305,7 +292,7 @@ export default class DocumentTask extends Task
         return Promise.all(mods).then(() => document);
     }
 
-    protected updateAsset(assets: IAsset[], type: TAssetType, fileName: string): Promise<IAsset>
+    private async updateAsset(assets: IAsset[], type: TAssetType, fileName: string): Promise<IAsset>
     {
         const filePath = path.resolve(this.context.jobDir, fileName);
 
@@ -323,7 +310,7 @@ export default class DocumentTask extends Task
         });
     }
 
-    protected writeDocument(document: IDocument): Promise<void>
+    private async writeDocument(document: IDocument): Promise<void>
     {
         const params = this.parameters as IDocumentTaskParameters;
         const documentFilePath = path.resolve(this.context.jobDir, params.documentFile);

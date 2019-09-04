@@ -76,10 +76,8 @@ export default class PickupTask extends Task
         super(params, context);
     }
 
-    run(): Promise<void>
+    protected async execute(): Promise<unknown>
     {
-        this.startTask();
-
         const options = this.parameters as IPickupTaskParameters;
         const files = options.files;
         const filesToCopy = [];
@@ -97,7 +95,6 @@ export default class PickupTask extends Task
 
         if (options.method === "none") {
             this.logTaskEvent("debug", "file pickup skipped");
-            this.endTask(null, "done");
             return Promise.resolve();
         }
 
@@ -124,12 +121,7 @@ export default class PickupTask extends Task
             else {
                 throw new Error(`unsupported transport method: ${options.method}`);
             }
-        })).then(() => {
-            this.endTask(null, "done");
-        }).catch(err => {
-            this.endTask(err, "error");
-            throw err;
-        });
+        }));
     }
 
     protected copyFile(sourceFilePath: string, destinationFilePath: string): Promise<void>

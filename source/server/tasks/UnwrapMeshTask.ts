@@ -17,11 +17,12 @@
 
 import Job from "../app/Job";
 
-import { IRizomUVToolOptions } from "../tools/RizomUVTool";
-import { IUnknitToolOptions } from "../tools/UnknitTool";
-import { IRapidCompactToolOptions } from "../tools/RapidCompactTool";
+import { IRizomUVToolSettings } from "../tools/RizomUVTool";
+import { IUnknitToolSettings } from "../tools/UnknitTool";
+import { IRapidCompactToolSettings } from "../tools/RapidCompactTool";
 
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -73,7 +74,7 @@ export interface IUnwrapMeshTaskParameters extends ITaskParameters
  * - Parameters: [[IUnwrapMeshTaskParameters]].
  * - Tools: [[RizomUVTool]], [[RapidCompactTool]], [[UnknitTool]].
  */
-export default class UnwrapMeshTask extends Task
+export default class UnwrapMeshTask extends ToolTask
 {
     static readonly description = "creates a new UV map for a mesh.";
 
@@ -133,7 +134,7 @@ export default class UnwrapMeshTask extends Task
                 const packMutations = mutations[index];
                 const packRotateStep = steps[index];
 
-                const rizomUVOptions: IRizomUVToolOptions = {
+                const rizomUVSettings: IRizomUVToolSettings = {
                     inputMeshFile: params.inputMeshFile,
                     outputMeshFile: params.outputMeshFile,
                     saveObj: params.saveObj,
@@ -147,13 +148,13 @@ export default class UnwrapMeshTask extends Task
                     timeout: params.timeout
                 };
 
-                this.addTool("RizomUV", rizomUVOptions);
+                this.addTool("RizomUV", rizomUVSettings);
                 break;
 
             case "RapidCompact":
                 const chartAngleDeg = limit(60 + segmentationStrength * 120, 60, 180);
 
-                const rpdOptions: IRapidCompactToolOptions = {
+                const rpdSettings: IRapidCompactToolSettings = {
                     inputMeshFile: params.inputMeshFile,
                     outputMeshFile: params.outputMeshFile,
                     mode: params.decimate ? "decimate-unwrap" : "unwrap",
@@ -168,21 +169,21 @@ export default class UnwrapMeshTask extends Task
                     if (!params.numFaces) {
                         throw new Error("for decimation, target number of faces (numFaces) must be specified");
                     }
-                    rpdOptions.numFaces = params.numFaces;
+                    rpdSettings.numFaces = params.numFaces;
                 }
 
-                this.addTool("RapidCompact", rpdOptions);
+                this.addTool("RapidCompact", rpdSettings);
                 break;
 
             case "Unknit":
-                const unknitOptions: IUnknitToolOptions = {
+                const unknitSettings: IUnknitToolSettings = {
                     inputMeshFile: params.inputMeshFile,
                     outputMeshFile: params.outputMeshFile,
                     mapSize: params.mapSize,
                     showUI: params.debug
                 };
 
-                this.addTool("Unknit", unknitOptions);
+                this.addTool("Unknit", unknitSettings);
                 break;
 
             default:

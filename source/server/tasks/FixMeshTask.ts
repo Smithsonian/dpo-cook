@@ -17,8 +17,10 @@
 
 import Job from "../app/Job";
 
-import { IMeshfixToolOptions } from "../tools/MeshfixTool";
+import { IMeshfixToolSettings } from "../tools/MeshfixTool";
+
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +41,7 @@ export interface IFixMeshTaskParameters extends ITaskParameters
  * Tool: [[MeshfixTool]]
  * Parameters: [[IFixMeshTaskParameters]]
  */
-export default class FixMeshTask extends Task
+export default class FixMeshTask extends ToolTask
 {
     static readonly description = "Uses the MeshFix tool to heal a mesh using a number of heuristics.";
 
@@ -63,13 +65,13 @@ export default class FixMeshTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IMeshfixToolOptions = {
+        const settings: IMeshfixToolSettings = {
             inputMeshFile: params.inputMeshFile,
             outputMeshFile: params.outputMeshFile,
             joinComponents: false,
             timeout: params.timeout
         };
 
-        this.addTool("Meshfix", toolOptions);
+        this.addTool("Meshfix", settings);
     }
 }

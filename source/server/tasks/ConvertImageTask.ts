@@ -18,7 +18,9 @@
 import Job from "../app/Job";
 
 import { IImageMagickToolSettings } from "../tools/ImageMagickTool";
+
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +48,7 @@ export interface IConvertImageTaskParameters extends ITaskParameters
  * Parameters: [[IConvertImageTaskParameters]].
  * Tool: [[ImageMagickTool]].
  */
-export default class ConvertImageTask extends Task
+export default class ConvertImageTask extends ToolTask
 {
     static readonly description = "Converts image files between different formats. " +
                                   "Applies scaling and gamma correction during conversion.";
@@ -75,7 +77,7 @@ export default class ConvertImageTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IImageMagickToolSettings = {
+        const settings: IImageMagickToolSettings = {
             inputImageFile: params.inputImageFile,
             outputImageFile: params.outputImageFile,
             quality: params.quality,
@@ -84,6 +86,6 @@ export default class ConvertImageTask extends Task
             resize: params.resize
         };
 
-        this.addTool("ImageMagick", toolOptions);
+        this.addTool("ImageMagick", settings);
     }
 }

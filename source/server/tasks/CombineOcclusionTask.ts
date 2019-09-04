@@ -18,7 +18,9 @@
 import Job from "../app/Job";
 
 import { IImageMagickToolSettings } from "../tools/ImageMagickTool";
+
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +49,7 @@ export interface ICombineOcclusionTaskParameters extends ITaskParameters
  * Parameters: [[ICombineOcclusionTaskParameters]].
  * Tool: [[ImageMagickTool]].
  */
-export default class CombineOcclusionTask extends Task
+export default class CombineOcclusionTask extends ToolTask
 {
     static readonly description = "Combines 3 separate occlusion maps into one combined map.";
 
@@ -82,7 +84,7 @@ export default class CombineOcclusionTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IImageMagickToolSettings = {
+        const settings: IImageMagickToolSettings = {
             redChannelInputFile: params.largeMapFile,
             greenChannelInputFile: params.mediumMapFile,
             blueChannelInputFile: params.smallMapFile,
@@ -93,6 +95,6 @@ export default class CombineOcclusionTask extends Task
             channelGamma: params.channelGamma || [ 1.0, 0.1, 0.05 ]
         };
 
-        this.addTool("ImageMagick", toolOptions);
+        this.addTool("ImageMagick", settings);
     }
 }

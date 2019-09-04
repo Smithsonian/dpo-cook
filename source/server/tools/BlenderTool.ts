@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-import Job from "../app/Job";
-
-import Task, { ITaskParameters } from "../app/Task";
-import ToolTask from "../app/ToolTask";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IInspectImageTaskParameters extends ITaskParameters
+export interface IBlenderToolSettings extends IToolSettings
 {
+
 }
 
-export default class InspectImageTask extends ToolTask
+export type BlenderInstance = ToolInstance<BlenderTool, IBlenderToolSettings>;
+
+export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
 {
-    static readonly description = "Image inspection task.";
+    static readonly toolName = "Blender";
 
-    static readonly parameterSchema = {
-    };
+    protected static readonly defaultSettings: Partial<IBlenderToolSettings> = { };
 
-    static readonly parameterValidator =
-        Task.jsonValidator.compile(InspectImageTask.parameterSchema);
-
-    constructor(params: IInspectImageTaskParameters, context: Job)
+    async setupInstance(instance: BlenderInstance): Promise<IToolSetup>
     {
-        super(params, context);
-
-        // TODO: Set Tool
+        return Promise.reject("not implemented yet");
     }
 }

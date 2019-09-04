@@ -19,17 +19,17 @@ import * as fs from "fs";
 import * as path from "path";
 import * as moment from "moment";
 
-import { TLogLevel } from "common/types";
+import { LogLevel } from "common/types";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export { TLogLevel };
+export { LogLevel };
 
 export interface ITaskLogEvent
 {
     time: Date;
     module: string;
-    level: TLogLevel;
+    level: LogLevel;
     message: string;
     sender: string;
 }

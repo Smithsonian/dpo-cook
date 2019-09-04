@@ -79,7 +79,7 @@ export default class MigratePlayTask extends Task
         super(params, context);
     }
 
-    async run(): Promise<void>
+    protected async execute(): Promise<unknown>
     {
         this.result.files = {};
 
@@ -98,14 +98,14 @@ export default class MigratePlayTask extends Task
         const infoFileName = this.result.files["info.json"] = "info.json";
         await this.writeFile(infoFileName, JSON.stringify(infoContent, null, 2));
 
-        await this.fetchArticles(infoContent);
+        return this.fetchArticles(infoContent);
     }
 
     /**
      * Fetches payload.json and the associated thumbnail and preview images.
      * @param boxId The Play box ID.
      */
-    protected async fetchPayload(boxId: string): Promise<IPlayPayload>
+    private async fetchPayload(boxId: string): Promise<IPlayPayload>
     {
         const payloadUrl = `${MigratePlayTask.payloadBaseUrl}/${boxId}_payload.json`;
 
@@ -134,7 +134,7 @@ export default class MigratePlayTask extends Task
      * Returns the content of the config.json asset.
      * @param boxId The Play box ID.
      */
-    protected async fetchAssets(boxId: string): Promise<Partial<IPlayBoxInfo>>
+    private async fetchAssets(boxId: string): Promise<Partial<IPlayBoxInfo>>
     {
         const cdnBaseUrl = MigratePlayTask.cdnBaseUrl;
         const boxBaseUrl = `${cdnBaseUrl}/boxes/${boxId}/`;
@@ -184,7 +184,7 @@ export default class MigratePlayTask extends Task
         };
     }
 
-    protected async fetchArticles(info: IPlayBoxInfo): Promise<any>
+    private async fetchArticles(info: IPlayBoxInfo): Promise<any>
     {
         let articleIndex = 0;
         const articleUrls: { [id:string]: number } = {};
@@ -210,7 +210,7 @@ export default class MigratePlayTask extends Task
         return Promise.all(urls.map(url => this.fetchArticle(url, articleUrls[url])));
     }
 
-    protected async fetchArticle(url: string, index: number): Promise<any>
+    private async fetchArticle(url: string, index: number): Promise<any>
     {
         const pageHtml = await fetch.text(url, "GET");
         const handler = new DomHandler();

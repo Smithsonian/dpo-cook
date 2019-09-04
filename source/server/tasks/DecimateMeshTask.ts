@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
+import * as fs from "fs-extra";
+
 import Job from "../app/Job";
 
-import { IMeshlabToolOptions } from "../tools/MeshlabTool";
-import { IRapidCompactToolOptions } from "../tools/RapidCompactTool";
+import { IMeshlabToolSettings } from "../tools/MeshlabTool";
+import { IRapidCompactToolSettings } from "../tools/RapidCompactTool";
 
-import Task, { ITaskParameters } from "../app/Task";
 import LegacyTool from "../app/LegacyTool";
 import MeshlabTool from "../tools/MeshlabTool";
-import * as fs from "fs";
+
+import Task, { ITaskParameters } from "../app/Task";
+import ToolTask, { IToolMessageEvent } from "../app/ToolTask";
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -62,7 +66,7 @@ export interface IDecimateMeshTaskParameters extends ITaskParameters
  * Parameters: [[IDecimateMeshTaskParameters]]
  * Tools: [[MeshlabTool]], [[RapidCompactTool]]
  */
-export default class DecimateMeshTask extends Task
+export default class DecimateMeshTask extends ToolTask
 {
     static readonly description = "Reduces the complexity of a geometric mesh by reducing the number of vertices.";
 
@@ -98,7 +102,7 @@ export default class DecimateMeshTask extends Task
         super(params, context);
 
         if (params.tool === "Meshlab") {
-            const toolOptions: IMeshlabToolOptions = {
+            const settings: IMeshlabToolSettings = {
                 inputMeshFile: params.inputMeshFile,
                 outputMeshFile: params.outputMeshFile,
                 writeTexCoords: params.preserveTexCoords,
@@ -122,7 +126,7 @@ export default class DecimateMeshTask extends Task
             };
 
             if (params.computeVertexNormals) {
-                toolOptions.filters.push({
+                settings.filters.push({
                     name: "ComputeVertexNormals",
                     params: {
                         "weightMode": 2 // area weighted
@@ -136,7 +140,7 @@ export default class DecimateMeshTask extends Task
                     size = size.toString() + "%";
                 }
                 console.log("MINCOMPONENTSIZE",size);
-                toolOptions.filters.unshift({
+                settings.filters.unshift({
                     name: "RemoveIsolatedPieces",
                     params: {
                         "MinComponentDiag": size,
@@ -146,7 +150,7 @@ export default class DecimateMeshTask extends Task
             }
 
             if (params.cleanup) {
-                toolOptions.filters.unshift(
+                settings.filters.unshift(
                     { name: "RemoveUnreferencedVertices" },
                     { name: "RemoveDuplicateVertices" },
                     { name: "RemoveDuplicateFaces" },
@@ -155,15 +159,15 @@ export default class DecimateMeshTask extends Task
             }
 
             if (params.inspectMesh) {
-                toolOptions.filters.unshift({
+                settings.filters.unshift({
                     name: "MeshReport"
                 });
             }
 
-            this.addTool("Meshlab", toolOptions);
+            this.addTool("Meshlab", settings);
         }
         else if (params.tool === "RapidCompact") {
-            const toolOptions: IRapidCompactToolOptions = {
+            const toolOptions: IRapidCompactToolSettings = {
                 inputMeshFile: params.inputMeshFile,
                 outputMeshFile: params.outputMeshFile,
                 mode: "decimate",
@@ -181,22 +185,34 @@ export default class DecimateMeshTask extends Task
         }
     }
 
-    protected postToolExit(toolInstance: LegacyTool)
+    /**
+     * Watch instance messages for a JSON formatted inspection report.
+     * @param event
+     */
+    protected onInstanceMessage(event: IToolMessageEvent)
     {
-        super.postToolExit(toolInstance);
+        const { instance, message } = event;
+        const inspectMesh = (this.parameters as IDecimateMeshTaskParameters).inspectMesh;
 
-        if (toolInstance instanceof MeshlabTool) {
-            const inspectMesh = (this.parameters as IDecimateMeshTaskParameters).inspectMesh;
+        if (inspectMesh && instance.tool instanceof MeshlabTool && message.startsWith("JSON={")) {
 
-            if (inspectMesh) {
-                const inspection = toolInstance.inspectionReport;
-                this.report.result.inspection = inspection;
+            let inspectionReport = null;
+
+            try {
+                inspectionReport = JSON.parse(message.substr(5));
+                this.report.result["inspection"] = inspectionReport;
 
                 if (typeof inspectMesh === "string") {
-                    const reportFilePath = this.getFilePath(inspectMesh);
-                    fs.writeFileSync(reportFilePath, JSON.stringify(inspection), "utf8");
+                    const reportFilePath = instance.getFilePath(inspectMesh);
+                    fs.writeFileSync(reportFilePath, JSON.stringify(inspectionReport), "utf8");
                 }
             }
+            catch(e) {
+                this.logTaskEvent("warning", "failed to parse mesh inspection report");
+            }
+        }
+        else {
+            super.onInstanceMessage(event);
         }
     }
 }

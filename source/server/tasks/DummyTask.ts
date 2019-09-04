@@ -60,21 +60,18 @@ export default class DummyTask extends Task
         super(options, context);
     }
 
-    run(): Promise<void>
+    protected async execute(): Promise<unknown>
     {
-        this.startTask();
         const options = this.parameters as IDummyTaskParameters;
 
         return new Promise((resolve, reject) => {
 
             setTimeout(() => {
                 if (options.outcome === "success") {
-                    this.endTask(null, "done");
                     return resolve();
                 }
 
                 const err = new Error("Task is set to fail");
-                this.endTask(err, "error");
                 return reject(err);
 
             }, options.duration)

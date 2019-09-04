@@ -17,10 +17,11 @@
 
 import Job from "../app/Job";
 
-import { IXNormalToolOptions } from "../tools/XNormalTool";
-import { IRapidCompactToolOptions } from "../tools/RapidCompactTool";
+import { IXNormalToolSettings } from "../tools/XNormalTool";
+import { IRapidCompactToolSettings } from "../tools/RapidCompactTool";
 
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +73,7 @@ export interface IBakeMapsTaskParameters extends ITaskParameters
  * Parameters: [[IBakeMapsTaskParameters]].
  * Tool: [[XNormalTool]].
  */
-export default class BakeMapsTask extends Task
+export default class BakeMapsTask extends ToolTask
 {
     static readonly description = "Bakes various features to texture by projecting them " +
                                   "from a high poly mesh onto the UV space of a low poly mesh.";
@@ -123,9 +124,9 @@ export default class BakeMapsTask extends Task
         }
     }
 
-    protected setupXNormal(parameters: IBakeMapsTaskParameters)
+    private setupXNormal(parameters: IBakeMapsTaskParameters)
     {
-        const toolOptions: IXNormalToolOptions = {
+        const settings: IXNormalToolSettings = {
             highPolyMeshFile: parameters.highPolyMeshFile,
             lowPolyUnwrappedMeshFile: parameters.lowPolyUnwrappedMeshFile,
             mapBaseName: parameters.mapBaseName,
@@ -144,18 +145,18 @@ export default class BakeMapsTask extends Task
             timeout: parameters.timeout
         };
 
-        if (toolOptions.bakeDiffuse) {
-            toolOptions.highPolyDiffuseMapFile = parameters.highPolyDiffuseMapFile;
+        if (settings.bakeDiffuse) {
+            settings.highPolyDiffuseMapFile = parameters.highPolyDiffuseMapFile;
         }
 
-        this.addTool("XNormal", toolOptions);
+        this.addTool("XNormal", settings);
     }
 
-    protected setupRapidCompact(parameters: IBakeMapsTaskParameters)
+    private setupRapidCompact(parameters: IBakeMapsTaskParameters)
     {
         const mapBaseName = parameters.mapBaseName;
 
-        const toolOptions: IRapidCompactToolOptions = {
+        const settings: IRapidCompactToolSettings = {
             mode: "bake",
             mapBaseName,
             mapSize: parameters.mapSize,
@@ -164,6 +165,6 @@ export default class BakeMapsTask extends Task
             timeout: parameters.timeout
         };
 
-        this.addTool("RapidCompact", toolOptions);
+        this.addTool("RapidCompact", settings);
     }
 }

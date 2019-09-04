@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-import * as fs from "fs";
+import * as fs from "fs-extra";
 
 import Job from "../app/Job";
 
-import LegacyTool from "../app/LegacyTool";
-import MeshlabTool, { IMeshlabToolOptions } from "../tools/MeshlabTool";
+import MeshlabTool, { IMeshlabToolSettings } from "../tools/MeshlabTool";
+import MeshSmithTool, { IMeshSmithToolSettings } from "../tools/MeshSmithTool";
 
 import Task, { ITaskParameters } from "../app/Task";
-import { IMeshSmithToolOptions, default as MeshSmithTool } from "../tools/MeshSmithLegacyTool";
+import ToolTask, { IToolMessageEvent, ToolInstance } from "../app/ToolTask";
+
+import { IDecimateMeshTaskParameters } from "./DecimateMeshTask";
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -51,7 +54,7 @@ export interface IInspectMeshTaskParameters extends ITaskParameters
  *
  * Parameters: [[IInspectMeshTaskParameters]]
  */
-export default class InspectMeshTask extends Task
+export default class InspectMeshTask extends ToolTask
 {
     static readonly description = "Inspects a given mesh and provides a detailed report " +
                                   "including topological and geometric features";
@@ -78,7 +81,7 @@ export default class InspectMeshTask extends Task
         super(params, context);
 
         if (params.tool === "Meshlab") {
-            const toolOptions: IMeshlabToolOptions = {
+            const settings: IMeshlabToolSettings = {
                 inputMeshFile: params.meshFile,
                 filters: [{
                     name: "MeshReport"
@@ -86,37 +89,65 @@ export default class InspectMeshTask extends Task
                 timeout: params.timeout
             };
 
-            this.addTool("Meshlab", toolOptions);
+            this.addTool("Meshlab", settings);
         }
         else if (params.tool === "MeshSmith") {
-            const toolOptions: IMeshSmithToolOptions = {
+            const settings: IMeshSmithToolSettings = {
                 inputFile: params.meshFile,
                 //outputFile: params.reportFile,
                 report: true,
                 timeout: params.timeout
             };
 
-            this.addTool("MeshSmith", toolOptions);
+            this.addTool("MeshSmith", settings);
         }
         else {
             throw new Error("InspectMeshTask.constructor - unknown tool: " + params.tool);
         }
     }
 
-    protected postToolExit(toolInstance: LegacyTool)
+    protected onInstanceMessage(event: IToolMessageEvent)
     {
-        super.postToolExit(toolInstance);
+        const { instance, message } = event;
+        const inspectMesh = (this.parameters as IDecimateMeshTaskParameters).inspectMesh;
 
-        if (toolInstance instanceof MeshlabTool || toolInstance instanceof MeshSmithTool) {
-            const inspection = toolInstance.inspectionReport;
-            this.report.result.inspection = inspection;
+        if (inspectMesh && instance.tool instanceof MeshlabTool && message.startsWith("JSON={")) {
+
+            let inspectionReport = null;
+
+            try {
+                inspectionReport = JSON.parse(message.substr(5));
+                this.report.result["inspection"] = inspectionReport;
+
+                if (typeof inspectMesh === "string") {
+                    const reportFilePath = instance.getFilePath(inspectMesh);
+                    fs.writeFileSync(reportFilePath, JSON.stringify(inspectionReport), "utf8");
+                }
+            }
+            catch(e) {
+                this.logTaskEvent("warning", "failed to parse mesh inspection report");
+            }
+        }
+        else {
+            super.onInstanceMessage(event);
+        }
+    }
+
+    protected async instanceDidExit(instance: ToolInstance)
+    {
+        if (instance.tool instanceof MeshlabTool || instance.tool instanceof MeshSmithTool) {
+
+            const inspectionReport = instance.report.results["inspection"];
+            this.report.result.inspection = inspectionReport;
 
             const reportFile = (this.parameters as IInspectMeshTaskParameters).reportFile;
 
             if (reportFile) {
-                const reportFilePath = this.getFilePath(reportFile);
-                fs.writeFileSync(reportFilePath, JSON.stringify(inspection), "utf8");
+                const reportFilePath = instance.getFilePath(reportFile);
+                return fs.writeFile(reportFilePath, JSON.stringify(inspectionReport, null, 2), "utf8");
             }
         }
+
+        return Promise.resolve();
     }
 }

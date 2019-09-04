@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import { promises as fs } from "fs";
+import * as fs from "fs-extra";
+import * as path from "path";
 import * as moment from "moment";
 import * as table from "markdown-table";
 
@@ -26,20 +27,11 @@ const jsonValidator = new Ajv({ useDefaults: true });
 import {
     ITaskParameters,
     ITaskReport,
-    TTaskState,
-    TTaskEndState
+    TaskState,
 } from "common/types";
 
-import LegacyTool, {
-    IToolOptions,
-    IToolStartEvent,
-    IToolMessageEvent,
-    IToolExitEvent
-} from "./LegacyTool";
-
-import { TLogLevel, ITaskLogEvent } from "./TaskLogger";
+import { LogLevel, ITaskLogEvent } from "./TaskLogger";
 import Job from "./Job";
-import * as path from "path";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -47,6 +39,7 @@ export { ITaskParameters };
 
 export default class Task
 {
+    static readonly taskName: string = "";
     static readonly description: string = "";
     static readonly parameterSchema: object = {};
     static readonly parameterValidator: ValidateFunction = null;
@@ -58,24 +51,20 @@ export default class Task
     protected context: Job;
     protected parameters: ITaskParameters;
     protected result: { [id:string]: any };
-    protected tools: LegacyTool[];
 
-    protected currentToolInstance: LegacyTool;
-    protected requestCancel: boolean;
-
+    private _isCancelling: boolean;
+    private _resolveCancelPromise: () => void;
+    private _rejectCancelPromise: () => void;
 
     constructor(params: ITaskParameters, context: Job)
     {
-        this.onToolStart = this.onToolStart.bind(this);
-        this.onToolMessage = this.onToolMessage.bind(this);
-        this.onToolExit = this.onToolExit.bind(this);
-
         this.context = context;
         this.parameters = params;
         this.result = {};
-        this.tools = [];
 
-        this.currentToolInstance = null;
+        this._isCancelling = false;
+        this._resolveCancelPromise = null;
+        this._rejectCancelPromise = null;
 
         this.report = {
             name: this.name,
@@ -90,10 +79,10 @@ export default class Task
             result: this.result
         };
 
-        let validator = this.type.parameterValidator;
+        let validator = this.parameterValidator;
 
         if (!validator) {
-            const message = `parameterValidator undefined for ${this.type.name}`;
+            const message = `parameterValidator undefined for ${this.name}`;
             this.logTaskEvent("error", message);
             throw new Error(message);
         }
@@ -109,188 +98,140 @@ export default class Task
         }
     }
 
-    get type(): typeof Task
-    {
-        return this.constructor as typeof Task;
+    get name(): string {
+        return (this.constructor as typeof Task).taskName;
+    }
+    get description(): string {
+        return (this.constructor as typeof Task).description;
+    }
+    get parameterSchema(): object {
+        return (this.constructor as typeof Task).parameterSchema;
+    }
+    get parameterValidator() {
+        return (this.constructor as typeof Task).parameterValidator;
+    }
+    get state() {
+        return this.report.state;
+    }
+    get isCancelling() {
+        return this._isCancelling;
     }
 
-    get name(): string
+    async run(): Promise<void>
     {
-        const typeName = this.type.name;
-        return typeName.substr(0, typeName.length - 4);
-    }
-
-    get description(): string
-    {
-        return this.type.description;
-    }
-
-    get parameterSchema(): object
-    {
-        return this.type.parameterSchema;
-    }
-
-    run(): Promise<void>
-    {
-        if (this.report.state !== "created") {
+        if (this.state !== "created") {
             return Promise.reject(new Error(
                 `task is in '${this.report.state}' state, but can only be run in 'created' state`));
         }
 
+        // bookkeeping, set state to "running"
         this.startTask();
 
-        return this.runTool()
+        return this.willStart()
+            .then(() => this.execute())
             .then(() => {
-                if (this.requestCancel) {
-                    this.endTask(null, "cancelled");
+                if (this.isCancelling) {
+                    this.endTask("cancelled");
+                    this.resolveCancel();
                 }
                 else {
-                    this.endTask(null, "done");
+                    this.endTask("done");
                 }
             })
             .catch(err => {
-                this.endTask(err, "error");
+                this.endTask("error", err);
                 throw err;
-            });
+            })
+            .finally(() => this.didFinish());
     }
 
-    cancel(): Promise<void>
+    /**
+     * Cancels the task. Returns a promise which is resolved when cancellation is complete and
+     * the task's state has been switched to "cancelled".
+     */
+    async cancel(): Promise<unknown>
     {
+        if (this.isCancelling) {
+            return Promise.reject("cancellation already in progress");
+        }
+
         const report = this.report;
 
+        // if task hasn't been started, we return immediately, setting the state to "cancelled"
         if (report.state === "created") {
             report.state = "cancelled";
             return Promise.resolve();
         }
+
+        // if task has ended, we return immediately, doing nothing
         if (report.state !== "waiting" && report.state !== "running") {
             return Promise.resolve();
         }
 
-        // set cancellation request flag
-        this.requestCancel = true;
+        // task is either waiting or running, return a cancel promise
+        this._isCancelling = true;
+        return this.waitCancel();
+    }
 
-        // if a tool is running, ask it to cancel
-        if (this.currentToolInstance) {
-            return this.currentToolInstance.cancel();
-        }
+    /**
+     * The default implementation for cancelling a task creates a promise and waits for a confirmation
+     * call to either Task.resolveCancel() or Task.rejectCancel(). It fails if the task isn't cancelled
+     * within 5 seconds.
+     */
+    protected async waitCancel(): Promise<unknown>
+    {
+        let timeoutHandler;
 
         return new Promise((resolve, reject) => {
+            this._resolveCancelPromise = () => {
+                clearTimeout(timeoutHandler);
+                resolve();
+            };
+            this._rejectCancelPromise = () => {
+                clearTimeout(timeoutHandler);
+                reject();
+            };
 
             // if cancellation not successful after 5 seconds, throw error
-            const timeoutHandler = setTimeout(() => {
-                clearInterval(waitHandler);
+            timeoutHandler = setTimeout(() => {
                 return reject(new Error("failed to cancel within 5 seconds"));
             }, 5000);
-
-            // polling timer, wait until request flag is cleared
-            const waitHandler = setInterval(() => {
-                if (this.requestCancel === false) {
-                    clearTimeout(timeoutHandler);
-                    clearInterval(waitHandler);
-                    return resolve();
-                }
-            }, 100);
+        }).finally(() => {
+            this._resolveCancelPromise = null;
+            this._rejectCancelPromise = null;
         });
     }
 
-    addTool(toolName: string, options: IToolOptions)
+    /**
+     * Executes the task. Subclasses must override this method.
+     */
+    protected async execute(): Promise<unknown>
     {
-        const toolInstance = this.context.manager.createToolInstance(toolName, options, this.context.jobDir);
-        this.report.tools.push(toolInstance.report);
-        this.tools.push(toolInstance);
+        return Promise.reject("must override");
     }
 
-    protected startTask()
+    protected async willStart(): Promise<unknown>
     {
-        const time = new Date();
-        const report = this.report;
-
-        report.start = time.toISOString();
-        report.state = "running";
-
-        this.onTaskStart(time);
-
-        this.context.logEvent({
-            time, module: "task", level: "info",  message: "started", sender: this.name
-        });
+        return Promise.resolve();
     }
 
-    protected endTask(error: Error, endState: TTaskEndState)
+    protected async didFinish(): Promise<unknown>
     {
-        this.requestCancel = false;
+        return Promise.resolve();
+    }
 
-        const time = new Date();
-        this.onTaskEnd(time, error, endState);
-
-        const report = this.report;
-        report.state = endState;
-        report.end = time.toISOString();
-        report.duration = (time.valueOf() - (new Date(report.start).valueOf())) * 0.001;
-
-        const formattedDuration = moment.utc(
-            moment.duration(report.duration, "seconds").asMilliseconds()).format("HH:mm:ss.SSS");
-
-        if (endState === "error") {
-            report.error = error.message;
-
-            this.context.logEvent({
-                time, module: "task", level: "error", sender: this.name,
-                message: `terminated with error after ${formattedDuration}`
-            });
-        }
-        else if (endState === "cancelled") {
-            this.context.logEvent({
-                time, module: "task", level: "warning", sender: this.name,
-                message: `cancelled by user after ${formattedDuration}`
-            });
-        }
-        else {
-            this.context.logEvent({
-                time, module: "task", level: "info", sender: this.name,
-                message: `completed successfully after ${formattedDuration}`
-            });
+    protected resolveCancel()
+    {
+        if (this._resolveCancelPromise) {
+            this._resolveCancelPromise();
         }
     }
 
-    protected onTaskStart(time: Date)
+    protected rejectCancel()
     {
-    }
-
-    protected onTaskEnd(time: Date, error: Error, endState: TTaskState)
-    {
-    }
-
-    protected runTool(): Promise<void>
-    {
-        const toolInstance = this.tools[0];
-        this.preToolStart(toolInstance);
-
-        return toolInstance.run()
-        .then(() => {
-            this.postToolExit(toolInstance);
-        })
-        .catch(err => {
-            this.postToolExit(toolInstance);
-            throw err;
-        });
-    }
-
-    protected preToolStart(toolInstance: LegacyTool)
-    {
-        this.currentToolInstance = toolInstance;
-
-        toolInstance.on("start", this.onToolStart);
-        toolInstance.on("message", this.onToolMessage);
-        toolInstance.on("exit", this.onToolExit);
-    }
-
-    protected postToolExit(toolInstance: LegacyTool)
-    {
-        toolInstance.off("start", this.onToolStart);
-        toolInstance.off("message", this.onToolMessage);
-        toolInstance.off("exit", this.onToolExit);
-
-        this.currentToolInstance = null;
+        if (this._rejectCancelPromise) {
+            this._rejectCancelPromise();
+        }
     }
 
     protected logEvent(event: ITaskLogEvent)
@@ -311,7 +252,7 @@ export default class Task
         });
     }
 
-    protected logTaskEvent(level: TLogLevel, message: string, sender?: string)
+    protected logTaskEvent(level: LogLevel, message: string, sender?: string)
     {
         this.logEvent({
             time: new Date(),
@@ -372,30 +313,50 @@ export default class Task
         }
     }
 
-    protected onToolStart(e: IToolStartEvent)
+    private startTask()
     {
-        const message = `tool '${e.sender.name}' started: ${e.sender.report.execution.command}`;
+        const time = new Date();
+        const report = this.report;
 
-        this.logTaskEvent("info", message);
-    }
+        report.start = time.toISOString();
+        report.state = "running";
 
-    protected onToolExit(e: IToolExitEvent)
-    {
-        const exec = e.sender.report.execution;
-        const isError = exec.state === "error";
-        const isTimeout = exec.state === "timeout";
-
-        const message =
-            `tool '${e.sender.name}' exited after ${exec.duration} seconds - ` +
-            `${isError ? `ERROR: (${exec.code}) ${exec.error}` : (isTimeout ? "ERROR: Timeout" : "OK")}`;
-
-        this.logTaskEvent(isError ? "warning" : "info", message);
-    }
-
-    protected onToolMessage(e: IToolMessageEvent)
-    {
-        this.logEvent({
-            time: e.time, module: "tool", level: "debug", message: `>> ${e.message}`, sender: e.sender.name
+        this.context.logEvent({
+            time, module: "task", level: "info",  message: "started", sender: this.name
         });
+    }
+
+    private endTask(state: TaskState, error?: Error)
+    {
+        const time = new Date();
+
+        const report = this.report;
+        report.state = state;
+        report.end = time.toISOString();
+        report.duration = (time.valueOf() - (new Date(report.start).valueOf())) * 0.001;
+
+        const formattedDuration = moment.utc(
+            moment.duration(report.duration, "seconds").asMilliseconds()).format("HH:mm:ss.SSS");
+
+        if (state === "error") {
+            report.error = error.message;
+
+            this.context.logEvent({
+                time, module: "task", level: "error", sender: this.name,
+                message: `terminated with error after ${formattedDuration}`
+            });
+        }
+        else if (state === "cancelled") {
+            this.context.logEvent({
+                time, module: "task", level: "warning", sender: this.name,
+                message: `cancelled by user after ${formattedDuration}`
+            });
+        }
+        else {
+            this.context.logEvent({
+                time, module: "task", level: "info", sender: this.name,
+                message: `completed successfully after ${formattedDuration}`
+            });
+        }
     }
 }

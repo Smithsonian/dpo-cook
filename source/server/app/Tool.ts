@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-import ToolInstance, { IToolStateEvent, IToolMessageEvent } from "./ToolInstance";
+import ToolInstance, { IToolStateEvent, IToolMessageEvent, IToolScript } from "./ToolInstance";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export { ToolInstance, IToolStateEvent, IToolMessageEvent };
+export { ToolInstance, IToolStateEvent, IToolMessageEvent, IToolScript };
 
 export interface IToolConfiguration
 {
@@ -43,10 +43,7 @@ export type ToolState = "created" | "waiting" | "running" | "done" | "error" | "
 export interface IToolSetup
 {
     command: string;
-    script?: {
-        filePath: string;
-        content: string;
-    }
+    script?: IToolScript
 }
 
 export default class Tool<
@@ -60,8 +57,8 @@ export default class Tool<
 
     readonly configuration: IToolConfiguration;
 
-    private _runningInstances: ToolInstance<T, S>[];
-    private _waitingInstances: ToolInstance<T, S>[];
+    private _runningInstances: ToolInstance[];
+    private _waitingInstances: ToolInstance[];
 
     get name() {
         return (this.constructor as typeof Tool).toolName;
@@ -80,6 +77,12 @@ export default class Tool<
         this._runningInstances = [];
     }
 
+    /**
+     * Creates and returns an instance for this tool. The instance object keeps track of the
+     * tool instance's state and settings.
+     * @param settings The settings to be used for instance invocation.
+     * @param workDir The path to the directory to be used for work files.
+     */
     createInstance(settings: S, workDir: string): ToolInstance<T, S>
     {
         settings = this.conformSettings(settings);
@@ -87,12 +90,20 @@ export default class Tool<
         return new ToolInstance<T, S>(tool, settings, workDir);
     }
 
+    /**
+     * Returns true if this tool can run additional instances. The maximum number of instances
+     * is defined in the tool configuration.
+     */
     canRunInstance()
     {
         return this.runningInstanceCount < this.configuration.maxInstances;
     }
 
-    onInstanceState(event: IToolStateEvent<T, S>)
+    /**
+     * Called when the state of a tool instance changes.
+     * @param event
+     */
+    onInstanceState(event: IToolStateEvent)
     {
         const { instance, state } = event;
 
@@ -116,16 +127,21 @@ export default class Tool<
         }
     }
 
-    onInstanceMessage(event: IToolMessageEvent<T, S>)
+    /**
+     * Called with messages from running tool instances.
+     * @param event
+     */
+    onInstanceMessage(event: IToolMessageEvent)
     {
-
     }
 
     /**
-     *
+     * Subclasses must override.
+     * Called before the tool instance is started. Must return an [IToolSetup]
+     * with a command to be executed and optionally a generated script file.
      * @param instance
      */
-    setup(instance: ToolInstance<T, S>): Promise<IToolSetup>
+    async setupInstance(instance: ToolInstance): Promise<IToolSetup>
     {
         return Promise.reject("must override");
     }
@@ -135,7 +151,7 @@ export default class Tool<
      * Override to perform setup tasks.
      * @param instance The tool instance about to be executed.
      */
-    willStart(instance: ToolInstance<T, S>): Promise<unknown>
+    async instanceWillStart(instance: ToolInstance): Promise<unknown>
     {
         return Promise.resolve();
     }
@@ -145,13 +161,14 @@ export default class Tool<
      * Override to perform cleanup tasks.
      * @param instance The tool instance that exited.
      */
-    didExit(instance: ToolInstance<T, S>): Promise<unknown>
+    async instanceDidExit(instance: ToolInstance): Promise<unknown>
     {
         return Promise.resolve();
     }
 
     private conformSettings(settings: S): S
     {
+        // merges given settings with the default settings. Omits setting props with a value of 'undefined'.
         const defaultSettings = (this.constructor as typeof Tool).defaultSettings;
         const mergedSettings = Object.assign({}, defaultSettings);
         const settingsKeys = Object.getOwnPropertyNames(settings);

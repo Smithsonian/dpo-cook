@@ -23,7 +23,7 @@ import * as Ajv from "ajv";
 const jsonValidator = new Ajv({ useDefaults: true, allErrors: true });
 jsonValidator.addFormat("file", value => true);
 
-import { IRecipe, ITaskReport, TTaskEndState, TTaskState } from "common/types";
+import { IRecipe, ITaskReport, TaskState } from "common/types";
 
 import Job from "../app/Job";
 import Task, { ITaskParameters } from "../app/Task";
@@ -48,7 +48,7 @@ export interface IRecipeReport
     duration: number;
 
     /** Current execution state. */
-    state: TTaskState;
+    state: TaskState;
     /** Currently executed recipe step. */
     step: string;
     /** Error message if an error has occurred. */
@@ -134,90 +134,53 @@ export default class RecipeTask extends Task
         this.configureJsonata(input);
     }
 
-    run(): Promise<void>
-    {
-        this.startTask();
-        this.recipeDidFail = false;
-
-        return this.executeStep(this.recipe.start)
-            .then(() => {
-                if (this.requestCancel) {
-                    this.endTask(null, "cancelled");
-                }
-                else {
-                    this.endTask(null, "done");
-                }
-            })
-            .catch(err => {
-                this.endTask(err, "error");
-                throw err;
-            });
-    }
-
-    cancel(): Promise<void>
-    {
-        if (this.report.state !== "running") {
-            return Promise.resolve();
-        }
-
-        // set cancellation request flag
-        this.requestCancel = true;
-
-        // if a sub-task is running, delegate cancellation
-        if (this.currentTask) {
-            return this.currentTask.cancel();
-        }
-
-        // otherwise wait while polling for the flag to clear
-        return new Promise((resolve, reject) => {
-
-            // if cancellation not successful after 5 seconds, throw error
-            const timeoutHandler = setTimeout(() => {
-                clearInterval(waitHandler);
-                return reject(new Error("failed to cancel within 5 seconds"));
-            }, 5000);
-
-            // polling timer, wait until request flag is cleared
-            const waitHandler = setInterval(() => {
-                if (this.requestCancel === false) {
-                    clearTimeout(timeoutHandler);
-                    clearInterval(waitHandler);
-                    return resolve();
-                }
-            }, 100);
-        });
-    }
-
-    protected get recipeReport()
-    {
+    protected get recipeReport() {
         return this.context.data.report;
     }
 
-    protected startTask()
+    protected async execute(): Promise<unknown>
     {
-        super.startTask();
+        this.recipeDidFail = false;
+        return this.executeStep(this.recipe.start);
+    }
 
+    protected async waitCancel(): Promise<unknown>
+    {
+        if (this.currentTask) {
+            this.currentTask.cancel();
+        }
+
+        return super.waitCancel();
+    }
+
+    protected async willStart(): Promise<unknown>
+    {
         const report = this.recipeReport;
         report.start = this.report.start;
         report.state = "running";
+
+        return Promise.resolve();
     }
 
-    protected endTask(error: Error, endState: TTaskEndState)
+    protected async didFinish(): Promise<unknown>
     {
-        super.endTask(error, endState);
-
         const report = this.recipeReport;
         report.end = this.report.end;
         report.duration = this.report.duration;
-        report.state = endState;
-        report.error = error ? error.message : "";
-        report.step = endState === "done" ? "" : report.step;
+        report.state = this.report.state;
+        report.error = this.report.error;
+
+        if (report.state === "done") {
+            report.step = "";
+        }
+
+        return Promise.resolve();
     }
 
     protected executeStep(stepName: string, err?: Error): Promise<void>
     {
         // if a cancellation request is pending, resolve immediately
-        if (this.requestCancel) {
+        if (this.isCancelling) {
             return Promise.resolve();
         }
         // if the recipe already failed, reject immediately
@@ -302,7 +265,7 @@ export default class RecipeTask extends Task
             .then(() => {
                 this.currentTask = null;
 
-                if (this.requestCancel) {
+                if (this.isCancelling) {
                     return Promise.resolve();
                 }
 

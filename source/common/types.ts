@@ -19,10 +19,9 @@
 
 import { Dictionary } from "@ff/core/types";
 
-export type TJobPriority = "high" | "normal" | "low";
-export type TLogLevel = "debug" | "info" | "warning" | "error";
-export type TTaskState = "created" | "waiting" | "running" | "done" | "error" | "cancelled";
-export type TTaskEndState = "done" | "error" | "cancelled";
+export type JobPriority = "high" | "normal" | "low";
+export type LogLevel = "debug" | "info" | "warning" | "error";
+export type TaskState = "created" | "waiting" | "running" | "done" | "error" | "cancelled";
 
 /** Describes the submission of a new job. */
 export interface IJobOrder
@@ -44,7 +43,7 @@ export interface IJobOrder
     };
 
     /** Priority of this job. */
-    priority?: TJobPriority;
+    priority?: JobPriority;
     /** Submission date and time (ISO formatted string). */
     submission?: string;
 }
@@ -71,7 +70,7 @@ export interface IJobInfo
     recipe: IRecipeInfo;
 
     /** Priority of this job. */
-    priority: TJobPriority;
+    priority: JobPriority;
     /** Submission date and time (ISO formatted string). */
     submission: string;
     /** Job start date and time (ISO formatted string). */
@@ -82,7 +81,7 @@ export interface IJobInfo
     duration: number;
 
     /** Current execution state of the job. */
-    state: TTaskState;
+    state: TaskState;
     /** Currently executed processing step. */
     step: string;
     /** In case of an error: description of the problem. */
@@ -99,7 +98,7 @@ export interface IJobReport
     clientId: string;
 
     /** Priority of this job. */
-    priority: TJobPriority;
+    priority: JobPriority;
     /** Submission date and time (ISO formatted string). */
     submission: string;
 
@@ -118,7 +117,7 @@ export interface IJobReport
     duration: number;
 
     /** Current execution state. */
-    state: TTaskState;
+    state: TaskState;
     /** Currently executed recipe step. */
     step: string;
     /** Error message if an error has occurred. */
@@ -132,7 +131,7 @@ export interface IJobLogEvent
 {
     time: Date;
     module: string;
-    level: TLogLevel;
+    level: LogLevel;
     message: string;
     sender: string;
     clientId: string;
@@ -162,12 +161,12 @@ export interface ITaskReport
     /** If this task is part of a sequence, the id of the task step. */
     step?: string;
 
-    state: TTaskState;
+    state: TaskState;
     error: string;
 
     log: Array<{
         time: string;
-        level: TLogLevel;
+        level: LogLevel;
         message: string;
     }>;
 

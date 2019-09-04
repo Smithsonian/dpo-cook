@@ -8,7 +8,6 @@
         "module": "commonjs",
         "sourceMap": true,
         "resolveJsonModule": true,
-
         "outDir": "../../server/bin",
         "baseUrl": "../../server/bin/node_modules"
     },

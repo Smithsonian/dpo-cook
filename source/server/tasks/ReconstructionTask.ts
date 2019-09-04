@@ -17,8 +17,10 @@
 
 import Job from "../app/Job";
 
-import { IRealityCaptureToolOptions } from "../tools/RealityCaptureTool";
+import { IRealityCaptureToolSettings } from "../tools/RealityCaptureTool";
+
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +39,7 @@ export interface IReconstructionTaskParameters extends ITaskParameters
  * Tool: [[RealityCaptureTool]],
  * Parameters: [[IReconstructionTaskParameters]]
  */
-export default class ReconstructionTask extends Task
+export default class ReconstructionTask extends ToolTask
 {
     static readonly description = "Uses RealityCapture photogrammetry software to create a 3D model.";
 
@@ -60,12 +62,12 @@ export default class ReconstructionTask extends Task
     {
         super(params, context);
 
-        const toolOptions: IRealityCaptureToolOptions = {
+        const settings: IRealityCaptureToolSettings = {
             inputImageFolderName: params.inputImageFolderName,
             timeout: params.timeout
         };
 
-        this.addTool("RealityCapture", toolOptions);
+        this.addTool("RealityCapture", settings);
     }
 }
 

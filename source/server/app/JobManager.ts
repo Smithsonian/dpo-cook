@@ -29,8 +29,8 @@ import Publisher from "@ff/core/Publisher";
 import {
     IRecipe,
     IRecipeInfo,
-    TJobPriority,
-    TTaskState
+    JobPriority,
+    TaskState
 } from "common/types";
 
 import TaskManager from "./TaskManager";
@@ -63,7 +63,7 @@ export interface IJobOrder
     };
 
     /** Priority of this job. */
-    priority?: TJobPriority;
+    priority?: JobPriority;
     /** Submission date and time (ISO formatted string). */
     submission?: string;
 }
@@ -79,7 +79,7 @@ export interface IJobReport extends IRecipeReport
     clientId: string;
 
     /** Priority of this job. */
-    priority: TJobPriority;
+    priority: JobPriority;
     /** Submission date and time (ISO formatted string). */
     submission: string;
 }
@@ -97,7 +97,7 @@ export interface IJobInfo
     recipe: IRecipeInfo;
 
     /** Priority of this job. */
-    priority: TJobPriority;
+    priority: JobPriority;
     /** Submission date and time (ISO formatted string). */
     submission: string;
     /** Job start date and time (ISO formatted string). */
@@ -108,7 +108,7 @@ export interface IJobInfo
     duration: number;
 
     /** Current execution state of the job. */
-    state: TTaskState;
+    state: TaskState;
     /** Currently executed processing step. */
     step: string;
     /** In case of an error: description of the problem. */

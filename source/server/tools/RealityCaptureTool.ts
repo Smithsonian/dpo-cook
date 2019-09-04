@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-import LegacyTool, { IToolOptions } from "../app/LegacyTool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IRealityCaptureToolOptions extends IToolOptions
+export interface IRealityCaptureToolSettings extends IToolSettings
 {
     inputImageFolderName: string;
 }
 
-export default class RealityCaptureTool extends LegacyTool
-{
-    static readonly type: string = "RealityCaptureTool";
+export type RealityCaptureInstance = ToolInstance<RealityCaptureTool, IRealityCaptureToolSettings>;
 
-    protected static readonly defaultOptions: Partial<IRealityCaptureToolOptions> = {
+export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealityCaptureToolSettings>
+{
+    static readonly toolName = "RealityCapture";
+
+    protected static readonly defaultOptions: Partial<IRealityCaptureToolSettings> = {
         inputImageFolderName: ""
     };
 
-    run(): Promise<void>
+    async setupInstance(instance: RealityCaptureInstance): Promise<IToolSetup>
     {
-        const options = this.options as IRealityCaptureToolOptions;
+        const settings = instance.settings;
 
-        const inputImageFolderName = this.getFilePath(options.inputImageFolderName);
+        const inputImageFolderName = instance.getFilePath(settings.inputImageFolderName);
         if (!inputImageFolderName) {
             throw new Error("RealityCaptureTool: missing image folder name");
         }
@@ -44,6 +46,7 @@ export default class RealityCaptureTool extends LegacyTool
         let operations = "";
 
         const command = `"${this.configuration.executable}" ${operations}`;
-        return this.waitInstance(command);
+
+        return Promise.resolve({ command });
     }
 }

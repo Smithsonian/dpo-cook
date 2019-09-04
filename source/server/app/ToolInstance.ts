@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import * as fs from "fs-extra";
 import * as path from "path";
 import * as osUtils from "os-utils";
 import * as child_process from "child_process";
@@ -51,33 +52,44 @@ export interface IToolReport
             level: string;
             message: string;
         }>;
+
+        results?: any;
     };
 }
 
 export interface IToolScript
 {
-    filePath: string;
+    fileName: string;
     content: string;
 }
 
-export interface IToolStateEvent<T extends Tool, S extends IToolSettings> extends ITypedEvent<"state">
+export interface IToolStateEvent extends ITypedEvent<"state">
 {
     time: Date;
     state: ToolState;
-    instance: ToolInstance<T, S>;
+    instance: ToolInstance;
 }
 
 export type MessageLevel = "debug" | "info" | "warning" | "error";
 
-export interface IToolMessageEvent<T extends Tool, S extends IToolSettings> extends ITypedEvent<"message">
+export interface IToolMessageEvent extends ITypedEvent<"message">
 {
     time: Date;
     level: MessageLevel;
     message: string;
-    instance: ToolInstance<T, S>;
+    instance: ToolInstance;
 }
 
-export default class ToolInstance<T extends Tool, S extends IToolSettings> extends Publisher
+/**
+ * An instance of a tool. For each tool, instances can be created using the tool's createInstance() method.
+ * After creation, an instance is invoked using the run() method. Execution can be cancelled using the cancel() method.
+ * Instance objects keep track of the instance's settings and state.
+ *
+ * The number of instances which can be run simultaneously is limited and defined in each tool's configuration.
+ * If an instance can't be started immediately after run() is called, it enters "waiting" state until instance slots
+ * become available for the tool.
+ */
+export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings = IToolSettings> extends Publisher
 {
     readonly tool: T;
     readonly settings: S;
@@ -112,31 +124,25 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
         return this.settings.timeout || this.tool.configuration.timeout;
     }
 
-    getFilePath(fileName: string): string
-    {
-        if (!fileName) {
-            return "";
-        }
-
-        return path.resolve(this.workDir, fileName);
-    }
-
-    async run(): Promise<void>
+    async run(): Promise<unknown>
     {
         const tool = this.tool;
         const report = this.report.execution;
 
-        const setup = await tool.setup(this);
+        return tool.setupInstance(this).then(setup => {
+            report.command = setup.command;
+            report.script = setup.script;
 
-        report.command = setup.command;
-        report.script = setup.script;
-
-        const canStart = await this.wait();
-        if (canStart) {
-            await tool.willStart(this);
-            await this.start(setup);
-            await tool.didExit(this);
-        }
+            return this.wait().then(cancelled => {
+                if (!cancelled) {
+                    return tool.instanceWillStart(this)
+                    .then(() => {
+                        return this.execute(setup)
+                        .finally(() => tool.instanceDidExit(this));
+                    });
+                }
+            });
+        });
     }
 
     async cancel(): Promise<void>
@@ -170,14 +176,81 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
         });
     }
 
-    async wait(): Promise<boolean>
+    /**
+     * Helper method, returns an absolute path to the given file in the instance's work directory.
+     * @param fileName
+     */
+    getFilePath(fileName: string): string
+    {
+        if (!fileName) {
+            return "";
+        }
+
+        return path.resolve(this.workDir, fileName);
+    }
+
+    /**
+     * Helper method, writes a file to the instance's work directory.
+     * @param fileName
+     * @param content
+     */
+    async writeFile(fileName: string, content: string): Promise<unknown>
+    {
+        const filePath = this.getFilePath(fileName);
+        return fs.writeFile(filePath, content)
+        .then(() => this.emitMessage("debug", `file written: '${fileName}'`));
+    }
+
+    /**
+     * Helper method, renames a file in the instance's work directory.
+     * @param oldFileName
+     * @param newFileName
+     */
+    async renameFile(oldFileName: string, newFileName: string): Promise<unknown>
+    {
+        const oldFilePath = this.getFilePath(oldFileName);
+        const newFilePath = this.getFilePath(newFileName);
+
+        return fs.exists(oldFilePath).then(exists => {
+            if (exists) {
+                return fs.rename(oldFilePath, newFilePath)
+                .then(() => this.emitMessage("debug", `renamed file '${oldFileName}' to '${newFileName}'`));
+            }
+
+            throw new Error(`failed to rename file, can't find '${oldFileName}'`);
+        })
+    }
+
+    /**
+     * Helper method, deletes a file from the instance's work directory.
+     * @param fileName
+     */
+    async removeFile(fileName: string): Promise<unknown>
+    {
+        const filePath = this.getFilePath(fileName);
+
+        return fs.exists(filePath).then(exists => {
+            if (exists) {
+                return fs.unlink(filePath)
+                .then(() => this.emitMessage("debug", `file removed: '${fileName}'`));
+            }
+
+            throw new Error(`failed to remove file, can't find '${fileName}'`);
+        })
+    }
+
+    /**
+     * Waits until there are sufficient resources available for the instance to run.
+     * Returns true if cancelled during the wait.
+     */
+    protected async wait(): Promise<boolean>
     {
         return new Promise((resolve, reject) => {
 
             // tool instances and CPU available? then run immediately
             osUtils.cpuUsage(usage => {
                 if (this.tool.canRunInstance() && usage < 0.9) {
-                    return resolve(true);
+                    return resolve(false);
                 }
 
                 // set an interval timer and wait for an instance to become available
@@ -189,14 +262,14 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
                         this._requestCancel = false;
                         this.setState("cancelled");
                         clearInterval(handler);
-                        return resolve(false);
+                        return resolve(true);
                     }
 
                     osUtils.cpuUsage(usage => {
                         // start polling; if an instance becomes available, run the tool
                         if (this.tool.canRunInstance() && usage < 0.9) {
                             clearInterval(handler);
-                            return resolve(true);
+                            return resolve(false);
                         }
                     });
                 }, 2000);
@@ -204,7 +277,7 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
         });
     }
 
-    async start(setup: IToolSetup)
+    protected async execute(setup: IToolSetup)
     {
         const tool = this.tool;
         const report = this.report.execution;
@@ -228,7 +301,7 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
             const dataHandler = data => {
                 const text = data ? data.toString().trim() : "";
                 text && text.split("\n").forEach(message => {
-                    this.logMessage("debug", message);
+                    this.emitMessage("debug", message);
                 });
             };
 
@@ -243,17 +316,17 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
                     terminated = true;
                     if (signal) {
                         const error = new Error(`Tool ${tool.name}: terminated with signal '${signal}' and code: '${code}'`);
-                        this.exit(error, code, "error");
+                        this.exit("error", code, error);
                         return reject(error);
                     }
 
                     if (code !== 0) {
                         const error = new Error(`Tool ${tool.name}: terminated with code: ${code}`);
-                        this.exit(error, code, "error");
+                        this.exit("error", code, error);
                         return reject(error);
                     }
 
-                    this.exit(null, 0, "done");
+                    this.exit("done", 0);
                     return resolve();
                 }
             });
@@ -274,11 +347,11 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
 
                         if (endState === "error" || endState === "timeout") {
                             const error = new Error(`Tool ${tool.name}: ${reason}`);
-                            this.exit(error, 0, endState);
+                            this.exit(endState, 0, error);
                             reject(error);
                         }
                         else {
-                            this.exit(null, 0, endState);
+                            this.exit(endState, 0);
                             resolve();
                         }
                     }, 1000);
@@ -307,7 +380,13 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
         });
     }
 
-    protected exit(error: Error, code: number, endState: ToolState)
+    /**
+     * Called after the tool has exited. Does bookkeeping and keeps track of the exit state.
+     * @param endState
+     * @param code
+     * @param error
+     */
+    protected exit(endState: ToolState, code: number, error?: Error)
     {
         // bookkeeping
         const report = this.report.execution;
@@ -328,7 +407,7 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
             `tool '${this.tool.name}' exited after ${report.duration} seconds - ` +
             `${isError ? `ERROR: (${code}) ${error.message}` : (isTimeout ? "ERROR: Timeout" : "OK")}`;
 
-        this.logMessage(level, message);
+        this.emitMessage(level, message);
         this.setState(endState);
 
         // if tool completed successfully, don't keep debug messages
@@ -340,21 +419,14 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
         this._requestCancel = false;
     }
 
-    protected setState(state: ToolState)
+    /**
+     * Sends a message from the instance. Emits an [[IToolMessageEvent]].
+     * @param level
+     * @param message
+     */
+    protected emitMessage(level: MessageLevel, message: string)
     {
-        this.report.execution.state = state;
-
-        const event: IToolStateEvent<T, S> = {
-            type: "state", time: new Date(), state, instance: this
-        };
-
-        this.tool.onInstanceState(event);
-        this.emit(event);
-    }
-
-    protected logMessage(level: MessageLevel, message: string)
-    {
-        const event: IToolMessageEvent<T, S> = {
+        const event: IToolMessageEvent = {
             type: "message", time: new Date(), level, message, instance: this
         };
 
@@ -362,7 +434,23 @@ export default class ToolInstance<T extends Tool, S extends IToolSettings> exten
         this.emit(event);
     }
 
-    protected createReport(): IToolReport
+    /**
+     * Changes the state of the instance. Emits a [[IToolStateEvent]].
+     * @param state
+     */
+    protected setState(state: ToolState)
+    {
+        this.report.execution.state = state;
+
+        const event: IToolStateEvent = {
+            type: "state", time: new Date(), state, instance: this
+        };
+
+        this.tool.onInstanceState(event);
+        this.emit(event);
+    }
+
+    private createReport(): IToolReport
     {
         const configuration = this.tool.configuration;
 

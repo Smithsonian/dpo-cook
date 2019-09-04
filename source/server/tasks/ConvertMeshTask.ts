@@ -19,11 +19,12 @@ import * as path from "path";
 
 import Job from "../app/Job";
 
-import { IMeshSmithToolOptions } from "../tools/MeshSmithLegacyTool";
-import { IMeshlabToolOptions } from "../tools/MeshlabTool";
-import { IFBX2glTFToolOptions, TFBX2glTFComputeNormals } from "../tools/FBX2glTFTool";
+import { IMeshSmithToolSettings } from "../tools/MeshSmithTool";
+import { IMeshlabToolSettings } from "../tools/MeshlabTool";
+import { IFBX2glTFToolSettings, TFBX2glTFComputeNormals } from "../tools/FBX2glTFTool";
 
 import Task, { ITaskParameters } from "../app/Task";
+import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +75,7 @@ export interface IConvertMeshTaskParameters extends ITaskParameters
  * Parameters: [[IConvertMeshTaskParameters]].
  * Tools: [[MeshSmithTool]], [[FBX2glTFTool]], [[MeshlabTool]].
  */
-export default class ConvertMeshTask extends Task
+export default class ConvertMeshTask extends ToolTask
 {
     static readonly description = "Converts geometric mesh data between various file formats.";
 
@@ -118,19 +119,20 @@ export default class ConvertMeshTask extends Task
 
         // use meshlab if explicitly asked for
         if (params.tool === "Meshlab") {
-            const toolOptions: IMeshlabToolOptions = {
+            const settings: IMeshlabToolSettings = {
                 inputMeshFile: params.inputMeshFile,
                 outputMeshFile: params.outputMeshFile,
                 filters: [],
                 timeout: params.timeout
             };
 
-            this.addTool("Meshlab", toolOptions);
+            this.addTool("Meshlab", settings);
         }
         // if conversion is from fbx to glb or gltf, use FBX2glTF
         else if (params.tool === "FBX2glTF" && inputMeshExt === "fbx"
-            && (outputMeshExt === "glb" || outputMeshExt === "gltf")) {
-            const toolOptions: IFBX2glTFToolOptions = {
+            && (outputMeshExt === "glb" || outputMeshExt === "gltf"))
+        {
+            const settings: IFBX2glTFToolSettings = {
                 inputMeshFile: params.inputMeshFile,
                 outputMeshFile: params.outputMeshFile,
                 binary: outputMeshExt === "glb",
@@ -141,11 +143,11 @@ export default class ConvertMeshTask extends Task
                 timeout: params.timeout
             };
 
-            this.addTool("FBX2glTF", toolOptions);
+            this.addTool("FBX2glTF", settings);
         }
         // for all other purposes, use MeshSmith
         else {
-            const toolOptions: IMeshSmithToolOptions = {
+            const settings: IMeshSmithToolSettings = {
                 inputFile: params.inputMeshFile,
                 outputFile: params.outputMeshFile,
                 stripNormals: params.stripNormals,
@@ -163,7 +165,7 @@ export default class ConvertMeshTask extends Task
                 timeout: params.timeout
             };
 
-            this.addTool("MeshSmith", toolOptions);
+            this.addTool("MeshSmith", settings);
         }
     }
 }

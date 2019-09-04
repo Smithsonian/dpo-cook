@@ -73,30 +73,28 @@ export default class LogTask extends Task
         super(options, context);
     }
 
-    run(): Promise<void>
+    protected async execute(): Promise<unknown>
     {
-        this.startTask();
-        const options = this.parameters as ILogTaskParameters;
+        const params = this.parameters as ILogTaskParameters;
         const logger = this.context.logger;
 
-        logger.enableConsoleLog(options.logToConsole);
-        logger.enableLogFile(options.logFile);
-        logger.enableReportFile(options.reportFile);
-        logger.enableMarkerFile(options.markerFile);
+        logger.enableConsoleLog(params.logToConsole);
+        logger.enableLogFile(params.logFile);
+        logger.enableReportFile(params.reportFile);
+        logger.enableMarkerFile(params.markerFile);
 
         // mention output files in report result, so they can be picked up later
         const files = this.report.result.files = {};
-        if (options.logFile) {
-            files["log"] = options.logFile;
+        if (params.logFile) {
+            files["log"] = params.logFile;
         }
-        if (options.reportFile) {
-            files["report"] = options.reportFile;
+        if (params.reportFile) {
+            files["report"] = params.reportFile;
         }
-        if (options.markerFile) {
-            files["marker"] = options.markerFile;
+        if (params.markerFile) {
+            files["marker"] = params.markerFile;
         }
 
-        this.endTask(null, "done");
         return Promise.resolve();
     }
 }

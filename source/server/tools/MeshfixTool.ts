@@ -16,54 +16,52 @@
  */
 
 import * as path from "path";
-import LegacyTool, { IToolOptions } from "../app/LegacyTool";
+
+import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IMeshfixToolOptions extends IToolOptions
+export interface IMeshfixToolSettings extends IToolSettings
 {
     inputMeshFile: string;
     outputMeshFile: string;
     joinComponents?: boolean;
 }
 
-export default class MeshfixTool extends LegacyTool
+export type MeshfixInstance = ToolInstance<MeshfixTool, IMeshfixToolSettings>;
+
+export default class MeshfixTool extends Tool
 {
-    static readonly type: string = "MeshfixTool";
+    static readonly toolName = "Meshfix";
 
-    run(): Promise<void>
+    async setupInstance(instance: MeshfixInstance): Promise<IToolSetup>
     {
-        const options = this.options as IMeshfixToolOptions;
+        const settings = instance.settings;
 
-        const inputFilePath = this.getFilePath(options.inputMeshFile);
+        const inputFilePath = instance.getFilePath(settings.inputMeshFile);
         if (!inputFilePath) {
             throw new Error("missing input mesh file");
         }
 
-        const outputFilePath = this.getFilePath(options.outputMeshFile);
+        const outputFilePath = instance.getFilePath(settings.outputMeshFile);
         if (!outputFilePath) {
             throw new Error("missing output mesh file");
         }
 
-        const optionString = this.getOptionString(options, outputFilePath);
+        const options = [];
 
-        const command = `"${this.configuration.executable}" "${inputFilePath}" "${outputFilePath}" ${optionString}`;
-        return this.waitInstance(command);
-    }
-
-    private getOptionString(options: IMeshfixToolOptions, outputFile: string): string
-    {
-        let opts = [];
-
-        const extension = path.extname(outputFile);
+        const extension = path.extname(outputFilePath);
         if (extension === ".stl") {
-            opts.push("-j");
+            options.push("-j");
         }
 
-        if (options.joinComponents) {
-            opts.push("-a");
+        if (settings.joinComponents) {
+            options.push("-a");
         }
 
-        return opts.join(" ");
+        const executable = this.configuration.executable;
+        const command = `"${executable}" "${inputFilePath}" "${outputFilePath}" ${options.join(" ")}`;
+
+        return Promise.resolve({ command });
     }
 }

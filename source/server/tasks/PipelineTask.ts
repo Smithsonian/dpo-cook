@@ -83,10 +83,8 @@ export default class PipelineTask extends Task
         this.taskQueue = this.taskQueue.concat(tasks);
     }
 
-    run(): Promise<void>
+    protected async execute(): Promise<unknown>
     {
-        this.startTask();
-
         let promise = Promise.resolve();
 
         this.taskQueue.forEach(task => {
@@ -95,12 +93,6 @@ export default class PipelineTask extends Task
             });
         });
 
-        return promise.then(() => {
-            this.endTask(null, "done");
-        })
-        .catch(err => {
-            this.endTask(err, "error");
-            throw err;
-        });
+        return promise;
     }
 }
