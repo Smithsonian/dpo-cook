@@ -51,7 +51,7 @@ export default class Tool<
     S extends IToolSettings = IToolSettings
     >
 {
-    static readonly toolName: string;
+    static readonly toolName: string = "Tool";
 
     protected static readonly defaultSettings: Partial<IToolSettings> = {};
 
@@ -130,9 +130,11 @@ export default class Tool<
     /**
      * Called with messages from running tool instances.
      * @param event
+     * @returns true if message should be discarded.
      */
-    onInstanceMessage(event: IToolMessageEvent)
+    onInstanceMessage(event: IToolMessageEvent): boolean
     {
+        return false;
     }
 
     /**

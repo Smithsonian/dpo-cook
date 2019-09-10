@@ -69,6 +69,7 @@ export default class ToolTask extends Task
     {
         instance.on("state", this.onInstanceState, this);
         instance.on("message", this.onInstanceMessage, this);
+
         this.runningInstance = instance;
 
         return this.instanceWillStart(instance)
@@ -78,18 +79,17 @@ export default class ToolTask extends Task
         })
         .finally(() => {
             this.runningInstance = null;
+
             instance.off("state", this.onInstanceState, this);
             instance.off("message", this.onInstanceMessage, this);
         });
     }
 
-    protected async waitCancel(): Promise<unknown>
+    protected onCancel()
     {
         if (this.runningInstance) {
-            return this.runningInstance.cancel();
+            this.runningInstance.cancel();
         }
-
-        return Promise.resolve();
     }
 
     protected async instanceWillStart(instance: ToolInstance): Promise<unknown>

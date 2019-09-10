@@ -185,14 +185,14 @@ export default class MeshSmithTool extends Tool<MeshSmithTool, IMeshSmithToolSet
         }));
     }
 
-    onInstanceMessage(event: IToolMessageEvent)
+    onInstanceMessage(event: IToolMessageEvent): boolean
     {
         let { instance, message } = event;
 
         message = message.trim();
 
         if (message.length < 2 || !message.startsWith("{")) {
-            return;
+            return false;
         }
 
         try {
@@ -206,5 +206,7 @@ export default class MeshSmithTool extends Tool<MeshSmithTool, IMeshSmithToolSet
         catch(e) {
             // discard parsing error
         }
+
+        return true;
     }
 }

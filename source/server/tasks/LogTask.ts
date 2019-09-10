@@ -86,7 +86,9 @@ export default class LogTask extends Task
         logger.enableMarkerFile(params.markerFile);
 
         // mention output files in report result, so they can be picked up later
-        const files = this.report.result.files = {};
+        const result = this.report.result;
+        const files = result.files = (result.files || {});
+
         if (params.logFile) {
             files["log"] = params.logFile;
         }

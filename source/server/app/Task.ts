@@ -58,6 +58,10 @@ export default class Task
 
     constructor(params: ITaskParameters, context: Job)
     {
+        this.context = context;
+        this.parameters = params;
+        this.result = {};
+
         this.report = {
             name: this.name,
             parameters: this.parameters,
@@ -70,10 +74,6 @@ export default class Task
             log: [],
             result: this.result
         };
-
-        this.context = context;
-        this.parameters = params;
-        this.result = {};
 
         this._resolveCancel = null;
 
@@ -179,6 +179,8 @@ export default class Task
                 timeoutHandler = null;
                 resolve();
             };
+
+            this.onCancel();
         });
     }
 
@@ -190,11 +192,28 @@ export default class Task
         return Promise.reject("must override");
     }
 
+    /**
+     * Override to perform action to cancel the task.
+     * The running task's promise must resolve within 5 seconds, otherwise the
+     * cancellation promise rejects.
+     */
+    protected onCancel()
+    {
+    }
+
+    /**
+     * Will always be called before task is run.
+     * Task is already in 'running' state at this point.
+     */
     protected async willStart(): Promise<unknown>
     {
         return Promise.resolve();
     }
 
+    /**
+     * Will always be called after the task has reached its end state.
+     * The task's state is one of 'done', 'error', or 'cancelled'.
+     */
     protected async didFinish(): Promise<unknown>
     {
         return Promise.resolve();

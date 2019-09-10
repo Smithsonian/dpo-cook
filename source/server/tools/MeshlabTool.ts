@@ -101,21 +101,20 @@ export default class MeshlabTool extends Tool
             });
     }
 
-    onInstanceMessage(event: IToolMessageEvent)
+    onInstanceMessage(event: IToolMessageEvent): boolean
     {
         const { instance, message } = event;
 
         // only handle JSON report data
         if (!message.startsWith("JSON={")) {
-            return;
+            return false;
         }
 
         const report = instance.report.execution;
         const results = report.results = report.results || {};
 
         try {
-            const inspection = JSON.parse(message.substr(5));
-            results["inspection"] = inspection;
+            results["inspection"] = JSON.parse(message.substr(5));
         }
         catch(e) {
             const error = "failed to parse mesh inspection report";

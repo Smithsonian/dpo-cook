@@ -51,7 +51,7 @@ export type XNormalInstance = ToolInstance<XNormalTool, IXNormalToolSettings>;
 
 export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
 {
-    static readonly type: string = "XNormalTool";
+    static readonly toolName = "XNormal";
 
     protected static readonly defaultOptions: Partial<IXNormalToolSettings> = {
         mapSize: 2048,

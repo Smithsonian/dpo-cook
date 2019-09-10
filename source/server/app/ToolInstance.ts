@@ -17,6 +17,7 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
+import * as os from "os";
 import * as osUtils from "os-utils";
 import * as child_process from "child_process";
 
@@ -138,12 +139,16 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             report.script = setup.script;
 
             return this.wait().then(() => {
-                if (this.state !== "cancelled") {
+                if (!this._resolveCancel) {
                     return tool.instanceWillExecute(this)
                     .then(() => {
                         return this.execute(setup)
                         .finally(() => tool.instanceDidExit(this));
                     });
+                }
+            }).finally(() => {
+                if (this._resolveCancel) {
+                    this._resolveCancel();
                 }
             });
         });
@@ -267,10 +272,8 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
 
                 const handler = setInterval(() => {
                     // if cancellation has been requested, abort waiting
-                    if (this._resolveCancel) {
+                    if (this.cancelRequested) {
                         clearInterval(handler);
-                        this.setState("cancelled");
-                        this._resolveCancel();
                         return resolve();
                     }
 
@@ -295,6 +298,9 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
         report.script = setup.script || null;
         report.timeout = this.timeout;
 
+        let cancelTimerHandle = null;
+        let timeoutHandle = null;
+
         return new Promise((resolve, reject) => {
 
             let terminated = false;
@@ -307,22 +313,37 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             report.state = "running";
 
             // message handler
-            const dataHandler = data => {
-                const text = data ? data.toString().trim() : "";
-                text && text.split("\n").forEach(message => {
-                    this.emitMessage("debug", message);
-                });
+            const dataHandler = () => {
+                let chunk = "";
+                return data => {
+                    chunk += data.toString();
+                    while(true) {
+                        const eol = chunk.indexOf(os.EOL);
+                        if (eol >= 0) {
+                            const line = chunk.substring(0, eol);
+                            chunk = chunk.substring(eol + os.EOL.length - 1);
+                            line && this.emitMessage("debug", line);
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                };
             };
 
             // run tool
             const shellScript = child_process.exec(setup.command);
 
-            shellScript.stdout.on("data", dataHandler);
-            shellScript.stderr.on("data", dataHandler);
+            shellScript.stdout.on("data", dataHandler());
+            shellScript.stderr.on("data", dataHandler());
 
             shellScript.on("exit", (code, signal) => {
                 if (!terminated) {
                     terminated = true;
+
+                    clearInterval(cancelTimerHandle);
+                    clearTimeout(timeoutHandle);
+
                     if (signal) {
                         const error = new Error(`Tool ${tool.name}: terminated with signal '${signal}' and code: '${code}'`);
                         this.didExit("error", code, error);
@@ -344,6 +365,9 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             const terminate = (reason: string, endState: ToolState) => {
                 if (!terminated) {
                     terminated = true;
+
+                    clearInterval(cancelTimerHandle);
+                    clearTimeout(timeoutHandle);
 
                     // try to terminate the tool
                     shellScript.kill(/* "SIGINT" */);
@@ -372,25 +396,16 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             });
 
             // periodically check whether we should cancel
-            const timerHandle = setInterval(() => {
-                if (this._resolveCancel) {
-                    clearInterval(timerHandle);
-                    clearTimeout(timeoutHandle);
+            cancelTimerHandle = setInterval(() => {
+                if (this.cancelRequested) {
                     terminate("cancelled by user.", "cancelled");
                 }
-            }, 500);
+            }, 250);
 
             // terminate when reaching timeout
-            const timeoutHandle = setTimeout(() => {
-                clearTimeout(timeoutHandle);
-                clearInterval(timerHandle);
+            timeoutHandle = setTimeout(() => {
                 terminate(`timeout after ${this.timeout} seconds.`, "timeout");
             }, this.timeout * 1000);
-        })
-        .then(() => {
-            if (this._resolveCancel) {
-                this._resolveCancel();
-            }
         });
     }
 
@@ -441,8 +456,10 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             type: "message", time: new Date(), level, message, instance: this
         };
 
-        this.tool.onInstanceMessage(event);
-        this.emit(event);
+        const discard = this.tool.onInstanceMessage(event);
+        if (!discard) {
+            this.emit(event);
+        }
     }
 
     /**
