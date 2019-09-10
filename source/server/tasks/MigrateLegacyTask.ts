@@ -38,6 +38,8 @@ export interface IMigrateLegacyTaskParameters extends ITaskParameters
  */
 export default class MigrateLegacyTask extends Task
 {
+    static readonly taskName = "MigrateLegacy";
+
     static readonly description = "Fetches Legacy Viewer content including models, maps, annotations " +
                                   "and articles, and converts it to Voyager items/presentations.";
 

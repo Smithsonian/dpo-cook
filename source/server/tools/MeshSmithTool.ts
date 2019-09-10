@@ -19,7 +19,7 @@ import * as path from "path";
 
 import uniqueId from "../utils/uniqueId";
 
-import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance, IToolMessageEvent } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -183,5 +183,28 @@ export default class MeshSmithTool extends Tool<MeshSmithTool, IMeshSmithToolSet
             command: `"${this.configuration.executable}" -c "${instance.getFilePath(fileName)}"`,
             script: { fileName, content }
         }));
+    }
+
+    onInstanceMessage(event: IToolMessageEvent)
+    {
+        let { instance, message } = event;
+
+        message = message.trim();
+
+        if (message.length < 2 || !message.startsWith("{")) {
+            return;
+        }
+
+        try {
+            const parsedMessage = JSON.parse(message);
+            if (parsedMessage.type === "report") {
+                const report = instance.report.execution;
+                const results = report.results = report.results || {};
+                results["inspection"] = parsedMessage;
+            }
+        }
+        catch(e) {
+            // discard parsing error
+        }
     }
 }

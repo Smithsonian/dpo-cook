@@ -47,6 +47,8 @@ export interface IRemeshTaskParameters extends ITaskParameters
  */
 export default class RemeshTask extends ToolTask
 {
+    static readonly taskName = "Remesh";
+
     static readonly description = "Creates a new, regular mesh for an object.";
 
     static readonly parameterSchema = {

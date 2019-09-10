@@ -50,6 +50,8 @@ export interface IConvertImageTaskParameters extends ITaskParameters
  */
 export default class ConvertImageTask extends ToolTask
 {
+    static readonly taskName = "ConvertImage";
+
     static readonly description = "Converts image files between different formats. " +
                                   "Applies scaling and gamma correction during conversion.";
 

@@ -173,14 +173,14 @@ export interface ITaskReport
     result: { [id:string]: any }
 }
 
-export interface IToolOptions
+export interface IToolSettings
 {
     timeout?: number;
 }
 
 export interface IToolScript
 {
-    filePath: string;
+    fileName: string;
     content: string;
 }
 
@@ -194,7 +194,8 @@ export interface IToolReport
     version: string;
 
     execution: {
-        options: IToolOptions;
+        settings: IToolSettings;
+
         script?: IToolScript;
         command: string;
         timeout: number;
@@ -212,6 +213,8 @@ export interface IToolReport
             level: string;
             message: string;
         }>;
+
+        results?: any;
     };
 }
 

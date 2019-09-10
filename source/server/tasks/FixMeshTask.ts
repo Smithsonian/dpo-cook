@@ -43,6 +43,8 @@ export interface IFixMeshTaskParameters extends ITaskParameters
  */
 export default class FixMeshTask extends ToolTask
 {
+    static readonly taskName = "FixMesh";
+
     static readonly description = "Uses the MeshFix tool to heal a mesh using a number of heuristics.";
 
     static readonly parameterSchema = {

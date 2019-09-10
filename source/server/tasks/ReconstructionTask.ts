@@ -41,6 +41,8 @@ export interface IReconstructionTaskParameters extends ITaskParameters
  */
 export default class ReconstructionTask extends ToolTask
 {
+    static readonly taskName = "Reconstruction";
+
     static readonly description = "Uses RealityCapture photogrammetry software to create a 3D model.";
 
     static readonly parameterSchema = {

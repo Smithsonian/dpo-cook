@@ -46,6 +46,8 @@ export interface IPickupTaskParameters extends ITaskParameters
  */
 export default class PickupTask extends Task
 {
+    static readonly taskName = "Pickup";
+
     static readonly description = "Picks files from a given location and copies them into the current work directory.";
 
     static readonly parameterSchema = {

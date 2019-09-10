@@ -74,7 +74,7 @@ type TRecipeVariables = { [id:string]: number | boolean | string | [] | object }
 
 /**
  * Executes a recipe as a sequence of tasks. Execution order depends on success
- * or failure of each task.Task execution is fully parameterized. Each recipe
+ * or failure of each task. Task execution is fully parameterized. Each recipe
  * provides a global set of parameters that can be used to control and
  * orchestrate the various tasks.
  *
@@ -82,8 +82,9 @@ type TRecipeVariables = { [id:string]: number | boolean | string | [] | object }
  */
 export default class RecipeTask extends Task
 {
-    static readonly description: string =
-        "Executes a recipe as a sequence of tasks.";
+    static readonly taskName = "Recipe";
+
+    static readonly description = "Executes a recipe as a sequence of tasks.";
 
     static readonly parameterSchema: object = {
         type: "object",
@@ -144,13 +145,13 @@ export default class RecipeTask extends Task
         return this.executeStep(this.recipe.start);
     }
 
-    protected async waitCancel(): Promise<unknown>
+    async cancel(): Promise<unknown>
     {
         if (this.currentTask) {
             this.currentTask.cancel();
         }
 
-        return super.waitCancel();
+        return super.cancel();
     }
 
     protected async willStart(): Promise<unknown>
@@ -180,7 +181,7 @@ export default class RecipeTask extends Task
     protected executeStep(stepName: string, err?: Error): Promise<void>
     {
         // if a cancellation request is pending, resolve immediately
-        if (this.isCancelling) {
+        if (this.cancelRequested) {
             return Promise.resolve();
         }
         // if the recipe already failed, reject immediately
@@ -265,7 +266,7 @@ export default class RecipeTask extends Task
             .then(() => {
                 this.currentTask = null;
 
-                if (this.isCancelling) {
+                if (this.cancelRequested) {
                     return Promise.resolve();
                 }
 

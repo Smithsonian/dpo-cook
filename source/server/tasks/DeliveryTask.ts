@@ -48,6 +48,8 @@ export interface IDeliveryTaskParameters extends ITaskParameters
  */
 export default class DeliveryTask extends Task
 {
+    static readonly taskName = "Delivery";
+
     static readonly description = "Delivers files to a given destination.";
 
     static readonly parameterSchema = {

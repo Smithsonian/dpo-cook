@@ -42,6 +42,8 @@ export interface IFileCopyTaskParameters extends ITaskParameters
  */
 export default class FileCopyTask extends Task
 {
+    static readonly taskName = "FileCopy";
+
     static readonly description = "Copies files from the source directory to the destination directory.";
 
     static readonly parameterSchema = {

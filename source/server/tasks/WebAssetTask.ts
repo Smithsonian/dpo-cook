@@ -72,6 +72,8 @@ export interface IWebAssetTaskParameters extends ITaskParameters
  */
 export default class WebAssetTask extends ToolTask
 {
+    static readonly taskName = "WebAsset";
+
     static readonly description = "Creates glTF/glb web assets including mesh and textures.";
 
     static readonly parameterSchema = {

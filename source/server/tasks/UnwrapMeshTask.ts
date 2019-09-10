@@ -76,6 +76,8 @@ export interface IUnwrapMeshTaskParameters extends ITaskParameters
  */
 export default class UnwrapMeshTask extends ToolTask
 {
+    static readonly taskName = "UnwrapMesh";
+
     static readonly description = "creates a new UV map for a mesh.";
 
     static readonly parameterSchema = {

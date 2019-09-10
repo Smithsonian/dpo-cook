@@ -48,6 +48,8 @@ export interface ICleanupMeshTaskParameters extends ITaskParameters
  */
 export default class CleanupMeshTask extends ToolTask
 {
+    static readonly taskName = "CleanupMesh";
+
     static readonly description = "Uses a combination of Meshlab filters to clean a mesh.";
 
     static readonly parameterSchema = {

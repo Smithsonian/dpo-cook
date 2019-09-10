@@ -75,6 +75,8 @@ export interface IBakeMapsTaskParameters extends ITaskParameters
  */
 export default class BakeMapsTask extends ToolTask
 {
+    static readonly taskName = "BakeMaps";
+
     static readonly description = "Bakes various features to texture by projecting them " +
                                   "from a high poly mesh onto the UV space of a low poly mesh.";
 

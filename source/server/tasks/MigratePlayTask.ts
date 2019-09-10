@@ -49,6 +49,8 @@ export interface IMigratePlayTaskParameters extends ITaskParameters
  */
 export default class MigratePlayTask extends Task
 {
+    static readonly taskName = "MigratePlay";
+
     static readonly description = "Fetches Play box content including models, maps, annotations " +
                                   "and articles, and converts it to Voyager items/presentations.";
 

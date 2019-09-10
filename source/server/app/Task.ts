@@ -39,8 +39,10 @@ export { ITaskParameters };
 
 export default class Task
 {
-    static readonly taskName: string = "";
+    static readonly taskName: string = "Task";
+
     static readonly description: string = "";
+
     static readonly parameterSchema: object = {};
     static readonly parameterValidator: ValidateFunction = null;
 
@@ -52,20 +54,10 @@ export default class Task
     protected parameters: ITaskParameters;
     protected result: { [id:string]: any };
 
-    private _isCancelling: boolean;
-    private _resolveCancelPromise: () => void;
-    private _rejectCancelPromise: () => void;
+    private _resolveCancel: () => void;
 
     constructor(params: ITaskParameters, context: Job)
     {
-        this.context = context;
-        this.parameters = params;
-        this.result = {};
-
-        this._isCancelling = false;
-        this._resolveCancelPromise = null;
-        this._rejectCancelPromise = null;
-
         this.report = {
             name: this.name,
             parameters: this.parameters,
@@ -78,6 +70,12 @@ export default class Task
             log: [],
             result: this.result
         };
+
+        this.context = context;
+        this.parameters = params;
+        this.result = {};
+
+        this._resolveCancel = null;
 
         let validator = this.parameterValidator;
 
@@ -113,8 +111,8 @@ export default class Task
     get state() {
         return this.report.state;
     }
-    get isCancelling() {
-        return this._isCancelling;
+    get cancelRequested() {
+        return !!this._resolveCancel;
     }
 
     async run(): Promise<void>
@@ -130,9 +128,9 @@ export default class Task
         return this.willStart()
             .then(() => this.execute())
             .then(() => {
-                if (this.isCancelling) {
+                if (this._resolveCancel) {
                     this.endTask("cancelled");
-                    this.resolveCancel();
+                    this._resolveCancel();
                 }
                 else {
                     this.endTask("done");
@@ -151,54 +149,36 @@ export default class Task
      */
     async cancel(): Promise<unknown>
     {
-        if (this.isCancelling) {
-            return Promise.reject("cancellation already in progress");
-        }
-
-        const report = this.report;
-
-        // if task hasn't been started, we return immediately, setting the state to "cancelled"
-        if (report.state === "created") {
-            report.state = "cancelled";
-            return Promise.resolve();
-        }
-
-        // if task has ended, we return immediately, doing nothing
-        if (report.state !== "waiting" && report.state !== "running") {
-            return Promise.resolve();
-        }
-
-        // task is either waiting or running, return a cancel promise
-        this._isCancelling = true;
-        return this.waitCancel();
-    }
-
-    /**
-     * The default implementation for cancelling a task creates a promise and waits for a confirmation
-     * call to either Task.resolveCancel() or Task.rejectCancel(). It fails if the task isn't cancelled
-     * within 5 seconds.
-     */
-    protected async waitCancel(): Promise<unknown>
-    {
-        let timeoutHandler;
-
         return new Promise((resolve, reject) => {
-            this._resolveCancelPromise = () => {
-                clearTimeout(timeoutHandler);
-                resolve();
-            };
-            this._rejectCancelPromise = () => {
-                clearTimeout(timeoutHandler);
-                reject();
-            };
+
+            if (this._resolveCancel) {
+                return reject("cancellation already in progress");
+            }
+
+            const report = this.report;
+
+            // if task hasn't been started, we return immediately, setting the state to "cancelled"
+            if (report.state === "created") {
+                report.state = "cancelled";
+                return resolve();
+            }
+
+            // if task has ended, we return immediately, doing nothing
+            if (report.state !== "waiting" && report.state !== "running") {
+                return resolve();
+            }
 
             // if cancellation not successful after 5 seconds, throw error
-            timeoutHandler = setTimeout(() => {
+            let timeoutHandler = setTimeout(() => {
                 return reject(new Error("failed to cancel within 5 seconds"));
             }, 5000);
-        }).finally(() => {
-            this._resolveCancelPromise = null;
-            this._rejectCancelPromise = null;
+
+            this._resolveCancel = () => {
+                this._resolveCancel = null;
+                clearTimeout(timeoutHandler);
+                timeoutHandler = null;
+                resolve();
+            };
         });
     }
 
@@ -218,20 +198,6 @@ export default class Task
     protected async didFinish(): Promise<unknown>
     {
         return Promise.resolve();
-    }
-
-    protected resolveCancel()
-    {
-        if (this._resolveCancelPromise) {
-            this._resolveCancelPromise();
-        }
-    }
-
-    protected rejectCancel()
-    {
-        if (this._rejectCancelPromise) {
-            this._rejectCancelPromise();
-        }
     }
 
     protected logEvent(event: ITaskLogEvent)

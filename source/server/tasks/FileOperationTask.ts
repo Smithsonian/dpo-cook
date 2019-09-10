@@ -45,6 +45,8 @@ export interface IFileOperationTaskParameters extends ITaskParameters
  */
 export default class FileOperationTask extends Task
 {
+    static readonly taskName = "FileOperation";
+
     static readonly description = "Executes file system operations including " +
                                   "delete, rename, create folder and delete folder";
 

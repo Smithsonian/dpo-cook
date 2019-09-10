@@ -96,7 +96,8 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
     readonly workDir: string;
     readonly report: IToolReport;
 
-    private _requestCancel: boolean;
+    private _resolveCancel: () => void;
+
 
     constructor(tool: T, settings: S, workDir: string)
     {
@@ -108,7 +109,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
         this.workDir = workDir;
         this.report = this.createReport();
 
-        this._requestCancel = false;
+        this._resolveCancel = null;
     }
 
     get code() {
@@ -123,6 +124,9 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
     get timeout() {
         return this.settings.timeout || this.tool.configuration.timeout;
     }
+    get cancelRequested() {
+        return !!this._resolveCancel;
+    }
 
     async run(): Promise<unknown>
     {
@@ -133,9 +137,9 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             report.command = setup.command;
             report.script = setup.script;
 
-            return this.wait().then(cancelled => {
-                if (!cancelled) {
-                    return tool.instanceWillStart(this)
+            return this.wait().then(() => {
+                if (this.state !== "cancelled") {
+                    return tool.instanceWillExecute(this)
                     .then(() => {
                         return this.execute(setup)
                         .finally(() => tool.instanceDidExit(this));
@@ -145,34 +149,39 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
         });
     }
 
-    async cancel(): Promise<void>
+    async cancel(): Promise<unknown>
     {
         return new Promise((resolve, reject) => {
+
+            if (this._resolveCancel) {
+                return reject("cancellation already in progress");
+            }
+
             const state = this.report.execution.state;
 
-            // if job is already done (done, timeout, error, cancelled), fulfill immediately
-            if (state !== "created" && state !== "waiting" && state !== "running") {
+            // if job is in created state, cancel immediately
+            if (state === "created") {
+                this.setState("cancelled");
                 return resolve();
             }
 
-            // set request flag and wait until it is cleared
-            this._requestCancel = true;
+            // if job is already done (done, timeout, error, cancelled), fulfill immediately
+            if (state !== "waiting" && state !== "running") {
+                return resolve();
+            }
 
             // if cancellation not successful after 5 seconds, throw error
-            const timeoutHandler = setTimeout(() => {
-                clearInterval(waitHandler);
+            let timeoutHandler = setTimeout(() => {
                 this.setState("error");
                 return reject(new Error("failed to cancel within 5 seconds"));
             }, 5000);
 
-            // polling timer, wait until request flag is cleared
-            const waitHandler = setInterval(() => {
-                if (this._requestCancel === false) {
-                    clearTimeout(timeoutHandler);
-                    clearInterval(waitHandler);
-                    return resolve();
-                }
-            }, 200);
+            this._resolveCancel = () => {
+                this._resolveCancel = null;
+                clearTimeout(timeoutHandler);
+                timeoutHandler = null;
+                resolve();
+            };
         });
     }
 
@@ -243,14 +252,14 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
      * Waits until there are sufficient resources available for the instance to run.
      * Returns true if cancelled during the wait.
      */
-    protected async wait(): Promise<boolean>
+    protected async wait(): Promise<unknown>
     {
         return new Promise((resolve, reject) => {
 
             // tool instances and CPU available? then run immediately
             osUtils.cpuUsage(usage => {
                 if (this.tool.canRunInstance() && usage < 0.9) {
-                    return resolve(false);
+                    return resolve();
                 }
 
                 // set an interval timer and wait for an instance to become available
@@ -258,18 +267,18 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
 
                 const handler = setInterval(() => {
                     // if cancellation has been requested, abort waiting
-                    if (this._requestCancel) {
-                        this._requestCancel = false;
-                        this.setState("cancelled");
+                    if (this._resolveCancel) {
                         clearInterval(handler);
-                        return resolve(true);
+                        this.setState("cancelled");
+                        this._resolveCancel();
+                        return resolve();
                     }
 
                     osUtils.cpuUsage(usage => {
                         // start polling; if an instance becomes available, run the tool
                         if (this.tool.canRunInstance() && usage < 0.9) {
                             clearInterval(handler);
-                            return resolve(false);
+                            return resolve();
                         }
                     });
                 }, 2000);
@@ -316,17 +325,17 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
                     terminated = true;
                     if (signal) {
                         const error = new Error(`Tool ${tool.name}: terminated with signal '${signal}' and code: '${code}'`);
-                        this.exit("error", code, error);
+                        this.didExit("error", code, error);
                         return reject(error);
                     }
 
                     if (code !== 0) {
                         const error = new Error(`Tool ${tool.name}: terminated with code: ${code}`);
-                        this.exit("error", code, error);
+                        this.didExit("error", code, error);
                         return reject(error);
                     }
 
-                    this.exit("done", 0);
+                    this.didExit("done", 0);
                     return resolve();
                 }
             });
@@ -347,11 +356,11 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
 
                         if (endState === "error" || endState === "timeout") {
                             const error = new Error(`Tool ${tool.name}: ${reason}`);
-                            this.exit(endState, 0, error);
+                            this.didExit(endState, 0, error);
                             reject(error);
                         }
                         else {
-                            this.exit(endState, 0);
+                            this.didExit(endState, 0);
                             resolve();
                         }
                     }, 1000);
@@ -364,7 +373,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
 
             // periodically check whether we should cancel
             const timerHandle = setInterval(() => {
-                if (this._requestCancel) {
+                if (this._resolveCancel) {
                     clearInterval(timerHandle);
                     clearTimeout(timeoutHandle);
                     terminate("cancelled by user.", "cancelled");
@@ -377,6 +386,11 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
                 clearInterval(timerHandle);
                 terminate(`timeout after ${this.timeout} seconds.`, "timeout");
             }, this.timeout * 1000);
+        })
+        .then(() => {
+            if (this._resolveCancel) {
+                this._resolveCancel();
+            }
         });
     }
 
@@ -386,7 +400,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
      * @param code
      * @param error
      */
-    protected exit(endState: ToolState, code: number, error?: Error)
+    protected didExit(endState: ToolState, code: number, error?: Error)
     {
         // bookkeeping
         const report = this.report.execution;
@@ -414,9 +428,6 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
         if (report.state === "done") {
             report.log = report.log.filter(message => message.level !== "debug");
         }
-
-        // clear cancellation request flag in case it was set and tool just exited
-        this._requestCancel = false;
     }
 
     /**

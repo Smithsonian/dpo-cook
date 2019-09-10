@@ -38,6 +38,8 @@ export interface IDummyTaskParameters extends ITaskParameters
  */
 export default class DummyTask extends Task
 {
+    static readonly taskName = "Dummy";
+
     static readonly description = "Dummy task with predictable outcome (success/failure).";
 
     static readonly parameterSchema = {
@@ -66,7 +68,11 @@ export default class DummyTask extends Task
 
         return new Promise((resolve, reject) => {
 
-            setTimeout(() => {
+            let timeoutHandler, intervalHandler;
+
+            timeoutHandler = setTimeout(() => {
+                clearInterval(intervalHandler);
+
                 if (options.outcome === "success") {
                     return resolve();
                 }
@@ -74,7 +80,15 @@ export default class DummyTask extends Task
                 const err = new Error("Task is set to fail");
                 return reject(err);
 
-            }, options.duration)
+            }, options.duration);
+
+            intervalHandler = setInterval(() => {
+                if (this.cancelRequested) {
+                    clearTimeout(timeoutHandler);
+                    clearInterval(intervalHandler);
+                    return resolve();
+                }
+            });
         })
     }
 }

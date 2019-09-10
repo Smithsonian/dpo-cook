@@ -22,7 +22,6 @@ import Job from "../app/Job";
 import { IMeshlabToolSettings } from "../tools/MeshlabTool";
 import { IRapidCompactToolSettings } from "../tools/RapidCompactTool";
 
-import LegacyTool from "../app/LegacyTool";
 import MeshlabTool from "../tools/MeshlabTool";
 
 import Task, { ITaskParameters } from "../app/Task";
@@ -68,6 +67,8 @@ export interface IDecimateMeshTaskParameters extends ITaskParameters
  */
 export default class DecimateMeshTask extends ToolTask
 {
+    static readonly taskName = "DecimateMesh";
+
     static readonly description = "Reduces the complexity of a geometric mesh by reducing the number of vertices.";
 
     static readonly parameterSchema = {

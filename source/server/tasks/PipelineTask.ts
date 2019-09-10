@@ -34,6 +34,8 @@ export interface IPipelineTaskParameters extends ITaskParameters
  */
 export default class PipelineTask extends Task
 {
+    static readonly taskName = "Pipeline";
+
     static readonly description = "Executes a linear sequence of tasks.";
 
     static readonly parameterSchema = {

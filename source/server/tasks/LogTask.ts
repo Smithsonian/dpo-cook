@@ -44,6 +44,8 @@ export interface ILogTaskParameters extends ITaskParameters
  */
 export default class LogTask extends Task
 {
+    static readonly taskName = "Log";
+
     static readonly description = "Provides logging facilities (log to console, log to file, write report to file).";
 
     static readonly parameterSchema = {

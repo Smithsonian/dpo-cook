@@ -70,6 +70,8 @@ export interface IDocumentTaskParameters extends ITaskParameters
  */
 export default class DocumentTask extends Task
 {
+    static readonly taskName = "Document";
+
     static readonly description = "Creates and modifies document.json descriptor files.";
 
     static readonly parameterSchema = {

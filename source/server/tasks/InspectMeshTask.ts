@@ -56,6 +56,8 @@ export interface IInspectMeshTaskParameters extends ITaskParameters
  */
 export default class InspectMeshTask extends ToolTask
 {
+    static readonly taskName = "InspectMesh";
+
     static readonly description = "Inspects a given mesh and provides a detailed report " +
                                   "including topological and geometric features";
 
@@ -106,45 +108,22 @@ export default class InspectMeshTask extends ToolTask
         }
     }
 
-    protected onInstanceMessage(event: IToolMessageEvent)
-    {
-        const { instance, message } = event;
-        const inspectMesh = (this.parameters as IDecimateMeshTaskParameters).inspectMesh;
-
-        if (inspectMesh && instance.tool instanceof MeshlabTool && message.startsWith("JSON={")) {
-
-            let inspectionReport = null;
-
-            try {
-                inspectionReport = JSON.parse(message.substr(5));
-                this.report.result["inspection"] = inspectionReport;
-
-                if (typeof inspectMesh === "string") {
-                    const reportFilePath = instance.getFilePath(inspectMesh);
-                    fs.writeFileSync(reportFilePath, JSON.stringify(inspectionReport), "utf8");
-                }
-            }
-            catch(e) {
-                this.logTaskEvent("warning", "failed to parse mesh inspection report");
-            }
-        }
-        else {
-            super.onInstanceMessage(event);
-        }
-    }
-
     protected async instanceDidExit(instance: ToolInstance)
     {
         if (instance.tool instanceof MeshlabTool || instance.tool instanceof MeshSmithTool) {
 
-            const inspectionReport = instance.report.results["inspection"];
-            this.report.result.inspection = inspectionReport;
+            const results = instance.report.execution.results;
+            const inspection = results && results["inspection"];
 
-            const reportFile = (this.parameters as IInspectMeshTaskParameters).reportFile;
+            if (inspection) {
+                this.report.result["inspection"] = inspection;
 
-            if (reportFile) {
-                const reportFilePath = instance.getFilePath(reportFile);
-                return fs.writeFile(reportFilePath, JSON.stringify(inspectionReport, null, 2), "utf8");
+                const reportFile = (this.parameters as IInspectMeshTaskParameters).reportFile;
+
+                if (reportFile) {
+                    const reportFilePath = instance.getFilePath(reportFile);
+                    return fs.writeFile(reportFilePath, JSON.stringify(inspection, null, 2), "utf8");
+                }
             }
         }
 

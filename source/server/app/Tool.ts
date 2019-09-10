@@ -151,7 +151,7 @@ export default class Tool<
      * Override to perform setup tasks.
      * @param instance The tool instance about to be executed.
      */
-    async instanceWillStart(instance: ToolInstance): Promise<unknown>
+    async instanceWillExecute(instance: ToolInstance): Promise<unknown>
     {
         return Promise.resolve();
     }

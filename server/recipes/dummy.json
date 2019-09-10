@@ -2,12 +2,16 @@
     "id": "2626ceed-6b12-462a-b901-c7b4489f2da8",
     "name": "dummy",
     "description": "Dummy recipe for testing purposes. Executes a number of dummy tasks.",
-    "version": "1",
+    "version": "2",
     "start": "0",
 
     "parameterSchema": {
         "type": "object",
         "properties": {
+            "duration": {
+                "type": "integer",
+                "default": 2000
+            }
         },
         "required": [
         ],
@@ -17,72 +21,91 @@
     "steps": {
         "0": {
             "task": "Dummy",
+            "description": "will succeed",
             "parameters": {
-                "outcome": "'success'"
+                "outcome": "'success'",
+                "duration": "duration"
             },
             "success": "'1'",
             "failure": "'2'"
         },
         "1": {
             "task": "Dummy",
+            "skip": "true",
+            "description": "will skip",
             "parameters": {
-                "outcome": "'success'"
+                "outcome": "'success'",
+                "duration": "duration"
             },
             "success": "'2'",
             "failure": "'3'"
         },
         "2": {
             "task": "Dummy",
+            "description": "will succeed",
             "parameters": {
-                "outcome": "'success'"
+                "outcome": "'success'",
+                "duration": "duration"
             },
             "success": "'3'",
             "failure": "'4'"
         },
         "3": {
             "task": "Dummy",
+            "description": "will fail",
             "parameters": {
-                "outcome": "'failure'"
+                "outcome": "'failure'",
+                "duration": "duration"
             },
             "success": "'4'",
             "failure": "'5'"
         },
         "4": {
             "task": "Dummy",
+            "description": "never executed",
             "parameters": {
-                "outcome": "'success'"
+                "outcome": "'success'",
+                "duration": "duration"
             },
             "success": "'5'",
             "failure": "'6'"
         },
         "5": {
             "task": "Dummy",
+            "description": "will succeed",
             "parameters": {
-                "outcome": "'success'"
+                "outcome": "'success'",
+                "duration": "duration"
             },
             "success": "'6'",
             "failure": "'7'"
         },
         "6": {
             "task": "Dummy",
+            "description": "will fail",
             "parameters": {
-                "outcome": "'failure'"
+                "outcome": "'failure'",
+                "duration": "duration"
             },
             "success": "'7'",
             "failure": "'8'"
         },
         "7": {
             "task": "Dummy",
+            "description": "never executed",
             "parameters": {
-                "outcome": "'success'"
+                "outcome": "'success'",
+                "duration": "duration"
             },
             "success": "'8'",
             "failure": "$failure"
         },
         "8": {
             "task": "Dummy",
+            "description": "will succeed",
             "parameters": {
-                "outcome": "'success'"
+                "outcome": "'success'",
+                "duration": "duration"
             },
             "success": "$success",
             "failure": "$failure"

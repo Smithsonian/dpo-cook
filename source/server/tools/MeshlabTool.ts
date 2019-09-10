@@ -110,7 +110,8 @@ export default class MeshlabTool extends Tool
             return;
         }
 
-        const results = instance.report.results = instance.report.results || {};
+        const report = instance.report.execution;
+        const results = report.results = report.results || {};
 
         try {
             const inspection = JSON.parse(message.substr(5));

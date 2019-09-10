@@ -77,6 +77,8 @@ export interface IConvertMeshTaskParameters extends ITaskParameters
  */
 export default class ConvertMeshTask extends ToolTask
 {
+    static readonly taskName = "ConvertMesh";
+
     static readonly description = "Converts geometric mesh data between various file formats.";
 
     static readonly parameterSchema = {

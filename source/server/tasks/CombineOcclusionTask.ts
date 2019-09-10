@@ -51,6 +51,8 @@ export interface ICombineOcclusionTaskParameters extends ITaskParameters
  */
 export default class CombineOcclusionTask extends ToolTask
 {
+    static readonly taskName = "CombineOcclusion";
+
     static readonly description = "Combines 3 separate occlusion maps into one combined map.";
 
     static readonly parameterSchema = {

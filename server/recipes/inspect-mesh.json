@@ -2,7 +2,7 @@
     "id": "ee77ee05-d832-4729-9914-18a96939f205",
     "name": "inspect-mesh",
     "description": "Inspects a mesh and returns a report with results",
-    "version": "1",
+    "version": "2",
     "start": "log",
 
     "parameterSchema": {
@@ -20,22 +20,6 @@
                     "MeshSmith"
                 ],
                 "default": "Meshlab"
-            },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
-                "default": "none"
             }
         },
         "required": [
@@ -48,28 +32,12 @@
         "log": {
             "task": "Log",
             "pre": {
-                "baseName": "$baseName(meshFile)",
-                "delivery": {
-                    "inspectionReport": "baseName & '-inspection.json'"
-                }
+                "baseName": "$baseName(meshFile)"
             },
             "parameters": {
                 "logToConsole": true,
                 "logFile": "baseName & '-log.txt'",
                 "reportFile": "baseName & '-report.json'"
-            },
-            "success": "'pickup'",
-            "failure": "$failure"
-        },
-        "pickup": {
-            "task": "Pickup",
-            "description": "Get input files from client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "meshFile": "meshFile"
-                }
             },
             "success": "'inspect'",
             "failure": "$failure"
@@ -77,9 +45,14 @@
         "inspect": {
             "task": "InspectMesh",
             "description": "Validate mesh and inspect topology",
+            "pre": {
+                "deliverables": {
+                    "inspectionReport": "baseName & '-inspection.json'"
+                }
+            },
             "parameters": {
                 "meshFile": "meshFile",
-                "reportFile": "delivery.inspectionReport",
+                "reportFile": "deliverables.inspectionReport",
                 "tool": "inspectionTool"
             },
             "post": {
@@ -92,9 +65,9 @@
             "task": "Delivery",
             "description": "Send result files back to client",
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
-                "files": "delivery"
+                "method": "none",
+                "path": "$currentDir",
+                "files": "deliverables"
             },
             "success": "$success",
             "failure": "$failure"

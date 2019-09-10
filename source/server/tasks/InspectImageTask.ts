@@ -28,6 +28,8 @@ export interface IInspectImageTaskParameters extends ITaskParameters
 
 export default class InspectImageTask extends ToolTask
 {
+    static readonly taskName = "InspectImage";
+
     static readonly description = "Image inspection task.";
 
     static readonly parameterSchema = {
