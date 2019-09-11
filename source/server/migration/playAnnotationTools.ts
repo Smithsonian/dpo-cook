@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-import { IPlayBoxInfo } from "./playTypes";
+import uniqueId from "@ff/core/uniqueId";
+
+import { IAnnotation } from "../types/model";
+import { IPlayAnnotation } from "./playTypes";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export default class PlayArticles
+export function convertAnnotation(annotation: IPlayAnnotation, articleId?: string): IAnnotation
 {
-    protected info: IPlayBoxInfo;
-    protected workDir: string;
+    const result: IAnnotation = {
+        id: uniqueId(),
+        title: annotation.Title,
+        lead: annotation.Body,
 
-    constructor(info: IPlayBoxInfo, workDir: string)
-    {
-        this.info = info;
-        this.workDir = workDir;
+        style: annotation.Body || articleId ? "Extended" : "Default",
+        visible: false,
+
+        position: [],
+        direction: [],
+        color: [],
+        scale: 1,
+        offset: 0,
+    };
+
+    if (articleId) {
+        result.articleId = articleId;
     }
 
-    async fetchArticles()
-    {
-
-    }
+    return result;
 }

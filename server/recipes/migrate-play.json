@@ -11,9 +11,17 @@
             "boxId": {
                 "type": "integer"
             },
-            "baseName": {
+            "drupalBaseUrl": {
                 "type": "string",
-                "minLength": 1
+                "default": "https://3d.si.edu"
+            },
+            "payloadBaseUrl": {
+                "type": "string",
+                "default": "https://3d.si.edu/sites/default/files/box_payloads"
+            },
+            "cdnBaseUrl": {
+                "type": "string",
+                "default": "https://d39fxlie76wg71.cloudfront.net"
             }
         },
         "required": [
@@ -44,7 +52,9 @@
             },
             "parameters": {
                 "boxId": "boxId",
-                "baseName": "baseName"
+                "drupalBaseUrl": "drupalBaseUrl",
+                "payloadBaseUrl": "payloadBaseUrl",
+                "cdnBaseUrl": "cdnBaseUrl"
             },
             "post": {
                 "deliverables": "$result.files"

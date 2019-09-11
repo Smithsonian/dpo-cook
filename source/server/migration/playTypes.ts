@@ -15,8 +15,24 @@
  * limitations under the License.
  */
 
+import { Dictionary } from "@ff/core/types";
+
+////////////////////////////////////////////////////////////////////////////////
+
+export interface IPlayContext
+{
+    drupalBaseUrl: string;
+    payloadBaseUrl: string;
+    cdnBaseUrl: string;
+    baseDir: string;
+    assetDir: string;
+    articleDir: string;
+    files: Dictionary<string>;
+}
+
 export interface IPlayBoxInfo
 {
+    id: string;
     bake: IPlayBake;
     config: IPlayConfig;
     descriptor: IPlayDescriptor;
@@ -28,10 +44,10 @@ export interface IPlayBake
     box: {
         name: string;
         description: string;
-        tags: { [id:string]: string },
-        mount: { [id:string]: string}
+        tags: Dictionary<string>,
+        mount: Dictionary<string>
     },
-    assets: { [id:string]: IPlayAsset }
+    assets: Dictionary<IPlayAsset>
 }
 
 export interface IPlayAsset
@@ -39,7 +55,7 @@ export interface IPlayAsset
     name: string;
     size: number;
     type: string;
-    files: { [id:string]: string }
+    files: Dictionary<string>
 }
 
 export interface IPlayDescriptor

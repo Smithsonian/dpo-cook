@@ -7,7 +7,7 @@
         "stop": "pm2 delete cook",
         "monitor": "pm2 monit",
         "server": "node server/bin/index.js",
-        "watch": "concurrently \"cd source/client && webpack --watch\" \"tsc -b source/server -w\" \"nodemon server/bin/index.js\"",
+        "watch": "npm run build & concurrently \"cd source/client && webpack --watch\" \"tsc -b source/server -w\" \"nodemon server/bin/index.js\"",
         "build": "concurrently \"npm run build-server\" \"npm run build-client\"",
         "build-client": "cd source/client && webpack && cd ../..",
         "build-server": "tsc -b source/server",
@@ -19,7 +19,7 @@
         "delay": "500",
         "watch": [
             "server/bin",
-            "server/bin/app",
+            "server/recipes",
             "node_modules/@ff"
         ]
     },

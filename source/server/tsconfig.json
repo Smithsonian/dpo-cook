@@ -11,14 +11,6 @@
         "outDir": "../../server/bin",
         "baseUrl": "../../server/bin/node_modules"
     },
-    "files": [
-        "index.ts",
-        "cli.ts"
-    ],
-    "include": [
-        "tools",
-        "tasks"
-    ],
     "exclude": [
         "node_modules"
     ]

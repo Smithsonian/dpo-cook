@@ -40,6 +40,7 @@ export type TMapType = "Color" | "Emissive" | "Occlusion" | "Normal" | "Metallic
 export interface IModel
 {
     units: TUnitType;
+    tags?: string;
     derivatives: IDerivative[];
 
     visible?: boolean;
@@ -61,7 +62,8 @@ export interface IAnnotation
     title?: string;
     lead?: string;
     tags?: string[];
-    articles?: Index[];
+    articleId?: string;
+    imageUri?: string;
 
     style?: string;
     visible?: boolean;
@@ -73,6 +75,7 @@ export interface IAnnotation
     offset?: number;
     tilt?: number;
     azimuth?: number;
+    color?: number[];
 
     zoneIndex?: number;
 }

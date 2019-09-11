@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-import { Parser, DomHandler, DomUtils } from "htmlparser2";
-
-import fetch from "../utils/fetch";
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as mkdirp from "mkdirp";
 
 import Job from "../app/Job";
 import Task, { ITaskParameters } from "../app/Task";
 
-import {
-    IPlayBoxInfo,
-    IPlayBake,
-    IPlayPayload,
-    IPlayConfig,
-    IPlayDescriptor
-} from "../migration/playTypes";
+import { IPlayContext } from "../migration/playTypes";
+
+import { fetchPlayBox } from "../migration/playBoxTools";
+import { createDocument } from "../migration/playDocumentTools";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 /** Parameters for [[MigratePlayTask]]. */
 export interface IMigratePlayTaskParameters extends ITaskParameters
 {
-    /** Play box id. */
+    /** The ID of the Play box to migrate. */
     boxId: string;
-    /** Base name for extracted files. */
-    baseName?: string;
+    /** The URL of the Drupal CMS. */
+    drupalBaseUrl: string;
+    /** The URL of the Drupal folder with box payloads. */
+    payloadBaseUrl: string;
+    /** The base URL of the Play CDN. */
+    cdnBaseUrl: string;
 }
 
 /**
@@ -51,14 +52,20 @@ export default class MigratePlayTask extends Task
 {
     static readonly taskName = "MigratePlay";
 
-    static readonly description = "Fetches Play box content including models, maps, annotations " +
-                                  "and articles, and converts it to Voyager items/presentations.";
+    static readonly description = "Fetches Play box content including models, maps, annotations, " +
+                                  "and articles, and converts it to a Voyager experience.";
+
+    protected static readonly drupalBaseUrl = "https://3d.si.edu";
+    protected static readonly payloadBaseUrl = "https://3d.si.edu/sites/default/files/box_payloads";
+    protected static readonly cdnBaseUrl = "https://d39fxlie76wg71.cloudfront.net";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
             boxId: { type: "integer" },
-            baseName: { type: "string" }
+            drupalBaseUrl: { type: "string", default: MigratePlayTask.drupalBaseUrl },
+            payloadBaseUrl: { type: "string", default: MigratePlayTask.payloadBaseUrl },
+            cdnBaseUrl: { type: "string", default: MigratePlayTask.cdnBaseUrl },
         },
         required: [
             "boxId"
@@ -68,10 +75,6 @@ export default class MigratePlayTask extends Task
 
     static readonly parameterValidator =
         Task.jsonValidator.compile(MigratePlayTask.parameterSchema);
-
-    protected static readonly drupalBaseUrl = "https://3d.si.edu";
-    protected static readonly payloadBaseUrl = "https://3d.si.edu/sites/default/files/box_payloads";
-    protected static readonly cdnBaseUrl = "https://d39fxlie76wg71.cloudfront.net";
 
     protected parameters: IMigratePlayTaskParameters;
 
@@ -84,199 +87,37 @@ export default class MigratePlayTask extends Task
     protected async execute(): Promise<unknown>
     {
         this.result.files = {};
+        const params = this.parameters;
 
-        const playBoxId = this.parameters.boxId;
-
-        const payload = await this.fetchPayload(playBoxId);
-        const { bake, config, descriptor } = await this.fetchAssets(playBoxId);
-
-        const infoContent: IPlayBoxInfo = {
-            payload,
-            bake,
-            config,
-            descriptor
+        const context: IPlayContext = {
+            baseDir: this.context.jobDir,
+            assetDir: "assets",
+            articleDir: "articles",
+            drupalBaseUrl: params.drupalBaseUrl,
+            payloadBaseUrl: params.payloadBaseUrl,
+            cdnBaseUrl: params.cdnBaseUrl,
+            files: this.result.files
         };
 
-        const infoFileName = this.result.files["info.json"] = "info.json";
-        await this.writeFile(infoFileName, JSON.stringify(infoContent, null, 2));
+        // create subdirectories for assets and articles
+        this.logTaskEvent("debug", "creating subdirectories for assets and articles");
+        mkdirp(path.resolve(context.baseDir, context.assetDir));
+        mkdirp(path.resolve(context.baseDir, context.articleDir));
 
-        return this.fetchArticles(infoContent);
-    }
+        // fetch play box assets and articles
+        this.logTaskEvent("debug", `fetching assets for Play box #${params.boxId}`);
+        const info = await fetchPlayBox(context, params.boxId);
 
-    /**
-     * Fetches payload.json and the associated thumbnail and preview images.
-     * @param boxId The Play box ID.
-     */
-    private async fetchPayload(boxId: string): Promise<IPlayPayload>
-    {
-        const payloadUrl = `${MigratePlayTask.payloadBaseUrl}/${boxId}_payload.json`;
-
-        this.logTaskEvent("debug", `fetching ${payloadUrl}`);
-        const payloadContent = await fetch.json(payloadUrl, "GET") as IPlayPayload;
-        const payloadFileName = this.result.files["payload.json"] = "payload.json";
-        await this.writeFile(payloadFileName, JSON.stringify(payloadContent, null, 2));
-
-        // fetch and write thumbnail image
-        this.logTaskEvent("debug", `fetching ${payloadContent.message.pubThumb}`);
-        const thumbImage = await fetch.buffer(payloadContent.message.pubThumb, "GET");
-        const thumbFileName = this.result.files["image-thumb.jpg"] = "image-thumb.jpg";
-        await this.writeFile(thumbFileName, Buffer.from(thumbImage));
-
-        // fetch and write preview image
-        this.logTaskEvent("debug", `fetching ${payloadContent.message.pubPreview}`);
-        const previewImage = await fetch.buffer(payloadContent.message.pubPreview, "GET");
-        const previewFileName = this.result.files["image-preview.jpg"] = "image-preview";
-        await this.writeFile(previewFileName, Buffer.from(previewImage));
-
-        return payloadContent;
-    }
-
-    /**
-     * Fetches the bake.json asset map from CDN, then fetches all assets (original files).
-     * Returns the content of the config.json asset.
-     * @param boxId The Play box ID.
-     */
-    private async fetchAssets(boxId: string): Promise<Partial<IPlayBoxInfo>>
-    {
-        const cdnBaseUrl = MigratePlayTask.cdnBaseUrl;
-        const boxBaseUrl = `${cdnBaseUrl}/boxes/${boxId}/`;
-
-        // fetch and write bake.json
-        const bakeUrl = boxBaseUrl + "bake.json";
-        this.logTaskEvent("debug", `fetching 'bake.json' from ${bakeUrl}`);
-        const bakeContent = await fetch.json(bakeUrl, "GET") as IPlayBake;
-        const bakeFileName = this.result.files["bake.json"] = "bake.json";
-        await this.writeFile(bakeFileName, JSON.stringify(bakeContent, null, 2));
-
-        let configContent: IPlayConfig = null;
-        let descriptorContent: IPlayDescriptor = null;
-
-        // fetch and write all assets
-        const assetPaths = Object.keys(bakeContent.assets);
-        const fetchAssets = assetPaths.map(assetPath => {
-            const asset = bakeContent.assets[assetPath];
-            const assetUrl = `${cdnBaseUrl}/${asset.files["original"]}`;
-            const assetFileName = this.result.files[asset.name] = asset.name;
-
-            this.logTaskEvent("debug", `fetching asset '${assetFileName}' from ${assetUrl}`);
-
-            if (asset.type === "json") {
-                return fetch.json(assetUrl, "GET").then(data => {
-                    if (asset.name === "config.json") {
-                        configContent = data;
-                    }
-                    if (asset.name === "descriptor.json") {
-                        descriptorContent = data;
-                    }
-
-                    return this.writeFile(assetFileName, JSON.stringify(data, null, 2))
-                });
-            }
-            else {
-                return fetch.buffer(assetUrl, "GET").then(data => this.writeFile(assetFileName, Buffer.from(data)));
-            }
-        });
-
-        await Promise.all(fetchAssets);
-
-        return {
-            bake: bakeContent,
-            config: configContent,
-            descriptor: descriptorContent
-        };
-    }
-
-    private async fetchArticles(info: IPlayBoxInfo): Promise<any>
-    {
-        let articleIndex = 0;
-        const articleUrls: { [id:string]: number } = {};
-
-        // default article
-        const url = info.config["Default Sidebar"].URL;
-        if (url && !articleUrls[url]) {
-            articleUrls[url] = articleIndex++;
+        if (this.cancelRequested) {
+            return;
         }
 
-        // tour articles
-        const tours = info.payload.message.tours;
-        tours.forEach(tour => {
-            tour.snapshots.forEach(snapshot => {
-                const sidebarUrl = snapshot.data["Sidebar Store"]["Sidebar.URL"];
-                if (sidebarUrl && !articleUrls[sidebarUrl]) {
-                    articleUrls[sidebarUrl] = articleIndex++;
-                }
-            })
-        });
+        // create document, fetch article HTML files and images
+        this.logTaskEvent("debug", `creating SVX document for Play box #${params.boxId}`);
+        const document = await createDocument(context, info);
 
-        const urls = Object.keys(articleUrls);
-        return Promise.all(urls.map(url => this.fetchArticle(url, articleUrls[url])));
-    }
-
-    private async fetchArticle(url: string, index: number): Promise<any>
-    {
-        const pageHtml = await fetch.text(url, "GET");
-        const handler = new DomHandler();
-        const parser = new Parser(handler);
-
-        parser.write(pageHtml);
-        parser.done();
-
-        const dom = handler.dom;
-
-        // find parent of article content
-        const contentDiv = DomUtils.findOne(elem =>
-                elem.attribs && elem.attribs.class && elem.attribs.class.indexOf("region-content") >=0,
-        dom, true);
-
-        if (!contentDiv) {
-            throw new Error("Article content not found (no 'region-content' class)");
-        }
-
-        // remove article body-enclosing div (class "threed-sidebar-article-body")
-        const bodyDiv = DomUtils.findOne(elem =>
-            elem.attribs && elem.attribs.class && elem.attribs.class.indexOf("threed-sidebar-article-body") >= 0,
-        contentDiv.children, true);
-
-        if (bodyDiv) {
-            const parent: any = bodyDiv.parent;
-            bodyDiv.children.forEach(child => DomUtils.appendChild(parent, child));
-            DomUtils.removeElement(bodyDiv);
-        }
-
-        let imageIndex = 0;
-        const imageUrls: { [id:string]: string } = {};
-
-        DomUtils.findOne(elem => {
-            // download images
-            if (elem.name === "img" && elem.attribs && elem.attribs.src) {
-                const src = elem.attribs.src;
-                const imageUrl = src.startsWith("http") ? src : MigratePlayTask.drupalBaseUrl + src;
-                const imageExtension = imageUrl.split(".").pop();
-                const imageFileName = `article-${index}-image-${imageIndex}.${imageExtension}`;
-
-                elem.attribs.src = imageFileName;
-                imageUrls[imageUrl] = imageFileName;
-                imageIndex++;
-            }
-
-            // remove additional classes from all nodes
-            if (elem.attribs && elem.attribs.class) {
-                delete elem.attribs.class;
-            }
-
-            return false;
-        }, contentDiv.children, true);
-
-        // fetch all images
-        const urls = Object.keys(imageUrls);
-        const promises = urls.map(url => fetch.buffer(url, "GET").then(image => {
-            this.writeFile(imageUrls[url], Buffer.from(image))
-        }));
-
-        // write article HTML content
-        const contentHtml = DomUtils.getInnerHTML(contentDiv);
-        promises.push(this.writeFile(`article-${index}.html`, contentHtml));
-
-        await Promise.all(promises);
+        const documentFileName = "document.svx.json";
+        context.files[documentFileName] = documentFileName;
+        return fs.writeFile(path.resolve(context.baseDir, JSON.stringify(document, null, 2)));
     }
 }

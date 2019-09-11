@@ -25,6 +25,8 @@ import Task, { ITaskParameters } from "../app/Task";
 import { IDocument, INode, TUnitType } from "../types/document";
 import { IModel } from "../types/model";
 
+import DocumentBuilder from "../utils/DocumentBuilder";
+
 import { TDerivativeUsage, TDerivativeQuality, IAsset, TAssetType } from "../types/model";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,45 +103,35 @@ export default class DocumentTask extends Task
     static readonly parameterValidator =
         Task.jsonValidator.compile(DocumentTask.parameterSchema);
 
-    protected static readonly defaultDocument: IDocument = {
-        asset: {
-            "type": "application/si-dpo-3d.document+json",
-            "version": "1.0",
-            "generator": "Cook",
-            "copyright": "(c) Smithsonian Institution. All rights reserved."
-        },
-        "scene": 0,
-        "scenes": [{
-            "name": "Scene",
-            "units": "cm",
-        }],
-    };
+
+    protected builder: DocumentBuilder = null;
 
     protected async execute(): Promise<unknown>
     {
-        return this.readOrCreateDocument()
-        .then(document => this.modifyDocument(document))
-        .then(document => this.writeDocument(document));
+        this.builder = new DocumentBuilder(this.context.jobDir);
+
+        await this.readDocument();
+        await this.modifyDocument();
+        return this.writeDocument();
     }
 
-    private async readOrCreateDocument(): Promise<IDocument>
+    private async readDocument(): Promise<unknown>
     {
         const params = this.parameters as IDocumentTaskParameters;
         const documentFilePath = path.resolve(this.context.jobDir, params.documentFile);
 
         return fs.readFile(documentFilePath, "utf8").then(json => {
             // successfully read file: parse JSON and return document
-            return JSON.parse(json) as IDocument;
-        }).catch(err => {
-            // error while reading the document file: create new document
-            return clone(DocumentTask.defaultDocument);
+            this.builder.document = JSON.parse(json) as IDocument;
         });
     }
 
-    private async modifyDocument(document: IDocument): Promise<IDocument>
+    private async modifyDocument(): Promise<unknown>
     {
+        const builder = this.builder;
+        const document = this.builder.document;
         const params = this.parameters as IDocumentTaskParameters;
-        const scene = document.scenes[document.scene];
+        const scene = builder.getMainScene();
 
         if (!scene) {
             throw new Error("malformed document, missing scene");
@@ -312,11 +304,11 @@ export default class DocumentTask extends Task
         });
     }
 
-    private async writeDocument(document: IDocument): Promise<void>
+    private async writeDocument(): Promise<unknown>
     {
         const params = this.parameters as IDocumentTaskParameters;
         const documentFilePath = path.resolve(this.context.jobDir, params.documentFile);
-        const json = JSON.stringify(document);
+        const json = JSON.stringify(this.builder.document);
 
         return fs.writeFile(documentFilePath, json, "utf8");
     }
