@@ -201,18 +201,20 @@ export default class DocumentBuilder
 
     getOrCreateDerivative(model: IModel, quality: TDerivativeQuality, usage: TDerivativeUsage = "Web3D"): IDerivative
     {
-        const derivative = model.derivatives.find(
+        let derivative = model.derivatives.find(
             derivative => derivative.usage === usage && derivative.quality === quality);
 
-        if (derivative) {
-            return derivative;
+        if (!derivative) {
+            derivative = {
+                quality,
+                usage,
+                assets: [],
+            };
+
+            model.derivatives.push(derivative);
         }
 
-        return {
-            quality,
-            usage,
-            assets: [],
-        };
+        return derivative;
     }
 
     async setModelAsset(derivative: IDerivative, uri: string, numFaces?: number, mapSize?: number): Promise<IAsset>
@@ -256,24 +258,24 @@ export default class DocumentBuilder
     {
         const assetPath = path.resolve(this.baseDir, uri);
 
+        let asset = derivative.assets.find(asset => asset.type === type);
+
+        if (!asset) {
+            asset = {
+                uri,
+                type
+            };
+
+            derivative.assets.push(asset);
+        }
+        else {
+            asset.uri = uri;
+        }
+
         return fs.stat(assetPath).then(stats => {
-            let asset = derivative.assets.find(asset => asset.type === type);
-
-            if (!asset) {
-                asset = {
-                    uri,
-                    type,
-                    byteSize: stats.size
-                };
-
-                derivative.assets.push(asset);
-            }
-            else {
-                asset.uri = uri;
-                asset.byteSize = stats.size;
-            }
-
-            return asset;
-        });
+            asset.byteSize = stats.size;
+        })
+        .catch(() => {})
+        .then(() => asset);
     }
 }

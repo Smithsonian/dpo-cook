@@ -17,14 +17,16 @@
 
 import { Dictionary } from "@ff/core/types";
 
+import Job from "../app/Job";
+
 ////////////////////////////////////////////////////////////////////////////////
 
 export interface IPlayContext
 {
+    job: Job;
     drupalBaseUrl: string;
     payloadBaseUrl: string;
     cdnBaseUrl: string;
-    baseDir: string;
     assetDir: string;
     articleDir: string;
     files: Dictionary<string>;
@@ -79,17 +81,59 @@ export interface IPlayPart
 
 export interface IPlayConfig
 {
-    "Material - Curator Settings": any;
-    "Background - Curator Settings": any;
-    "Grid - Curator Settings": any;
-    "Measure - Curator Settings": any;
-    "Lighting - Curator Settings": any;
-    "Curator Tools": any;
-    "Viewcube and Grid for thumbnail": any;
-    "Title - Curator Settings": any;
-    "Annotation - Curator Settings": any;
-    "Camera - Curator Settings": any;
-    "Model Rotation - Curator Settings": any;
+    "Material - Curator Settings": {
+        "Material.Roughness": number;
+        "Material.Metalness": number;
+        "Material.PhotoTexture": number;
+        "Material.Occlusion": number;
+        "Material.Exposure": number;
+        "Material.Gamma": number;
+        "Material.Opacity": number;
+        "Material.Color": number[];
+    },
+    "Background - Curator Settings": {
+        "Background.Top.Color": number[];
+        "Background.Bottom.Color": number[];
+    },
+    "Grid - Curator Settings": {
+        "Grid.Units": number,
+        "Grid.Primary.Color": number[];
+        "Grid.Secondary.Color": number[];
+        "Grid.Opacity": number;
+        "Grid.Height": number;
+        "Grid.Size": "large"
+    },
+    "Measure - Curator Settings": {
+        "Thumbtack.Scale": number;
+    },
+    "Lighting - Curator Settings": {
+        "Environment.Preset": number;
+        "Environment.Exposure": number;
+    },
+    "Curator Tools": {
+        "hidden": boolean;
+    },
+    "Viewcube and Grid for thumbnail": {
+        "Viewcube.On": boolean;
+    },
+    "Title - Curator Settings": {
+        "Title.Name": string;
+        "Title.Size": number;
+        "Title.On": boolean;
+    },
+    "Annotation - Curator Settings": {
+        "Dot.Size": number,
+        "Dot.Color": number[];
+    },
+    "Camera - Curator Settings": {
+        "Camera.Offset": number[];
+        "Camera.Distance": number;
+        "Camera.Orientation.X": number;
+        "Camera.Orientation.Y": number;
+    },
+    "Model Rotation - Curator Settings": {
+        "Model.Rotation": number[];
+    },
 
     "Sidebar": { URL: string };
     "Default Sidebar": { URL: string };

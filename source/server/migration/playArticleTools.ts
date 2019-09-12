@@ -59,6 +59,7 @@ export async function fetchArticle(context: IPlayContext, url: string, index: nu
 {
     const articleIndex = index.toString().padStart(2, "0");
 
+    console.log(`fetchArticle - fetching HTML from ${url}`);
     const pageHtml = await fetch.text(url, "GET");
 
     // parse the article's HTML content
@@ -116,18 +117,21 @@ export async function fetchArticle(context: IPlayContext, url: string, index: nu
 
     // fetch all images
     const urls = Object.keys(imageUrls);
-    const promises = urls.map(url => fetch.buffer(url, "GET")
-        .then(image => {
+    const promises: Promise<unknown>[] = urls.map(url => {
+        console.log(`fetchArticle - fetching image from ${url}`);
+        return fetch.buffer(url, "GET").then(image => {
             const imageFileName = imageUrls[url];
-            const imageFilePath = path.resolve(context.baseDir, imageFileName);
+            const imageFilePath = path.resolve(context.job.jobDir, imageFileName);
+            console.log(`fetchArticle - writing image to ${imageFilePath}`);
             return fs.writeFile(imageFilePath, Buffer.from(image))
-        }));
+        });
+    });
 
     // write article HTML content
     const contentHtml = DomUtils.getInnerHTML(contentDiv);
     const articleFileName = `${context.articleDir}/article-${articleIndex}.html`;
     context.files[articleFileName] = articleFileName;
-    const articleFilePath = path.resolve(context.baseDir, articleFileName);
+    const articleFilePath = path.resolve(context.job.jobDir, articleFileName);
     promises.push(fs.writeFile(articleFilePath, contentHtml));
 
     return Promise.all(promises);

@@ -52,7 +52,7 @@ export async function fetchPlayBox(context: IPlayContext, boxId: string): Promis
     };
 
     const infoFileName = "info.json";
-    const infoFilePath = path.resolve(context.baseDir, infoFileName);
+    const infoFilePath = path.resolve(context.job.jobDir, infoFileName);
     context.files[infoFileName] = infoFileName;
 
     return fs.writeFile(infoFilePath, JSON.stringify(info, null, 2))
@@ -71,7 +71,7 @@ export async function fetchBake(context: IPlayContext, boxId: string): Promise<I
     // fetch and write bake.json
     const bakeUrl = boxBaseUrl + "bake.json";
     const bakeContent = await fetch.json(bakeUrl, "GET") as IPlayBake;
-    const bakeFilePath = path.resolve(context.baseDir, "bake.json");
+    const bakeFilePath = path.resolve(context.job.jobDir, "bake.json");
     context.files["bake.json"] = "bake.json";
 
     return fs.writeFile(bakeFilePath, JSON.stringify(bakeContent, null, 2))
@@ -89,17 +89,17 @@ export async function fetchPayload(context: IPlayContext, boxId: string): Promis
 
     const payloadContent = await fetch.json(payloadUrl, "GET") as IPlayPayload;
     const payloadFileName = context.files["payload.json"] = "payload.json";
-    const payloadFilePath = path.resolve(context.baseDir, payloadFileName);
+    const payloadFilePath = path.resolve(context.job.jobDir, payloadFileName);
 
     // fetch and write thumbnail image
     const thumbImage = await fetch.buffer(payloadContent.message.pubThumb, "GET");
     const thumbFileName = context.files["image-thumb.jpg"] = "image-thumb.jpg";
-    const thumbFilePath = path.resolve(context.baseDir, thumbFileName);
+    const thumbFilePath = path.resolve(context.job.jobDir, thumbFileName);
 
     // fetch and write preview image
     const previewImage = await fetch.buffer(payloadContent.message.pubPreview, "GET");
     const previewFileName = context.files["image-preview.jpg"] = "image-preview.jpg";
-    const previewFilePath = path.resolve(context.baseDir, previewFileName);
+    const previewFilePath = path.resolve(context.job.jobDir, previewFileName);
 
     return Promise.all([
         fs.writeFile(payloadFilePath, JSON.stringify(payloadContent, null, 2)),
@@ -126,7 +126,7 @@ export async function fetchAssets(context: IPlayContext, boxId: string, bake: IP
         const asset = bake.assets[assetPath];
         const assetUrl = `${context.cdnBaseUrl}/${asset.files["original"]}`;
         const assetFileName = `${context.assetDir}/${asset.name}`;
-        const assetFilePath = path.resolve(context.baseDir, assetFileName);
+        const assetFilePath = path.resolve(context.job.jobDir, assetFileName);
         context.files[assetFileName] = assetFileName;
 
         if (asset.type === "json") {

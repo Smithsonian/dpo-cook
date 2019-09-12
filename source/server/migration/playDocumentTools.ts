@@ -18,6 +18,7 @@
 import { Dictionary } from "@ff/core/types";
 
 import { IDocument } from "../types/document";
+import { ITour, ISnapshots } from "../types/setup";
 import { IArticle } from "../types/meta";
 import { IModel, IAnnotation } from "../types/model";
 
@@ -25,54 +26,66 @@ import DocumentBuilder from "../utils/DocumentBuilder";
 
 import { IPlayAnnotation, IPlayBoxInfo, IPlayContext, IPlaySnapshot, IPlayTour } from "./playTypes";
 
+import { createModels } from "./playModelTools";
 import { createArticle, fetchArticle } from "./playArticleTools";
-import { ITour, ISnapshots } from "../types/setup";
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export async function createDocument(context: IPlayContext, info: IPlayBoxInfo): Promise<IDocument>
 {
-    const builder = new DocumentBuilder(context.baseDir);
+    const builder = new DocumentBuilder(context.job.jobDir);
+    builder.document.asset.generator = "Cook - Play Migration";
+
     const scene = builder.getMainScene();
     const sceneSetup = builder.getOrCreateSetup(scene);
     const sceneMeta = builder.getOrCreateMeta(scene);
-    const todos: Promise<unknown>[] = [];
 
     let articleIndex = 0;
     const articleByUrl: Dictionary<IArticle> = {};
+    const tasks: Promise<unknown>[] = [];
 
     // default article
     const articleUrl = info.config["Default Sidebar"].URL;
     if (articleUrl) {
+        console.log(`createDocument - converting the default article`);
+
         const article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
         builder.addArticle(sceneMeta, article);
-        todos.push(fetchArticle(context, articleUrl, articleIndex++));
+        tasks.push(fetchArticle(context, articleUrl, articleIndex++));
     }
 
-    const modelNode = builder.createRootNode();
-    const model = builder.getOrCreateModel(modelNode);
+    await createModels(context, info, builder.document);
+    const model = builder.document.models[0];
 
     // annotations
     const playAnnotations = info.payload.message.annotations[0].annotations;
+
+    console.log(`createDocument - converting ${playAnnotations.length} annotations`);
+
     playAnnotations.forEach(playAnnotation => {
         const annotation = builder.createAnnotation(model);
-        migrateAnnotation(playAnnotation, annotation);
+        convertAnnotation(playAnnotation, annotation);
 
         const articleUrl = playAnnotation.Link;
         if (articleUrl) {
             let article = articleByUrl[articleUrl];
             if (!article) {
                 article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
-                todos.push(fetchArticle(context, articleUrl, articleIndex++));
+                tasks.push(fetchArticle(context, articleUrl, articleIndex++));
             }
 
             builder.addArticle(sceneMeta, article);
             annotation.articleId = article.id;
+            annotation.style = "Extended";
         }
     });
 
     // tours
     const playTours = info.payload.message.tours;
+
+    console.log(`createDocument - converting ${playTours.length} tours`);
+
     playTours.forEach(playTour => {
         const tour = builder.createTour(sceneSetup, playTour.name);
         migrateTour(playTour, tour);
@@ -83,7 +96,7 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
                 let article = articleByUrl[articleUrl];
                 if (!article) {
                     article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
-                    todos.push(fetchArticle(context, articleUrl, articleIndex++));
+                    tasks.push(fetchArticle(context, articleUrl, articleIndex++));
                 }
 
                 builder.addArticle(sceneMeta, article);
@@ -92,14 +105,21 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
         });
     });
 
-    return Promise.all(todos)
+    console.log(`createDocument - fetching ${tasks.length} articles`);
+
+    return Promise.all(tasks)
         .then(() => builder.document);
 }
 
-function migrateAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotation)
+function convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotation)
 {
     annotation.title = playAnnotation.Title;
     annotation.lead = playAnnotation.Body;
+
+    if (annotation.lead) {
+        annotation.style = "Extended";
+    }
+
     annotation.color = playAnnotation["Stem.Color"];
     annotation.position = playAnnotation["Transform.Position"];
     annotation.direction = playAnnotation["Transform.Rotation"];
