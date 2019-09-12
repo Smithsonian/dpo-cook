@@ -91,7 +91,7 @@ export default class MigratePlayTask extends Task
 
         const context: IPlayContext = {
             job: this.context,
-            assetDir: "assets",
+            boxDir: "box",
             articleDir: "articles",
             drupalBaseUrl: params.drupalBaseUrl,
             payloadBaseUrl: params.payloadBaseUrl,
@@ -101,7 +101,7 @@ export default class MigratePlayTask extends Task
 
         // create subdirectories for assets and articles
         this.logTaskEvent("debug", "creating subdirectories for assets and articles");
-        mkdirp(path.resolve(context.job.jobDir, context.assetDir));
+        mkdirp(path.resolve(context.job.jobDir, context.boxDir));
         mkdirp(path.resolve(context.job.jobDir, context.articleDir));
 
         // fetch play box assets and articles
@@ -119,7 +119,6 @@ export default class MigratePlayTask extends Task
         const documentFileName = "document.svx.json";
         this.logTaskEvent("debug", `writing document to ${documentFileName}`);
         context.files[documentFileName] = documentFileName;
-
         return fs.writeFile(path.resolve(context.job.jobDir, documentFileName), JSON.stringify(document, null, 2));
     }
 }

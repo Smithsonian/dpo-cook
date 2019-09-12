@@ -27,7 +27,7 @@ export interface IPlayContext
     drupalBaseUrl: string;
     payloadBaseUrl: string;
     cdnBaseUrl: string;
-    assetDir: string;
+    boxDir: string;
     articleDir: string;
     files: Dictionary<string>;
 }

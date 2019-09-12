@@ -157,8 +157,9 @@ export default class DocumentBuilder
         return nodes.filter(node => models[node.model] === model);
     }
 
-    createArticle(meta: IMeta, uri: string): IArticle
+    createArticle(node: IScene | INode, uri: string): IArticle
     {
+        const meta = this.getOrCreateMeta(node);
         const articles = meta.articles = meta.articles || [];
         const article: IArticle = {
             id: uniqueId(),
@@ -169,8 +170,9 @@ export default class DocumentBuilder
         return article;
     }
 
-    addArticle(meta: IMeta, article: IArticle): IArticle
+    addArticle(node: IScene | INode, article: IArticle): IArticle
     {
+        const meta = this.getOrCreateMeta(node);
         const articles = meta.articles = meta.articles || [];
         articles.push(article);
         return article;

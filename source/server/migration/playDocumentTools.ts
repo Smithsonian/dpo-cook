@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import * as THREE from "three";
+
 import { Dictionary } from "@ff/core/types";
 
 import { IDocument } from "../types/document";
@@ -41,41 +43,49 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
     const sceneSetup = builder.getOrCreateSetup(scene);
     const sceneMeta = builder.getOrCreateMeta(scene);
 
+    // set title of experience
+    sceneMeta.collection = sceneMeta.collection || {};
+    sceneMeta.collection["title"] = info.descriptor.name;
+
     let articleIndex = 0;
     const articleByUrl: Dictionary<IArticle> = {};
     const tasks: Promise<unknown>[] = [];
 
-    // default article
-    const articleUrl = info.config["Default Sidebar"].URL;
-    if (articleUrl) {
-        console.log(`createDocument - converting the default article`);
+    // determine annotation scale factor from scene dimensions
+    const sceneBoundingBox = await createModels(context, info, builder.document);
+    const size = new THREE.Vector3();
+    sceneBoundingBox.getSize(size);
+    const annotationScale = Math.max(size.x, size.y, size.z) / 25;
 
-        const article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
-        builder.addArticle(sceneMeta, article);
-        tasks.push(fetchArticle(context, articleUrl, articleIndex++));
-    }
-
-    await createModels(context, info, builder.document);
+    // get first model
     const model = builder.document.models[0];
+    const modelNode = builder.findNodesByModel(model)[0];
 
-    // annotations
+    // convert all annotations and assign to first model
     const playAnnotations = info.payload.message.annotations[0].annotations;
-
     console.log(`createDocument - converting ${playAnnotations.length} annotations`);
 
     playAnnotations.forEach(playAnnotation => {
         const annotation = builder.createAnnotation(model);
         convertAnnotation(playAnnotation, annotation);
 
+        // adjust scale
+        annotation.scale = annotationScale;
+
+        // offset the annotation by the model's translation
+        const p = annotation.position;
+        const t = model.translation;
+        p[0] += t[0]; p[1] += t[1]; p[2] += t[2];
+
         const articleUrl = playAnnotation.Link;
         if (articleUrl) {
             let article = articleByUrl[articleUrl];
             if (!article) {
                 article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
-                tasks.push(fetchArticle(context, articleUrl, articleIndex++));
+                tasks.push(fetchArticle(context, article, articleUrl, articleIndex++));
             }
 
-            builder.addArticle(sceneMeta, article);
+            builder.addArticle(modelNode, article);
             annotation.articleId = article.id;
             annotation.style = "Extended";
         }
@@ -96,14 +106,28 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
                 let article = articleByUrl[articleUrl];
                 if (!article) {
                     article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
-                    tasks.push(fetchArticle(context, articleUrl, articleIndex++));
+                    tasks.push(fetchArticle(context, article, articleUrl, articleIndex++));
                 }
 
-                builder.addArticle(sceneMeta, article);
-                // add article id to tour stop
+                builder.addArticle(scene, article);
+                // TODO: add article id to tour stop
             }
         });
     });
+
+    // default article, add to scene
+    const articleUrl = info.config["Default Sidebar"].URL;
+    if (articleUrl) {
+        console.log(`createDocument - converting the default article`);
+
+        let article = articleByUrl[articleUrl];
+        if (!article) {
+            article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
+            tasks.push(fetchArticle(context, article, articleUrl, articleIndex++));
+        }
+
+        builder.addArticle(scene, article);
+    }
 
     console.log(`createDocument - fetching ${tasks.length} articles`);
 
@@ -122,7 +146,18 @@ function convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotat
 
     annotation.color = playAnnotation["Stem.Color"];
     annotation.position = playAnnotation["Transform.Position"];
-    annotation.direction = playAnnotation["Transform.Rotation"];
+
+    const rotation = new THREE.Vector3();
+    rotation.fromArray(playAnnotation["Transform.Rotation"]);
+    rotation.multiplyScalar(THREE.Math.DEG2RAD);
+
+    const euler = new THREE.Euler();
+    euler.setFromVector3(rotation, "XYZ");
+
+    const direction = new THREE.Vector3(0, 1, 0);
+    direction.applyEuler(euler);
+
+    annotation.direction = direction.toArray();
 }
 
 function migrateTour(playTour: IPlayTour, tour: ITour)

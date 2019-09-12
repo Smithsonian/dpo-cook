@@ -51,11 +51,12 @@ export function createArticle(context: IPlayContext, index: number): IArticle
  * Fetches the HTML document from the given url and transforms/rewrites it to the article folder.
  * Also fetches and writes all images referenced in the article.
  * @param context The configuration context.
+ * @param article The article to augment with title and lead.
  * @param url The URL of the article to be fetched.
  * @param index The index to be used for naming the article.
  * @returns file path of the fetched article.
  */
-export async function fetchArticle(context: IPlayContext, url: string, index: number): Promise<unknown>
+export async function fetchArticle(context: IPlayContext, article: IArticle, url: string, index: number): Promise<unknown>
 {
     const articleIndex = index.toString().padStart(2, "0");
 
@@ -88,6 +89,12 @@ export async function fetchArticle(context: IPlayContext, url: string, index: nu
         bodyDiv.children.forEach(child => DomUtils.appendChild(parent, child));
         DomUtils.removeElement(bodyDiv);
     }
+
+    const title = DomUtils.findOne(elem => elem.name === "h1",
+        contentDiv.children, true);
+
+    const titleText = title && DomUtils.getText(title);
+    article.title = titleText || `Article No. ${index + 1}`;
 
     let imageIndex = 0;
     const imageUrls: Dictionary<string> = {};

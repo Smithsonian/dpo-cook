@@ -62,32 +62,6 @@
             "success": "'delivery'",
             "failure": "$failure"
         },
-        "webasset": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset",
-            "pre": {
-                "deliverables": {
-                    "webAssetGlb": "baseMeshMapName & '-web-thumb.glb'",
-                    "diffuseMap": "bakeDiffuse ? (baseMeshMapName & '-diffuse.jpg') : ''",
-                    "occlusionMap": "bakeOcclusion ? (baseMeshMapName & '-occlusion.jpg') : ''",
-                    "normalMap": "bakeNormals ? (baseMeshMapName & '-normals.jpg') : ''"
-                }
-            },
-            "parameters": {
-                "outputFile": "deliverables.webAssetGlb",
-                "meshFile": "deliverables.unwrappedMesh",
-                "diffuseMapFile": "deliverables.diffuseMap",
-                "occlusionMapFile": "deliverables.occlusionMap",
-                "normalMapFile": "deliverables.normalMap",
-                "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": true,
-                "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
-            },
-            "success": "'delivery'",
-            "failure": "$failure"
-        },
         "delivery": {
             "task": "Delivery",
             "description": "Send result files back to client",

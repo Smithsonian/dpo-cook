@@ -51,9 +51,8 @@ export async function fetchPlayBox(context: IPlayContext, boxId: string): Promis
         config
     };
 
-    const infoFileName = "info.json";
+    const infoFileName = context.files["info.json"] = context.boxDir + "/info.json";
     const infoFilePath = path.resolve(context.job.jobDir, infoFileName);
-    context.files[infoFileName] = infoFileName;
 
     return fs.writeFile(infoFilePath, JSON.stringify(info, null, 2))
         .then(() => info);
@@ -71,8 +70,8 @@ export async function fetchBake(context: IPlayContext, boxId: string): Promise<I
     // fetch and write bake.json
     const bakeUrl = boxBaseUrl + "bake.json";
     const bakeContent = await fetch.json(bakeUrl, "GET") as IPlayBake;
-    const bakeFilePath = path.resolve(context.job.jobDir, "bake.json");
-    context.files["bake.json"] = "bake.json";
+    const bakeFileName = context.files["bake.json"] = context.boxDir + "/bake.json";
+    const bakeFilePath = path.resolve(context.job.jobDir, bakeFileName);
 
     return fs.writeFile(bakeFilePath, JSON.stringify(bakeContent, null, 2))
         .then(() => bakeContent);
@@ -88,7 +87,7 @@ export async function fetchPayload(context: IPlayContext, boxId: string): Promis
     const payloadUrl = `${context.payloadBaseUrl}/${boxId}_payload.json`;
 
     const payloadContent = await fetch.json(payloadUrl, "GET") as IPlayPayload;
-    const payloadFileName = context.files["payload.json"] = "payload.json";
+    const payloadFileName = context.files["payload.json"] = context.boxDir + "/payload.json";
     const payloadFilePath = path.resolve(context.job.jobDir, payloadFileName);
 
     // fetch and write thumbnail image
@@ -125,7 +124,7 @@ export async function fetchAssets(context: IPlayContext, boxId: string, bake: IP
     const fetchAssets = assetPaths.map(assetPath => {
         const asset = bake.assets[assetPath];
         const assetUrl = `${context.cdnBaseUrl}/${asset.files["original"]}`;
-        const assetFileName = `${context.assetDir}/${asset.name}`;
+        const assetFileName = `${context.boxDir}/${asset.name}`;
         const assetFilePath = path.resolve(context.job.jobDir, assetFileName);
         context.files[assetFileName] = assetFileName;
 
