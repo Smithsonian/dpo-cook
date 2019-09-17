@@ -23,7 +23,7 @@ import uniqueId from "@ff/core/uniqueId";
 
 import { IDocument, INode, IScene } from "../types/document";
 import { IArticle, IMeta } from "../types/meta";
-import { ISetup, ITours, ITour } from "../types/setup";
+import { ISetup, ITours, ITour, IState } from "../types/setup";
 
 import {
     IModel,
@@ -157,6 +157,21 @@ export default class DocumentBuilder
         return nodes.filter(node => models[node.model] === model);
     }
 
+    findSceneBySetup(setup: ISetup): IScene | undefined
+    {
+        const scenes = this.document.scenes;
+        if (!scenes) {
+            return undefined;
+        }
+
+        const setups = this.document.setups;
+        if (!setups) {
+            return undefined;
+        }
+
+        return scenes.filter(scene => setups[scene.setup] === setup)[0];
+    }
+
     createArticle(node: IScene | INode, uri: string): IArticle
     {
         const meta = this.getOrCreateMeta(node);
@@ -191,6 +206,27 @@ export default class DocumentBuilder
 
     createTour(setup: ISetup, title: string): ITour
     {
+        const scene = this.findSceneBySetup(setup);
+        const sceneIndex = this.document.scenes.indexOf(scene);
+        const scenePath = `scenes/${sceneIndex}/`;
+
+        setup.snapshots = setup.snapshots || {
+            features: ["reader", "viewer", "navigation"],
+            targets: [
+                `${scenePath}setup/reader/enabled`,
+                `${scenePath}setup/reader/articleId`,
+                `${scenePath}setup/navigation/orbit`,
+                `${scenePath}setup/navigation/offset`,
+                `${scenePath}setup/viewer/annotationsVisible`,
+                `${scenePath}setup/viewer/activeAnnotation`,
+                `${scenePath}setup/viewer/activeTags`,
+                `${scenePath}setup/viewer/shader`,
+                `${scenePath}setup/viewer/exposure`
+            ],
+            states: []
+        };
+
+
         const tours: ITours = setup.tours = setup.tours || [];
         const tour: ITour = {
             title,
@@ -199,6 +235,18 @@ export default class DocumentBuilder
 
         tours.push(tour);
         return tour;
+    }
+
+    createSnapshot(setup: ISetup, tour: ITour, title: string): IState
+    {
+        const id = uniqueId(6);
+
+        const step = { id, title };
+        tour.steps.push(step);
+
+        const state = { id, values: [], duration: 1.5, curve: "EaseOutQuad", threshold: 0.5 };
+        setup.snapshots.states.push(state);
+        return state;
     }
 
     getOrCreateDerivative(model: IModel, quality: TDerivativeQuality, usage: TDerivativeUsage = "Web3D"): IDerivative

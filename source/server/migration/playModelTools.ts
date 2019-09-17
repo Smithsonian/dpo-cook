@@ -75,7 +75,7 @@ export async function createModels(context: IPlayContext, info: IPlayBoxInfo, do
                 sceneBoundingBox.expandByPoint(corner);
 
                 // TODO: debug only, write inspection report
-                return fs.writeFile(path.resolve(context.job.jobDir, "inspection.json"), JSON.stringify(inspection, null, 2));
+                return fs.writeFile(path.resolve(context.job.jobDir, `p${index}-inspection.json`), JSON.stringify(inspection, null, 2));
             })
             // create thumb quality web asset
             .then(() => reduceMaps(context, part, index, inspection, 512))

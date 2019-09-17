@@ -143,13 +143,16 @@ export interface ISnapshots
 {
     features: string[];
     targets: string[];
-    states: {
-        id: string;
-        curve: string;
-        duration: number;
-        threshold: number;
-        values: any[];
-    }[];
+    states: IState[];
+}
+
+export interface IState
+{
+    id: string;
+    curve: string;
+    duration: number;
+    threshold: number;
+    values: any[];
 }
 
 export interface ITour

@@ -89,6 +89,7 @@ export default class MigratePlayTask extends Task
         this.result.files = {};
         const params = this.parameters;
 
+        // the context object contains configuration and status information for the current migration
         const context: IPlayContext = {
             job: this.context,
             boxDir: "box",

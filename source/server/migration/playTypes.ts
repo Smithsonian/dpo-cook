@@ -333,3 +333,10 @@ export interface IPlaySnapshotData
     "Measure Button Store": {};
     "Ortho Button Store": {};
 }
+
+export interface IPlayTourComponent
+{
+    key: string;
+    animatedProps: string[];
+}
+

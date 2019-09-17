@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
+import * as fs from "fs-extra";
+import * as path from "path";
+import * as deepEqual from "deep-equal";
+import * as filenamify from "filenamify";
 import * as THREE from "three";
 
 import { Dictionary } from "@ff/core/types";
 
 import { IDocument } from "../types/document";
-import { ITour, ISnapshots } from "../types/setup";
+import { ITour, IState } from "../types/setup";
 import { IArticle } from "../types/meta";
 import { IModel, IAnnotation } from "../types/model";
 
 import DocumentBuilder from "../utils/DocumentBuilder";
 
-import { IPlayAnnotation, IPlayBoxInfo, IPlayContext, IPlaySnapshot, IPlayTour } from "./playTypes";
+import { IPlayAnnotation, IPlayBoxInfo, IPlayContext, IPlaySnapshot, IPlayTour, IPlayTourComponent } from "./playTypes";
 
 import { createModels } from "./playModelTools";
 import { createArticle, fetchArticle } from "./playArticleTools";
@@ -96,22 +100,30 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
 
     console.log(`createDocument - converting ${playTours.length} tours`);
 
-    playTours.forEach(playTour => {
+    const tourTasks = playTours.map((tour, index) => findAnimatedTourProps(context, tour, index));
+    await Promise.all(tourTasks);
+
+    playTours.forEach((playTour, tourIndex) => {
         const tour = builder.createTour(sceneSetup, playTour.name);
         migrateTour(playTour, tour);
 
-        playTour.snapshots.forEach(snapshot => {
-            const articleUrl = snapshot.data["Sidebar Store"]["Sidebar.URL"];
+        playTour.snapshots.forEach(playSnapshot => {
+            const articleUrl = playSnapshot.data["Sidebar Store"]["Sidebar.URL"];
+            let article: IArticle = null;
+
             if (articleUrl) {
-                let article = articleByUrl[articleUrl];
+                article = articleByUrl[articleUrl];
                 if (!article) {
                     article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
                     tasks.push(fetchArticle(context, article, articleUrl, articleIndex++));
                 }
 
                 builder.addArticle(scene, article);
-                // TODO: add article id to tour stop
             }
+
+            const state = builder.createSnapshot(sceneSetup, tour, playSnapshot.name);
+            const articleId = article ? article.id : "";
+            migrateSnapshot(playSnapshot, articleId, tour, state);
         });
     });
 
@@ -160,13 +172,106 @@ function convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotat
     annotation.direction = direction.toArray();
 }
 
+async function findAnimatedTourProps(context: IPlayContext, tour: IPlayTour, index: number)
+{
+    const snapshots = tour.snapshots;
+    const first = snapshots[0];
+    if (!first) {
+        return Promise.resolve();
+    }
+
+    const firstStoreKeys = Object.keys(first.data);
+
+    const components: Dictionary<Dictionary<boolean>> = {};
+
+    for (let i = 1; i < snapshots.length; ++i) {
+        const snapshot = snapshots[i];
+        firstStoreKeys.forEach(storeKey => {
+            const propKeys = Object.keys(first.data[storeKey]);
+            propKeys.forEach(propKey => {
+                if (!deepEqual(snapshot.data[storeKey][propKey], first.data[storeKey][propKey])) {
+                    const props = components[storeKey] = components[storeKey] || {};
+                    props[propKey] = true;
+                }
+            });
+        });
+    }
+
+    console.log(`\n---------- TOUR: ${tour.name}: ANIMATED KEYS/PROPS ----------`);
+    firstStoreKeys.forEach(storeKey => {
+        if (components[storeKey]) {
+            const animatedProps = Object.keys(components[storeKey]);
+            if (animatedProps.length > 0) {
+                console.log(storeKey);
+                animatedProps.forEach(prop => console.log(`    ${prop}`));
+            }
+        }
+    });
+
+    const tourPropsFileName = `t${index}-${filenamify(tour.name)}-animated-props.json`;
+    return fs.writeFile(path.resolve(context.job.jobDir, tourPropsFileName), JSON.stringify(components, null, 2));
+}
+
 function migrateTour(playTour: IPlayTour, tour: ITour)
 {
     tour.title = playTour.name;
     tour.lead = playTour.description;
 }
 
-function migrateSnapshot(playSnapshot: IPlaySnapshot, snapshot: any)
-{
+const curves = [
+    "Linear",         // 0
+    "EaseQuad",       // 1
+    "EaseInQuad",     // 2
+    "EaseOutQuad",    // 3
+    "EaseCubic",      // 4
+    "EaseInCubic",    // 5
+    "EaseOutCubic",   // 6
+    "EaseQuart",      // 7
+    "EaseInQuart",    // 8
+    "EaseOutQuart",   // 9
+    "EaseQuint",      // 10
+    "EaseInQuint",    // 11
+    "EaseOutQuint",   // 12
+    "EaseSine",       // 13
+    "EaseInSine",     // 14
+    "EaseOutSine",    // 15
+];
 
+function migrateSnapshot(playSnapshot: IPlaySnapshot, articleId, tour: ITour, state: IState)
+{
+    state.duration = playSnapshot.transition.duration;
+    state.threshold = playSnapshot.transition.switch;
+    state.curve = curves[playSnapshot.transition.curve];
+
+    const camera = playSnapshot.data["Camera Store"];
+
+    const orbit = [
+        camera["Camera.Orientation"][0] * THREE.Math.DEG2RAD,
+        camera["Camera.Orientation"][1] * THREE.Math.DEG2RAD,
+        camera["Camera.Orientation"][2] * THREE.Math.DEG2RAD,
+    ];
+    const offset = [
+        camera["Camera.Offset"][0],
+        camera["Camera.Offset"][1],
+        camera["Camera.Offset"][2] + camera["Camera.Distance"],
+    ];
+
+    const readerEnabled = false;
+    const annotationsVisible = false;
+    const activeAnnotation = "";
+    const activeTags = "";
+    const shader = 0;
+    const exposure = 1;
+
+    state.values = [
+        readerEnabled,
+        articleId,
+        orbit,
+        offset,
+        annotationsVisible,
+        activeAnnotation,
+        activeTags,
+        shader,
+        exposure,
+    ];
 }

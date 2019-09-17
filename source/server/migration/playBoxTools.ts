@@ -146,6 +146,17 @@ export async function fetchAssets(context: IPlayContext, boxId: string, bake: IP
         }
     });
 
+    // additionally fetch 'nodeData.json' from 'config.json' asset
+    const configFiles = bake.assets["config.json"].files;
+    const nodeDataUrl = `${context.cdnBaseUrl}/${configFiles["nodeData"]}`;
+
+    fetchAssets.push(fetch.json(nodeDataUrl, "GET").then(data => {
+        const nodeDataFileName = `${context.boxDir}/nodeData.json`;
+        context.files["nodeData.json"] = nodeDataFileName;
+        const nodeDataFilePath = path.resolve(context.job.jobDir, nodeDataFileName);
+        return fs.writeFile(nodeDataFilePath, JSON.stringify(data, null, 2));
+    }));
+
     return Promise.all(fetchAssets)
         .then(() => ({
             config: playConfig,
