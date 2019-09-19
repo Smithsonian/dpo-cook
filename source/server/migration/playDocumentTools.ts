@@ -23,8 +23,8 @@ import * as THREE from "three";
 
 import { Dictionary } from "@ff/core/types";
 
-import { IDocument } from "../types/document";
-import { ITour, IState } from "../types/setup";
+import { IDocument, INode, ICamera } from "../types/document";
+import { ISetup, ITour, IState } from "../types/setup";
 import { IArticle } from "../types/meta";
 import { IModel, IAnnotation } from "../types/model";
 
@@ -45,12 +45,8 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
 
     const scene = builder.getMainScene();
     const sceneSetup = builder.getOrCreateSetup(scene);
-    const sceneMeta = builder.getOrCreateMeta(scene);
 
-    // set title of experience
-    sceneMeta.collection = sceneMeta.collection || {};
-    sceneMeta.collection["title"] = info.descriptor.name;
-
+    // bookkeeping for HTML article conversion
     let articleIndex = 0;
     const articleByUrl: Dictionary<IArticle> = {};
     const tasks: Promise<unknown>[] = [];
@@ -59,6 +55,7 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
     const sceneBoundingBox = await createModels(context, info, builder.document);
     const size = new THREE.Vector3();
     sceneBoundingBox.getSize(size);
+    const sceneRadius = size.length() * 0.5;
     const annotationScale = Math.max(size.x, size.y, size.z) / 25;
 
     // get first model
@@ -84,16 +81,20 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
         const articleUrl = playAnnotation.Link;
         if (articleUrl) {
             let article = articleByUrl[articleUrl];
+
             if (!article) {
                 article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
                 tasks.push(fetchArticle(context, article, articleUrl, articleIndex++));
+                builder.addArticle(modelNode, article);
             }
 
-            builder.addArticle(modelNode, article);
             annotation.articleId = article.id;
             annotation.style = "Extended";
         }
     });
+
+    // convert scene settings (camera, etc.)
+    convertScene(info, builder, sceneRadius);
 
     // tours
     const playTours = info.payload.message.tours;
@@ -105,7 +106,7 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
 
     playTours.forEach((playTour, tourIndex) => {
         const tour = builder.createTour(sceneSetup, playTour.name);
-        migrateTour(playTour, tour);
+        convertTour(playTour, tour);
 
         playTour.snapshots.forEach(playSnapshot => {
             const articleUrl = playSnapshot.data["Sidebar Store"]["Sidebar.URL"];
@@ -123,28 +124,74 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
 
             const state = builder.createSnapshot(sceneSetup, tour, playSnapshot.name);
             const articleId = article ? article.id : "";
-            migrateSnapshot(playSnapshot, articleId, tour, state);
+            convertSnapshot(playSnapshot, articleId, tour, state, sceneRadius);
         });
     });
 
     // default article, add to scene
     const articleUrl = info.config["Default Sidebar"].URL;
     if (articleUrl) {
-        console.log(`createDocument - converting the default article`);
-
         let article = articleByUrl[articleUrl];
+
         if (!article) {
             article = articleByUrl[articleUrl] = createArticle(context, articleIndex);
             tasks.push(fetchArticle(context, article, articleUrl, articleIndex++));
+            builder.addArticle(scene, article);
         }
-
-        builder.addArticle(scene, article);
     }
 
     console.log(`createDocument - fetching ${tasks.length} articles`);
 
     return Promise.all(tasks)
         .then(() => builder.document);
+}
+
+function convertScene(info: IPlayBoxInfo, builder: DocumentBuilder, sceneRadius: number)
+{
+    const scene = builder.getMainScene();
+    const meta = builder.getOrCreateMeta(scene);
+    const setup = builder.getOrCreateSetup(scene);
+
+    // set title of experience
+    meta.collection = meta.collection || {};
+    meta.collection["title"] = info.descriptor.name;
+
+    // create camera
+    let camera: ICamera = builder.getCamera(0);
+
+    if (!camera) {
+        const cameraNode = builder.createRootNode(scene);
+        camera = builder.getOrCreateCamera(cameraNode);
+    }
+
+    camera.type = "perspective";
+    camera.perspective = {
+        yfov: 45,
+        znear: 0.1,
+        zfar: 100000
+    };
+
+    const cam = info.config["Camera - Curator Settings"];
+    const offset = cam["Camera.Offset"];
+    const distance = cam["Camera.Distance"];
+    const orbitX = cam["Camera.Orientation.Y"];
+    const orbitY = cam["Camera.Orientation.X"];
+
+    const scaleFactor = sceneRadius / 8; // Play model scale to voyager model scale
+
+    setup.navigation = {
+        autoZoom: true,
+        enabled: true,
+        type: "Orbit",
+        orbit: {
+            offset: [ offset[0] * scaleFactor, offset[1] * scaleFactor, (offset[2] + distance) * scaleFactor ],
+            orbit: [ orbitX, orbitY, 0 ],
+            "minOrbit": [-90, null, null],
+            "maxOrbit": [90, null, null],
+            "minOffset": [null, null, 0.1],
+            "maxOffset": [null, null, 10000]
+        },
+    };
 }
 
 function convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotation)
@@ -212,7 +259,7 @@ async function findAnimatedTourProps(context: IPlayContext, tour: IPlayTour, ind
     return fs.writeFile(path.resolve(context.job.jobDir, tourPropsFileName), JSON.stringify(components, null, 2));
 }
 
-function migrateTour(playTour: IPlayTour, tour: ITour)
+function convertTour(playTour: IPlayTour, tour: ITour)
 {
     tour.title = playTour.name;
     tour.lead = playTour.description;
@@ -237,23 +284,25 @@ const curves = [
     "EaseOutSine",    // 15
 ];
 
-function migrateSnapshot(playSnapshot: IPlaySnapshot, articleId, tour: ITour, state: IState)
+function convertSnapshot(playSnapshot: IPlaySnapshot, articleId, tour: ITour, state: IState, sceneRadius: number)
 {
     state.duration = playSnapshot.transition.duration;
     state.threshold = playSnapshot.transition.switch;
     state.curve = curves[playSnapshot.transition.curve];
 
+    const scaleFactor = sceneRadius / 8; // Play model scale to voyager model scale
+
     const camera = playSnapshot.data["Camera Store"];
 
     const orbit = [
-        camera["Camera.Orientation"][0] * THREE.Math.DEG2RAD,
-        camera["Camera.Orientation"][1] * THREE.Math.DEG2RAD,
-        camera["Camera.Orientation"][2] * THREE.Math.DEG2RAD,
+        camera["Camera.Orientation"][1], // 1 = Pitch (X)
+        camera["Camera.Orientation"][0], // 2 = Yaw (Y)
+        camera["Camera.Orientation"][2], // 3 = Roll (Z)
     ];
     const offset = [
-        camera["Camera.Offset"][0],
-        camera["Camera.Offset"][1],
-        camera["Camera.Offset"][2] + camera["Camera.Distance"],
+        camera["Camera.Offset"][0] * scaleFactor,
+        camera["Camera.Offset"][1] * scaleFactor,
+        (camera["Camera.Offset"][2] + camera["Camera.Distance"]) * scaleFactor,
     ];
 
     const readerEnabled = false;

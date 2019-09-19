@@ -21,7 +21,7 @@ import { promises as fs } from "fs";
 import clone from "@ff/core/clone";
 import uniqueId from "@ff/core/uniqueId";
 
-import { IDocument, INode, IScene } from "../types/document";
+import { IDocument, INode, IScene, ICamera } from "../types/document";
 import { IArticle, IMeta } from "../types/meta";
 import { ISetup, ITours, ITour, IState } from "../types/setup";
 
@@ -82,6 +82,23 @@ export default class DocumentBuilder
         const node: INode = {};
         nodes.push(node);
         return node;
+    }
+
+    getOrCreateCamera(node: INode): ICamera
+    {
+        if (node.camera !== undefined) {
+            return this.document.cameras[node.camera];
+        }
+
+        const cameras = this.document.cameras = this.document.cameras || [];
+        node.camera = cameras.length;
+
+        const camera: ICamera = {
+            type: "perspective",
+        };
+
+        cameras.push(camera);
+        return camera;
     }
 
     createRootNode(scene?: IScene): INode
@@ -155,6 +172,26 @@ export default class DocumentBuilder
         }
 
         return nodes.filter(node => models[node.model] === model);
+    }
+
+    getCamera(index: number): ICamera | undefined
+    {
+        return this.document.cameras ? this.document.cameras[index] : undefined;
+    }
+
+    findNodeByCamera(camera: ICamera): INode
+    {
+        const nodes = this.document.nodes;
+        if (!nodes) {
+            return null;
+        }
+
+        const cameras = this.document.cameras;
+        if (!cameras) {
+            return null;
+        }
+
+        return nodes.find(node => cameras[node.camera] === camera);
     }
 
     findSceneBySetup(setup: ISetup): IScene | undefined
