@@ -121,9 +121,10 @@ export default class DocumentTask extends Task
         const documentFilePath = path.resolve(this.context.jobDir, params.documentFile);
 
         return fs.readFile(documentFilePath, "utf8").then(json => {
-            // successfully read file: parse JSON and return document
+            // successfully read file: parse JSON and replace the default document
             this.builder.document = JSON.parse(json) as IDocument;
-        });
+        })
+        .catch(() => {}); // in case of an error, continue with default document
     }
 
     private async modifyDocument(): Promise<unknown>

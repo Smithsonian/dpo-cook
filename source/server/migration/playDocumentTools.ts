@@ -46,11 +46,6 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
     const scene = builder.getMainScene();
     const sceneSetup = builder.getOrCreateSetup(scene);
 
-    // bookkeeping for HTML article conversion
-    let articleIndex = 0;
-    const articleByUrl: Dictionary<IArticle> = {};
-    const tasks: Promise<unknown>[] = [];
-
     // determine annotation scale factor from scene dimensions
     const sceneBoundingBox = await createModels(context, info, builder.document);
     const size = new THREE.Vector3();
@@ -61,6 +56,11 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
     // get first model
     const model = builder.document.models[0];
     const modelNode = builder.findNodesByModel(model)[0];
+
+    // bookkeeping for HTML article conversion
+    let articleIndex = 0;
+    const articleByUrl: Dictionary<IArticle> = {};
+    const tasks: Promise<unknown>[] = [];
 
     // convert all annotations and assign to first model
     const playAnnotations = info.payload.message.annotations[0].annotations;
@@ -157,19 +157,20 @@ function convertScene(info: IPlayBoxInfo, builder: DocumentBuilder, sceneRadius:
     meta.collection["title"] = info.descriptor.name;
 
     // create camera
-    let camera: ICamera = builder.getCamera(0);
-
-    if (!camera) {
-        const cameraNode = builder.createRootNode(scene);
-        camera = builder.getOrCreateCamera(cameraNode);
-    }
-
-    camera.type = "perspective";
-    camera.perspective = {
-        yfov: 45,
-        znear: 0.1,
-        zfar: 100000
-    };
+    // TODO: Disabled - needs updated merge strategy in Voyager
+    // let camera: ICamera = builder.getCamera(0);
+    //
+    // if (!camera) {
+    //     const cameraNode = builder.createRootNode(scene);
+    //     camera = builder.getOrCreateCamera(cameraNode);
+    // }
+    //
+    // camera.type = "perspective";
+    // camera.perspective = {
+    //     yfov: 45,
+    //     znear: 0.1,
+    //     zfar: 100000
+    // };
 
     const cam = info.config["Camera - Curator Settings"];
     const offset = cam["Camera.Offset"];
