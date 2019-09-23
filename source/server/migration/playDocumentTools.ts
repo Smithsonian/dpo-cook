@@ -95,7 +95,6 @@ export async function createDocument(context: IPlayContext, info: IPlayBoxInfo):
             }
 
             annotation.articleId = article.id;
-            annotation.style = "Extended";
         }
     });
 
@@ -201,12 +200,10 @@ function convertScene(info: IPlayBoxInfo, builder: DocumentBuilder, playScaleFac
 
 function convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotation)
 {
+    annotation.marker = playAnnotation.index.toString();
     annotation.title = playAnnotation.Title;
     annotation.lead = playAnnotation.Body;
-
-    if (annotation.lead) {
-        annotation.style = "Number";
-    }
+    annotation.style = "Marker";
 
     annotation.color = playAnnotation["Stem.Color"];
     annotation.position = playAnnotation["Transform.Position"];
