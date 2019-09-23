@@ -20,8 +20,7 @@ import * as path from "path";
 import * as filenamify from "filenamify";
 import * as THREE from "three";
 
-import { Dictionary } from "@ff/core/types";
-
+import { playToUnitType } from "../utils/unitTools";
 import DocumentBuilder from "../utils/DocumentBuilder";
 import { IDocument, TUnitType } from "../types/document";
 
@@ -33,17 +32,6 @@ import { IMeshSmithInspection } from "../types/inspection";
 import { IConvertImageTaskParameters } from "../tasks/ConvertImageTask";
 
 ////////////////////////////////////////////////////////////////////////////////
-
-const units: Dictionary<TUnitType> = {
-    "millimeter": "mm",
-    "centimeter": "cm",
-    "meter": "m",
-    "kilometer": "km",
-    "inch": "in",
-    "foot": "ft",
-    "yard": "yd",
-    "mile": "mi",
-};
 
 export async function createModels(context: IPlayContext, info: IPlayBoxInfo, document: IDocument): Promise<THREE.Box3>
 {
@@ -61,7 +49,7 @@ export async function createModels(context: IPlayContext, info: IPlayBoxInfo, do
 
         const model = builder.getOrCreateModel(node);
         models.push(model);
-        model.units = units[info.descriptor.units];
+        model.units = playToUnitType(info.descriptor.units);
 
         let inspection: IMeshSmithInspection = null;
 
