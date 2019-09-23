@@ -205,7 +205,7 @@ function convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotat
     annotation.lead = playAnnotation.Body;
 
     if (annotation.lead) {
-        annotation.style = "Numbers";
+        annotation.style = "Number";
     }
 
     annotation.color = playAnnotation["Stem.Color"];
