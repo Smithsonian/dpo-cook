@@ -17,20 +17,7 @@
 
 import { Dictionary } from "@ff/core/types";
 
-import Job from "../app/Job";
-
 ////////////////////////////////////////////////////////////////////////////////
-
-export interface IPlayContext
-{
-    job: Job;
-    drupalBaseUrl: string;
-    payloadBaseUrl: string;
-    cdnBaseUrl: string;
-    boxDir: string;
-    articleDir: string;
-    files: Dictionary<string>;
-}
 
 export interface IPlayBoxInfo
 {

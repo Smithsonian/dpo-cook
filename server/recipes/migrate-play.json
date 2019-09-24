@@ -1,8 +1,8 @@
 {
     "id": "8a2e8556-3c39-48a2-b432-591f480b7d69",
     "name": "migrate-play",
-    "description": "Converts Play boxes to Voyager items/presentations",
-    "version": "2",
+    "description": "Converts a Play Box to a Voyager Scene Document",
+    "version": "3",
     "start": "log",
 
     "parameterSchema": {
@@ -10,6 +10,15 @@
         "properties": {
             "boxId": {
                 "type": "integer"
+            },
+            "annotationStyle": {
+                "type": "string",
+                "enum": [ "Standard", "Extended", "Marker", "Balloon" ],
+                "default": "Marker"
+            },
+            "migrateAnnotationColor": {
+                "type": "boolean",
+                "default": false
             },
             "drupalBaseUrl": {
                 "type": "string",
@@ -52,6 +61,8 @@
             },
             "parameters": {
                 "boxId": "boxId",
+                "annotationStyle": "annotationStyle",
+                "migrateAnnotationColor": "migrateAnnotationColor",
                 "drupalBaseUrl": "drupalBaseUrl",
                 "payloadBaseUrl": "payloadBaseUrl",
                 "cdnBaseUrl": "cdnBaseUrl"
