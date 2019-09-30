@@ -13,8 +13,8 @@
             },
             "annotationStyle": {
                 "type": "string",
-                "enum": [ "Standard", "Extended", "Marker", "Balloon" ],
-                "default": "Marker"
+                "enum": [ "Standard", "Extended", "Circle" ],
+                "default": "Circle"
             },
             "migrateAnnotationColor": {
                 "type": "boolean",

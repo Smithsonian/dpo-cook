@@ -117,7 +117,7 @@ export default class MigratePlayTask extends Task
         type: "object",
         properties: {
             boxId: { type: "integer" },
-            annotationStyle: { type: "string", enum: [ "Standard", "Extended", "Marker", "Balloon" ], default: "Marker" },
+            annotationStyle: { type: "string", enum: [ "Standard", "Extended", "Circle" ], default: "Circle" },
             migrateAnnotationColor: { type: "boolean", default: false },
             drupalBaseUrl: { type: "string", default: MigratePlayTask.drupalBaseUrl },
             payloadBaseUrl: { type: "string", default: MigratePlayTask.payloadBaseUrl },
@@ -322,7 +322,7 @@ export default class MigratePlayTask extends Task
         const size = new THREE.Vector3();
         modelBoundingBox.getSize(size);
         const modelRadius = size.length() * 0.5;
-        const annotationScale = Math.max(size.x, size.y, size.z) / 25;
+        const annotationScale = modelRadius / 18;
 
         // get first model
         const model = builder.document.models[0];
@@ -343,11 +343,8 @@ export default class MigratePlayTask extends Task
 
         playAnnotations.forEach(playAnnotation => {
             const annotation = builder.createAnnotation(model);
-            this.convertAnnotation(playAnnotation, annotation);
+            this.convertAnnotation(playAnnotation, annotation, annotationScale);
             annotationIds[playAnnotation.index] = annotation.id;
-
-            // adjust scale
-            annotation.scale = annotationScale;
 
             // offset the annotation by the model's translation
             const p = annotation.position;
@@ -471,17 +468,19 @@ export default class MigratePlayTask extends Task
     ////////////////////////////////////////////////////////////////////////////////
     // ANNOTATIONS, TOURS
 
-    convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotation)
+    convertAnnotation(playAnnotation: IPlayAnnotation, annotation: IAnnotation, scale: number)
     {
-        annotation.marker = playAnnotation.index.toString();
+        annotation.marker = (playAnnotation.index + 1).toString();
         annotation.title = playAnnotation.Title;
         annotation.lead = playAnnotation.Body;
 
-        annotation.style = this.parameters.annotationStyle || "Marker";
+        annotation.style = this.parameters.annotationStyle || "Circle";
 
         if (this.parameters.migrateAnnotationColor) {
             annotation.color = playAnnotation["Stem.Color"];
         }
+
+        annotation.scale = annotation.style === "Circle" ? 10 : scale;
 
         annotation.position = playAnnotation["Transform.Position"];
 
