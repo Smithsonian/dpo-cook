@@ -97,6 +97,9 @@ export interface IMigratePlayTaskParameters extends ITaskParameters
  * Fetches Play box content including models, maps, annotations
  * and articles, and converts it to Voyager items/presentations.
  *
+ * Generated assets, keys in result.files
+ * - `document`: Voyager document
+ *
  * Parameters: [[IMigratePlayTaskParameters]].
  */
 export default class MigratePlayTask extends Task
@@ -171,7 +174,7 @@ export default class MigratePlayTask extends Task
 
         const documentFileName = "document.svx.json";
         this.logTaskEvent("debug", `writing document to ${documentFileName}`);
-        this.result.files[documentFileName] = documentFileName;
+        this.result.files["scene:document"] = documentFileName;
         return fs.writeFile(this.getFilePath(documentFileName), JSON.stringify(document, null, 2));
     }
 
@@ -197,7 +200,7 @@ export default class MigratePlayTask extends Task
             config
         };
 
-        const infoFileName = this.result.files["info.json"] = this.boxDir + "/info.json";
+        const infoFileName = this.result.files["box:info.json"] = this.boxDir + "/info.json";
         const infoFilePath = this.getFilePath(infoFileName);
 
         return fs.writeFile(infoFilePath, JSON.stringify(info, null, 2))
@@ -215,7 +218,7 @@ export default class MigratePlayTask extends Task
         // fetch and write bake.json
         const bakeUrl = boxBaseUrl + "bake.json";
         const bakeContent = await fetch.json(bakeUrl, "GET") as IPlayBake;
-        const bakeFileName = this.result.files["bake.json"] = this.boxDir + "/bake.json";
+        const bakeFileName = this.result.files["box:bake.json"] = this.boxDir + "/bake.json";
         const bakeFilePath = this.getFilePath(bakeFileName);
 
         return fs.writeFile(bakeFilePath, JSON.stringify(bakeContent, null, 2))
@@ -231,17 +234,17 @@ export default class MigratePlayTask extends Task
         const payloadUrl = `${this.parameters.payloadBaseUrl}/${boxId}_payload.json`;
 
         const payloadContent = await fetch.json(payloadUrl, "GET") as IPlayPayload;
-        const payloadFileName = this.result.files["payload.json"] = this.boxDir + "/payload.json";
+        const payloadFileName = this.result.files["box:payload.json"] = this.boxDir + "/payload.json";
         const payloadFilePath = this.getFilePath(payloadFileName);
 
         // fetch and write thumbnail image
         const thumbImage = await fetch.buffer(payloadContent.message.pubThumb, "GET");
-        const thumbFileName = this.result.files["image-thumb.jpg"] = "image-thumb.jpg";
+        const thumbFileName = this.result.files["box:image-thumb.jpg"] = this.boxDir + "/image-thumb.jpg";
         const thumbFilePath = this.getFilePath(thumbFileName);
 
         // fetch and write preview image
         const previewImage = await fetch.buffer(payloadContent.message.pubPreview, "GET");
-        const previewFileName = this.result.files["image-preview.jpg"] = "image-preview.jpg";
+        const previewFileName = this.result.files["box:image-preview.jpg"] = this.boxDir + "/image-preview.jpg";
         const previewFilePath = this.getFilePath(previewFileName);
 
         return Promise.all([
@@ -268,7 +271,7 @@ export default class MigratePlayTask extends Task
             const assetUrl = `${this.parameters.cdnBaseUrl}/${asset.files["original"]}`;
             const assetFileName = `${this.boxDir}/${asset.name}`;
             const assetFilePath = this.getFilePath(assetFileName);
-            this.result.files[assetFileName] = assetFileName;
+            this.result.files[`box:${assetFileName}`] = assetFileName;
 
             if (asset.type === "json") {
                 return fetch.json(assetUrl, "GET").then(data => {
@@ -294,7 +297,7 @@ export default class MigratePlayTask extends Task
 
         fetchAssets.push(fetch.json(nodeDataUrl, "GET").then(data => {
             const nodeDataFileName = `${this.boxDir}/nodeData.json`;
-            this.result.files["nodeData.json"] = nodeDataFileName;
+            this.result.files["box:nodeData.json"] = nodeDataFileName;
             const nodeDataFilePath = this.getFilePath(nodeDataFileName);
             return fs.writeFile(nodeDataFilePath, JSON.stringify(data, null, 2));
         }));
@@ -661,7 +664,7 @@ export default class MigratePlayTask extends Task
                 const imageName = filenamify(decodeURIComponent(src.split("/").pop()));
                 const imageFileName = `article-${articleIndex}-${imageName}`;
                 const imageAssetPath = `${this.articlesDir}/${imageFileName}`;
-                this.result.files[imageAssetPath] = imageAssetPath;
+                this.result.files[`scene:${imageAssetPath}`] = imageAssetPath;
 
                 elem.attribs.src = imageFileName; // relative to location of html file
                 imageUrls[imageUrl] = imageAssetPath;
@@ -691,7 +694,7 @@ export default class MigratePlayTask extends Task
         // write article HTML content
         const contentHtml = DomUtils.getInnerHTML(contentDiv);
         const articleFileName = `${this.articlesDir}/article-${articleIndex}.html`;
-        this.result.files[articleFileName] = articleFileName;
+        this.result.files[`scene:${articleFileName}`] = articleFileName;
         const articleFilePath = this.getFilePath(articleFileName);
         promises.push(fs.writeFile(articleFilePath, contentHtml));
 
@@ -813,7 +816,7 @@ export default class MigratePlayTask extends Task
             const srcImagePath = `${this.boxDir}/${srcImage.name}`;
             const { base, extension } = this.splitFileName(srcImagePath);
             const dstImagePath = `p${index}-${base}-${marker}.${extension}`;
-            this.result.files[dstImagePath] = dstImagePath;
+            this.result.files[`temp:${dstImagePath}`] = dstImagePath;
 
             // parameters for image conversion/size reduction
             const params: IConvertImageTaskParameters = {
@@ -833,7 +836,7 @@ export default class MigratePlayTask extends Task
     async createWebAsset(part: IPlayPart, index: number, marker: string): Promise<string>
     {
         const modelAssetPath = `p${index}-${filenamify(part.name)}-${marker}.glb`;
-        this.result.files[modelAssetPath] = modelAssetPath;
+        this.result.files[`scene:${modelAssetPath}`] = modelAssetPath;
 
         const webAssetTaskParams: IWebAssetTaskParameters = {
             outputFile: modelAssetPath,
