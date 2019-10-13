@@ -172,7 +172,7 @@ export default class MigratePlayTask extends Task
         this.logTaskEvent("debug", `creating SVX document for Play box #${params.boxId}`);
         const document = await this.createDocument(info);
 
-        const documentFileName = "document.svx.json";
+        const documentFileName = "scene.svx.json";
         this.logTaskEvent("debug", `writing document to ${documentFileName}`);
         this.result.files["scene:document"] = documentFileName;
         return fs.writeFile(this.getFilePath(documentFileName), JSON.stringify(document, null, 2));
