@@ -87,6 +87,8 @@ export interface IMigratePlayTaskParameters extends ITaskParameters
     migrateAnnotationColor: boolean;
     /** Creates extra steps in tours that display articles. */
     createReadingSteps: boolean;
+    /** String containing an EDAN record entry for the migrated subject. */
+    edanEntry: string;
     /** The URL of the Drupal CMS. */
     drupalBaseUrl: string;
     /** The URL of the Drupal folder with box payloads. */
@@ -125,6 +127,7 @@ export default class MigratePlayTask extends Task
             annotationStyle: { type: "string", enum: [ "Standard", "Extended", "Circle" ], default: "Circle" },
             migrateAnnotationColor: { type: "boolean", default: false },
             createReadingSteps: { type: "boolean", default: false },
+            edanEntry: { type: "string" },
             drupalBaseUrl: { type: "string", default: MigratePlayTask.drupalBaseUrl },
             payloadBaseUrl: { type: "string", default: MigratePlayTask.payloadBaseUrl },
             cdnBaseUrl: { type: "string", default: MigratePlayTask.cdnBaseUrl },
@@ -439,9 +442,20 @@ export default class MigratePlayTask extends Task
         const meta = builder.getOrCreateMeta(scene);
         const setup = builder.getOrCreateSetup(scene);
 
+        // get EDAN entry
+        const edanJson = this.parameters.edanEntry;
+        const edanEntry = edanJson ? JSON.parse(edanJson) : null;
+
         // set title of experience
         meta.collection = meta.collection || {};
-        meta.collection["title"] = info.descriptor.name;
+        if (edanEntry) {
+            meta.collection["edanRecordId"] = edanEntry.url;
+            meta.collection["edanEntry"] = edanJson;
+            meta.collection["title"] = edanEntry.title;
+        }
+        else {
+            meta.collection["title"] = info.descriptor.name;
+        }
 
         // create camera
         // TODO: Disabled - needs updated merge strategy in Voyager

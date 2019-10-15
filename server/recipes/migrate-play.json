@@ -24,6 +24,9 @@
                 "type": "boolean",
                 "default": false
             },
+            "edanEntry": {
+                "type": "string"
+            },
             "drupalBaseUrl": {
                 "type": "string",
                 "default": "https://3d.si.edu"
@@ -68,6 +71,7 @@
                 "annotationStyle": "annotationStyle",
                 "migrateAnnotationColor": "migrateAnnotationColor",
                 "createReadingSteps": "createReadingSteps",
+                "edanEntry": "edanEntry",
                 "drupalBaseUrl": "drupalBaseUrl",
                 "payloadBaseUrl": "payloadBaseUrl",
                 "cdnBaseUrl": "cdnBaseUrl"
