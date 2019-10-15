@@ -409,11 +409,11 @@ export default class MigratePlayTask extends Task
 
                 if (articleUrl && this.parameters.createReadingSteps) {
                     state.threshold = 0;
-                    state.duration = 0;
                     const extraState = builder.createSnapshot(sceneSetup, tour, playSnapshot.name);
                     const articleId = article ? article.id : "";
                     this.convertSnapshot(playSnapshot, annotationIds, articleId, tour, extraState, playScaleFactor, true);
                     extraState.threshold = 0;
+                    extraState.duration = 0.5;
                 }
             });
         });
