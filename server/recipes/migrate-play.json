@@ -20,6 +20,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "createReadingSteps": {
+                "type": "boolean",
+                "default": false
+            },
             "drupalBaseUrl": {
                 "type": "string",
                 "default": "https://3d.si.edu"
@@ -63,6 +67,7 @@
                 "boxId": "boxId",
                 "annotationStyle": "annotationStyle",
                 "migrateAnnotationColor": "migrateAnnotationColor",
+                "createReadingSteps": "createReadingSteps",
                 "drupalBaseUrl": "drupalBaseUrl",
                 "payloadBaseUrl": "payloadBaseUrl",
                 "cdnBaseUrl": "cdnBaseUrl"

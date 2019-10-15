@@ -85,6 +85,8 @@ export interface IMigratePlayTaskParameters extends ITaskParameters
     annotationStyle: string;
     /** Migrates the custom color of annotations. */
     migrateAnnotationColor: boolean;
+    /** Creates extra steps in tours that display articles. */
+    createReadingSteps: boolean;
     /** The URL of the Drupal CMS. */
     drupalBaseUrl: string;
     /** The URL of the Drupal folder with box payloads. */
@@ -122,6 +124,7 @@ export default class MigratePlayTask extends Task
             boxId: { type: "integer" },
             annotationStyle: { type: "string", enum: [ "Standard", "Extended", "Circle" ], default: "Circle" },
             migrateAnnotationColor: { type: "boolean", default: false },
+            createReadingSteps: { type: "boolean", default: false },
             drupalBaseUrl: { type: "string", default: MigratePlayTask.drupalBaseUrl },
             payloadBaseUrl: { type: "string", default: MigratePlayTask.payloadBaseUrl },
             cdnBaseUrl: { type: "string", default: MigratePlayTask.cdnBaseUrl },
@@ -379,7 +382,7 @@ export default class MigratePlayTask extends Task
         const tourTasks = playTours.map((tour, index) => this.findAnimatedTourProps(tour, index));
         await Promise.all(tourTasks);
 
-        playTours.forEach((playTour, tourIndex) => {
+        playTours.filter(playTour => playTour.snapshots.length > 0).forEach((playTour, tourIndex) => {
             const tour = builder.createTour(sceneSetup, playTour.name);
             this.convertTour(playTour, tour);
 
@@ -399,7 +402,16 @@ export default class MigratePlayTask extends Task
 
                 const state = builder.createSnapshot(sceneSetup, tour, playSnapshot.name);
                 const articleId = article ? article.id : "";
-                this.convertSnapshot(playSnapshot, annotationIds, articleId, tour, state, playScaleFactor);
+                this.convertSnapshot(playSnapshot, annotationIds, articleId, tour, state, playScaleFactor, false);
+
+                if (articleUrl && this.parameters.createReadingSteps) {
+                    state.threshold = 0;
+                    state.duration = 0;
+                    const extraState = builder.createSnapshot(sceneSetup, tour, playSnapshot.name);
+                    const articleId = article ? article.id : "";
+                    this.convertSnapshot(playSnapshot, annotationIds, articleId, tour, extraState, playScaleFactor, true);
+                    extraState.threshold = 0;
+                }
             });
         });
 
@@ -546,7 +558,15 @@ export default class MigratePlayTask extends Task
         tour.lead = playTour.description;
     }
 
-    convertSnapshot(playSnapshot: IPlaySnapshot, annotationIds: Dictionary<string>, articleId: string, tour: ITour, state: IState, playScaleFactor: number)
+    convertSnapshot(
+        playSnapshot: IPlaySnapshot,
+        annotationIds: Dictionary<string>,
+        articleId: string,
+        tour: ITour,
+        state: IState,
+        playScaleFactor: number,
+        readerEnabled: boolean
+    )
     {
         state.duration = playSnapshot.transition.duration;
         state.threshold = playSnapshot.transition.switch;
@@ -567,7 +587,6 @@ export default class MigratePlayTask extends Task
             (camera["Camera.Offset"][2] + camera["Camera.Distance"]) * playScaleFactor,
         ];
 
-        const readerEnabled = false;
         const annotationsVisible = annotations["Annotation.On"];
         const activeAnnotation = activeAnnotationId;
         const activeTags = "";
