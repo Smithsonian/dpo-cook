@@ -34,13 +34,21 @@ const _unitScaleFactor = {
 
 const _playUnits: Dictionary<TUnitType> = {
     "millimeter": "mm",
+    "millimeters": "mm",
     "centimeter": "cm",
+    "centimeters": "cm",
     "meter": "m",
+    "meters": "m",
     "kilometer": "km",
+    "kilometers": "km",
     "inch": "in",
+    "inches": "in",
     "foot": "ft",
+    "feet": "ft",
     "yard": "yd",
+    "yards": "yd",
     "mile": "mi",
+    "miles": "mi",
 };
 
 export function playToUnitType(playUnit: string): TUnitType

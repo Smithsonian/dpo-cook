@@ -159,6 +159,8 @@ export default class MigratePlayTask extends Task
     protected async execute(): Promise<unknown>
     {
         this.result.files = {};
+        this.result.warnings = [];
+
         const params = this.parameters;
 
         // create subdirectories for assets and articles
@@ -242,22 +244,34 @@ export default class MigratePlayTask extends Task
         const payloadContent = await fetch.json(payloadUrl, "GET") as IPlayPayload;
         const payloadFileName = this.result.files["box:payload.json"] = this.boxDir + "/payload.json";
         const payloadFilePath = this.getFilePath(payloadFileName);
+        await fs.writeFile(payloadFilePath, JSON.stringify(payloadContent, null, 2));
+
 
         // fetch and write thumbnail image
-        const thumbImage = await fetch.buffer(payloadContent.message.pubThumb, "GET");
-        const thumbFileName = this.result.files["box:image-thumb.jpg"] = this.boxDir + "/image-thumb.jpg";
-        const thumbFilePath = this.getFilePath(thumbFileName);
+        try {
+            const thumbImage = await fetch.buffer(payloadContent.message.pubThumb, "GET");
+            const thumbFileName = this.boxDir + "/image-thumb.jpg";
+            const thumbFilePath = this.getFilePath(thumbFileName);
+            await fs.writeFile(thumbFilePath, Buffer.from(thumbImage));
+            this.result.files["box:image-thumb.jpg"] = thumbFileName;
+        }
+        catch (error) {
+            this.result.warnings.push(`error while fetching thumbnail image: ${error.message}`);
+        }
 
         // fetch and write preview image
-        const previewImage = await fetch.buffer(payloadContent.message.pubPreview, "GET");
-        const previewFileName = this.result.files["box:image-preview.jpg"] = this.boxDir + "/image-preview.jpg";
-        const previewFilePath = this.getFilePath(previewFileName);
+        try {
+            const previewImage = await fetch.buffer(payloadContent.message.pubPreview, "GET");
+            const previewFileName = this.boxDir + "/image-preview.jpg";
+            const previewFilePath = this.getFilePath(previewFileName);
+            await fs.writeFile(previewFilePath, Buffer.from(previewImage));
+            this.result.files["box:image-preview.jpg"] = previewFileName;
+        }
+        catch (error) {
+            this.result.warnings.push(`error while fetching preview image: ${error.message}`);
+        }
 
-        return Promise.all([
-            fs.writeFile(payloadFilePath, JSON.stringify(payloadContent, null, 2)),
-            fs.writeFile(thumbFilePath, Buffer.from(thumbImage)),
-            fs.writeFile(previewFilePath, Buffer.from(previewImage))
-        ]).then(() => payloadContent);
+        return payloadContent;
     }
 
     /**
@@ -366,7 +380,7 @@ export default class MigratePlayTask extends Task
 
                 if (!article) {
                     article = articleByUrl[articleUrl] = this.createArticle(articleIndex);
-                    tasks.push(this.fetchArticle(article, articleUrl, articleIndex++));
+                    tasks.push(this.fetchArticleSafe(article, articleUrl, articleIndex++));
                     builder.addArticle(modelNode, article);
                 }
 
@@ -397,7 +411,7 @@ export default class MigratePlayTask extends Task
                     article = articleByUrl[articleUrl];
                     if (!article) {
                         article = articleByUrl[articleUrl] = this.createArticle(articleIndex);
-                        tasks.push(this.fetchArticle(article, articleUrl, articleIndex++));
+                        tasks.push(this.fetchArticleSafe(article, articleUrl, articleIndex++));
                     }
 
                     builder.addArticle(scene, article);
@@ -419,13 +433,14 @@ export default class MigratePlayTask extends Task
         });
 
         // default article, add to scene
-        const articleUrl = info.config["Default Sidebar"].URL;
+        const sidebar = info.config["Default Sidebar"];
+        const articleUrl = sidebar && sidebar.URL;
         if (articleUrl) {
             let article = articleByUrl[articleUrl];
 
             if (!article) {
                 article = articleByUrl[articleUrl] = this.createArticle(articleIndex);
-                tasks.push(this.fetchArticle(article, articleUrl, articleIndex++));
+                tasks.push(this.fetchArticleSafe(article, articleUrl, articleIndex++));
                 builder.addArticle(scene, article);
             }
         }
@@ -638,6 +653,22 @@ export default class MigratePlayTask extends Task
         };
     }
 
+    async fetchArticleSafe(article: IArticle, url: string, index: number): Promise<unknown>
+    {
+        return this.fetchArticle(article, url, index)
+            .catch(error => {
+                this.result.warnings.push(`error while fetching article '${url}': ${error.message}`);
+
+                const articleIndex = index.toString().padStart(2, "0");
+                const articleFileName = `${this.articlesDir}/article-${articleIndex}.html`;
+                this.result.files[`scene:${articleFileName}`] = articleFileName;
+                const articleFilePath = this.getFilePath(articleFileName);
+
+                const contentHtml = `<h1>Failed to migrate article from '${url}'</h1>`;
+                return fs.writeFile(articleFilePath, contentHtml);
+            });
+    }
+
     /**
      * Fetches the HTML document from the given url and transforms/rewrites it to the article folder.
      * Also fetches and writes all images referenced in the article.
@@ -828,7 +859,8 @@ export default class MigratePlayTask extends Task
         };
 
         const inspectionTask = this.context.manager.createTask("InspectMesh", inspectMeshParams, this.context);
-        return inspectionTask.run().then(() => inspectionTask.report.result["inspection"] as IMeshSmithInspection);
+        return inspectionTask.run()
+            .then(() => inspectionTask.report.result["inspection"] as IMeshSmithInspection);
     }
 
     async reduceMaps(part: IPlayPart, index: number, stats: IMeshSmithInspection, mapSize: number): Promise<string>

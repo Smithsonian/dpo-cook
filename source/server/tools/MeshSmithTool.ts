@@ -19,7 +19,7 @@ import * as path from "path";
 
 import uniqueId from "../utils/uniqueId";
 
-import Tool, { IToolSettings, IToolSetup, ToolInstance, IToolMessageEvent } from "../app/Tool";
+import Tool, { IToolSettings, IToolSetup, ToolInstance, IToolMessageEvent, IToolStateEvent } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -185,6 +185,18 @@ export default class MeshSmithTool extends Tool<MeshSmithTool, IMeshSmithToolSet
         }));
     }
 
+    onInstanceState(event: IToolStateEvent)
+    {
+        super.onInstanceState(event);
+
+        if (event.state === "error") {
+            const report = event.instance.report.execution;
+            if (report.results.error) {
+                report.error = report.results.error;
+            }
+        }
+    }
+
     onInstanceMessage(event: IToolMessageEvent): boolean
     {
         let { instance, message } = event;
@@ -197,10 +209,16 @@ export default class MeshSmithTool extends Tool<MeshSmithTool, IMeshSmithToolSet
 
         try {
             const parsedMessage = JSON.parse(message);
+            const report = instance.report.execution;
+
             if (parsedMessage.type === "report") {
-                const report = instance.report.execution;
                 const results = report.results = report.results || {};
                 results["inspection"] = parsedMessage;
+            }
+
+            if (parsedMessage.type === "status" && parsedMessage.status === "error") {
+                const results = report.results = report.results || {};
+                results["error"] = parsedMessage.error;
             }
         }
         catch(e) {
