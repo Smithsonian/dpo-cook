@@ -2,7 +2,7 @@
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
     "name": "web-thumb",
     "description": "Generates thumbnail (20k faces, 512x512 maps) glTF/GLB web asset",
-    "version": "12",
+    "version": "13",
     "start": "log",
 
     "parameterSchema": {
@@ -243,12 +243,12 @@
             "pre": {
                 "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped.fbx'",
                 "deliverables": {
-                    "unwrappedMesh": "baseMeshName & '-unwrapped.obj'"
+                    "scene_unwrappedMesh": "baseMeshName & '-unwrapped.obj'"
                 }
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "deliverables.unwrappedMesh",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSize",
@@ -263,7 +263,7 @@
             "description": "Calculate mesh size and max. ray distance for bake",
             "skip": "maxRayDistance > 0",
             "parameters": {
-                "meshFile": "deliverables.unwrappedMesh",
+                "meshFile": "deliverables.scene_unwrappedMesh",
                 "tool": "'MeshSmith'"
             },
             "post": {
@@ -294,12 +294,10 @@
                 "timeout": 900
             },
             "post": {
-                "temp": {
+                "deliverables": {
                     "diffuseMapUncompressed": "bakeDiffuse ? (baseMeshMapName & '-diffuse.png') : ''",
                     "occlusionMapUncompressed": "bakeOcclusion ? (baseMeshMapName & '-occlusion.png') : ''",
-                    "normalMapUncompressed": "bakeNormals ? (baseMeshMapName & '-normals.png') : ''"
-                },
-                "deliverables": {
+                    "normalMapUncompressed": "bakeNormals ? (baseMeshMapName & '-normals.png') : ''",
                     "testMap": "bakeTest ? (baseMeshMapName & '-test.png') : ''"
                 }
             },
@@ -311,13 +309,13 @@
             "description": "Convert Diffuse Map",
             "skip": "$not(bakeDiffuse)",
             "pre": {
-                "temp": {
-                    "diffuseMap": "baseMeshMapName & '-diffuse.jpg'"
+                "deliverables": {
+                    "scene_diffuseMap": "baseMeshMapName & '-diffuse.jpg'"
                 }
             },
             "parameters": {
-                "inputImageFile": "temp.diffuseMapUncompressed",
-                "outputImageFile": "temp.diffuseMap",
+                "inputImageFile": "deliverables.diffuseMapUncompressed",
+                "outputImageFile": "deliverables.scene_diffuseMap",
                 "quality": "diffuseMapQuality"
             },
             "success": "'convert-occlusion-map'",
@@ -328,13 +326,13 @@
             "description": "Convert Occlusion Map",
             "skip": "$not(bakeOcclusion)",
             "pre": {
-                "temp": {
-                    "occlusionMap": "baseMeshMapName & '-occlusion.jpg'"
+                "deliverables": {
+                    "scene_occlusionMap": "baseMeshMapName & '-occlusion.jpg'"
                 }
             },
             "parameters": {
-                "inputImageFile": "temp.occlusionMapUncompressed",
-                "outputImageFile": "temp.occlusionMap",
+                "inputImageFile": "deliverables.occlusionMapUncompressed",
+                "outputImageFile": "deliverables.scene_occlusionMap",
                 "quality": "occlusionMapQuality"
             },
             "success": "'convert-normal-map'",
@@ -345,13 +343,13 @@
             "description": "Convert Normal Map",
             "skip": "$not(bakeNormals)",
             "pre": {
-                "temp": {
-                    "normalMap": "baseMeshMapName & '-normals.jpg'"
+                "deliverables": {
+                    "scene_normalMap": "baseMeshMapName & '-normals.jpg'"
                 }
             },
             "parameters": {
-                "inputImageFile": "temp.normalMapUncompressed",
-                "outputImageFile": "temp.normalMap",
+                "inputImageFile": "deliverables.normalMapUncompressed",
+                "outputImageFile": "deliverables.scene_normalMap",
                 "quality": "normalMapQuality"
             },
             "success": "'web-asset'",
@@ -363,16 +361,16 @@
             "description": "Create glTF asset",
             "pre": {
                 "deliverables": {
-                    "webAsset": "baseMeshMapName & (packContainer ? '-thumb.glb' : '-thumb.gltf')",
-                    "webAssetBin": "packContainer ? '' : (baseMeshMapName & '-thumb.bin')"
+                    "scene_webAsset": "baseMeshMapName & (packContainer ? '-thumb.glb' : '-thumb.gltf')",
+                    "scene_webAssetBin": "packContainer ? '' : (baseMeshMapName & '-thumb.bin')"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAsset",
-                "meshFile": "deliverables.unwrappedMesh",
-                "diffuseMapFile": "temp.diffuseMap",
-                "occlusionMapFile": "temp.occlusionMap",
-                "normalMapFile": "temp.normalMap",
+                "outputFile": "deliverables.scene_webAsset",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "deliverables.scene_diffuseMap",
+                "occlusionMapFile": "deliverables.scene_occlusionMap",
+                "normalMapFile": "deliverables.scene_normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": "useCompression",
                 "compressionLevel": 10,
@@ -387,17 +385,17 @@
             "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, baseName & '.svx.json')"
+                    "scene_document": "$firstTrue(documentFile, baseName & '.svx.json')"
                 }
             },
             "parameters": {
-                "documentFile": "deliverables.document",
+                "documentFile": "deliverables.scene_document",
                 "metaDataFile": "metaDataFile",
                 "modelIndex": "modelIndex",
                 "modelName": "baseName",
                 "units": "units",
                 "derivativeQuality": "'Thumb'",
-                "modelFile": "deliverables.webAsset",
+                "modelFile": "deliverables.scene_webAsset",
                 "numFaces": "numFaces",
                 "mapSize": "mapSize"
             },
