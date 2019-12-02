@@ -5,12 +5,22 @@ summary: Texture baking tool.
 
 ### Information
 
-- Manufacturer:
-- Website:
+- Developer: 
+- Website: https://xnormal.net/
 - License:
 
 ### Installation
 
-### Versions
+- Recommended version with Cook: *3.19.3.c*
+- Windows installer: https://xnormal.net/
 
-### Options
+### Configuration
+
+```json
+"XNormal": {
+    "executable": "C:\\Program Files\\xNormal\\3.19.3\\x64\\xNormal.exe",
+    "version": "3.19.3.39669",
+    "maxInstances": 1,
+    "timeout": 1500
+}
+```
