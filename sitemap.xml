@@ -73,7 +73,6 @@
   
   <url>
     <loc>https://smithsonian.github.io/dpo-cook/categories/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -117,15 +116,15 @@
   </url>
   
   <url>
-    <loc>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</loc>
-  </url>
-  
-  <url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshfix/</loc>
   </url>
   
   <url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshlab/</loc>
+  </url>
+  
+  <url>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</loc>
   </url>
   
   <url>
@@ -150,12 +149,10 @@
   
   <url>
     <loc>https://smithsonian.github.io/dpo-cook/tags/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/</loc>
-    <priority>0</priority>
   </url>
   
   <url>

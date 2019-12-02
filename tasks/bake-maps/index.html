@@ -277,15 +277,15 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/tools/meshsmith/">MeshSmith</a>
-    </li>
-    
-    <li class="">
       <a href="/dpo-cook/tools/meshfix/">Meshfix</a>
     </li>
     
     <li class="">
       <a href="/dpo-cook/tools/meshlab/">Meshlab</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tools/meshsmith/">MeshSmith</a>
     </li>
     
     <li class="">
@@ -314,10 +314,13 @@
 
 <h3 id="description">Description</h3>
 
-<p>Bakes various features to texture by projecting them from a high poly mesh
-onto the UV space of a low poly mesh.</p>
+<p>Texture baking is the last step when preparing models for real-time applications. During decimation, the mesh has been reduced in size. Texture baking transfers features from the high resolution mesh to a texture. The texture is then applied to the low resolution mesh in order to bring back the lost details.</p>
 
-<p>Tools: <a href="../tools/xNormal.md">XNormal</a> / <a href="../tools/mops.md">Mops</a></p>
+<p>Baking requires a low poly mesh with UV coordinates. The coordinates can be generated using the <a href="./unwrap-mesh">UnwrapMeshTask</a>.</p>
+
+<p>This task utilizes the following tools:
+- <a href="../tools/xnormal">XNormal</a>
+- <a href="../tools/rapid-compact">RapidCompact</a></p>
 
 <h3 id="options">Options</h3>
 
@@ -418,7 +421,7 @@ onto the UV space of a low poly mesh.</p>
 <td>number</td>
 <td>no</td>
 <td>128</td>
-<td>Number of sample rays for ambient occlusion.</td>
+<td>Number of sample rays for ambient occlusion, between 1 and 512.</td>
 </tr>
 
 <tr>
@@ -426,7 +429,7 @@ onto the UV space of a low poly mesh.</p>
 <td>number</td>
 <td>no</td>
 <td>165</td>
-<td>Maximum cone angle for ambient occlusion sample rays.</td>
+<td>Maximum cone angle for ambient occlusion sample rays, between 1 and 165</td>
 </tr>
 
 <tr>
@@ -474,7 +477,7 @@ onto the UV space of a low poly mesh.</p>
 <td>string</td>
 <td>no</td>
 <td>&ldquo;XNormal&rdquo;</td>
-<td>Baking tool to use: &ldquo;XNormal&rdquo; or &ldquo;Mops&rdquo; (InstantUV)</td>
+<td>Baking tool to use: &ldquo;XNormal&rdquo; or &ldquo;RapidCompact&rdquo;</td>
 </tr>
 </tbody>
 </table>

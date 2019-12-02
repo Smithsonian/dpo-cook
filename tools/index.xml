@@ -38,15 +38,6 @@
     </item>
     
     <item>
-      <title>MeshSmith</title>
-      <link>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</guid>
-      <description>Mesh conversion tool based on the Assimp library.</description>
-    </item>
-    
-    <item>
       <title>Meshfix</title>
       <link>https://smithsonian.github.io/dpo-cook/tools/meshfix/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -62,6 +53,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/tools/meshlab/</guid>
       <description>Mesh manipulation tool.</description>
+    </item>
+    
+    <item>
+      <title>MeshSmith</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</guid>
+      <description>Mesh conversion tool based on the Assimp library.</description>
     </item>
     
     <item>
