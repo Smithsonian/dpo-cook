@@ -15,7 +15,7 @@
   </url>
   
   <url>
-    <loc>https://smithsonian.github.io/dpo-cook/tools/image-magick/</loc>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/blender/</loc>
   </url>
   
   <url>
@@ -32,10 +32,6 @@
   
   <url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/delivery/</loc>
-  </url>
-  
-  <url>
-    <loc>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</loc>
   </url>
   
   <url>
@@ -112,7 +108,15 @@
   </url>
   
   <url>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/image-magick/</loc>
+  </url>
+  
+  <url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</loc>
+  </url>
+  
+  <url>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</loc>
   </url>
   
   <url>
@@ -129,6 +133,10 @@
   
   <url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</loc>
+  </url>
+  
+  <url>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/reality-capture/</loc>
   </url>
   
   <url>

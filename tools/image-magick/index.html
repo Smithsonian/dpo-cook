@@ -152,7 +152,7 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">CLI</a>
+      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
     </li>
     
     <li class="">
@@ -268,6 +268,10 @@
       <a href="/dpo-cook/tools/overview/">Overview</a>
     </li>
     
+    <li class="">
+      <a href="/dpo-cook/tools/blender/">Blender</a>
+    </li>
+    
     <li class="active ">
       <a href="/dpo-cook/tools/image-magick/">Image Magick</a>
     </li>
@@ -293,6 +297,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tools/reality-capture/">Reality Capture</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tools/rizom-uv/">Rizom UV</a>
     </li>
     
@@ -315,17 +323,28 @@
 <h3 id="information">Information</h3>
 
 <ul>
-<li>Manufacturer:</li>
-<li>Website:</li>
-<li>License:</li>
+<li>Developer: ImageMagick Studio LLC</li>
+<li>Website: <a href="https://imagemagick.org">https://imagemagick.org</a></li>
+<li>Github repository: <a href="https://github.com/ImageMagick/ImageMagick">https://github.com/ImageMagick/ImageMagick</a></li>
+<li>License: <a href="https://imagemagick.org/script/license.php">https://imagemagick.org/script/license.php</a></li>
 </ul>
 
 <h3 id="installation">Installation</h3>
 
-<h3 id="versions">Versions</h3>
+<ul>
+<li>Recommended version with Cook: <em>7.0.8-Q16</em></li>
+<li>Installer for Windows: <a href="https://imagemagick.org/script/download.php#windows">https://imagemagick.org/script/download.php#windows</a></li>
+</ul>
 
-<h3 id="options">Options</h3>
+<h3 id="configuration">Configuration</h3>
 
+<p>Example configuration for ImageMagick in the <code>tools.json</code> configuration file:</p>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;ImageMagick&#34;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\ImageMagick-7.0.8-Q16\\magick.exe&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;7.0.8&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">600</span>
+<span class="p">}</span></code></pre></div>
 </div>
 
         </div>

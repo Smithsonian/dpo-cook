@@ -39,12 +39,12 @@
     </item>
     
     <item>
-      <title>Image Magick</title>
-      <link>https://smithsonian.github.io/dpo-cook/tools/image-magick/</link>
+      <title>Blender</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/blender/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://smithsonian.github.io/dpo-cook/tools/image-magick/</guid>
-      <description>Image manipulation and conversion tool.</description>
+      <guid>https://smithsonian.github.io/dpo-cook/tools/blender/</guid>
+      <description>3D content creation suite</description>
     </item>
     
     <item>
@@ -84,15 +84,6 @@
     </item>
     
     <item>
-      <title>Instant Meshes</title>
-      <link>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</guid>
-      <description>Remeshing tool, generates high quality, field-aligned, quad-dominant meshes.</description>
-    </item>
-    
-    <item>
       <title>Recipe: web-multi</title>
       <link>https://smithsonian.github.io/dpo-cook/recipes/web-multi/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -129,7 +120,7 @@
     </item>
     
     <item>
-      <title>CLI</title>
+      <title>Remote CLI</title>
       <link>https://smithsonian.github.io/dpo-cook/docs/cli/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -228,12 +219,30 @@
     </item>
     
     <item>
+      <title>Image Magick</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/image-magick/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/image-magick/</guid>
+      <description>Image manipulation and conversion tool.</description>
+    </item>
+    
+    <item>
       <title>InspectMesh</title>
       <link>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</guid>
       <description>Inspects a mesh file and provides a detailed report with topological, geometric, and statistical information.</description>
+    </item>
+    
+    <item>
+      <title>Instant Meshes</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</guid>
+      <description>Remeshing tool, generates high quality, field-aligned, quad-dominant meshes.</description>
     </item>
     
     <item>
@@ -270,6 +279,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</guid>
       <description>All-in-one mesh simplification, UV unwrapping, and map baking tool.</description>
+    </item>
+    
+    <item>
+      <title>Reality Capture</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/reality-capture/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/reality-capture/</guid>
+      <description>Photogrammetry tool</description>
     </item>
     
     <item>

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Tools - Cook Documentation</title>
+  <title>Reality Capture - Cook Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <link rel="icon" href="https://smithsonian.github.io/dpo-cook/favicon.ico">
@@ -18,7 +18,7 @@
 
 </head>
 
-<body class='page page-default-list'>
+<body class='page page-default-single'>
   <div id="main-menu-mobile" class="main-menu-mobile">
   <ul>
     
@@ -47,7 +47,7 @@
       </a>
     </li>
     
-    <li class="menu-item-tools active">
+    <li class="menu-item-tools">
       <a href="/dpo-cook/tools/">
         <span>Tools</span>
       </a>
@@ -95,7 +95,7 @@
       </a>
     </li>
     
-    <li class="menu-item-tools active">
+    <li class="menu-item-tools">
       <a href="/dpo-cook/tools/">
         <span>Tools</span>
       </a>
@@ -296,7 +296,7 @@
       <a href="/dpo-cook/tools/rapid-compact/">RapidCompact</a>
     </li>
     
-    <li class="">
+    <li class="active ">
       <a href="/dpo-cook/tools/reality-capture/">Reality Capture</a>
     </li>
     
@@ -316,82 +316,38 @@
         </div>
         <div class="col-12 col-md-9">
           
-
-  
-  <h1 class="title">Tools</h1>
-  <div class="content">
-    <p>The Cook currently supports the following 3rd party processing tools. Each of these tools can be remote controlled in workflow recipes through a set of unified parameters.</p>
-
-  </div>
-
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/overview/">Overview</a></h2>
-  <p>3rd party tool installation and configuration.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/blender/">Blender</a></h2>
-  <p>3D content creation suite</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/image-magick/">Image Magick</a></h2>
-  <p>Image manipulation and conversion tool.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/instant-meshes/">Instant Meshes</a></h2>
-  <p>Remeshing tool, generates high quality, field-aligned, quad-dominant meshes.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/meshfix/">Meshfix</a></h2>
-  <p>Automatic mesh healing and repairing tool.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/meshlab/">Meshlab</a></h2>
-  <p>Mesh manipulation tool.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/meshsmith/">MeshSmith</a></h2>
-  <p>Mesh conversion tool based on the Assimp library.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/rapid-compact/">RapidCompact</a></h2>
-  <p>All-in-one mesh simplification, UV unwrapping, and map baking tool.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/reality-capture/">Reality Capture</a></h2>
-  <p>Photogrammetry tool</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/rizom-uv/">Rizom UV</a></h2>
-  <p>UV unwrapping tool.</p>
-</div>
-  
-    <div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/dpo-cook/tools/xnormal/">XNormal</a></h2>
-  <p>Texture baking tool.</p>
-</div>
+<h1 class="title">Reality Capture</h1>
+<div class="content">
   
 
+<h3 id="note">Note</h3>
+
+<p><em>Reality Capture support is planned for a future release of Cook.</em></p>
+
+<h3 id="information">Information</h3>
+
+<ul>
+<li>Developer: Capturing Reality s.r.o.</li>
+<li>Website: <a href="https://www.capturingreality.com/">https://www.capturingreality.com/</a></li>
+<li>License: Commercial/Proprietary</li>
+</ul>
+
+<h3 id="installation">Installation</h3>
+
+<ul>
+<li>Windows installer: <a href="https://www.capturingreality.com/DownloadNow">https://www.capturingreality.com/DownloadNow</a></li>
+</ul>
+
+<h3 id="configuration">Configuration</h3>
+
+<p>Example configuration for Reality Capture in the <code>tools.json</code> configuration file:</p>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;RealityCapture&#34;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\Capturing Reality\\RealityCapture\\RealityCapture.exe&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.3.4658&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">0</span>
+<span class="p">}</span></code></pre></div>
+</div>
 
         </div>
       </div>

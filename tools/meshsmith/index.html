@@ -152,7 +152,7 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">CLI</a>
+      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
     </li>
     
     <li class="">
@@ -269,6 +269,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tools/blender/">Blender</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tools/image-magick/">Image Magick</a>
     </li>
     
@@ -290,6 +294,10 @@
     
     <li class="">
       <a href="/dpo-cook/tools/rapid-compact/">RapidCompact</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tools/reality-capture/">Reality Capture</a>
     </li>
     
     <li class="">
@@ -315,16 +323,28 @@
 <h3 id="information">Information</h3>
 
 <ul>
-<li>Manufacturer:</li>
-<li>Website:</li>
-<li>License:</li>
+<li>Developer: <a href="https://github.com/framefactory">Ralph Wiedemeier, Frame Factory GmbH</a> for Smithsonian DPO</li>
+<li>Github repository: <a href="https://github.com/Smithsonian/dpo-meshsmith">https://github.com/Smithsonian/dpo-meshsmith</a></li>
+<li>License: <a href="https://github.com/Smithsonian/dpo-meshsmith/blob/master/LICENSE.md">https://github.com/Smithsonian/dpo-meshsmith/blob/master/LICENSE.md</a></li>
 </ul>
 
 <h3 id="installation">Installation</h3>
 
-<h3 id="versions">Versions</h3>
+<ul>
+<li>Windows binary: <a href="https://github.com/Smithsonian/dpo-meshsmith/releases/download/v0.7.0/meshsmith_2019-08-13_release.zip">https://github.com/Smithsonian/dpo-meshsmith/releases/download/v0.7.0/meshsmith_2019-08-13_release.zip</a></li>
+<li>Instructions for building from source can be found on Github</li>
+</ul>
 
-<h3 id="options">Options</h3>
+<h3 id="configuration">Configuration</h3>
+
+<p>Example configuration for MeshSmith in the <code>tools.json</code> configuration file:</p>
+
+<p>&ldquo;MeshSmith&rdquo;: {
+    &ldquo;executable&rdquo;: &ldquo;C:\Tools\MeshSmith\MeshSmith.exe&rdquo;,
+    &ldquo;version&rdquo;: &ldquo;2019-09-12&rdquo;,
+    &ldquo;maxInstances&rdquo;: 3,
+    &ldquo;timeout&rdquo;: 600 // 10 minutes
+}</p>
 
 </div>
 

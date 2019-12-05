@@ -152,7 +152,7 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">CLI</a>
+      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
     </li>
     
     <li class="">
@@ -269,6 +269,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tools/blender/">Blender</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tools/image-magick/">Image Magick</a>
     </li>
     
@@ -290,6 +294,10 @@
     
     <li class="active ">
       <a href="/dpo-cook/tools/rapid-compact/">RapidCompact</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tools/reality-capture/">Reality Capture</a>
     </li>
     
     <li class="">
@@ -315,15 +323,27 @@
 <h3 id="information">Information</h3>
 
 <ul>
-<li>Manufacturer: <a href="https://www.dgg3d.com/">Darmstadt Graphics Group GmbH</a></li>
+<li>Developer: <a href="https://www.dgg3d.com/">Darmstadt Graphics Group GmbH</a></li>
 <li>Website: <a href="https://www.dgg3d.com/rapidcompact">https://www.dgg3d.com/rapidcompact</a></li>
 <li>License: Commercial/Proprietary</li>
 </ul>
 
 <h3 id="installation">Installation</h3>
 
-<h3 id="versions">Versions</h3>
+<ul>
+<li>Recommended version with Cook: <em>1.6</em></li>
+<li>Windows binary available to registered customers</li>
+</ul>
 
+<h3 id="configuration">Configuration</h3>
+
+<p>Example configuration for RapidCompact in the <code>tools.json</code> configuration file:</p>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;RapidCompact&#34;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\RapidCompact CLI 1.6.0\\rpdx.exe&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.6&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">900</span>
+<span class="p">}</span></code></pre></div>
 <h3 id="options">Options</h3>
 
 <table>

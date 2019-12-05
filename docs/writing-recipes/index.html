@@ -152,7 +152,7 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">CLI</a>
+      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
     </li>
     
     <li class="active ">
@@ -269,6 +269,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tools/blender/">Blender</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tools/image-magick/">Image Magick</a>
     </li>
     
@@ -293,6 +297,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tools/reality-capture/">Reality Capture</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tools/rizom-uv/">Rizom UV</a>
     </li>
     
@@ -312,13 +320,18 @@
 <div class="content">
   
 
-<p>In order to know what to do, the cook needs recipes. A recipe is a JSON document describing a processing workflow, where a set of input files is processed by multiple tools. Recipes offer “intelligent branching”: depending on the outcome of one processing step, it can decide what to do next. If a recipe fails on a task using tool A, it can for example decide to try again using tool B.</p>
+<p>In order to know what to do, the cook relies on recipes. A recipe is a JSON document describing a processing workflow, where a set of input files is processed by multiple tools. Recipes don&rsquo;t need to be linear: depending on the outcome of one processing step, a recipe can decide what to do next. If for example a task fails using tool A, it can decide to try again using tool B.</p>
 
 <p>Recipes are controlled by a set of global parameters. Instead of entering the same information again and again for each tool to be executed, parameters are defined once and then automatically fed to each involved tool.</p>
 
-<h3 id="introduction">Introduction</h3>
+<h3 id="json-schema">JSON Schema</h3>
 
-<p>Coming soon.</p>
+<p>Global recipe parameters are defined using JSON Schema. When running a recipe, actual parameters are validated against the schema. Documentation for JSON Schema can be found here: <a href="https://json-schema.org/specification.html">https://json-schema.org/specification.html</a></p>
+
+<h3 id="jsonata">JSONata</h3>
+
+<p>Recipes make heavy use of JSONata expressions. Documentation for JSONata can be found here:
+<a href="http://docs.jsonata.org/overview.html">http://docs.jsonata.org/overview.html</a></p>
 
 <h3 id="examples">Examples</h3>
 
@@ -340,22 +353,6 @@ A recipe template is available in <code>server/recipes-test/template.json</code>
                 <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span><span class="p">,</span>
                 <span class="nt">&#34;minLength&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="s2">&#34;file&#34;</span>
-            <span class="p">},</span>
-            <span class="nt">&#34;pickupPath&#34;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span><span class="p">,</span>
-                <span class="nt">&#34;minLength&#34;</span><span class="p">:</span> <span class="mi">1</span>
-            <span class="p">},</span>
-            <span class="nt">&#34;deliveryPath&#34;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span><span class="p">,</span>
-                <span class="nt">&#34;minLength&#34;</span><span class="p">:</span> <span class="mi">1</span>
-            <span class="p">},</span>
-            <span class="nt">&#34;transportMethod&#34;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span><span class="p">,</span>
-                <span class="nt">&#34;enum&#34;</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="s2">&#34;none&#34;</span><span class="p">,</span>
-                    <span class="s2">&#34;local&#34;</span>
-                <span class="p">],</span>
-                <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="s2">&#34;none&#34;</span>
             <span class="p">}</span>
         <span class="p">},</span>
         <span class="nt">&#34;required&#34;</span><span class="p">:</span> <span class="p">[</span>
@@ -371,19 +368,6 @@ A recipe template is available in <code>server/recipes-test/template.json</code>
             <span class="nt">&#34;parameters&#34;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="nt">&#34;logToConsole&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
                 <span class="nt">&#34;reportFile&#34;</span><span class="p">:</span> <span class="s2">&#34;$baseName(someFile) &amp; &#39;-report.json&#39;&#34;</span>
-            <span class="p">},</span>
-            <span class="nt">&#34;success&#34;</span><span class="p">:</span> <span class="s2">&#34;&#39;pickup&#39;&#34;</span><span class="p">,</span>
-            <span class="nt">&#34;failure&#34;</span><span class="p">:</span> <span class="s2">&#34;$failure&#34;</span>
-        <span class="p">},</span>
-        <span class="nt">&#34;pickup&#34;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="nt">&#34;task&#34;</span><span class="p">:</span> <span class="s2">&#34;Pickup&#34;</span><span class="p">,</span>
-            <span class="nt">&#34;description&#34;</span><span class="p">:</span> <span class="s2">&#34;Fetch input files from client&#34;</span><span class="p">,</span>
-            <span class="nt">&#34;parameters&#34;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&#34;method&#34;</span><span class="p">:</span> <span class="s2">&#34;transportMethod&#34;</span><span class="p">,</span>
-                <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;$firstTrue(pickupPath, $currentDir)&#34;</span><span class="p">,</span>
-                <span class="nt">&#34;files&#34;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="nt">&#34;someFile&#34;</span><span class="p">:</span> <span class="s2">&#34;someFile&#34;</span>
-                <span class="p">}</span>
             <span class="p">},</span>
             <span class="nt">&#34;success&#34;</span><span class="p">:</span> <span class="s2">&#34;&#39;process&#39;&#34;</span><span class="p">,</span>
             <span class="nt">&#34;failure&#34;</span><span class="p">:</span> <span class="s2">&#34;$failure&#34;</span>
@@ -411,8 +395,8 @@ A recipe template is available in <code>server/recipes-test/template.json</code>
                 <span class="p">}</span>
             <span class="p">},</span>
             <span class="nt">&#34;parameters&#34;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&#34;method&#34;</span><span class="p">:</span> <span class="s2">&#34;transportMethod&#34;</span><span class="p">,</span>
-                <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;$firstTrue(deliveryPath, pickupPath, $currentDir)&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;method&#34;</span><span class="p">:</span> <span class="s2">&#34;none&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;$currentDir&#34;</span><span class="p">,</span>
                 <span class="nt">&#34;files&#34;</span><span class="p">:</span> <span class="s2">&#34;deliverables&#34;</span>
             <span class="p">},</span>
             <span class="nt">&#34;success&#34;</span><span class="p">:</span> <span class="s2">&#34;$success&#34;</span><span class="p">,</span>
@@ -420,10 +404,6 @@ A recipe template is available in <code>server/recipes-test/template.json</code>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></div>
-<h3 id="how-to-write-a-recipe">How to write a recipe</h3>
-
-<p>Coming soon.</p>
-
 </div>
 
         </div>

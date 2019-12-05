@@ -152,7 +152,7 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">CLI</a>
+      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
     </li>
     
     <li class="">
@@ -269,6 +269,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tools/blender/">Blender</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tools/image-magick/">Image Magick</a>
     </li>
     
@@ -290,6 +294,10 @@
     
     <li class="">
       <a href="/dpo-cook/tools/rapid-compact/">RapidCompact</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tools/reality-capture/">Reality Capture</a>
     </li>
     
     <li class="">
@@ -331,16 +339,20 @@ while others rely on a strong CPU or use GPU (graphics card) based processing.</
 
 <h4 id="operating-system">Operating System</h4>
 
-<p>Cook has been tested with the following operating systems:</p>
+<p>Cook has been tested with the following versions of Microsoft Windows. We currently don&rsquo;t support any other operating systems, because some of the 3rd party processing tools are only available for Windows.</p>
 
 <ul>
 <li>Windows 10 Professional</li>
 <li>Windows Server 2012 R2 Standard</li>
 </ul>
 
+<h5 id="running-cook-in-a-vm">Running Cook in a VM</h5>
+
+<p>It is currently not advised to run Cook in a virtual machine. Some 3rd party tools have specific hardware requirements, e.g. some need direct access to the GPU. Also, performance may suffer.</p>
+
 <h4 id="applications">Applications</h4>
 
-<p>Before installing Cook Server, you need to install the following applications on your machine:</p>
+<p>Before installing Cook Server, you need to install the following applications:</p>
 
 <ul>
 <li>Git: <a href="https://git-scm.com">https://git-scm.com</a></li>
@@ -350,15 +362,21 @@ while others rely on a strong CPU or use GPU (graphics card) based processing.</
 <p>Depending on your needs, you also need to install the tools you want to use for processing. These tools are currently supported:</p>
 
 <ul>
-<li>Meshlab: <a href="http://www.meshlab.net">http://www.meshlab.net</a></li>
-<li>Meshfix: <a href="https://github.com/MarcoAttene/MeshFix-V2.1">https://github.com/MarcoAttene/MeshFix-V2.1</a></li>
-<li>RizomUV Virtual Spaces: <a href="https://www.rizom-lab.com/products/rizomuv-vs">https://www.rizom-lab.com/products/rizomuv-vs</a></li>
-<li>XNormal: <a href="http://www.xnormal.net">http://www.xnormal.net</a></li>
-<li>InstantUV Mops CLI: <a href="https://www.instantuv.org">https://www.instantuv.org</a></li>
-<li>ImageMagick: <a href="https://www.imagemagick.org">https://www.imagemagick.org</a></li>
-<li>MeshSmith: (following soon)</li>
-<li>InstantMeshes: <a href="https://github.com/wjakob/instant-meshes">https://github.com/wjakob/instant-meshes</a></li>
-<li>FBX2glTF: <a href="https://github.com/facebookincubator/FBX2glTF">https://github.com/facebookincubator/FBX2glTF</a></li>
+<li><a href="../../tools/image-magick">ImageMagick</a></li>
+<li><a href="../../tools/instant-meshes">Instant Meshes</a></li>
+<li><a href="../../tools/meshfix">Meshfix</a></li>
+<li><a href="../../tools/meshlab">Meshlab</a></li>
+<li><a href="../../tools/meshsmith">MeshSmith</a></li>
+<li><a href="../../tools/rapid-compact">RapidCompact</a></li>
+<li><a href="../../tools/rizom-uv">RizomUV</a></li>
+<li><a href="../../tools/xnormal">XNormal</a></li>
+</ul>
+
+<p>Support for the following tools is planned, but hasn&rsquo;t been completed yet.</p>
+
+<ul>
+<li><a href="../../tools/blender">Blender</a></li>
+<li><a href="../../tools/reality-capture">Reality Capture</a></li>
 </ul>
 
 <h2 id="installing-cook-server">Installing Cook Server</h2>
@@ -389,8 +407,9 @@ notepad.exe tools.json</code></pre></div>
 
 <h5 id="tools-json">tools.json</h5>
 
-<p>Information about processing tools: path to the executable, version, timeout in seconds and the maximum number
-of instances this tool can run simultaneously.</p>
+<p>Information about processing tools: path to the executable, version, timeout in seconds and the maximum number of instances this tool can run simultaneously.</p>
+
+<p>Please have a look at the tool documentation pages to see a configuration example for each tool.</p>
 
 <h5 id="clients-json">clients.json</h5>
 
@@ -398,13 +417,20 @@ of instances this tool can run simultaneously.</p>
 
 <h2 id="running-cook-server">Running Cook Server</h2>
 
-<h3 id="start-in-server-mode">Start in server mode</h3>
+<h3 id="starting-cook-as-a-service-using-pm2">Starting Cook as a service using PM2</h3>
+
+<ul>
+<li>To start the service, enter <code>npm run start</code></li>
+<li>To stop the service, enter <code>npm run stop</code></li>
+</ul>
+
+<h3 id="running-cook-as-a-foreground-application">Running Cook as a foreground application</h3>
 
 <p>Enter <code>npm run server</code></p>
 
-<h3 id="start-from-the-command-line-cli-mode">Start from the command line (CLI mode)</h3>
+<h3 id="starting-cook-in-development-mode-rebuilds-on-file-changes">Starting Cook in development mode (rebuilds on file changes)</h3>
 
-<p>See <a href="./cli.md">Cook CLI</a></p>
+<p>Enter <code>npm run watch</code></p>
 
 </div>
 

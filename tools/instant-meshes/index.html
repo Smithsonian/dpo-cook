@@ -152,7 +152,7 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">CLI</a>
+      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
     </li>
     
     <li class="">
@@ -269,6 +269,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tools/blender/">Blender</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tools/image-magick/">Image Magick</a>
     </li>
     
@@ -290,6 +294,10 @@
     
     <li class="">
       <a href="/dpo-cook/tools/rapid-compact/">RapidCompact</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tools/reality-capture/">Reality Capture</a>
     </li>
     
     <li class="">
@@ -315,17 +323,28 @@
 <h3 id="information">Information</h3>
 
 <ul>
-<li>Manufacturer:</li>
-<li>Website:</li>
-<li>License:</li>
+<li>Developer: Wenzel Jakob</li>
+<li>Website: <a href="http://igl.ethz.ch/projects/instant-meshes/">http://igl.ethz.ch/projects/instant-meshes/</a></li>
+<li>Github repository: <a href="https://github.com/wjakob/instant-meshes">https://github.com/wjakob/instant-meshes</a></li>
+<li>License: <a href="https://github.com/wjakob/instant-meshes/blob/master/LICENSE.txt">https://github.com/wjakob/instant-meshes/blob/master/LICENSE.txt</a></li>
 </ul>
 
 <h3 id="installation">Installation</h3>
 
-<h3 id="versions">Versions</h3>
+<ul>
+<li>Binary for Windows: <a href="https://instant-meshes.s3.eu-central-1.amazonaws.com/Release/instant-meshes-windows.zip">https://instant-meshes.s3.eu-central-1.amazonaws.com/Release/instant-meshes-windows.zip</a></li>
+<li>Download and unzip</li>
+</ul>
 
-<h3 id="options">Options</h3>
+<h3 id="configuration">Configuration</h3>
 
+<p>Example configuration for Instant Meshes in the <code>tools.json</code> configuration file:</p>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;InstantMeshes&#34;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Tools\\Instant Meshes.exe&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">900</span>
+<span class="p">}</span></code></pre></div>
 </div>
 
         </div>
