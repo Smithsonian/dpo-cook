@@ -1,7 +1,7 @@
 {
     "name": "dpo-cook",
     "version": "1.0.0",
-    "description": "Smithsonian DPO Cook - 3D Model/Geometry/Texture Processing Server",
+    "description": "Smithsonian DPO Cook - 3D Model/Geometry/Texture Processing Service",
     "scripts": {
         "start": "pm2 start server/bin/index.js --name cook",
         "stop": "pm2 delete cook",

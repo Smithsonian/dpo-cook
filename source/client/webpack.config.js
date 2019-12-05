@@ -18,6 +18,10 @@
 "use strict";
 
 var path = require('path');
+const childProcess = require("child_process");
+const moment = require("moment");
+const webpack = require("webpack");
+
 var MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 //////////////////////////////////////////////////////////////////////////////// 
@@ -30,8 +34,13 @@ var libDir = path.resolve(projectDir, "libs");
 
 ////////////////////////////////////////////////////////////////////////////////
 
+const isDevMode = process.env["NODE_ENV"] !== "production";
+const version = childProcess.execSync("git describe --tags").toString().trim();
+
+////////////////////////////////////////////////////////////////////////////////
+
 module.exports = {
-    mode: "development",
+    mode: isDevMode ? "development" : "production",
 
     entry: {
         "main": path.resolve(sourceDir, "client/main.tsx")
@@ -61,6 +70,9 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.DefinePlugin({
+            ENV_VERSION: JSON.stringify(`${moment().format("YYYY-MM-DD")} ${version}`),
+        }),
         new MiniCssExtractPlugin({
             filename: "[name].css",
             allChunks: true

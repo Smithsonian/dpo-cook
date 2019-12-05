@@ -26,6 +26,26 @@ import ClientApplication from "./components/ClientApplication";
 
 ////////////////////////////////////////////////////////////////////////////////
 
+console.log(`
+  _________       .__  __  .__                        .__                ________ ________   
+ /   _____/ _____ |__|/  |_|  |__   __________   ____ |__|____    ____   \\_____  \\\\______ \\  
+ \\_____  \\ /     \\|  \\   __\\  |  \\ /  ___/  _ \\ /    \\|  \\__  \\  /    \\    _(__  < |    |  \\ 
+ /        \\  Y Y  \\  ||  | |   Y  \\\\___ (  <_> )   |  \\  |/ __ \\|   |  \\  /       \\|    \`   \\
+/_______  /__|_|  /__||__| |___|  /____  >____/|___|  /__(____  /___|  / /______  /_______  /
+        \\/      \\/              \\/     \\/           \\/        \\/     \\/         \\/        \\/ 
+    
+Cook - 3D Model/Geometry/Texture Processing Server
+3D Foundation Project
+(c) 2019 Smithsonian Institution
+
+https://3d.si.edu
+https://github.com/smithsonian/dpo-cook
+
+-----------------------------------------------------
+Version: ${ENV_VERSION}
+-----------------------------------------------------
+`);
+
 const reset = parseUrlParameter("reset");
 
 ReactDOM.render(
