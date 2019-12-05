@@ -21,29 +21,37 @@ We have tested the cook service and our standard tool suite on the following con
 
 #### Operating System
 
-Cook has been tested with the following operating systems:
+Cook has been tested with the following versions of Microsoft Windows. We currently don't support any other operating systems, because some of the 3rd party processing tools are only available for Windows.
 
 - Windows 10 Professional
 - Windows Server 2012 R2 Standard 
 
+##### Running Cook in a VM
+
+It is currently not advised to run Cook in a virtual machine. Some 3rd party tools have specific hardware requirements, e.g. some need direct access to the GPU. Also, performance may suffer.
+
 #### Applications
 
-Before installing Cook Server, you need to install the following applications on your machine:
+Before installing Cook Server, you need to install the following applications:
 
 - Git: https://git-scm.com
 - Node: https://nodejs.org
 
 Depending on your needs, you also need to install the tools you want to use for processing. These tools are currently supported:
 
-- Meshlab: http://www.meshlab.net
-- Meshfix: https://github.com/MarcoAttene/MeshFix-V2.1
-- RizomUV Virtual Spaces: https://www.rizom-lab.com/products/rizomuv-vs
-- XNormal: http://www.xnormal.net
-- InstantUV Mops CLI: https://www.instantuv.org
-- ImageMagick: https://www.imagemagick.org
-- MeshSmith: (following soon)
-- InstantMeshes: https://github.com/wjakob/instant-meshes
-- FBX2glTF: https://github.com/facebookincubator/FBX2glTF
+- [ImageMagick](../../tools/image-magick)
+- [Instant Meshes](../../tools/instant-meshes)
+- [Meshfix](../../tools/meshfix)
+- [Meshlab](../../tools/meshlab)
+- [MeshSmith](../../tools/meshsmith)
+- [RapidCompact](../../tools/rapid-compact)
+- [RizomUV](../../tools/rizom-uv)
+- [XNormal](../../tools/xnormal)
+
+Support for the following tools is planned, but hasn't been completed yet.
+
+- [Blender](../../tools/blender)
+- [Reality Capture](../../tools/reality-capture)
 
 ## Installing Cook Server
 
@@ -75,8 +83,9 @@ Server configuration (directories, port, etc.)
 
 ##### tools.json
 
-Information about processing tools: path to the executable, version, timeout in seconds and the maximum number
-of instances this tool can run simultaneously.
+Information about processing tools: path to the executable, version, timeout in seconds and the maximum number of instances this tool can run simultaneously.
+
+Please have a look at the tool documentation pages to see a configuration example for each tool.
 
 ##### clients.json
 
@@ -84,10 +93,15 @@ IDs and names for the clients you want to grant access to the server.
 
 ## Running Cook Server
 
-### Start in server mode
+### Starting Cook as a service using PM2
+
+- To start the service, enter `npm run start`
+- To stop the service, enter `npm run stop`
+
+### Running Cook as a foreground application
 
 Enter `npm run server`
 
-### Start from the command line (CLI mode)
+### Starting Cook in development mode (rebuilds on file changes)
 
-See [Cook CLI](./cli.md)
+Enter `npm run watch`

@@ -4,13 +4,18 @@ summary: Learn how to write your own recipes.
 weight: 150
 ---
 
-In order to know what to do, the cook needs recipes. A recipe is a JSON document describing a processing workflow, where a set of input files is processed by multiple tools. Recipes offer “intelligent branching”: depending on the outcome of one processing step, it can decide what to do next. If a recipe fails on a task using tool A, it can for example decide to try again using tool B.
+In order to know what to do, the cook relies on recipes. A recipe is a JSON document describing a processing workflow, where a set of input files is processed by multiple tools. Recipes don't need to be linear: depending on the outcome of one processing step, a recipe can decide what to do next. If for example a task fails using tool A, it can decide to try again using tool B.
 
 Recipes are controlled by a set of global parameters. Instead of entering the same information again and again for each tool to be executed, parameters are defined once and then automatically fed to each involved tool.
 
-### Introduction
+### JSON Schema
 
-Coming soon.
+Global recipe parameters are defined using JSON Schema. When running a recipe, actual parameters are validated against the schema. Documentation for JSON Schema can be found here: https://json-schema.org/specification.html
+
+### JSONata
+
+Recipes make heavy use of JSONata expressions. Documentation for JSONata can be found here:
+http://docs.jsonata.org/overview.html
 
 ### Examples
 
@@ -34,22 +39,6 @@ A recipe template is available in `server/recipes-test/template.json`
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
-            },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "transportMethod": {
-                "type": "string",
-                "enum": [
-                    "none",
-                    "local"
-                ],
-                "default": "none"
             }
         },
         "required": [
@@ -65,19 +54,6 @@ A recipe template is available in `server/recipes-test/template.json`
             "parameters": {
                 "logToConsole": true,
                 "reportFile": "$baseName(someFile) & '-report.json'"
-            },
-            "success": "'pickup'",
-            "failure": "$failure"
-        },
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "someFile": "someFile"
-                }
             },
             "success": "'process'",
             "failure": "$failure"
@@ -105,8 +81,8 @@ A recipe template is available in `server/recipes-test/template.json`
                 }
             },
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "method": "none",
+                "path": "$currentDir",
                 "files": "deliverables"
             },
             "success": "$success",
@@ -115,7 +91,3 @@ A recipe template is available in `server/recipes-test/template.json`
     }
 }
 ```
-
-### How to write a recipe
-
-Coming soon.
