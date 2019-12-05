@@ -21,10 +21,15 @@ import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 export interface IImageMagickToolSettings extends IToolSettings
 {
+    /** Name of the RGB input image file. */
     inputImageFile?: string;
+    /** Name of the image file for the red channel (optional, only required if combining individual channels). */
     redChannelInputFile?: string;
+    /** Name of the image file for the green channel (optional, only required if combining individual channels). */
     greenChannelInputFile?: string;
+    /** Name of the image file for the blue channel (optional, only required if combining individual channels). */
     blueChannelInputFile?: string;
+    /** Name of the output image file. */
     outputImageFile: string;
     /** The compression quality for JPEG images (0 - 100). */
     quality?: number;

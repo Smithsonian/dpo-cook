@@ -2,7 +2,7 @@
     "id": "1c795703-8ef9-4392-8a68-bb8680209516",
     "name": "vz-to-play",
     "description": "VZ Collection CT mesh to Web, decimate (preserve bounds, topo), fix, unwrap, and bake, generate PLAY-ready assets",
-    "version": "9",
+    "version": "10",
     "start": "log",
 
     "parameterSchema": {
@@ -12,14 +12,6 @@
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
-            },
-            "pickupPath": {
-                "type": "string",
-                "minLength": 1
-            },
-            "deliveryPath": {
-                "type": "string",
-                "minLength": 1
             },
             "transportMethod": {
                 "type": "string",
@@ -131,20 +123,6 @@
                 "reportFile": "baseName & '_report.json'",
                 "markerFile": "baseName & '_log.txt'"
             },
-            "success": "'pickup'",
-            "failure": "$failure"
-        },
-
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "highPolyMeshFile": "highPolyMeshFile"
-                }
-            },
             "success": "'decimate-meshlab'",
             "failure": "$failure"
         },
@@ -153,41 +131,35 @@
             "task": "DecimateMesh",
             "description": "Decimate mesh using Meshlab",
             "pre": {
-                "decimatedMeshlabMeshFile": "baseMeshName & '-decimated-meshlab.obj'"
+                "decimatedMeshFile": "baseMeshName & '-decimated-meshlab.obj'"
             },
             "parameters": {
                 "inputMeshFile": "highPolyMeshFile",
-                "outputMeshFile": "decimatedMeshlabMeshFile",
+                "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "preserveTopology": "preserveTopology",
                 "preserveBoundaries": "preserveBoundaries",
                 "minComponentSize": "'2%'",
                 "timeout": 300
             },
-            "post": {
-                "decimatedMeshFile": "decimatedMeshlabMeshFile"
-            },
-            "success": "fixAfterDecimation ? 'fix' : 'unwrap-mops-a'",
-            "failure": "'decimate-mops'"
+            "success": "fixAfterDecimation ? 'fix' : 'unwrap-rapid-a'",
+            "failure": "'decimate-rapid'"
         },
 
-        "decimate-mops": {
+        "decimate-rapid": {
             "task": "DecimateMesh",
-            "description": "Decimate mesh using Mops",
+            "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMopsMeshFile": "baseMeshName & '-decimated-mops.obj'"
+                "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
             },
             "parameters": {
                 "inputMeshFile": "highPolyMeshFile",
-                "outputMeshFile": "decimatedMopsMeshFile",
+                "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "timeout": 180,
-                "tool": "'Mops'"
+                "tool": "'RapidCompact'"
             },
-            "post": {
-                "decimatedMeshFile": "decimatedMopsMeshFile"
-            },
-            "success": "fixAfterDecimation ? 'fix' : 'unwrap-mops-a'",
+            "success": "fixAfterDecimation ? 'fix' : 'unwrap-rapid-a'",
             "failure": "$failure"
         },
 
@@ -216,11 +188,11 @@
                 "outputMeshFile": "decimatedFixedConvertedMeshFile",
                 "tool": "'Meshlab'"
             },
-            "success": "'unwrap-mops-a'",
+            "success": "'unwrap-rapid-a'",
             "failure": "$failure"
         },
 
-        "unwrap-mops-a": {
+        "unwrap-rapid-a": {
             "task": "UnwrapMesh",
             "description": "Unwrap mesh using Mops",
             "pre": {
@@ -234,7 +206,7 @@
                 "packEffort": "packEffort",
                 "unwrapMethod": "'forwardBijective'",
                 "timeout": 540,
-                "tool": "'Mops'"
+                "tool": "'RapidCompact'"
             },
             "success": "'convert-obj'",
             "failure": "'unwrap-rizom'"
@@ -257,10 +229,10 @@
                 "tool": "'RizomUV'"
             },
             "success": "'convert-fbx'",
-            "failure": "'unwrap-mops-b'"
+            "failure": "'unwrap-rapid-b'"
         },
 
-        "unwrap-mops-b": {
+        "unwrap-rapid-b": {
             "task": "UnwrapMesh",
             "description": "Unwrap mesh using Mops",
             "pre": {
@@ -274,7 +246,7 @@
                 "packEffort": "packEffort",
                 "unwrapMethod": "'isometric'",
                 "timeout": 240,
-                "tool": "'Mops'"
+                "tool": "'RapidCompact'"
             },
             "success": "'convert-obj'",
             "failure": "$failure"
@@ -369,8 +341,8 @@
             "task": "Delivery",
             "description": "Send result files back to client",
             "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "method": "none",
+                "path": "$currentDir",
                 "files": {
                     "lowPolyUnrwappedMeshFile": "unwrappedConvertedMeshFile",
                     "occlusionMapFile": "convertedOcclusionMap",

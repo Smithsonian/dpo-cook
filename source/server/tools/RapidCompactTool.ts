@@ -30,24 +30,43 @@ export type TRapidCompactUnwrapMethod =
 
 export interface IRapidCompactToolSettings extends IToolSettings
 {
+    /** Name of the high resolution input mesh file (bake mode only). */
     highPolyMeshFile?: string;
+    /** Name of the low resolution input mesh file (bake mode only). */
     lowPolyMeshFile?: string;
+    /** Name of the input mesh file (decimate and unwrap modes). */
     inputMeshFile?: string;
+    /** Name of the output mesh file (decimate and unwrap modes). */
     outputMeshFile?: string;
+    /** Defines the task to be executed by RapidCompact. */
     mode: TRapidCompactMode;
+    /** The target number of faces. */
     numFaces?: number;
+    /** The algorithm to be used for UV unwrapping. */
     unwrapMethod?: TRapidCompactUnwrapMethod;
+    /** The cut angle degree used for UV unwrapping. Default is 95. */
     cutAngleDeg?: number;
+    /** The chart angle degree used for UV unwrapping. Default is 120. */
     chartAngleDeg?: number;
+    /** The chart padding (relative value between 0 and 1, default is 4/1024. */
     chartPadding?: number;
+    /** The base name for the generated texture maps. */
     mapBaseName?: string;
+    /** The size of the baked texture maps. */
     mapSize?: number;
+    /** Set to true to bake an occlusion map. */
     bakeOcclusion?: boolean;
+    /** Number of rays to use for ambient occlusion. Default is 128. */
     occlusionRays?: number;
+    /** Normal space to use. Tangent space is used if set to true, object space otherwise. Default is false. */
     tangentSpaceNormals?: boolean;
+    /** Should the topology be preserved during decimation? Default is true. */
     preserveTopology?: boolean;
+    /** Should boundaries be preserved during decimation? Default is true. */
     preserveBoundaries?: boolean;
+    /** Can unconnected vertices be collapsed during decimation? Default is true. */
     collapseUnconnectedVertices?: boolean;
+    /** Should duplicate vertices be removed during decimation? Default is false. */
     removeDuplicateVertices?: boolean;
 }
 
@@ -181,7 +200,6 @@ export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompa
             config["export:occlusionMapFormat"] = extension;
 
         }
-
 
         // write RapidCompact config file
         const fileName = "_rapidcompact_" + uniqueId() + ".json";
