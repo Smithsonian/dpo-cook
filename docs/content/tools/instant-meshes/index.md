@@ -22,7 +22,7 @@ Example configuration for Instant Meshes in the `tools.json` configuration file:
  ```json
 "InstantMeshes": {
     "executable": "C:\\Tools\\Instant Meshes.exe",
-    "version": "-",
+    "version": "1",
     "maxInstances": 1,
     "timeout": 900
 }

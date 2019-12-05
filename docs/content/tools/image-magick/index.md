@@ -12,7 +12,7 @@ summary: Image manipulation and conversion tool.
 
 ### Installation
 
-- Recommended version with Cook: *7.0.7-Q16*
+- Recommended version with Cook: *7.0.8-Q16*
 - Installer for Windows: https://imagemagick.org/script/download.php#windows
 
 ### Configuration
@@ -21,8 +21,8 @@ Example configuration for ImageMagick in the `tools.json` configuration file:
 
 ```json
 "ImageMagick": {
-    "executable": "C:\\Program Files\\ImageMagick-7.0.7-Q16\\magick.exe",
-    "version": "7.0.7",
+    "executable": "C:\\Program Files\\ImageMagick-7.0.8-Q16\\magick.exe",
+    "version": "7.0.8",
     "maxInstances": 1,
     "timeout": 600
 }

@@ -20,7 +20,7 @@ Example configuration for MeshSmith in the `tools.json` configuration file:
 
 "MeshSmith": {
     "executable": "C:\\Tools\\MeshSmith\\MeshSmith.exe",
-    "version": "v0.7.0, 2019-08-13",
+    "version": "2019-09-12",
     "maxInstances": 3,
     "timeout": 600 // 10 minutes
 }

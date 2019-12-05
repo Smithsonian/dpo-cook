@@ -12,11 +12,10 @@ summary: Mesh manipulation tool.
 
 ### Installation
 
-
-
-### Versions
-
-- Recommended version with Cook: 
+- In order to enable mesh statistics, you need to install a modified meshlab server version from
+https://github.com/framefactory/meshlab
+- An precompiled binary is available on the Smithsonian internal digitization drive
+- Recommended version with Cook: *2019.12, 2019-12-02*
 
 ### Configuration
 
@@ -25,7 +24,7 @@ Example configuration for Meshlab in the `tools.json` configuration file:
 ```json
 "Meshlab": {
     "executable": "C:\\Tools\\MeshlabMini\\meshlabserver.exe",
-    "version": "v2019.5, 2019-05-02",
+    "version": "2019.12, 2019-12-02",
     "maxInstances": 3,
     "timeout": 1800
 }
