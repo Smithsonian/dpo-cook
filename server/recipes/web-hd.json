@@ -191,7 +191,7 @@
             },
             "parameters": {
                 "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
-                "outputMeshFile": "deliverables.remeshedFile",
+                "outputMeshFile": "deliverables.remeshedMeshFile",
                 "numFaces": "remeshFaces"
             },
             "post": {
