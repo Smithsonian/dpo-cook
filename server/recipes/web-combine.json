@@ -7,7 +7,7 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "inputMeshFile": {
+            "highPolyMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -192,7 +192,7 @@
             }
         },
         "required": [
-            "inputMeshFile"
+            "highPolyMeshFile"
         ],
         "additionalProperties": false
     },
@@ -201,10 +201,10 @@
             "task": "Log",
             "description": "Enable logging services",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, inputMeshFile))",
-                "baseMeshName": "$baseMeshName($firstTrue(baseName, inputMeshFile), numFacesWebThumb)",
-                "baseMeshMapNameWebThumb": "$baseMeshMapName($firstTrue(baseName, inputMeshFile), numFacesWebThumb, mapSizeWebThumb)",
-                "baseMeshMapNameWebMulti": "$baseMeshMapName($firstTrue(baseName, inputMeshFile), numFacesWebMulti, mapSizeWebMulti)",
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFacesWebThumb)",
+                "baseMeshMapNameWebThumb": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFacesWebThumb, mapSizeWebThumb)",
+                "baseMeshMapNameWebMulti": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFacesWebMulti, mapSizeWebMulti)",
                 "baseMeshMapNameHigh": "$baseMeshMapName(baseName, numFacesWebMulti, mapSizeWebMulti)",
                 "baseMeshMapNameMedium": "$baseMeshMapName(baseName, numFacesWebMulti, mapSizeWebMulti * 0.5)",
                 "baseMeshMapNameLow": "$baseMeshMapName(baseName, numFacesWebMulti, mapSizeWebMulti * 0.25)",
@@ -230,7 +230,7 @@
                 }
             },
             "parameters": {
-                "meshFile": "inputMeshFile",
+                "meshFile": "highPolyMeshFile",
                 "reportFile": "deliverables.inspectionReport"
             },
             "success": "'remesh'",
@@ -246,7 +246,7 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "inputMeshFile",
+                "inputMeshFile": "highPolyMeshFile",
                 "outputMeshFile": "deliverables.remeshedMeshFile",
                 "numFaces": "numFacesRemesh",
                 "quadsOnly": "quadsOnly"
@@ -264,7 +264,7 @@
                 "decimatedMeshFile": "baseMeshName & '-decimated-rapid-webthumb.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, inputMeshFile)",
+                "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebThumb",
                 "cleanup": "cleanupMesh",
@@ -282,7 +282,7 @@
                 "decimatedMeshFile": "baseMeshName & '-decimated-meshlab-webthumb.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, inputMeshFile)",
+                "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebThumb",
                 "cleanup": "cleanupMesh",
@@ -336,7 +336,7 @@
                 "mapBaseName": "baseMeshMapNameWebThumb & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "inputMeshFile",
+                "highPolyMeshFile": "highPolyMeshFile",
                 "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
@@ -514,7 +514,7 @@
                 "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, inputMeshFile)",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebMulti",
                 "cleanup": "cleanupMesh",
@@ -532,7 +532,7 @@
                 "decimatedMeshFile": "baseMeshName & '-decimated-meshlab-webmulti.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, inputMeshFile)",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebMulti",
                 "cleanup": "cleanupMesh",
@@ -585,7 +585,7 @@
                 "mapBaseName": "baseMeshMapNameWebMulti & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "inputMeshFile",
+                "highPolyMeshFile": "highPolyMeshFile",
                 "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
