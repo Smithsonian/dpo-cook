@@ -82,7 +82,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
         }
 
         const maxRayDistance = settings.maxRayDistance;
-        const edgePadding = settings.mapSize / 512; // 1k = 2, 2k = 4, 4k = 8
+        const edgePadding = (settings.mapSize / 512) * 4; // (1k = 2, 2k = 4, 4k = 8) x 4
 
         const tangentSpace = settings.tangentSpaceNormals;
         const swizzleX = settings.normalsFlipX ? "X-" : "X+";
