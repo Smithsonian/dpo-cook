@@ -188,7 +188,7 @@
             "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, baseName & '.svx.json')"
+                    "document": "$firstTrue(documentFile, 'scene.svx.json')"
                 }
             },
             "parameters": {

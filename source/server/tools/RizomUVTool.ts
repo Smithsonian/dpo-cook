@@ -108,12 +108,12 @@ export default class RizomUVTool extends Tool<RizomUVTool, IRizomUVToolSettings>
             `ZomCut({PrimType="Edge"})`,
 
             `-- unwrap --`,
-            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=${settings.rizomIterations}, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=${!!settings.rizomNoBorderIntersections}, TriangleFlips=${!!settings.rizomNoTriangleFlips}})`,
+            `ZomUnfold({PrimType="Edge", MinAngle=1e-05, Mix=1, Iterations=5, PreIterations=5, StopIfOutOFDomain=false, RoomSpace=0, PinMapName="Pin", ProcessNonFlats=true, ProcessSelection=true, ProcessAllIfNoneSelected=true, ProcessJustCut=true, BorderIntersections=true, TriangleFlips=true})`,
 
             `-- pack --`,
             `ZomIslandGroups({Mode="DistributeInTilesByBBox", MergingPolicy=8322})`,
             `ZomIslandGroups({Mode="DistributeInTilesEvenly", MergingPolicy=8322, UseTileLocks=true, UseIslandLocks=true})`,
-            `ZomPack({ProcessTileSelection=false, RootGroup="RootGroup", RecursionDepth=1, MaxMutations=${settings.packMutations}, Resolution=${settings.packResolution}, MarginSize=${settings.packMargin}, SpacingSize=${settings.packSpacing}, Scaling={Mode=2}, Rotate={Min=${settings.packRotateMin}, Max=${settings.packRotateMax}, Step=${settings.packRotateStep}}, Translate=true, LayoutScalingMode=2})`,
+            `ZomPack({ProcessTileSelection=false, RootGroup="RootGroup", RecursionDepth=1, MaxMutations=1, Resolution=500, MarginSize=2/1024, SpacingSize=4/1024, Scaling={Mode=2}, Rotate={Min=0, Max=180, Step=30}, Translate=true, LayoutScalingMode=2})`,
 
             `-- save mesh --`,
             saveOperations.join("\n"),
