@@ -17,7 +17,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "outputMeshFile": {
+            "processedMeshFile": {
                 "type": "string",
                 "minLength": 1
             },
@@ -242,13 +242,13 @@
             "skip": "remeshFaces < 1",
             "pre": {
                 "deliverables": {
-                    "remeshedMeshFile": "$firstTrue(outputMeshFile, baseMeshName & '-remeshed.obj')"
+                    "remeshedMeshFile": "$firstTrue(processedMeshFile, baseMeshName & '-remeshed.obj')"
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "deliverables.remeshedMeshFile",
-                "numFaces": "numFacesRemesh",
+                "numFaces": "numFacesWebMulti",
                 "quadsOnly": "quadsOnly"
             },
             "post": {
@@ -559,7 +559,7 @@
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSizeWebMulti",
-                "segmentationStrength": "segmentationStrength",
+                "segmentationStrength": "segmentationStrengthWebMulti",
                 "packEffort": "packEffort"
             },
             "success": "'inspect-unwrapped-webmulti'",
@@ -622,7 +622,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapHigh",
-                "quality": "diffuseMapQuality"
+                "quality": "diffuseMapQualityWebMulti"
             },
             "success": "'convert-occlusion-map-high'",
             "failure": "$failure"
@@ -656,7 +656,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_normalMapHigh",
-                "quality": "normalMapQuality"
+                "quality": "normalMapQualityWebMulti"
             },
             "success": "'web-asset-glb-high'",
             "failure": "$failure"
@@ -766,7 +766,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapMedium",
-                "quality": "diffuseMapQuality",
+                "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeMedium"
             },
             "success": "'convert-occlusion-map-medium'",
@@ -802,7 +802,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_normalMapMedium",
-                "quality": "normalMapQuality",
+                "quality": "normalMapQualityWebMulti",
                 "resize": "mapSizeMedium"
             },
             "success": "'web-asset-glb-medium'",
@@ -907,7 +907,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapLow",
-                "quality": "diffuseMapQuality",
+                "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeLow"
             },
             "success": "'convert-occlusion-map-low'",
@@ -943,7 +943,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_normalMapLow",
-                "quality": "normalMapQuality",
+                "quality": "normalMapQualityWebMulti",
                 "resize": "mapSizeLow"
             },
             "success": "'web-asset-glb-low'",
