@@ -78,7 +78,7 @@
                     "ft",
                     "yd"
                 ],
-                "default": "cm"
+                "default": "mm"
             },
             "inspectMesh": {
                 "type": "boolean",
@@ -254,7 +254,7 @@
             "post": {
                 "remeshedFile": "deliverables.remeshedMeshFile"
             },
-            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-webthumb' : 'decimate-meshlab-webthumb'",
+            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-webmulti' : 'decimate-meshlab-webmulti'",
             "failure": "$failure"
         },
         "decimate-rapid-webthumb": {
