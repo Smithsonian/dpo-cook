@@ -98,7 +98,7 @@
                     "Meshlab",
                     "RapidCompact"
                 ],
-                "default": "RapidCompact"
+                "default": "Meshlab"
             },
             "segmentationStrengthWebThumb": {
                 "type": "number",
@@ -254,7 +254,7 @@
             "post": {
                 "remeshedFile": "deliverables.remeshedMeshFile"
             },
-            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-webmulti' : 'decimate-meshlab-webmulti'",
+            "success": "'decimate-meshlab-webmulti'",
             "failure": "$failure"
         },
         "decimate-rapid-webthumb": {
