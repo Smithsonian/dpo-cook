@@ -1029,16 +1029,6 @@
             "success": "'delivery'",
             "failure": "$failure"
         },
-        "end": {
-            "task": "Dummy",
-            "description": "Nothing more to do",
-            "parameters": {
-                "outcome": "'success'",
-                "duration": "1"
-            },
-            "success": "$success",
-            "failure": "$failure"
-        },
         "delivery": {
             "task": "Delivery",
             "description": "Send result files back to client",
