@@ -4,6 +4,7 @@
     "description": "Combines web-thumb and web-multi into one",
     "version": "2",
     "start": "log",
+
     "parameterSchema": {
         "type": "object",
         "properties": {
@@ -12,7 +13,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "highPolyDiffuseMapFile": {
+             "highPolyDiffuseMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -70,14 +71,7 @@
             },
             "units": {
                 "type": "string",
-                "enum": [
-                    "mm",
-                    "cm",
-                    "m",
-                    "in",
-                    "ft",
-                    "yd"
-                ],
+                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
                 "default": "mm"
             },
             "inspectMesh": {
@@ -94,10 +88,7 @@
             },
             "decimationTool": {
                 "type": "string",
-                "enum": [
-                    "Meshlab",
-                    "RapidCompact"
-                ],
+                "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
             },
             "segmentationStrengthWebThumb": {
@@ -196,6 +187,7 @@
         ],
         "additionalProperties": false
     },
+
     "steps": {
         "log": {
             "task": "Log",
@@ -223,17 +215,14 @@
         "inspect-mesh": {
             "task": "InspectMesh",
             "description": "Inspect mesh health and statistics",
-            "skip": "$not(inspectMesh)",
-            "pre": {
-                "deliverables": {
-                    "inspectionReport": "inspectMesh ? baseName & '-inspection.json' : ''"
-                }
-            },
             "parameters": {
                 "meshFile": "highPolyMeshFile",
-                "reportFile": "deliverables.inspectionReport"
+                "tool": "'MeshSmith'"
             },
-            "success": "'remesh'",
+            "post": {
+                "startingNumFaces": "$result.inspection.scene.statistics.numFaces"
+            },
+            "success": "startingNumFaces <= 150001 ? 'remesh' : 'end'",
             "failure": "$failure"
         },
         "remesh": {
@@ -435,6 +424,7 @@
             },
             "success": "'web-asset-glb-nondraco'",
             "failure": "$failure"
+
         },
         "web-asset-glb-nondraco": {
             "task": "WebAsset",
@@ -459,6 +449,7 @@
             },
             "success": "'web-asset-gltf'",
             "failure": "$failure"
+
         },
         "web-asset-gltf": {
             "task": "WebAsset",
