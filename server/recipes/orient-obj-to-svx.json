@@ -1,0 +1,97 @@
+{
+    "id": "271d9c8d-08af-45db-a940-3f0115d0ba00",
+    "name": "orient-obj-to-svx",
+    "description": "Orients an .obj to match the supplied .svx",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "inputMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "inputVoyagerFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputMeshFile": {
+                "type": "string",
+                "minLength": 1
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
+            }
+        },
+        "required": [
+            "inputMeshFile",
+            "inputVoyagerFile"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "baseName": "$baseName($firstTrue(baseName, inputMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, inputMeshFile))"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "baseMeshName & '-web-multi-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "pre": {
+                "baseName": "$baseName($firstTrue(baseName, inputMeshFile))"
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "inputMeshFile": "inputMeshFile",
+                    "inputVoyagerFile": "inputVoyagerFile"
+                }
+            },
+            "success": "'reorient'",
+            "failure": "$failure"
+        },
+        "reorient": {
+            "task": "ReorientMesh",
+            "description": "Reorient mesh to match Voyager orientation",
+            "pre": {
+                "deliverables": {
+                    "reorientedMeshFile": "$firstTrue(outputMeshFile, baseName & '_oriented.obj')"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "inputMeshFile",
+                "inputVoyagerFile": "inputVoyagerFile",
+                "outputMeshFile": "deliverables.reorientedMeshFile"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
