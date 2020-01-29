@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
+import * as path from "path";
+
 import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export interface IBlenderToolSettings extends IToolSettings
 {
-
+    inputMeshFile: string;
+    inputVoyagerFile?: string;
+    outputMeshFile?: string;
 }
 
 export type BlenderInstance = ToolInstance<BlenderTool, IBlenderToolSettings>;
@@ -34,6 +38,12 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
 
     async setupInstance(instance: BlenderInstance): Promise<IToolSetup>
     {
-        return Promise.reject("not implemented yet");
+        const settings = instance.settings;
+
+        const operation = `--background --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}"`;
+
+        const command = `"${this.configuration.executable}" ${operation}`;
+
+        return Promise.resolve({ command });
     }
 }
