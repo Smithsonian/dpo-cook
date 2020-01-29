@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import * as path from "path";
+
 import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +40,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
     {
         const settings = instance.settings;
 
-        const operation = `--background --python "server/scripts/BlenderOrientToVoyager.py" -- "${instance.getFilePath(settings.inputMeshFile)}" ${instance.getFilePath(settings.inputVoyagerFile)}`;
+        const operation = `--background --python "${path.resolve()}/server/scripts/BlenderOrientToVoyager.py" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}"`;
 
         const command = `"${this.configuration.executable}" ${operation}`;
 
