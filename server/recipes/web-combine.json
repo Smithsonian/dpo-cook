@@ -4,6 +4,7 @@
     "description": "Combines web-thumb and web-multi into one",
     "version": "2",
     "start": "log",
+
     "parameterSchema": {
         "type": "object",
         "properties": {
@@ -12,12 +13,12 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "highPolyDiffuseMapFile": {
+             "highPolyDiffuseMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "outputMeshFile": {
+            "processedMeshFile": {
                 "type": "string",
                 "minLength": 1
             },
@@ -70,15 +71,8 @@
             },
             "units": {
                 "type": "string",
-                "enum": [
-                    "mm",
-                    "cm",
-                    "m",
-                    "in",
-                    "ft",
-                    "yd"
-                ],
-                "default": "cm"
+                "enum": [ "mm", "cm", "m", "in", "ft", "yd" ],
+                "default": "mm"
             },
             "inspectMesh": {
                 "type": "boolean",
@@ -94,11 +88,8 @@
             },
             "decimationTool": {
                 "type": "string",
-                "enum": [
-                    "Meshlab",
-                    "RapidCompact"
-                ],
-                "default": "RapidCompact"
+                "enum": [ "Meshlab", "RapidCompact" ],
+                "default": "Meshlab"
             },
             "segmentationStrengthWebThumb": {
                 "type": "number",
@@ -196,6 +187,7 @@
         ],
         "additionalProperties": false
     },
+
     "steps": {
         "log": {
             "task": "Log",
@@ -223,17 +215,14 @@
         "inspect-mesh": {
             "task": "InspectMesh",
             "description": "Inspect mesh health and statistics",
-            "skip": "$not(inspectMesh)",
-            "pre": {
-                "deliverables": {
-                    "inspectionReport": "inspectMesh ? baseName & '-inspection.json' : ''"
-                }
-            },
             "parameters": {
                 "meshFile": "highPolyMeshFile",
-                "reportFile": "deliverables.inspectionReport"
+                "tool": "'MeshSmith'"
             },
-            "success": "'remesh'",
+            "post": {
+                "startingNumFaces": "$result.inspection.scene.statistics.numFaces"
+            },
+            "success": "startingNumFaces <= 150001 ? 'remesh' : 'end'",
             "failure": "$failure"
         },
         "remesh": {
@@ -242,19 +231,19 @@
             "skip": "remeshFaces < 1",
             "pre": {
                 "deliverables": {
-                    "remeshedMeshFile": "$firstTrue(outputMeshFile, baseMeshName & '-remeshed.obj')"
+                    "remeshedMeshFile": "$firstTrue(processedMeshFile, baseMeshName & '-remeshed.obj')"
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "deliverables.remeshedMeshFile",
-                "numFaces": "numFacesRemesh",
+                "numFaces": "numFacesWebMulti",
                 "quadsOnly": "quadsOnly"
             },
             "post": {
                 "remeshedFile": "deliverables.remeshedMeshFile"
             },
-            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-webthumb' : 'decimate-meshlab-webthumb'",
+            "success": "'decimate-meshlab-webmulti'",
             "failure": "$failure"
         },
         "decimate-rapid-webthumb": {
@@ -435,6 +424,7 @@
             },
             "success": "'web-asset-glb-nondraco'",
             "failure": "$failure"
+
         },
         "web-asset-glb-nondraco": {
             "task": "WebAsset",
@@ -459,6 +449,7 @@
             },
             "success": "'web-asset-gltf'",
             "failure": "$failure"
+
         },
         "web-asset-gltf": {
             "task": "WebAsset",
@@ -559,7 +550,7 @@
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSizeWebMulti",
-                "segmentationStrength": "segmentationStrength",
+                "segmentationStrength": "segmentationStrengthWebMulti",
                 "packEffort": "packEffort"
             },
             "success": "'inspect-unwrapped-webmulti'",
@@ -622,7 +613,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapHigh",
-                "quality": "diffuseMapQuality"
+                "quality": "diffuseMapQualityWebMulti"
             },
             "success": "'convert-occlusion-map-high'",
             "failure": "$failure"
@@ -656,7 +647,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_normalMapHigh",
-                "quality": "normalMapQuality"
+                "quality": "normalMapQualityWebMulti"
             },
             "success": "'web-asset-glb-high'",
             "failure": "$failure"
@@ -766,7 +757,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapMedium",
-                "quality": "diffuseMapQuality",
+                "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeMedium"
             },
             "success": "'convert-occlusion-map-medium'",
@@ -802,7 +793,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_normalMapMedium",
-                "quality": "normalMapQuality",
+                "quality": "normalMapQualityWebMulti",
                 "resize": "mapSizeMedium"
             },
             "success": "'web-asset-glb-medium'",
@@ -907,7 +898,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapLow",
-                "quality": "diffuseMapQuality",
+                "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeLow"
             },
             "success": "'convert-occlusion-map-low'",
@@ -943,7 +934,7 @@
             "parameters": {
                 "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_normalMapLow",
-                "quality": "normalMapQuality",
+                "quality": "normalMapQualityWebMulti",
                 "resize": "mapSizeLow"
             },
             "success": "'web-asset-glb-low'",

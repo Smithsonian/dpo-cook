@@ -525,6 +525,7 @@ export default class MigratePlayTask extends Task
         }
 
         annotation.scale = annotation.style === "Circle" ? 10 : scale;
+        //annotation.scale = annotation.style === "Circle" ? 1.0 : scale;
 
         annotation.position = playAnnotation["Transform.Position"];
 

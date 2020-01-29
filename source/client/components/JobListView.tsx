@@ -64,6 +64,7 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
         this.onTapStart = this.onTapStart.bind(this);
         this.onTapCancel = this.onTapCancel.bind(this);
         this.onTapRemove = this.onTapRemove.bind(this);
+        this.onTapVoyager = this.onTapVoyager.bind(this);
 
         // hidden input element for clipboard copy operation
         this.hiddenElement = document.createElement("textarea");
@@ -129,6 +130,11 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
                         faIcon="trash-alt"
                         title="Delete job and files"
                         onTap={this.onTapRemove} />
+                     <Button
+                        id={job.id}
+                        faIcon="eye"
+                        title="Copy Voyager path to clipboard"
+                        onTap={this.onTapVoyager} />
                 </div></Td>
             </Tr>);
         });
@@ -166,6 +172,22 @@ export default class JobListView extends React.Component<IJobListViewProps, IJob
         //const webUrl = `${location.protocol}//${location.host}/${event.id}`;
         const explorerUrl = `\\\\${location.hostname}@${location.port}\\${event.id}`;
 
+        this.hiddenElement.value = explorerUrl;
+        this.hiddenElement.select();
+        document.execCommand("copy");
+    }
+
+    protected onTapVoyager(event: IButtonTapEvent)
+    {
+        //Cook:
+        //const explorerUrl = `http://si-3dvm01.si.edu:9040/voyager-story-dev.html?mode=story&root=cook/${event.id}/&document=scene.svx.json`;
+        
+        //Cook2:
+        //const explorerUrl = `http://si-3dvm01.si.edu:9040/voyager-story-dev.html?mode=story&root=cook2/${event.id}/&document=scene.svx.json`;
+
+        //Dev:
+        const explorerUrl = `http://si-3dvm01.si.edu:9040/voyager-story-dev.html?mode=story&root=cookdev/${event.id}/&document=scene.svx.json`;
+        
         this.hiddenElement.value = explorerUrl;
         this.hiddenElement.select();
         document.execCommand("copy");
