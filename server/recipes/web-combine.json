@@ -222,7 +222,7 @@
             "post": {
                 "startingNumFaces": "$result.inspection.scene.statistics.numFaces"
             },
-            "success": "startingNumFaces <= 150001 ? 'remesh' : 'end'",
+            "success": "'remesh'",
             "failure": "$failure"
         },
         "remesh": {
