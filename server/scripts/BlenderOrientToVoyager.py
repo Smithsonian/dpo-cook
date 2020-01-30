@@ -15,12 +15,12 @@ argv = argv[argv.index("--") + 1:]
 
 #get import file extension
 filename, file_extension = os.path.splitext(argv[0])
-file_extension = file_extension.upper()
+file_extension = file_extension.lower()
 
 #import scene to be reoriented
-if file_extension == '.OBJ':
+if file_extension == '.obj':
 	bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
-elif file_extension == '.PLY':
+elif file_extension == '.ply':
 	bpy.ops.import_mesh.ply(filepath=argv[0])
 
 #load and parse voyager file
@@ -62,10 +62,9 @@ for object in bpy.data.objects:
 #save reoriented scene
 path = bpy.data.filepath
 dir = os.path.dirname(path)
-file_extension_low = file_extension.lower()
-mod_filename = filename + '_oriented' + file_extension_low
+mod_filename = filename + '_oriented' + file_extension
 save_file = os.path.join(dir, mod_filename)
-if file_extension == '.OBJ':
+if file_extension == '.obj':
 	bpy.ops.export_scene.obj(filepath=save_file, check_existing=True, axis_forward='-Z', axis_up='Y', use_materials=True)
-elif file_extension == '.PLY':
+elif file_extension == '.ply':
 	bpy.ops.export_mesh.ply(filepath=save_file)
