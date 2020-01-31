@@ -59,12 +59,17 @@ for object in bpy.data.objects:
 		bm.to_mesh(me)
 		bm.free()  
 		
-#save reoriented scene
+#create save file name
 path = bpy.data.filepath
 dir = os.path.dirname(path)
-mod_filename = filename + '_oriented' + file_extension
+try: #check for provided output filename
+	mod_filename = argv[2]
+except IndexError:
+	mod_filename = filename + '_oriented' + file_extension
+
+#save reoriented scene
 save_file = os.path.join(dir, mod_filename)
 if file_extension == '.obj':
-	bpy.ops.export_scene.obj(filepath=save_file, check_existing=True, axis_forward='-Z', axis_up='Y', use_materials=True)
+	bpy.ops.export_scene.obj(filepath=save_file, check_existing=False, axis_forward='-Z', axis_up='Y', use_materials=True)
 elif file_extension == '.ply':
 	bpy.ops.export_mesh.ply(filepath=save_file)

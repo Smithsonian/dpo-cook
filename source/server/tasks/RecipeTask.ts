@@ -429,6 +429,9 @@ export default class RecipeTask extends Task
         // file base name without path and extension
         const basePath = filePath =>
             path.resolve(path.dirname(filePath), path.basename(filePath, path.extname(filePath)));
+        // file extension
+        const extName = fileName =>
+            path.extname(fileName);
 
         // file base name with annotated mesh size
         const baseMeshName = (fileName, numFaces) =>
@@ -448,6 +451,7 @@ export default class RecipeTask extends Task
             k,
             baseName,
             basePath,
+            extName,
             baseMeshName,
             baseMeshMapName
         }

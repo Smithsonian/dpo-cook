@@ -40,7 +40,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
     {
         const settings = instance.settings;
 
-        const operation = `--background --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}"`;
+        const operation = `--background --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputMeshFile)}"`;
 
         const command = `"${this.configuration.executable}" ${operation}`;
 
