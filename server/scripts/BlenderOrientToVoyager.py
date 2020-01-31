@@ -48,12 +48,14 @@ for object in bpy.data.objects:
 		matrix_world = object.matrix_world 
         
         # transform
-		bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(-90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # change coordinate system
+		if file_extension == '.obj':
+			bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(-90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # change coordinate system
 		if do_rotate:
 			bmesh.ops.transform(bm, matrix=mathutils.Quaternion((rotation[3], rotation[0], rotation[1], rotation[2])).to_matrix(), space=matrix_world, verts=bm.verts)
 		if do_translate: 
 			bmesh.ops.transform(bm, matrix=mathutils.Matrix.Translation((translation[0], translation[1], translation[2])), space=matrix_world, verts=bm.verts)
-		bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # return to original coordinate system
+		if file_extension == '.obj':
+			bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # return to original coordinate system
 			
         # write to mesh
 		bm.to_mesh(me)
