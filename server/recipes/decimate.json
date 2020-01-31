@@ -112,6 +112,7 @@
                 "preserveTopology": "preserveTopology",
                 "preserveBoundaries": "preserveBoundaries",
                 "preserveTexCoords": "preserveTexCoords",
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": "computeVertexNormals",
                 "tool": "tool",
                 "timeout": 1200

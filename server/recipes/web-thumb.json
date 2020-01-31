@@ -71,6 +71,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "optimalPlacement": {
+                "type": "boolean",
+                "default": true
+            },
             "decimationTool": {
                 "type": "string",
                 "enum": [ "Meshlab", "RapidCompact" ],
@@ -232,6 +236,7 @@
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": "tangentSpaceNormals"
             },
             "success": "'unwrap-rizom'",
