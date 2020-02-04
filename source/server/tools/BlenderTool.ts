@@ -40,6 +40,11 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
     {
         const settings = instance.settings;
 
+        const inputFilePath = instance.getFilePath(settings.inputMeshFile);
+        if (!inputFilePath) {
+            throw new Error("missing input mesh file");
+        } 
+
         const operation = `--background --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputMeshFile)}"`;
 
         const command = `"${this.configuration.executable}" ${operation}`;
