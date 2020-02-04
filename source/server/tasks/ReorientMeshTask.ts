@@ -82,6 +82,14 @@ export default class ReorientMeshTask extends ToolTask
         const inputVoyagerExt = path.extname(params.inputVoyagerFile);
         const outputMeshExt = path.extname(params.outputMeshFile);
 
+        if (inputMeshExt != ".obj" && inputMeshExt != ".ply") {
+            throw new Error("input file type not supported");
+        }
+
+        if (inputVoyagerExt != ".svx" && inputVoyagerExt != ".json") {
+            throw new Error("voyager file incorrect type");
+        }
+
         // Currently Blender is the only implementation
         if (params.tool === "Blender") {
             const settings: IBlenderToolSettings = {

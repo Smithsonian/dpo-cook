@@ -13,8 +13,15 @@ do_rotate = False
 argv = sys.argv
 argv = argv[argv.index("--") + 1:]
 
+#get import file extension
+filename, file_extension = os.path.splitext(argv[0])
+file_extension = file_extension.lower()
+
 #import scene to be reoriented
-bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
+if file_extension == '.obj':
+	bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
+elif file_extension == '.ply':
+	bpy.ops.import_mesh.ply(filepath=argv[0])
 
 #load and parse voyager file
 f=open(argv[1],'r') 
@@ -41,22 +48,30 @@ for object in bpy.data.objects:
 		matrix_world = object.matrix_world 
         
         # transform
-		bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(-90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # change coordinate system
+		if file_extension == '.obj':
+			bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(-90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # change coordinate system
 		if do_rotate:
 			bmesh.ops.transform(bm, matrix=mathutils.Quaternion((rotation[3], rotation[0], rotation[1], rotation[2])).to_matrix(), space=matrix_world, verts=bm.verts)
 		if do_translate: 
 			bmesh.ops.transform(bm, matrix=mathutils.Matrix.Translation((translation[0], translation[1], translation[2])), space=matrix_world, verts=bm.verts)
-		bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # return to original coordinate system
+		if file_extension == '.obj':
+			bmesh.ops.transform(bm, matrix=mathutils.Euler((math.radians(90.0), 0.0, 0.0)).to_matrix(), space=matrix_world, verts=bm.verts) # return to original coordinate system
 			
         # write to mesh
 		bm.to_mesh(me)
 		bm.free()  
 		
-#save reoriented scene
+#create save file name
 path = bpy.data.filepath
 dir = os.path.dirname(path)
-filename = argv[0]
-ext_index = filename.rfind('.')
-mod_filename = filename[:ext_index] + '_oriented' + filename[ext_index:]
+try: #check for provided output filename
+	mod_filename = argv[2]
+except IndexError:
+	mod_filename = filename + '_oriented' + file_extension
+
+#save reoriented scene
 save_file = os.path.join(dir, mod_filename)
-bpy.ops.export_scene.obj(filepath=save_file, check_existing=True, axis_forward='-Z', axis_up='Y', use_materials=False)
+if file_extension == '.obj':
+	bpy.ops.export_scene.obj(filepath=save_file, check_existing=False, axis_forward='-Z', axis_up='Y', use_materials=True)
+elif file_extension == '.ply':
+	bpy.ops.export_mesh.ply(filepath=save_file)

@@ -44,7 +44,7 @@
             },
             "parameters": {
                 "logToConsole": true,
-                "reportFile": "baseMeshName & '-web-multi-report.json'"
+                "reportFile": "baseMeshName & '-reorient-report.json'"
             },
             "success": "'pickup'",
             "failure": "$failure"
@@ -71,7 +71,7 @@
             "description": "Reorient mesh to match Voyager orientation",
             "pre": {
                 "deliverables": {
-                    "reorientedMeshFile": "$firstTrue(outputMeshFile, baseName & '_oriented.obj')"
+                    "reorientedMeshFile": "$firstTrue(outputMeshFile, baseName & '_oriented' & $extName(inputMeshFile))"
                 }
             },
             "parameters": {
