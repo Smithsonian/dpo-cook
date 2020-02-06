@@ -16,7 +16,6 @@ docs/resources/
 docs/themes/hugo-whisper-theme/exampleSite/
 
 # FILES
-.env
 *.log
 .DS_Store
 server/tools.json
