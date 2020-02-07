@@ -18,6 +18,16 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "inputMTLFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "highPolyDiffuseMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "outputMeshFile": {
                 "type": "string",
                 "minLength": 1
@@ -60,7 +70,9 @@
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
                     "inputMeshFile": "inputMeshFile",
-                    "inputVoyagerFile": "inputVoyagerFile"
+                    "inputVoyagerFile": "inputVoyagerFile",
+                    "inputMTLFile": "inputMTLFile",
+                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile"
                 }
             },
             "success": "'reorient'",
