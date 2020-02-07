@@ -21,6 +21,7 @@ var path = require('path');
 const childProcess = require("child_process");
 const moment = require("moment");
 const webpack = require("webpack");
+const dotenv = require('dotenv');
 
 var MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
@@ -34,6 +35,11 @@ var libDir = path.resolve(projectDir, "libs");
 
 ////////////////////////////////////////////////////////////////////////////////
 
+const envs = dotenv.config().parsed;
+var envKeys = Object.keys(envs).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(envs[next]);
+    return prev;
+}, {});
 const isDevMode = process.env["NODE_ENV"] !== "production";
 const version = childProcess.execSync("git describe --tags").toString().trim();
 
@@ -71,7 +77,8 @@ module.exports = {
 
     plugins: [
         new webpack.DefinePlugin({
-            ENV_VERSION: JSON.stringify(`${moment().format("YYYY-MM-DD")} ${version}`),
+            APP_ENVIRONMENT: envKeys["process.env.REACT_APP_ENV"],
+            ENV_VERSION: JSON.stringify(`${moment().format("YYYY-MM-DD")} ${version}`)
         }),
         new MiniCssExtractPlugin({
             filename: "[name].css",

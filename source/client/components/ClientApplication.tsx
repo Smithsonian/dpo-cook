@@ -274,6 +274,8 @@ export default class ClientApplication extends React.Component<IClientApplicatio
 
     render()
     {
+        var envLabelClasses = (APP_ENVIRONMENT !== 'development') ? 'ff-badge ff-error' : 'ff-badge ff-warning';
+        var envLabel = APP_ENVIRONMENT.toUpperCase();
         return (
             <FlexContainer
                 direction="vertical"
@@ -288,7 +290,7 @@ export default class ClientApplication extends React.Component<IClientApplicatio
 
                     <img className="sc-logo" src="/static/images/cook-logo-250px.png"/>
                     <Label className="ff-label sc-byline">
-                        Smithsonian 3D Foundation Project<br/>
+                        Smithsonian 3D Foundation Project <span className={envLabelClasses}><strong>{envLabel}</strong></span><br/>
                         Processing API Client, Cook Version {ENV_VERSION}
                     </Label>
                     <FlexItem/>
