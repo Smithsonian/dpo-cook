@@ -18,5 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // GLOBAL TYPE DECLARATIONS
 
+// Webpack constant: app environment - regardless of NODE_ENV value
+declare const APP_ENVIRONMENT: string;
 // Webpack constant: build version
 declare const ENV_VERSION: string;
