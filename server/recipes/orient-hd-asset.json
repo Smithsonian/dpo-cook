@@ -18,6 +18,11 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "inputMTLFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "highPolyMeshFileVoyager": {
                 "type": "string",
                 "minLength": 1,
@@ -222,6 +227,8 @@
                 "files": {
                     "highPolyMeshFileMaster": "highPolyMeshFileMaster",
                     "highPolyMeshFileVoyager":"highPolyMeshFileVoyager",
+                    "inputMTLFile": "inputMTLFile",
+                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
                     "documentFile": "documentFile",
                     "diffuseMapFile": "diffuseMapFile",
                     "occlusionMapFile": "occlusionMapFile",
@@ -270,7 +277,6 @@
         "web-asset-glb-voyager": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset for 150k",
-            "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
                     "webAssetGlb": "baseName & '-150k-web.glb'"
@@ -300,7 +306,6 @@
         "web-asset-gltf-voyager": {
             "task": "WebAsset",
             "description": "Create glTF asset for 150k",
-            "skip": "$not(generateGltf)",
             "pre": {
                 "deliverables": {
                     "webAssetGltf": "baseName & '-150k-web.gltf'",
@@ -545,7 +550,6 @@
         "web-asset-glb-hd": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset for 1000k",
-            "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
                     "webAssetGlb": "baseName & '-1000k-web.glb'"
@@ -573,7 +577,6 @@
         "web-asset-gltf-hd": {
             "task": "WebAsset",
             "description": "Create glTF asset for 1000k",
-            "skip": "$not(generateGltf)",
             "pre": {
                 "deliverables": {
                     "webAssetGltf": "baseName & '-1000k-web.gltf'",
