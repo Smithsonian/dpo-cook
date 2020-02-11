@@ -676,7 +676,7 @@
                 "occlusionMapFile": "deliverables.occlusionMap",
                 "normalMapFile": "deliverables.normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": "useCompression1000",
+                "useCompression": "useCompression150",
                 "compressionLevel": 6,
                 "embedMaps": "packContainer",
                 "writeBinary": "packContainer"
