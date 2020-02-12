@@ -466,7 +466,7 @@
                 "embedMaps": false,
                 "writeBinary": false
             },
-            "success": "'inspect-mesh'",
+            "success": "'delivery'",
             "failure": "$failure"
         },
         "inspect-mesh": {
