@@ -581,7 +581,7 @@
             "task": "BakeMaps",
             "description": "Bake diffuse, normal and occlusion maps using xNormal for 1000k obj",
             "pre": {
-                "mapBaseName": "baseMeshMapName1000 & '-master-texture.png'"
+                "mapBaseName": "baseMeshMapName1000 & '.png'"
             },
             "parameters": {
                 "highPolyMeshFile": "highPolyMeshFile",
