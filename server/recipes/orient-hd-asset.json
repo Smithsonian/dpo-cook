@@ -600,9 +600,9 @@
             },
             "post": {
                 "deliverables": {
-                    "diffuseMapUncompressed": "bakeDiffuse ? (baseName & '-1000k-8192-master-texture-diffuse.png') : ''",
-                    "occlusionMapUncompressed": "bakeOcclusion ? (baseName & '-1000k-8192-master-texture-occlusion.png') : ''",
-                    "normalMapUncompressed": "bakeNormals ? (baseName & '-1000k-8192-master-texture-normals.png') : ''",
+                    "diffuseMapUncompressed": "bakeDiffuse ? (baseName & '-1000k-8192-diffuse.png') : ''",
+                    "occlusionMapUncompressed": "bakeOcclusion ? (baseName & '-1000k-8192-occlusion.png') : ''",
+                    "normalMapUncompressed": "bakeNormals ? (baseName & '-1000k-8192-normals.png') : ''",
                     "testMap": "bakeTest ? (baseMeshMapName1000 & '-test.png') : ''"
                 }
             },
@@ -615,7 +615,7 @@
             "skip": "$not(bakeDiffuse)",
             "pre": {
                 "deliverables": {
-                    "diffuseMap": "baseName & '-master-texture-diffuse.jpg'"
+                    "diffuseMap": "baseName & '-1000k-8192-diffuse.jpg'"
                 }
             },
             "parameters": {
@@ -632,7 +632,7 @@
             "skip": "$not(bakeOcclusion)",
             "pre": {
                 "deliverables": {
-                    "occlusionMap": "baseName & '-master-texture-occlusion.jpg'"
+                    "occlusionMap": "baseName & '-1000k-8192-occlusion.jpg'"
                 }
             },
             "parameters": {
@@ -649,7 +649,7 @@
             "skip": "$not(bakeNormals)",
             "pre": {
                 "deliverables": {
-                    "normalMap": "baseName & '-master-texture-normals.jpg'"
+                    "normalMap": "baseName & '-1000k-8192-normals.jpg'"
                 }
             },
             "parameters": {
