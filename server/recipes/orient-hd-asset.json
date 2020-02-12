@@ -426,7 +426,7 @@
             "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
-                    "scene_webAssetHighGlb": "baseName & '-150k-web.glb'"
+                    "scene_webAssetHighGlb": "baseMeshMapName150 & '.glb'"
                 }
             },
             "parameters": {
@@ -450,8 +450,8 @@
             "skip": "$not(generateGltf)",
             "pre": {
                 "deliverables": {
-                    "scene_webAssetHighGltf": "baseName & '-150k-web.gltf'",
-                    "scene_webAssetHighBin": "baseName & '-150k-web.bin'"
+                    "scene_webAssetHighGltf": "baseMeshMapName150 & '.gltf'",
+                    "scene_webAssetHighBin": "baseMeshMapName150 & '.bin'"
                 }
             },
             "parameters": {
@@ -665,8 +665,8 @@
             "description": "Create glTF asset for 1000k obj",
             "pre": {
                 "deliverables": {
-                    "webAsset": "baseName & (packContainer ? '-highest.glb' : '-1000k-web.gltf')",
-                    "webAssetBin": "packContainer ? '' : (baseName & '-1000k-web.bin')"
+                    "webAsset": "baseName & (packContainer ? '-highest.glb' : '-1000k-8192.gltf')",
+                    "webAssetBin": "packContainer ? '' : (baseName & '-1000k-8192.bin')"
                 }
             },
             "parameters": {
@@ -689,7 +689,7 @@
             "description": "Create binary, compressed, embedded glTF asset for 1000k",
             "pre": {
                 "deliverables": {
-                    "webAssetGlb": "baseName & '-1000k-web.glb'"
+                    "webAssetGlb": "baseName & '-1000k-8192.glb'"
                 }
             },
             "parameters": {
@@ -716,8 +716,8 @@
             "description": "Create glTF asset for 1000k",
             "pre": {
                 "deliverables": {
-                    "webAssetGltf": "baseName & '-1000k-web.gltf'",
-                    "webAssetBin": "baseName & '-1000k-web.bin'"
+                    "webAssetGltf": "baseName & '-1000k-8192.gltf'",
+                    "webAssetBin": "baseName & '-1000k-8192.bin'"
                 }
             },
             "parameters": {
