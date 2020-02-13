@@ -8,7 +8,7 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "highPolyMeshFileMaster": {
+            "highPolyMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -19,26 +19,6 @@
                 "format": "file"
             },
             "inputMTLFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "highPolyMeshFileVoyager": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-             "diffuseMapFileVoyager": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "occlusionMapFileVoyager": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "normalMapFileForVoyager": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -66,13 +46,25 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "numFaces": {
+            "numFaces150": {
+                "type": "integer",
+                "minimum": 10000,
+                "multipleOf": 1000,
+                "default": 150000
+            },
+            "numFaces1000": {
                 "type": "integer",
                 "minimum": 10000,
                 "multipleOf": 1000,
                 "default": 1000000
             },
-            "mapSize": {
+            "mapSize150": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 8192,
+                "default": 4096
+            },
+            "mapSize1000": {
                 "type": "integer",
                 "minimum": 128,
                 "maximum": 8192,
@@ -105,7 +97,13 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "RapidCompact"
             },
-            "segmentationStrength": {
+            "segmentationStrength150": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "segmentationStrength1000": {
                 "type": "number",
                 "minimum": 0,
                 "maximum": 1,
@@ -139,19 +137,37 @@
                 "maximum": 512,
                 "default": 128
             },
-            "diffuseMapQuality": {
+            "diffuseMapQuality150": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 79
+            },
+            "diffuseMapQuality1000": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100,
                 "default": 89
             },
-            "occlusionMapQuality": {
+            "occlusionMapQuality150": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 59
+            },
+            "occlusionMapQuality1000": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100,
                 "default": 69
             },
-            "normalMapQuality": {
+            "normalMapQuality150": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 89
+            },
+            "normalMapQuality1000": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100,
@@ -165,7 +181,11 @@
                 "type": "boolean",
                 "default": true
             },
-            "useCompression-hd": {
+            "useCompression150": {
+                "type": "boolean",
+                "default": false
+            },
+            "useCompression1000": {
                 "type": "boolean",
                 "default": true
             },
@@ -184,15 +204,10 @@
             "generateGltf": {
                 "type": "boolean",
                 "default": true
-            },
-            "useCompression-webasset": {
-                "type": "boolean",
-                "default": false
             }
         },
         "required": [
-            "highPolyMeshFileMaster",
-            "highPolyMeshFileVoyager",
+            "highPolyMeshFile",
             "documentFile"
         ],
         "additionalProperties": false
@@ -203,9 +218,10 @@
             "task": "Log",
             "description": "Enable logging services",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFileMaster))",
-                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFileMaster))",
-                "baseMeshMapName": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFileMaster), numFaces, mapSize)",
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile))",
+                "baseMeshMapName150": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFaces150, mapSize150)",
+                "baseMeshMapName1000": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFaces1000, mapSize1000)",
                 "bakeDiffuse": "$exists(highPolyDiffuseMapFile)"
             },
             "parameters": {
@@ -219,24 +235,16 @@
             "task": "Pickup",
             "description": "Fetch input files from client",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFileMaster))"
+                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))"
             },
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "highPolyMeshFileMaster": "highPolyMeshFileMaster",
-                    "highPolyMeshFileVoyager":"highPolyMeshFileVoyager",
+                    "highPolyMeshFile": "highPolyMeshFile",
                     "inputMTLFile": "inputMTLFile",
                     "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                    "documentFile": "documentFile",
-                    "diffuseMapFile": "diffuseMapFile",
-                    "occlusionMapFile": "occlusionMapFile",
-                    "emissiveMapFile": "emissiveMapFile",
-                    "metallicRoughnessMapFile": "metallicRoughnessMapFile",
-                    "normalMapFile": "normalMapFile",
-                    "zoneMapFile": "zoneMapFile",
-                    "metaDataFile": "metaDataFile"
+                    "documentFile": "documentFile"
                 }
             },
             "success": "'reorient-master'",
@@ -247,89 +255,218 @@
             "description": "Reorient Master mesh to match Voyager orientation",
             "pre": {
                 "deliverables": {
-                    "reorientedMeshFileMaster": "$firstTrue(highPolyMeshFileMaster, baseName & '-master-geometry.obj')"
+                    "reorientedMeshFileMaster": "$firstTrue(highPolyMeshFile, baseName & '-master-geometry.obj')"
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFileMaster",
+                "inputMeshFile": "highPolyMeshFile",
                 "inputVoyagerFile": "documentFile",
                 "outputMeshFile": "deliverables.reorientedMeshFileMaster"
             },
-            "success": "'reorient-voyager'",
+            "success": "'decimate-rapid-150'",
             "failure": "$failure"
         },
-        "reorient-voyager": {
-            "task": "ReorientMesh",
-            "description": "Reorient Voyager mesh to match Voyager orientation",
+        "decimate-rapid-150": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using RapidCompact",
             "pre": {
+                "decimatedMeshFile": "baseName & '-decimated-rapid.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFaces150",
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "tool": "'RapidCompact'"
+            },
+            "success": "'unwrap-rizom-150'",
+            "failure": "'decimate-meshlab-150'"
+        },
+        "decimate-meshlab-150": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using Meshlab",
+            "pre": {
+                "decimatedMeshFile": "baseName & '-decimated-meshlab-150.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFaces150",
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "preserveTexCoords": false,
+                "computeVertexNormals": "tangentSpaceNormals"
+            },
+            "success": "'unwrap-rizom-150'",
+            "failure": "$failure"
+        },
+        "unwrap-rizom-150": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using RizomUV",
+            "pre": {
+                "unwrappedMeshFbxFile": "baseName & '-150k.fbx'",
                 "deliverables": {
-                    "reorientedMeshFileVoyager": "$firstTrue(highPolyMeshFileVoyager, baseName & '-150k.obj')"
+                    "scene_unwrappedMesh": "baseName & '-150k.obj'"
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFileVoyager",
-                "inputVoyagerFile": "documentFile",
-                "outputMeshFile": "deliverables.reorientedMeshFileVoyager"
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "saveFbx": true,
+                "saveObj": true,
+                "mapSize": "mapSize150",
+                "segmentationStrength": "segmentationStrength150",
+                "packEffort": "packEffort"
             },
-            "success": "'web-asset-glb-voyager'",
+            "success": "'inspect-unwrapped-150'",
             "failure": "$failure"
         },
-        "web-asset-glb-voyager": {
+        "inspect-unwrapped-150": {
+            "task": "InspectMesh",
+            "description": "Calculate mesh size and max. ray distance for bake",
+            "parameters": {
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "tool": "'MeshSmith'"
+            },
+            "post": {
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
+            },
+            "success": "'bake-150'",
+            "failure": "$failure"
+        },
+        "bake-150": {
+            "task": "BakeMaps",
+            "description": "Bake diffuse, normal and occlusion maps using xNormal",
+            "pre": {
+                "mapBaseName": "baseMeshMapName150 & '.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "highPolyMeshFile",
+                "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSize150",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": "bakeDiffuse",
+                "bakeOcclusion": "bakeOcclusion",
+                "bakeNormals": "bakeNormals",
+                "bakeTest": "bakeTest",
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": "tangentSpaceNormals",
+                "timeout": 1200
+            },
+            "post": {
+                "deliverables": {
+                    "diffuseMapUncompressed150": "bakeDiffuse ? (baseMeshMapName150 & '-diffuse.png') : ''",
+                    "occlusionMapUncompressed150": "bakeOcclusion ? (baseMeshMapName150 & '-occlusion.png') : ''",
+                    "normalMapUncompressed150": "bakeNormals ? (baseMeshMapName150 & '-normals.png') : ''",
+                    "testMap150": "bakeTest ? (baseMeshMapName150 & '-test.png') : ''"
+                }
+            },
+            "success": "'convert-diffuse-map-high'",
+            "failure": "$failure"
+        },
+        "convert-diffuse-map-high": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map",
+            "skip": "$not(bakeDiffuse)",
+            "pre": {
+                "deliverables": {
+                    "scene_diffuseMapHigh": "baseMeshMapName150 & '-diffuse.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.diffuseMapUncompressed150",
+                "outputImageFile": "deliverables.scene_diffuseMapHigh",
+                "quality": "diffuseMapQuality150"
+            },
+            "success": "'convert-occlusion-map-high'",
+            "failure": "$failure"
+        },
+        "convert-occlusion-map-high": {
+            "task": "ConvertImage",
+            "description": "Convert Occlusion Map High",
+            "skip": "$not(bakeOcclusion)",
+            "pre": {
+                "deliverables": {
+                    "scene_occlusionMapHigh": "baseMeshMapName150 & '-occlusion.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.occlusionMapUncompressed150",
+                "outputImageFile": "deliverables.scene_occlusionMapHigh",
+                "quality": "occlusionMapQuality150"
+            },
+            "success": "'convert-normal-map-high'",
+            "failure": "$failure"
+        },
+        "convert-normal-map-high": {
+            "task": "ConvertImage",
+            "description": "Convert Normal Map High",
+            "skip": "$not(bakeNormals)",
+            "pre": {
+                "deliverables": {
+                    "scene_normalMapHigh": "baseMeshMapName150 & '-normals.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.normalMapUncompressed150",
+                "outputImageFile": "deliverables.scene_normalMapHigh",
+                "quality": "normalMapQuality150"
+            },
+            "success": "'web-asset-glb-high'",
+            "failure": "$failure"
+        },
+        "web-asset-glb-high": {
             "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset for 150k",
+            "description": "Create binary, compressed, embedded glTF asset (high)",
+            "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
-                    "webAssetGlb": "baseName & '-150k-web.glb'"
+                    "scene_webAssetHighGlb": "baseMeshMapName150 & '.glb'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetGlb",
-                "meshFile": "highPolyMeshFileVoyager",
-                "diffuseMapFile": "diffuseMapFileVoyager",
-                "occlusionMapFile": "occlusionMapFileVoyager",
-                "emissiveMapFile": "emissiveMapFile",
-                "metallicRoughnessMapFile": "metallicRoughnessMapFile",
-                "normalMapFile": "normalMapFileForVoyager",
-                "zoneMapFile": "zoneMapFile",
-                "alignCenter": "alignCenter",
-                "alignFloor": "alignFloor",
+                "outputFile": "deliverables.scene_webAssetHighGlb",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
+                "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": "useCompression-webasset",
+                "useCompression": "useCompression150",
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'web-asset-gltf-voyager'",
+            "success": "'web-asset-gltf-high'",
             "failure": "$failure"
-
         },
-        "web-asset-gltf-voyager": {
+        "web-asset-gltf-high": {
             "task": "WebAsset",
-            "description": "Create glTF asset for 150k",
+            "description": "Create glTF asset (high)",
+            "skip": "$not(generateGltf)",
             "pre": {
                 "deliverables": {
-                    "webAssetGltf": "baseName & '-150k-web.gltf'",
-                    "webAssetBin": "baseName & '-150k-web.bin'"
+                    "scene_webAssetHighGltf": "baseMeshMapName150 & '.gltf'",
+                    "scene_webAssetHighBin": "baseMeshMapName150 & '.bin'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetGltf",
-                "meshFile": "highPolyMeshFileVoyager",
-                "diffuseMapFile": "diffuseMapFileVoyager",
-                "occlusionMapFile": "occlusionMapFileVoyager",
-                "emissiveMapFile": "emissiveMapFile",
-                "metallicRoughnessMapFile": "metallicRoughnessMapFile",
-                "normalMapFile": "normalMapFileForVoyager",
-                "zoneMapFile": "zoneMapFile",
-                "alignCenter": "alignCenter",
-                "alignFloor": "alignFloor",
+                "outputFile": "deliverables.scene_webAssetHighGltf",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
+                "normalMapFile": "bakeNormals150 ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": "useCompression-webasset",
+                "useCompression": "useCompression150",
                 "compressionLevel": 10,
                 "embedMaps": false,
                 "writeBinary": false
             },
-            "success": "'inspect-mesh'",
+            "success": "'delivery'",
             "failure": "$failure"
         },
         "inspect-mesh": {
@@ -342,7 +479,7 @@
                 }
             },
             "parameters": {
-                "meshFile": "highPolyMeshFileMaster",
+                "meshFile": "highPolyMeshFile",
                 "reportFile": "deliverables.inspectionReport"
             },
             "success": "'remesh-hd'",
@@ -358,9 +495,9 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFileMaster)",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "deliverables.remeshedMeshFile",
-                "numFaces": "remeshFaces"
+                "numFaces": "numFaces1000"
             },
             "post": {
                 "processedMeshFile": "deliverables.remeshedMeshFile"
@@ -375,9 +512,9 @@
                 "decimatedMeshFile": "baseName & '-1000k-decimated-rapid.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFileMaster)",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFaces",
+                "numFaces": "numFaces1000",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
@@ -393,9 +530,9 @@
                 "decimatedMeshFile": "baseName & '-1000k-decimated-meshlab.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFileMaster)",
+                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFaces",
+                "numFaces": "numFaces1000",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
@@ -419,8 +556,8 @@
                 "outputMeshFile": "deliverables.unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
-                "mapSize": "mapSize",
-                "segmentationStrength": "segmentationStrength",
+                "mapSize": "mapSize1000",
+                "segmentationStrength": "segmentationStrength1000",
                 "packEffort": "packEffort",
                 "timeout": 1800
             },
@@ -444,14 +581,14 @@
             "task": "BakeMaps",
             "description": "Bake diffuse, normal and occlusion maps using xNormal for 1000k obj",
             "pre": {
-                "mapBaseName": "baseMeshMapName & '-master-texture.png'"
+                "mapBaseName": "baseMeshMapName1000 & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "highPolyMeshFileMaster",
+                "highPolyMeshFile": "highPolyMeshFile",
                 "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
-                "mapSize": "mapSize",
+                "mapSize": "mapSize1000",
                 "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
                 "bakeDiffuse": "bakeDiffuse",
                 "bakeOcclusion": "bakeOcclusion",
@@ -463,10 +600,10 @@
             },
             "post": {
                 "deliverables": {
-                    "diffuseMapUncompressed": "bakeDiffuse ? (baseName & '-1000k-8192-master-texture-diffuse.png') : ''",
-                    "occlusionMapUncompressed": "bakeOcclusion ? (baseName & '-1000k-8192-master-texture-occlusion.png') : ''",
-                    "normalMapUncompressed": "bakeNormals ? (baseName & '-1000k-8192-master-texture-normals.png') : ''",
-                    "testMap": "bakeTest ? (baseMeshMapName & '-test.png') : ''"
+                    "diffuseMapUncompressed": "bakeDiffuse ? (baseName & '-1000k-8192-diffuse.png') : ''",
+                    "occlusionMapUncompressed": "bakeOcclusion ? (baseName & '-1000k-8192-occlusion.png') : ''",
+                    "normalMapUncompressed": "bakeNormals ? (baseName & '-1000k-8192-normals.png') : ''",
+                    "testMap": "bakeTest ? (baseMeshMapName1000 & '-test.png') : ''"
                 }
             },
             "success": "'convert-diffuse-map-hd'",
@@ -478,13 +615,13 @@
             "skip": "$not(bakeDiffuse)",
             "pre": {
                 "deliverables": {
-                    "diffuseMap": "baseMeshMapName & '-master-texture-diffuse.jpg'"
+                    "diffuseMap": "baseName & '-1000k-8192-diffuse.jpg'"
                 }
             },
             "parameters": {
                 "inputImageFile": "deliverables.diffuseMapUncompressed",
                 "outputImageFile": "deliverables.diffuseMap",
-                "quality": "diffuseMapQuality"
+                "quality": "diffuseMapQuality1000"
             },
             "success": "'convert-occlusion-map-hd'",
             "failure": "$failure"
@@ -495,13 +632,13 @@
             "skip": "$not(bakeOcclusion)",
             "pre": {
                 "deliverables": {
-                    "occlusionMap": "baseMeshMapName & '-master-texture-occlusion.jpg'"
+                    "occlusionMap": "baseName & '-1000k-8192-occlusion.jpg'"
                 }
             },
             "parameters": {
                 "inputImageFile": "deliverables.occlusionMapUncompressed",
                 "outputImageFile": "deliverables.occlusionMap",
-                "quality": "occlusionMapQuality"
+                "quality": "occlusionMapQuality1000"
             },
             "success": "'convert-normal-map-hd'",
             "failure": "$failure"
@@ -512,13 +649,13 @@
             "skip": "$not(bakeNormals)",
             "pre": {
                 "deliverables": {
-                    "normalMap": "baseMeshMapName & '-master-texture-normals.jpg'"
+                    "normalMap": "baseName & '-1000k-8192-normals.jpg'"
                 }
             },
             "parameters": {
                 "inputImageFile": "deliverables.normalMapUncompressed",
                 "outputImageFile": "deliverables.normalMap",
-                "quality": "normalMapQuality"
+                "quality": "normalMapQuality1000"
             },
             "success": "'web-asset-hd'",
             "failure": "$failure"
@@ -528,8 +665,8 @@
             "description": "Create glTF asset for 1000k obj",
             "pre": {
                 "deliverables": {
-                    "webAsset": "baseName & (packContainer ? '-highest.glb' : '-1000k-web.gltf')",
-                    "webAssetBin": "packContainer ? '' : (baseName & '-1000k-web.bin')"
+                    "webAsset": "baseName & (packContainer ? '-highest.glb' : '-1000k-8192.gltf')",
+                    "webAssetBin": "packContainer ? '' : (baseName & '-1000k-8192.bin')"
                 }
             },
             "parameters": {
@@ -539,7 +676,7 @@
                 "occlusionMapFile": "deliverables.occlusionMap",
                 "normalMapFile": "deliverables.normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": "useCompression-hd",
+                "useCompression": "useCompression150",
                 "compressionLevel": 6,
                 "embedMaps": "packContainer",
                 "writeBinary": "packContainer"
@@ -552,7 +689,7 @@
             "description": "Create binary, compressed, embedded glTF asset for 1000k",
             "pre": {
                 "deliverables": {
-                    "webAssetGlb": "baseName & '-1000k-web.glb'"
+                    "webAssetGlb": "baseName & '-1000k-8192.glb'"
                 }
             },
             "parameters": {
@@ -565,7 +702,7 @@
                 "zoneMapFile": "zoneMapFile",
                 "alignCenter": "alignCenter",
                 "alignFloor": "alignFloor",
-                "useCompression": "useCompression-webasset",
+                "useCompression": "useCompression150",
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
@@ -579,8 +716,8 @@
             "description": "Create glTF asset for 1000k",
             "pre": {
                 "deliverables": {
-                    "webAssetGltf": "baseName & '-1000k-web.gltf'",
-                    "webAssetBin": "baseName & '-1000k-web.bin'"
+                    "webAssetGltf": "baseName & '-1000k-8192.gltf'",
+                    "webAssetBin": "baseName & '-1000k-8192.bin'"
                 }
             },
             "parameters": {
@@ -593,7 +730,7 @@
                 "zoneMapFile": "zoneMapFile",
                 "alignCenter": "alignCenter",
                 "alignFloor": "alignFloor",
-                "useCompression": "useCompression-webasset",
+                "useCompression": "useCompression150",
                 "compressionLevel": 10,
                 "embedMaps": false,
                 "writeBinary": false
