@@ -366,57 +366,6 @@
                     "testMap150": "bakeTest ? (baseMeshMapName150 & '-test.png') : ''"
                 }
             },
-            "success": "'convert-diffuse-map-high'",
-            "failure": "$failure"
-        },
-        "convert-diffuse-map-high": {
-            "task": "ConvertImage",
-            "description": "Convert Diffuse Map",
-            "skip": "$not(bakeDiffuse)",
-            "pre": {
-                "deliverables": {
-                    "scene_diffuseMapHigh": "baseMeshMapName150 & '-diffuse.jpg'"
-                }
-            },
-            "parameters": {
-                "inputImageFile": "deliverables.diffuseMapUncompressed150",
-                "outputImageFile": "deliverables.scene_diffuseMapHigh",
-                "quality": "diffuseMapQuality150"
-            },
-            "success": "'convert-occlusion-map-high'",
-            "failure": "$failure"
-        },
-        "convert-occlusion-map-high": {
-            "task": "ConvertImage",
-            "description": "Convert Occlusion Map High",
-            "skip": "$not(bakeOcclusion)",
-            "pre": {
-                "deliverables": {
-                    "scene_occlusionMapHigh": "baseMeshMapName150 & '-occlusion.jpg'"
-                }
-            },
-            "parameters": {
-                "inputImageFile": "deliverables.occlusionMapUncompressed150",
-                "outputImageFile": "deliverables.scene_occlusionMapHigh",
-                "quality": "occlusionMapQuality150"
-            },
-            "success": "'convert-normal-map-high'",
-            "failure": "$failure"
-        },
-        "convert-normal-map-high": {
-            "task": "ConvertImage",
-            "description": "Convert Normal Map High",
-            "skip": "$not(bakeNormals)",
-            "pre": {
-                "deliverables": {
-                    "scene_normalMapHigh": "baseMeshMapName150 & '-normals.jpg'"
-                }
-            },
-            "parameters": {
-                "inputImageFile": "deliverables.normalMapUncompressed150",
-                "outputImageFile": "deliverables.scene_normalMapHigh",
-                "quality": "normalMapQuality150"
-            },
             "success": "'web-asset-glb-high'",
             "failure": "$failure"
         },
@@ -432,9 +381,9 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetHighGlb",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
-                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
-                "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.diffuseMapUncompressed150 : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.occlusionMapUncompressed150 : ''",
+                "normalMapFile": "bakeNormals ? deliverables.normalMapUncompressed150 : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": "useCompression150",
                 "compressionLevel": 10,
@@ -457,9 +406,9 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetHighGltf",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
-                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
-                "normalMapFile": "bakeNormals150 ? deliverables.scene_normalMapHigh : ''",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.diffuseMapUncompressed150 : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.occlusionMapUncompressed150 : ''",
+                "normalMapFile": "bakeNormals ? deliverables.normalMapUncompressed150 : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": "useCompression150",
                 "compressionLevel": 10,
