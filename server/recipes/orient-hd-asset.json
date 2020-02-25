@@ -263,7 +263,7 @@
                 "inputVoyagerFile": "documentFile",
                 "outputMeshFile": "deliverables.reorientedMeshFileMaster"
             },
-            "success": "'decimate-rapid-150'",
+            "success": "'inspect-mesh'",
             "failure": "$failure"
         },
         "decimate-rapid-150": {
@@ -459,7 +459,7 @@
                 "meshFile": "deliverables.scene_unwrappedMesh",
                 "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
-                "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
+                "normalMapFile": "bakeNormals150 ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": "useCompression150",
                 "compressionLevel": 10,
