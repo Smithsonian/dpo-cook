@@ -263,7 +263,7 @@
                 "inputVoyagerFile": "documentFile",
                 "outputMeshFile": "deliverables.reorientedMeshFileMaster"
             },
-            "success": "'decimate-rapid-150'",
+            "success": "'inspect-mesh'",
             "failure": "$failure"
         },
         "decimate-rapid-150": {

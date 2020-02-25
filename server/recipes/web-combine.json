@@ -2,7 +2,7 @@
     "id": "512211e5-f2e8-4723-93e9-e30116c88ab0",
     "name": "web-combine",
     "description": "Combines web-thumb and web-multi into one",
-    "version": "2",
+    "version": "3",
     "start": "log",
 
     "parameterSchema": {
@@ -194,9 +194,8 @@
             "description": "Enable logging services",
             "pre": {
                 "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
-                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFacesWebThumb)",
-                "baseMeshMapNameWebThumb": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFacesWebThumb, mapSizeWebThumb)",
-                "baseMeshMapNameWebMulti": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFacesWebMulti, mapSizeWebMulti)",
+                "baseMeshNameWebThumb": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFacesWebThumb)",
+                "baseMeshNameWebMulti": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFacesWebMulti)",
                 "baseMeshMapNameHigh": "$baseMeshMapName(baseName, numFacesWebMulti, mapSizeWebMulti)",
                 "baseMeshMapNameMedium": "$baseMeshMapName(baseName, numFacesWebMulti, mapSizeWebMulti * 0.5)",
                 "baseMeshMapNameLow": "$baseMeshMapName(baseName, numFacesWebMulti, mapSizeWebMulti * 0.25)",
@@ -207,20 +206,7 @@
             },
             "parameters": {
                 "logToConsole": true,
-                "reportFile": "baseMeshMapNameWebThumb & '-remesh-thumb-multi-report.json'"
-            },
-            "success": "'inspect-mesh'",
-            "failure": "$failure"
-        },
-        "inspect-mesh": {
-            "task": "InspectMesh",
-            "description": "Inspect mesh health and statistics",
-            "parameters": {
-                "meshFile": "highPolyMeshFile",
-                "tool": "'MeshSmith'"
-            },
-            "post": {
-                "startingNumFaces": "$result.inspection.scene.statistics.numFaces"
+                "reportFile": "baseName & '-webcombine-report.json'"
             },
             "success": "'remesh'",
             "failure": "$failure"
@@ -231,7 +217,7 @@
             "skip": "remeshFaces < 1",
             "pre": {
                 "deliverables": {
-                    "remeshedMeshFile": "$firstTrue(processedMeshFile, baseMeshName & '-remeshed.obj')"
+                    "remeshedMeshFile": "$firstTrue(processedMeshFile, baseName & '-remeshed.obj')"
                 }
             },
             "parameters": {
@@ -250,7 +236,7 @@
             "task": "DecimateMesh",
             "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-rapid-webthumb.obj'"
+                "decimatedMeshFile": "baseName & '-decimated-rapid-webthumb.obj'"
             },
             "parameters": {
                 "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, highPolyMeshFile)",
@@ -268,7 +254,7 @@
             "task": "DecimateMesh",
             "description": "Decimate mesh using Meshlab",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-meshlab-webthumb.obj'"
+                "decimatedMeshFile": "baseName & '-decimated-meshlab-webthumb.obj'"
             },
             "parameters": {
                 "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, highPolyMeshFile)",
@@ -287,9 +273,9 @@
             "task": "UnwrapMesh",
             "description": "Unwrap mesh using RizomUV",
             "pre": {
-                "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped-webthumb.fbx'",
+                "unwrappedMeshFbxFile": "baseName & '-unwrapped-webthumb.fbx'",
                 "deliverables": {
-                    "scene_unwrappedMesh": "baseMeshName & '-unwrapped-webthumb.obj'"
+                    "scene_unwrappedMesh": "baseName & '-unwrapped-webthumb.obj'"
                 }
             },
             "parameters": {
@@ -322,7 +308,7 @@
             "task": "BakeMaps",
             "description": "Bake diffuse, normal and occlusion maps using xNormal",
             "pre": {
-                "mapBaseName": "baseMeshMapNameWebThumb & '.png'"
+                "mapBaseName": "baseMeshNameWebThumb & '.png'"
             },
             "parameters": {
                 "highPolyMeshFile": "highPolyMeshFile",
@@ -341,10 +327,10 @@
             },
             "post": {
                 "deliverables": {
-                    "diffuseMapUncompressedwebthumb": "bakeDiffuse ? (baseMeshMapNameWebThumb & '-diffuse.png') : ''",
-                    "occlusionMapUncompressedwebthumb": "bakeOcclusion ? (baseMeshMapNameWebThumb & '-occlusion.png') : ''",
-                    "normalMapUncompressedwebthumb": "bakeNormalsWebThumb ? (baseMeshMapNameWebThumb & '-normals.png') : ''",
-                    "testMapwebthumb": "bakeTest ? (baseMeshMapNameWebThumb & '-test.png') : ''"
+                    "diffuseMapUncompressedwebthumb": "bakeDiffuse ? (baseMeshNameWebThumb & '-diffuse.png') : ''",
+                    "occlusionMapUncompressedwebthumb": "bakeOcclusion ? (baseMeshNameWebThumb & '-occlusion.png') : ''",
+                    "normalMapUncompressedwebthumb": "bakeNormalsWebThumb ? (baseMeshNameWebThumb & '-normals.png') : ''",
+                    "testMapwebthumb": "bakeTest ? (baseMeshNameWebThumb & '-test.png') : ''"
                 }
             },
             "success": "'convert-diffuse-map-webthumb'",
@@ -356,7 +342,7 @@
             "skip": "$not(bakeDiffuse)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMap": "baseMeshMapNameWebThumb & '-diffuse-webthumb.jpg'"
+                    "scene_diffuseMap": "baseMeshNameWebThumb & '-diffuse-webthumb.jpg'"
                 }
             },
             "parameters": {
@@ -373,7 +359,7 @@
             "skip": "$not(bakeOcclusion)",
             "pre": {
                 "deliverables": {
-                    "scene_occlusionMap": "baseMeshMapNameWebThumb & '-occlusion-webthumb.jpg'"
+                    "scene_occlusionMap": "baseMeshNameWebThumb & '-occlusion-webthumb.jpg'"
                 }
             },
             "parameters": {
@@ -390,7 +376,7 @@
             "skip": "$not(bakeNormalsWebThumb)",
             "pre": {
                 "deliverables": {
-                    "scene_normalMap": "baseMeshMapNameWebThumb & '-normals-webthumb.jpg'"
+                    "scene_normalMap": "baseMeshNameWebThumb & '-normals-webthumb.jpg'"
                 }
             },
             "parameters": {
@@ -407,7 +393,7 @@
             "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
-                    "webAssetGlb": "baseMeshMapNameWebThumb & '-thumb.glb'"
+                    "webAssetGlb": "baseMeshNameWebThumb & '-thumb.glb'"
                 }
             },
             "parameters": {
@@ -432,7 +418,7 @@
             "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
-                    "webAssetGlbNonDraco": "baseMeshMapNameWebThumb & '-thumb-nondraco.glb'"
+                    "webAssetGlbNonDraco": "baseMeshNameWebThumb & '-thumb-nondraco.glb'"
                 }
             },
             "parameters": {
@@ -457,8 +443,8 @@
             "skip": "$not(generateGltf)",
             "pre": {
                 "deliverables": {
-                    "webAssetGltf": "baseMeshMapNameWebThumb & '-thumb.gltf'",
-                    "webAssetBin": "baseMeshMapNameWebThumb & '-thumb.bin'"
+                    "webAssetGltf": "baseMeshNameWebThumb & '-thumb.gltf'",
+                    "webAssetBin": "baseMeshNameWebThumb & '-thumb.bin'"
                 }
             },
             "parameters": {
@@ -502,7 +488,7 @@
             "task": "DecimateMesh",
             "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
+                "decimatedMeshFile": "baseName & '-decimated-rapid.obj'"
             },
             "parameters": {
                 "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
@@ -520,7 +506,7 @@
             "task": "DecimateMesh",
             "description": "Decimate mesh using Meshlab",
             "pre": {
-                "decimatedMeshFile": "baseMeshName & '-decimated-meshlab-webmulti.obj'"
+                "decimatedMeshFile": "baseName & '-decimated-meshlab-webmulti.obj'"
             },
             "parameters": {
                 "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
@@ -539,9 +525,9 @@
             "task": "UnwrapMesh",
             "description": "Unwrap mesh using RizomUV",
             "pre": {
-                "unwrappedMeshFbxFile": "baseMeshName & '-unwrapped-webmulti.fbx'",
+                "unwrappedMeshFbxFile": "baseName & '-unwrapped-webmulti.fbx'",
                 "deliverables": {
-                    "scene_unwrappedMesh": "baseMeshName & '-unwrapped-webmulti.obj'"
+                    "scene_unwrappedMesh": "baseName & '-unwrapped-webmulti.obj'"
                 }
             },
             "parameters": {
@@ -573,7 +559,7 @@
             "task": "BakeMaps",
             "description": "Bake diffuse, normal and occlusion maps using xNormal",
             "pre": {
-                "mapBaseName": "baseMeshMapNameWebMulti & '.png'"
+                "mapBaseName": "baseMeshNameWebMulti & '.png'"
             },
             "parameters": {
                 "highPolyMeshFile": "highPolyMeshFile",
@@ -592,10 +578,10 @@
             },
             "post": {
                 "deliverables": {
-                    "diffuseMapUncompressedwebmulti": "bakeDiffuse ? (baseMeshMapNameWebMulti & '-diffuse.png') : ''",
-                    "occlusionMapUncompressedwebmulti": "bakeOcclusion ? (baseMeshMapNameWebMulti & '-occlusion.png') : ''",
-                    "normalMapUncompressedwebmulti": "bakeNormalsWebMulti ? (baseMeshMapNameWebMulti & '-normals.png') : ''",
-                    "testMapwebmulti": "bakeTest ? (baseMeshMapNameWebMulti & '-test.png') : ''"
+                    "diffuseMapUncompressedwebmulti": "bakeDiffuse ? (baseMeshNameWebMulti & '-diffuse.png') : ''",
+                    "occlusionMapUncompressedwebmulti": "bakeOcclusion ? (baseMeshNameWebMulti & '-occlusion.png') : ''",
+                    "normalMapUncompressedwebmulti": "bakeNormalsWebMulti ? (baseMeshNameWebMulti & '-normals.png') : ''",
+                    "testMapwebmulti": "bakeTest ? (baseMeshNameWebMulti & '-test.png') : ''"
                 }
             },
             "success": "'convert-diffuse-map-high'",
