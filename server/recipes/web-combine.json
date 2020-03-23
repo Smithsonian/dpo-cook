@@ -237,13 +237,13 @@
             "parameters": {
                 "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
                 "outputMeshFile": "deliverables.remeshedMeshFile",
-                "numFaces": "numFacesWebMulti",
+                "numFaces": "remeshFaces",
                 "quadsOnly": "quadsOnly"
             },
             "post": {
                 "remeshedFile": "deliverables.remeshedMeshFile"
             },
-            "success": "'decimate-meshlab-webmulti'",
+            "success": "'decimate-meshlab-webthumb'",
             "failure": "$failure"
         },
         "decimate-rapid-webthumb": {
