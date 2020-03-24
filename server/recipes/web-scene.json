@@ -1,7 +1,7 @@
 {
     "id": "512211e5-f2e8-4723-93e9-e30116c88ab0",
-    "name": "web-combine",
-    "description": "Combines web-thumb and web-multi into one",
+    "name": "web-scene",
+    "description": "Generates web-thumb and web-multi assets for full Voyager package.",
     "version": "3",
     "start": "log",
 
@@ -175,11 +175,7 @@
             },
             "generateGltf": {
                 "type": "boolean",
-                "default": true
-            },
-            "packContainer": {
-                "type": "boolean",
-                "default": true
+                "default": false
             }
         },
         "required": [
@@ -404,31 +400,6 @@
                 "normalMapFile": "deliverables.scene_normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": true,
-                "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
-            },
-            "success": "'web-asset-glb-nondraco'",
-            "failure": "$failure"
-
-        },
-        "web-asset-glb-nondraco": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset (thumb non-draco)",
-            "skip": "$not(generateBinary)",
-            "pre": {
-                "deliverables": {
-                    "webAssetGlbNonDraco": "baseMeshNameWebThumb & '-thumb-nondraco.glb'"
-                }
-            },
-            "parameters": {
-                "outputFile": "deliverables.webAssetGlbNonDraco",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "deliverables.scene_diffuseMap",
-                "occlusionMapFile": "deliverables.scene_occlusionMap",
-                "normalMapFile": "deliverables.scene_normalMap",
-                "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
@@ -659,30 +630,6 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'web-asset-glb-high-nondraco'",
-            "failure": "$failure"
-        },
-        "web-asset-glb-high-nondraco": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset (high nondraco)",
-            "skip": "$not(generateBinary)",
-            "pre": {
-                "deliverables": {
-                    "scene_webAssetHighGlbNondraco": "baseMeshMapNameHigh & '-high-nondraco.glb'"
-                }
-            },
-            "parameters": {
-                "outputFile": "deliverables.scene_webAssetHighGlbNondraco",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
-                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
-                "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapHigh : ''",
-                "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": false,
-                "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
-            },
             "success": "'web-asset-gltf-high'",
             "failure": "$failure"
         },
@@ -806,30 +753,6 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
-            "success": "'web-asset-glb-medium-nondraco'",
-            "failure": "$failure"
-        },
-        "web-asset-glb-medium-nondraco": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset (medium nondraco)",
-            "skip": "$not(generateBinary)",
-            "pre": {
-                "deliverables": {
-                    "scene_webAssetMediumGlbNondraco": "baseMeshMapNameMedium & '-medium-nondraco.glb'"
-                }
-            },
-            "parameters": {
-                "outputFile": "deliverables.scene_webAssetMediumGlbNondraco",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapMedium : ''",
-                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapMedium : ''",
-                "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapMedium : ''",
-                "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": true,
-                "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
-            },
             "success": "'web-asset-gltf-medium'",
             "failure": "$failure"
         },
@@ -937,30 +860,6 @@
             },
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetLowGlb",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapLow : ''",
-                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapLow : ''",
-                "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapLow : ''",
-                "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": true,
-                "compressionLevel": 10,
-                "embedMaps": true,
-                "writeBinary": true
-            },
-            "success": "'web-asset-glb-low-nondraco'",
-            "failure": "$failure"
-        },
-        "web-asset-glb-low-nondraco": {
-            "task": "WebAsset",
-            "description": "Create binary, compressed, embedded glTF asset (low nondraco)",
-            "skip": "$not(generateBinary)",
-            "pre": {
-                "deliverables": {
-                    "scene_webAssetLowGlbNondraco": "baseMeshMapNameLow & '-low-nondraco.glb'"
-                }
-            },
-            "parameters": {
-                "outputFile": "deliverables.scene_webAssetLowGlbNondraco",
                 "meshFile": "deliverables.scene_unwrappedMesh",
                 "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapLow : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapLow : ''",
