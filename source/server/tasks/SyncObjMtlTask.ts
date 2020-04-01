@@ -105,7 +105,9 @@ export default class SyncObjMtlTask extends ToolTask
             let script = "";
             const objBuffer = fs.readFileSync(objFilePath);
             if(generatedMtl || !objBuffer.includes("mtllib") || !objBuffer.includes("usemtl")) {
-                script = `"./server/scripts/InjectMTL2.vbs" "${objFilePath}" "${params.mtlFile}"`;             
+                const scriptPath = path.resolve(this.context.jobDir, "../../scripts/InjectMTL2.vbs");
+
+                script = `"${scriptPath}" "${objFilePath}" "${params.mtlFile}"`;             
             }
 
             const settings: ICscriptToolSettings = {
