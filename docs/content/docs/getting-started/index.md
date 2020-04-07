@@ -66,7 +66,7 @@ Support for the following tools is planned, but hasn't been completed yet.
 
 ### Configuration
 
-In the `server` subfolder, you find templates for the 3 required configuration files. Copy and rename the template, then
+In the `server` subfolder, you find templates for the 3 required server configuration files. Copy and rename the template, then
 edit it to your needs. For example:
 
 ```bash
@@ -90,6 +90,23 @@ Please have a look at the tool documentation pages to see a configuration exampl
 ##### clients.json
 
 IDs and names for the clients you want to grant access to the server.
+
+---
+
+In the `client` subfolder, you find templates for the 1 required clientr configuration files. Copy and rename the template, then
+edit it to your needs. For example:
+
+```bash
+copy .env.template .env
+notepad.exe .env
+```
+
+You should end up with 1 environment file,
+`.env`
+
+##### .env
+
+Environment configuration. 'production' or 'development'
 
 ## Running Cook Server
 
