@@ -46,6 +46,8 @@ export interface IBakeMapsTaskParameters extends ITaskParameters
     bakeOcclusion?: boolean;
     /** Bakes a normal map if true (default: true). */
     bakeNormals?: boolean;
+    /** Bakes vertex color to diffuse map if true (default: false). */
+    bakeVertexColor?: boolean;
     /** Bakes a test map for checking the projection quality if true (default: false). */
     bakeTest?: boolean;
     /** Number of sample rays for ambient occlusion (default: 128). */
@@ -92,6 +94,7 @@ export default class BakeMapsTask extends ToolTask
             bakeDiffuse: { type: "boolean", default: true },
             bakeOcclusion: { type: "boolean", default: true },
             bakeNormals: { type: "boolean", default: true },
+            bakeVertexColor: { type: "boolean", default: false },
             bakeTest: { type: "boolean", default: false },
             occlusionRays: { type: "integer", minimum: 1, maximum: 512, default: 128 },
             occlusionConeAngle: { type: "integer", minimum: 1, maximum: 180, default: 165 },
@@ -137,6 +140,7 @@ export default class BakeMapsTask extends ToolTask
             bakeDiffuse: !!parameters.highPolyDiffuseMapFile && parameters.bakeDiffuse,
             bakeOcclusion: parameters.bakeOcclusion,
             bakeNormals: parameters.bakeNormals,
+            bakeVertexColor: parameters.bakeVertexColor,
             bakeTest: parameters.bakeTest,
             occlusionRays: parameters.occlusionRays,
             occlusionConeAngle: parameters.occlusionConeAngle,
