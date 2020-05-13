@@ -414,6 +414,19 @@ notepad.exe tools.json</code></pre></div>
 <h5 id="clients-json">clients.json</h5>
 
 <p>IDs and names for the clients you want to grant access to the server.</p>
+  
+<hr></hr>
+
+<p>In the <code>client</code> subfolder, you find templates for the 1 required client configuration file. Copy and rename the template, then
+edit it to your needs. For example:</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">copy .env.template .env
+notepad.exe .env</code></pre></div>
+<p>You should end up with 1 environment file,
+<code>.env</code></p>
+  
+<h5 id="clients-env">.env</h5>
+  
+<p>Environment configuration. 'production' or 'development'.</p>
 
 <h2 id="running-cook-server">Running Cook Server</h2>
 
