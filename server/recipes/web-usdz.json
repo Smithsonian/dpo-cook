@@ -1,0 +1,96 @@
+{
+    "id": "a12161bb-265f-4979-80db-65f739dcc156",
+    "name": "web-usdz",
+    "description": "Create usdz web asset",
+    "version": "1",
+    "start": "pickup",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "meshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "diffuseMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "mtlFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "baseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "Unity",
+                    "RapidCompact"
+                ],
+                "default": "Unity"
+            }
+        },
+        "required": [
+            "meshFile"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "pre": {
+                "baseName": "$baseName($firstTrue(baseName, meshFile))"
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "meshFile": "meshFile",
+                    "diffuseMapFile": "diffuseMapFile",
+                    "occlusionMapFile": "occlusionMapFile"
+                }
+            },
+            "success": "'web-asset-usdz'",
+            "failure": "$failure"
+        },
+        "web-asset-usdz": {
+            "task": "GenerateUsdz",
+            "description": "Create usdz asset",
+            "skip": "$not(generateBinary)",
+            "pre": {
+                "deliverables": {
+                    "webAssetUsdz": "baseName & '.usdz'"
+                }
+            },
+            "parameters": {
+                "outputFile": "deliverables.webAssetUsdz",
+                "objFile": "meshFile",
+                "textureFile": "diffuseMapFile",
+                "mtlFile": "mtlFile",
+                "tool": "tool"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

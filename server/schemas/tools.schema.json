@@ -15,6 +15,11 @@
                 "type": "string",
                 "minLength": 1
             },
+            "projectPath": {
+                "description": "path to preconfigured tool project",
+                "type": "string",
+                "minLength": 1
+            },
             "version": {
                 "description": "tool version, will be recorded in reports, logs, etc.",
                 "type": "string",

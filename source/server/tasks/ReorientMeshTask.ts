@@ -35,6 +35,8 @@ export interface IReorientMeshTaskParameters extends ITaskParameters
     inputVoyagerFile: string;
     /** Converted (output) mesh file name. */
     outputMeshFile: string;
+    /** Flag that indicates if we should scale the model to meters. */
+    scaleToMeters: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Default tool is MeshSmith. Specify another tool if needed. */
@@ -60,6 +62,7 @@ export default class ReorientMeshTask extends ToolTask
             inputMeshFile: { type: "string", minLength: 1 },
             inputVoyagerFile: { type: "string", minLength: 1 },
             outputMeshFile: { type: "string", minLength: 1 },
+            scaleToMeters: { type: "boolean", default: false},
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "Blender" ], default: "Blender" }
         },
@@ -96,6 +99,7 @@ export default class ReorientMeshTask extends ToolTask
                 inputMeshFile: params.inputMeshFile,
                 inputVoyagerFile: params.inputVoyagerFile,
                 outputMeshFile: params.outputMeshFile,
+                scaleToMeters: params.scaleToMeters,
                 timeout: params.timeout
             };
 

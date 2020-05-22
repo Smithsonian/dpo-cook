@@ -31,6 +31,8 @@ export interface IToolConfiguration
     maxInstances: number;
     /** Maximum allowed time the tool can run in seconds. */
     timeout: number;
+    /** Absolute path to preconfigured project required for tool to run. */
+    projectPath?: string;
 }
 
 export interface IToolSettings
