@@ -219,7 +219,7 @@
             },
             "generateUsdz": {
                 "type": "boolean",
-                "default": false
+                "default": true
             }
         },
         "required": [
