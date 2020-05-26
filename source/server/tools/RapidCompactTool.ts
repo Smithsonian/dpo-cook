@@ -24,7 +24,7 @@ import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 ////////////////////////////////////////////////////////////////////////////////
 
 export type TRapidCompactMode =
-    "decimate" | "unwrap" | "decimate-unwrap" | "bake";
+    "decimate" | "unwrap" | "decimate-unwrap" | "bake" | "convert";
 export type TRapidCompactUnwrapMethod =
     "conformal" | "fastConformal" | "isometric" | "forwardBijective" | "fixedBoundary";
 

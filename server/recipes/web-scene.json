@@ -113,6 +113,10 @@
                 "type": "boolean",
                 "default": true
             },
+            "bakeVertexColor": {
+                "type": "boolean",
+                "default": false
+            },
             "bakeNormalsWebThumb": {
                 "type": "boolean",
                 "default": false
@@ -315,6 +319,7 @@
                 "maxRayDistance": "maxRayDistance",
                 "bakeDiffuse": "bakeDiffuse",
                 "bakeOcclusion": "bakeOcclusion",
+                "bakeVertexColor": "bakeVertexColor",
                 "bakeNormals": "bakeNormalsWebThumb",
                 "bakeTest": "bakeTest",
                 "occlusionRays": "occlusionRays",
@@ -324,6 +329,7 @@
             "post": {
                 "deliverables": {
                     "diffuseMapUncompressedwebthumb": "bakeDiffuse ? (baseMeshNameWebThumb & '-diffuse.png') : ''",
+                    "vcolMapUncompressedwebthumb": "bakeVertexColor ? (baseMeshNameWebThumb & '_vcols.png') : ''",
                     "occlusionMapUncompressedwebthumb": "bakeOcclusion ? (baseMeshNameWebThumb & '-occlusion.png') : ''",
                     "normalMapUncompressedwebthumb": "bakeNormalsWebThumb ? (baseMeshNameWebThumb & '-normals.png') : ''",
                     "testMapwebthumb": "bakeTest ? (baseMeshNameWebThumb & '-test.png') : ''"
@@ -335,14 +341,14 @@
         "convert-diffuse-map-webthumb": {
             "task": "ConvertImage",
             "description": "Convert Diffuse Map",
-            "skip": "$not(bakeDiffuse)",
+            "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
                     "scene_diffuseMap": "baseMeshNameWebThumb & '-diffuse-webthumb.jpg'"
                 }
             },
             "parameters": {
-                "inputImageFile": "deliverables.diffuseMapUncompressedwebthumb",
+                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebthumb : deliverables.diffuseMapUncompressedwebthumb",
                 "outputImageFile": "deliverables.scene_diffuseMap",
                 "quality": "diffuseMapQualityWebThumb"
             },
@@ -542,6 +548,7 @@
                 "bakeDiffuse": "bakeDiffuse",
                 "bakeOcclusion": "bakeOcclusion",
                 "bakeNormals": "bakeNormalsWebMulti",
+                "bakeVertexColor": "bakeVertexColor",
                 "bakeTest": "bakeTest",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": "tangentSpaceNormals",
@@ -550,6 +557,7 @@
             "post": {
                 "deliverables": {
                     "diffuseMapUncompressedwebmulti": "bakeDiffuse ? (baseMeshNameWebMulti & '-diffuse.png') : ''",
+                    "vcolMapUncompressedwebmulti": "bakeVertexColor ? (baseMeshNameWebMulti & '_vcols.png') : ''",
                     "occlusionMapUncompressedwebmulti": "bakeOcclusion ? (baseMeshNameWebMulti & '-occlusion.png') : ''",
                     "normalMapUncompressedwebmulti": "bakeNormalsWebMulti ? (baseMeshNameWebMulti & '-normals.png') : ''",
                     "testMapwebmulti": "bakeTest ? (baseMeshNameWebMulti & '-test.png') : ''"
@@ -561,14 +569,14 @@
         "convert-diffuse-map-high": {
             "task": "ConvertImage",
             "description": "Convert Diffuse Map",
-            "skip": "$not(bakeDiffuse)",
+            "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
                     "scene_diffuseMapHigh": "baseMeshMapNameHigh & '-diffuse.jpg'"
                 }
             },
             "parameters": {
-                "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
+                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebmulti : deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapHigh",
                 "quality": "diffuseMapQualityWebMulti"
             },
@@ -621,7 +629,7 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetHighGlb",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
                 "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -646,7 +654,7 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetHighGltf",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
                 "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -681,14 +689,14 @@
         "convert-diffuse-map-medium": {
             "task": "ConvertImage",
             "description": "Convert Diffuse Map",
-            "skip": "$not(bakeDiffuse)",
+            "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
                     "scene_diffuseMapMedium": "baseMeshMapNameMedium & '-diffuse.jpg'"
                 }
             },
             "parameters": {
-                "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
+                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebmulti : deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapMedium",
                 "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeMedium"
@@ -744,7 +752,7 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetMediumGlb",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapMedium : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapMedium : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapMedium : ''",
                 "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapMedium : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -769,7 +777,7 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetMediumGltf",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapMedium : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapMedium : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapMedium : ''",
                 "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapMedium : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -798,14 +806,14 @@
         "convert-diffuse-map-low": {
             "task": "ConvertImage",
             "description": "Convert Diffuse Map",
-            "skip": "$not(bakeDiffuse)",
+            "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
                     "scene_diffuseMapLow": "baseMeshMapNameLow & '-diffuse.jpg'"
                 }
             },
             "parameters": {
-                "inputImageFile": "deliverables.diffuseMapUncompressedwebmulti",
+                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebmulti : deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapLow",
                 "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeLow"
@@ -861,7 +869,7 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetLowGlb",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapLow : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapLow : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapLow : ''",
                 "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapLow : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -886,7 +894,7 @@
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetLowGltf",
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapLow : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapLow : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapLow : ''",
                 "normalMapFile": "bakeNormalsWebMulti ? deliverables.scene_normalMapLow : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",

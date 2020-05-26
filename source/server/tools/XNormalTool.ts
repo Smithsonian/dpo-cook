@@ -33,6 +33,7 @@ export interface IXNormalToolSettings extends IToolSettings
     maxRayDistance?: number;
     bakeDiffuse?: boolean;
     bakeOcclusion?: boolean;
+    bakeVertexColor?: boolean;
     occlusionRays?: number;
     occlusionConeAngle?: number;
     occlusionAttConstant?: number;
@@ -101,6 +102,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
 
         const highpolyDiffuseMapPath = instance.getFilePath(settings.highPolyDiffuseMapFile);
         const bakeDiffuse = !!settings.bakeDiffuse && !!highpolyDiffuseMapPath;
+        const bakeVertexColor = !!settings.bakeVertexColor;
 
         if (!settings.mapBaseName) {
             throw new Error("XNormalTool.writeTaskScript - missing output base map path");
@@ -114,7 +116,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
                 `<?xml version="1.0" encoding="UTF-8"?>`,
                 `<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="3.19.3">`,
                 `  <HighPolyModel DefaultMeshScale="1.000000">`,
-                `    <Mesh Visible="true" File="${highPolyMeshPath}" Scale="1.000000" IgnorePerVertexColor="true" AverageNormals="AverageNormals" BaseTexIsTSNM="false" PositionOffset="0.0000;0.0000;0.0000" ${bakeDiffuse ? `BaseTex="${highpolyDiffuseMapPath}"` : ""} />`,
+                `    <Mesh Visible="true" File="${highPolyMeshPath}" Scale="1.000000" IgnorePerVertexColor="${!bakeVertexColor}" AverageNormals="AverageNormals" BaseTexIsTSNM="false" PositionOffset="0.0000;0.0000;0.0000" ${bakeDiffuse ? `BaseTex="${highpolyDiffuseMapPath}"` : ""} />`,
                 `  </HighPolyModel>`,
 
                 `  <LowPolyModel DefaultMeshScale="1.000000">`,
@@ -124,7 +126,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
                 `  <GenerateMaps `,
                 `      File="${mapBaseFilePath}" Width="${settings.mapSize}" Height="${settings.mapSize}" EdgePadding="${edgePadding}"`,
                 `      BucketSize="64" ClosestIfFails="true" DiscardRayBackFacesHits="true" AA="1"`,
-                `      BakeHighpolyVCols="false"`,
+                `      BakeHighpolyVCols="${bakeVertexColor}"`,
                 `      GenDerivNM="false"`,
 
                 `      GenNormals="${settings.bakeNormals}" TangentSpace="${tangentSpace}" SwizzleX="${swizzleX}" SwizzleY="${swizzleY}" SwizzleZ="${swizzleZ}"`,

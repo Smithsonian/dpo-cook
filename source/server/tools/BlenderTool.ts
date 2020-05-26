@@ -26,6 +26,7 @@ export interface IBlenderToolSettings extends IToolSettings
     inputMeshFile: string;
     inputVoyagerFile?: string;
     outputMeshFile?: string;
+    scaleToMeters?: boolean;
 }
 
 export type BlenderInstance = ToolInstance<BlenderTool, IBlenderToolSettings>;
@@ -45,7 +46,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             throw new Error("missing input mesh file");
         } 
 
-        const operation = `--background --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputMeshFile)}"`;
+        const operation = `--background --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputMeshFile)}" "${settings.scaleToMeters}"`;
 
         const command = `"${this.configuration.executable}" ${operation}`;
 
