@@ -458,26 +458,50 @@
                 "outputImageFile": "deliverables.scene_normalMapHigh",
                 "quality": "normalMapQuality150"
             },
-            "success": "'web-asset-glb-high'",
+            "success": "'web-asset-glb-draco-high'",
             "failure": "$failure"
         },
-        "web-asset-glb-high": {
+        "web-asset-glb-draco-high": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset (high)",
             "skip": "$not(generateBinary) or $not(generate150kAssets)",
             "pre": {
                 "deliverables": {
-                    "scene_webAssetHighGlb": "scaleToMeters ? baseMeshMapName150 & '_std.glb' : baseMeshMapName150 & '.glb'"
+                    "scene_webAssetHighGlbCompressed": "scaleToMeters ? baseMeshMapName150 & '_std_draco.glb' : baseMeshMapName150 & '_draco.glb'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.scene_webAssetHighGlb",
+                "outputFile": "deliverables.scene_webAssetHighGlbCompressed",
                 "meshFile": "deliverables.scene_unwrappedMesh",
                 "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
                 "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
-                "useCompression": "useCompression150",
+                "useCompression": true,
+                "compressionLevel": 10,
+                "embedMaps": true,
+                "writeBinary": true
+            },
+            "success": "'web-asset-glb-high'",
+            "failure": "$failure"
+        },
+        "web-asset-glb-high": {
+            "task": "WebAsset",
+            "description": "Create binary, uncompressed, embedded glTF asset (high)",
+            "skip": "$not(generateBinary) or $not(generate150kAssets)",
+            "pre": {
+                "deliverables": {
+                    "scene_webAssetHighGlbUncompressed": "scaleToMeters ? baseMeshMapName150 & '_std.glb' : baseMeshMapName150 & '.glb'"
+                }
+            },
+            "parameters": {
+                "outputFile": "deliverables.scene_webAssetHighGlbUncompressed",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
+                "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
+                "objectSpaceNormals": "$not(tangentSpaceNormals)",
+                "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true
