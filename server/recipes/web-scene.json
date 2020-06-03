@@ -91,6 +91,10 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
             },
+            "minComponentSize": {
+                "type": "string",
+                "default": "'2%'"
+            },
             "segmentationStrengthWebThumb": {
                 "type": "number",
                 "minimum": 0,
@@ -261,6 +265,7 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebThumb",
                 "cleanup": "cleanupMesh",
+                "minComponentSize": "minComponentSize",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
@@ -490,6 +495,7 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebMulti",
                 "cleanup": "cleanupMesh",
+                "minComponentSize": "minComponentSize",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,

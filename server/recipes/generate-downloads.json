@@ -101,6 +101,10 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "RapidCompact"
             },
+            "minComponentSize": {
+                "type": "string",
+                "default": "'2%'"
+            },
             "segmentationStrength150": {
                 "type": "number",
                 "minimum": 0,
@@ -331,6 +335,7 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces150",
                 "cleanup": "cleanupMesh",
+                "minComponentSize": "minComponentSize",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
@@ -636,6 +641,7 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces1000",
                 "cleanup": "cleanupMesh",
+                "minComponentSize": "minComponentSize",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
