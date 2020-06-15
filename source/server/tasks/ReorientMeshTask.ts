@@ -81,8 +81,8 @@ export default class ReorientMeshTask extends ToolTask
     {
         super(params, context);
 
-        const inputMeshExt = path.extname(params.inputMeshFile);
-        const inputVoyagerExt = path.extname(params.inputVoyagerFile);
+        const inputMeshExt = path.extname(params.inputMeshFile).toLowerCase();
+        const inputVoyagerExt = path.extname(params.inputVoyagerFile).toLowerCase();
         const outputMeshExt = path.extname(params.outputMeshFile);
 
         if (inputMeshExt != ".obj" && inputMeshExt != ".ply") {
