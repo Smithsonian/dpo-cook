@@ -301,7 +301,7 @@
                 "mtlFile": "deliverables.mtlFile_master",
                 "textureFile": "highPolyDiffuseMapFile"
             },
-            "success": "'decimate-meshlab-150'",
+            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-150' : 'decimate-meshlab-150'",
             "failure": "$failure"
         },
         "decimate-rapid-150": {

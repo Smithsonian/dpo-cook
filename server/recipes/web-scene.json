@@ -233,7 +233,7 @@
             "post": {
                 "remeshedFile": "deliverables.remeshedMeshFile"
             },
-            "success": "'decimate-meshlab-webthumb'",
+            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-webthumb' : 'decimate-meshlab-webthumb'",
             "failure": "$failure"
         },
         "decimate-rapid-webthumb": {
