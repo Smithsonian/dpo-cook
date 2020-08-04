@@ -19,7 +19,7 @@
                     "Meshlab",
                     "MeshSmith"
                 ],
-                "default": "Meshlab"
+                "default": "MeshSmith"
             }
         },
         "required": [
