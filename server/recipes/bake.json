@@ -47,6 +47,10 @@
                 "type": "boolean",
                 "default": true
             },
+            "bakeVertexColor": {
+                "type": "boolean",
+                "default": false
+            },
             "bakeTest": {
                 "type": "boolean",
                 "default": false
@@ -113,7 +117,7 @@
                 "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
                 "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
                 "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)",
-                "bakeDiffuse": "$exists(highPolyDiffuseMapFile)",
+                "bakeDiffuse": "$exists(highPolyDiffuseMapFile) or bakeVertexColor",
                 "mapBaseName": "baseMeshMapName & '.png'"
             },
             "parameters": {
@@ -126,10 +130,11 @@
                 "bakeDiffuse": "bakeDiffuse",
                 "bakeOcclusion": "bakeOcclusion",
                 "bakeNormals": "bakeNormals",
+                "bakeVertexColor": "bakeVertexColor",
                 "bakeTest": "bakeTest",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": "tangentSpaceNormals",
-                "timeout": 1200
+                "timeout": 3600
             },
             "post": {
                 "deliverables": {
