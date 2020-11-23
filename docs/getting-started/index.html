@@ -387,15 +387,20 @@ notepad.exe tools.json
 <p>Please have a look at the tool documentation pages to see a configuration example for each tool.</p>
 <h5 id="clientsjson">clients.json</h5>
 <p>IDs and names for the clients you want to grant access to the server.</p>
-<hr>
-<p>In the <code>client</code> subfolder, you find templates for the 1 required clientr configuration files. Copy and rename the template, then
+  
+<hr></hr>
+
+<p>In the <code>client</code> subfolder, you find templates for the 1 required client configuration file. Copy and rename the template, then
 edit it to your needs. For example:</p>
 <div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">copy .env.template .env
-notepad.exe .env
-</code></pre></div><p>You should end up with 1 environment file,
+notepad.exe .env</code></pre></div>
+<p>You should end up with 1 environment file,
 <code>.env</code></p>
-<h5 id="env">.env</h5>
-<p>Environment configuration. &lsquo;production&rsquo; or &lsquo;development&rsquo;</p>
+  
+<h5 id="clients-env">.env</h5>
+  
+<p>Environment configuration. 'production' or 'development'.</p>
+
 <h2 id="running-cook-server">Running Cook Server</h2>
 <h3 id="starting-cook-as-a-service-using-pm2">Starting Cook as a service using PM2</h3>
 <ul>
