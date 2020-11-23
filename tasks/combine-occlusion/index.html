@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,20 +322,16 @@
           
 <h1 class="title">CombineOcclusion</h1>
 <div class="content">
-  
-
-<h3 id="description">Description</h3>
-
+  <h3 id="description">Description</h3>
 <p>Combines 3 separate occlusion maps into one combined map.
-Applies individual gamma correction to each of the 3 map channels.
-- Large scale map &gt; red channel.
-- Medium scale map &gt; green channel.
-- Small scale map &gt; blue channel.</p>
-
+Applies individual gamma correction to each of the 3 map channels.</p>
+<ul>
+<li>Large scale map &gt; red channel.</li>
+<li>Medium scale map &gt; green channel.</li>
+<li>Small scale map &gt; blue channel.</li>
+</ul>
 <p>Tool: <a href="../tools/imageMagick.md">ImageMagick</a></p>
-
 <h3 id="options">Options</h3>
-
 <table>
 <thead>
 <tr>
@@ -342,7 +342,6 @@ Applies individual gamma correction to each of the 3 map channels.
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>largeMapFile</td>
@@ -351,7 +350,6 @@ Applies individual gamma correction to each of the 3 map channels.
 <td></td>
 <td>Large scale occlusion map input file.</td>
 </tr>
-
 <tr>
 <td>mediumMapFile</td>
 <td>string</td>
@@ -359,7 +357,6 @@ Applies individual gamma correction to each of the 3 map channels.
 <td></td>
 <td>Medium scale occlusion map input file.</td>
 </tr>
-
 <tr>
 <td>smallMapFile</td>
 <td>string</td>
@@ -367,7 +364,6 @@ Applies individual gamma correction to each of the 3 map channels.
 <td></td>
 <td>Small scale occlusion map input file.</td>
 </tr>
-
 <tr>
 <td>outputMapFile</td>
 <td>string</td>
@@ -375,7 +371,6 @@ Applies individual gamma correction to each of the 3 map channels.
 <td></td>
 <td>Combined occlusion map output file.</td>
 </tr>
-
 <tr>
 <td>channelGamma</td>
 <td>number[]</td>

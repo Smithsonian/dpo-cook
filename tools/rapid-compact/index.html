@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,34 +322,26 @@
           
 <h1 class="title">RapidCompact</h1>
 <div class="content">
-  
-
-<h3 id="information">Information</h3>
-
+  <h3 id="information">Information</h3>
 <ul>
 <li>Developer: <a href="https://www.dgg3d.com/">Darmstadt Graphics Group GmbH</a></li>
 <li>Website: <a href="https://www.dgg3d.com/rapidcompact">https://www.dgg3d.com/rapidcompact</a></li>
 <li>License: Commercial/Proprietary</li>
 </ul>
-
 <h3 id="installation">Installation</h3>
-
 <ul>
 <li>Recommended version with Cook: <em>1.6</em></li>
 <li>Windows binary available to registered customers</li>
 </ul>
-
 <h3 id="configuration">Configuration</h3>
-
 <p>Example configuration for RapidCompact in the <code>tools.json</code> configuration file:</p>
 <div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;RapidCompact&#34;</span><span class="err">:</span> <span class="p">{</span>
     <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\RapidCompact CLI 1.6.0\\rpdx.exe&#34;</span><span class="p">,</span>
     <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.6&#34;</span><span class="p">,</span>
     <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
     <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">900</span>
-<span class="p">}</span></code></pre></div>
-<h3 id="options">Options</h3>
-
+<span class="p">}</span>
+</code></pre></div><h3 id="options">Options</h3>
 <table>
 <thead>
 <tr>
@@ -356,7 +352,6 @@
 <th>Default</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>highPolyMeshFile</td>
@@ -365,7 +360,6 @@
 <td>file path</td>
 <td></td>
 </tr>
-
 <tr>
 <td>lowPolyMeshFile</td>
 <td>&ldquo;bake&rdquo; only</td>
@@ -373,7 +367,6 @@
 <td>file path</td>
 <td></td>
 </tr>
-
 <tr>
 <td>inputMeshFile</td>
 <td>yes except &ldquo;bake&rdquo;</td>
@@ -381,7 +374,6 @@
 <td>file path</td>
 <td></td>
 </tr>
-
 <tr>
 <td>outputMeshFile</td>
 <td>yes except &ldquo;bake&rdquo;</td>
@@ -389,7 +381,6 @@
 <td>file path</td>
 <td></td>
 </tr>
-
 <tr>
 <td>mapBaseName</td>
 <td>for &ldquo;bake&rdquo;</td>
@@ -397,7 +388,6 @@
 <td>base name for baked maps</td>
 <td></td>
 </tr>
-
 <tr>
 <td>mode</td>
 <td>yes</td>
@@ -405,7 +395,6 @@
 <td>&ldquo;decimate&rdquo;, &ldquo;unwrap&rdquo;, &ldquo;decimate-unwrap&rdquo;, &ldquo;bake&rdquo;</td>
 <td></td>
 </tr>
-
 <tr>
 <td>removeDuplicateVertices</td>
 <td>no</td>
@@ -413,7 +402,6 @@
 <td></td>
 <td>false</td>
 </tr>
-
 <tr>
 <td>numFaces</td>
 <td>&ldquo;decimate&rdquo;, &ldquo;decimate-unwrap&rdquo; only</td>
@@ -421,7 +409,6 @@
 <td></td>
 <td></td>
 </tr>
-
 <tr>
 <td>unwrapMethod</td>
 <td>no</td>
@@ -429,7 +416,6 @@
 <td>0 = fixedBoundary, 1 = fastConformal, 2 = conformal, 3 = isometric, 4 = forwardBijective</td>
 <td>4</td>
 </tr>
-
 <tr>
 <td>mapSize</td>
 <td>&ldquo;bake&rdquo; only</td>
@@ -437,7 +423,6 @@
 <td></td>
 <td>2048</td>
 </tr>
-
 <tr>
 <td>bakeOcclusion</td>
 <td>no</td>
@@ -445,7 +430,6 @@
 <td></td>
 <td>false</td>
 </tr>
-
 <tr>
 <td>occlusionRays</td>
 <td>no</td>
@@ -453,7 +437,6 @@
 <td></td>
 <td>128</td>
 </tr>
-
 <tr>
 <td>normalsTangentSpace</td>
 <td>no</td>
@@ -461,7 +444,6 @@
 <td></td>
 <td>false</td>
 </tr>
-
 <tr>
 <td>preserveBoundary</td>
 <td>no</td>

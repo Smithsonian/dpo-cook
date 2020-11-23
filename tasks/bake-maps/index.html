@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,20 +322,15 @@
           
 <h1 class="title">BakeMaps</h1>
 <div class="content">
-  
-
-<h3 id="description">Description</h3>
-
+  <h3 id="description">Description</h3>
 <p>Texture baking is the last step when preparing models for real-time applications. During decimation, the mesh has been reduced in size. Texture baking transfers features from the high resolution mesh to a texture. The texture is then applied to the low resolution mesh in order to bring back the lost details.</p>
-
 <p>Baking requires a low poly mesh with UV coordinates. The coordinates can be generated using the <a href="./unwrap-mesh">UnwrapMeshTask</a>.</p>
-
-<p>This task utilizes the following tools:
-- <a href="../tools/xnormal">XNormal</a>
-- <a href="../tools/rapid-compact">RapidCompact</a></p>
-
+<p>This task utilizes the following tools:</p>
+<ul>
+<li><a href="../tools/xnormal">XNormal</a></li>
+<li><a href="../tools/rapid-compact">RapidCompact</a></li>
+</ul>
 <h3 id="options">Options</h3>
-
 <table>
 <thead>
 <tr>
@@ -342,7 +341,6 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>highPolyMeshFile</td>
@@ -351,7 +349,6 @@
 <td></td>
 <td>High resolution mesh file name.</td>
 </tr>
-
 <tr>
 <td>highPolyDiffuseMapFile</td>
 <td>string</td>
@@ -359,7 +356,6 @@
 <td></td>
 <td>Diffuse texture for high resolution mesh.</td>
 </tr>
-
 <tr>
 <td>lowPolyUnwrappedMeshFile</td>
 <td>string</td>
@@ -367,7 +363,6 @@
 <td></td>
 <td>Low resolution (decimated) mesh file name.</td>
 </tr>
-
 <tr>
 <td>mapBaseName</td>
 <td>string</td>
@@ -375,7 +370,6 @@
 <td></td>
 <td>Base name for baked texture map files.</td>
 </tr>
-
 <tr>
 <td>mapSize</td>
 <td>number</td>
@@ -383,7 +377,6 @@
 <td>2048</td>
 <td>Baked map size in pixels.</td>
 </tr>
-
 <tr>
 <td>maxRayDistance</td>
 <td>number</td>
@@ -391,7 +384,6 @@
 <td>0.001</td>
 <td>Maximum search distance when projecting rays from the high poly to the low poly mesh.</td>
 </tr>
-
 <tr>
 <td>bakeDiffuse</td>
 <td>boolean</td>
@@ -399,7 +391,6 @@
 <td>true</td>
 <td>Bakes a diffuse map if true and highPolyDiffuseMapFile is not empty.</td>
 </tr>
-
 <tr>
 <td>bakeOcclusion</td>
 <td>boolean</td>
@@ -407,7 +398,6 @@
 <td>true</td>
 <td>Bakes an ambient occlusion map if true.</td>
 </tr>
-
 <tr>
 <td>bakeNormals</td>
 <td>boolean</td>
@@ -415,7 +405,6 @@
 <td>true</td>
 <td>Bakes a normal map if true.</td>
 </tr>
-
 <tr>
 <td>bakeTest</td>
 <td>boolean</td>
@@ -423,7 +412,6 @@
 <td>false</td>
 <td>Bakes a test map for checking the projection quality if true.</td>
 </tr>
-
 <tr>
 <td>occlusionRays</td>
 <td>number</td>
@@ -431,7 +419,6 @@
 <td>128</td>
 <td>Number of sample rays for ambient occlusion, between 1 and 512.</td>
 </tr>
-
 <tr>
 <td>occlusionConeAngle</td>
 <td>number</td>
@@ -439,7 +426,6 @@
 <td>165</td>
 <td>Maximum cone angle for ambient occlusion sample rays, between 1 and 165</td>
 </tr>
-
 <tr>
 <td>occlusionAttConstant</td>
 <td>number</td>
@@ -447,7 +433,6 @@
 <td>1</td>
 <td>Ambient occlusion attenuation, constant factor.</td>
 </tr>
-
 <tr>
 <td>occlusionAttLinear</td>
 <td>number</td>
@@ -455,7 +440,6 @@
 <td>0</td>
 <td>Ambient occlusion attenuation, linear factor.</td>
 </tr>
-
 <tr>
 <td>occlusionAttQuadratic</td>
 <td>number</td>
@@ -463,7 +447,6 @@
 <td>0</td>
 <td>Ambient occlusion attenuation, quadratic factor.</td>
 </tr>
-
 <tr>
 <td>tangentSpaceNormals</td>
 <td>boolean</td>
@@ -471,7 +454,6 @@
 <td>false</td>
 <td>Bakes normals in tangent space if true.</td>
 </tr>
-
 <tr>
 <td>timeout</td>
 <td>number</td>
@@ -479,7 +461,6 @@
 <td>0</td>
 <td>Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup).</td>
 </tr>
-
 <tr>
 <td>tool</td>
 <td>string</td>

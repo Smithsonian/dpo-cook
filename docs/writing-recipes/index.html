@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,26 +322,16 @@
           
 <h1 class="title">Writing recipes</h1>
 <div class="content">
-  
-
-<p>In order to know what to do, the cook relies on recipes. A recipe is a JSON document describing a processing workflow, where a set of input files is processed by multiple tools. Recipes don&rsquo;t need to be linear: depending on the outcome of one processing step, a recipe can decide what to do next. If for example a task fails using tool A, it can decide to try again using tool B.</p>
-
+  <p>In order to know what to do, the cook relies on recipes. A recipe is a JSON document describing a processing workflow, where a set of input files is processed by multiple tools. Recipes don&rsquo;t need to be linear: depending on the outcome of one processing step, a recipe can decide what to do next. If for example a task fails using tool A, it can decide to try again using tool B.</p>
 <p>Recipes are controlled by a set of global parameters. Instead of entering the same information again and again for each tool to be executed, parameters are defined once and then automatically fed to each involved tool.</p>
-
 <h3 id="json-schema">JSON Schema</h3>
-
 <p>Global recipe parameters are defined using JSON Schema. When running a recipe, actual parameters are validated against the schema. Documentation for JSON Schema can be found here: <a href="https://json-schema.org/specification.html">https://json-schema.org/specification.html</a></p>
-
 <h3 id="jsonata">JSONata</h3>
-
 <p>Recipes make heavy use of JSONata expressions. Documentation for JSONata can be found here:
 <a href="http://docs.jsonata.org/overview.html">http://docs.jsonata.org/overview.html</a></p>
-
 <h3 id="examples">Examples</h3>
-
-<p>Example recipes can be found in <code>server/recipes</code>.<br />
+<p>Example recipes can be found in <code>server/recipes</code>.<br>
 A recipe template is available in <code>server/recipes-test/template.json</code></p>
-
 <h3 id="recipe-template-structure">Recipe template structure</h3>
 <div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
     <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;00000000-0000-0000-0000-000000000000&#34;</span><span class="p">,</span>
@@ -403,7 +397,8 @@ A recipe template is available in <code>server/recipes-test/template.json</code>
             <span class="nt">&#34;failure&#34;</span><span class="p">:</span> <span class="s2">&#34;$failure&#34;</span>
         <span class="p">}</span>
     <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span>
+</code></pre></div>
 </div>
 
         </div>

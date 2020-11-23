@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>FileOperation - Cook Documentation</title>
+  <title>Recipe: generate-downloads - Cook Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <link rel="icon" href="https://smithsonian.github.io/dpo-cook/favicon.ico">
@@ -120,9 +120,9 @@
       
     
       
-    
-      
         
+      
+    
       
     
       
@@ -174,7 +174,7 @@
       <a href="/dpo-cook/recipes/web-multi/">Recipe: web-multi</a>
     </li>
     
-    <li class="">
+    <li class="active ">
       <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
     </li>
     
@@ -233,7 +233,7 @@
       <a href="/dpo-cook/tasks/file-copy/">FileCopy</a>
     </li>
     
-    <li class="active ">
+    <li class="">
       <a href="/dpo-cook/tasks/file-operation/">FileOperation</a>
     </li>
     
@@ -320,45 +320,19 @@
         </div>
         <div class="col-12 col-md-9">
           
-<h1 class="title">FileOperation</h1>
+<h1 class="title">Recipe: generate-downloads</h1>
 <div class="content">
-  <h3 id="description">Description</h3>
-<p>Performs operations on files and folders. Files can be renamed and deleted, folders can be created and deleted.</p>
-<h3 id="options">Options</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>operation</td>
-<td>string</td>
-<td>yes</td>
-<td>-</td>
-<td>Operation to be performed: &ldquo;DeleteFile&rdquo;, &ldquo;RenameFile&rdquo;, &ldquo;CreateFolder&rdquo;, &ldquo;DeleteFolder&rdquo;.</td>
-</tr>
-<tr>
-<td>name</td>
-<td>string</td>
-<td>yes</td>
-<td>-</td>
-<td>Name of the file the operation should be performed on.</td>
-</tr>
-<tr>
-<td>newName</td>
-<td>string</td>
-<td>no</td>
-<td>-</td>
-<td>For &ldquo;RenameFile&rdquo; only: new file name.</td>
-</tr>
-</tbody>
-</table>
+  <p>The <code>generate-downloads</code> recipe generates a set off assets based on a high resolution master model that are standardized and appropriate for public use. We have a predefined collection of asset types and sizes that fit our needs, but you may easily adjust this recipe to whatever works for your end users.</p>
+<p>Smithsonian downloads package:</p>
+<ul>
+<li>A .zip file containing a full-resolution .obj file and related textures that conforms to the glTF spec.
+Lower resolution (100k faces, 2k textures) assets:</li>
+<li>A .zip file containing a lower resolution .obj package that conforms to the glTF spec.</li>
+<li>A .zip file containing a lower resolution glTF package.</li>
+<li>An uncompressed .glb file created from the above glTF.</li>
+<li>A Draco compressed .glb file created from the above glTF.</li>
+<li>A .usdz file of the lower resolution geometry.</li>
+</ul>
 
 </div>
 

@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,31 +322,25 @@
           
 <h1 class="title">Overview</h1>
 <div class="content">
-  
-
-<h1 id="tools">Tools</h1>
-
+  <h1 id="tools">Tools</h1>
 <h2 id="configuration">Configuration</h2>
-
 <p>Each processing server needs a configuration file where the path to the executables and version information for all
 installed tools are defined. A template configuration file is provided for convenience.</p>
-
 <p>First, copy the template file:</p>
-<div class="highlight"><pre class="chroma">cp server/tools.template.json server/tools.json</pre></div>
+<pre><code>cp server/tools.template.json server/tools.json
+</code></pre>
 <p>Then edit the entries in the <code>tools.json</code> file. The timeout specifies the maximum execution
 time allowed for this tool. Change this if you are on a particularly slow or fast machine.
 Each entry should look like so:</p>
-<div class="highlight"><pre class="chroma">&#34;Unfold&#34;: {
-  &#34;executable&#34;: &#34;C:\\Program Files\\Rizom Lab\\Unfold3D VS RS 2017.0\\unfold3d.exe&#34;,
-  &#34;version&#34;: &#34;2017.0.27.g2c0aab2&#34;,
-  &#34;timeout&#34;: 1200 // 20 minutes
-},</pre></div>
+<pre><code>&quot;Unfold&quot;: {
+  &quot;executable&quot;: &quot;C:\\Program Files\\Rizom Lab\\Unfold3D VS RS 2017.0\\unfold3d.exe&quot;,
+  &quot;version&quot;: &quot;2017.0.27.g2c0aab2&quot;,
+  &quot;timeout&quot;: 1200 // 20 minutes
+},
+</code></pre>
 <p>You are allowed to use comments in the .json file.</p>
-
 <p>Please make sure backslashes are escaped using another backslash: <code>\\</code></p>
-
 <h2 id="supported-tools">Supported tools</h2>
-
 <table>
 <thead>
 <tr>
@@ -350,43 +348,35 @@ Each entry should look like so:</p>
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../image-magick">ImageMagick</a></td>
 <td>Swiss army knife for converting and processing images.</td>
 </tr>
-
 <tr>
 <td><a href="../instant-meshes">InstantMeshes</a></td>
 <td>Remeshing tool.</td>
 </tr>
-
 <tr>
 <td><a href="../meshfix">MeshFix</a></td>
 <td>Automatic fixing of mesh topology errors.</td>
 </tr>
-
 <tr>
 <td><a href="../meshlab">Meshlab</a></td>
 <td>Swiss army knife for mesh processing, including manipulation, analysis, cleaning, and repair.</td>
 </tr>
-
 <tr>
 <td><a href="../meshsmith">MeshSmith</a></td>
 <td>Converts mesh files between various file formats. Optionally strips components such as normals and UVs.</td>
 </tr>
-
 <tr>
 <td><a href="../rapid-compact">RapidCompact</a></td>
 <td>Processing tool for creating web-ready 3D assets, including decimation,unwrapping, and texture map baking.</td>
 </tr>
-
 <tr>
 <td><a href="../rizom-uv">RizomUV</a></td>
 <td>Automatic generation of an unwrapped UV atlas for a low poly mesh.</td>
 </tr>
-
 <tr>
 <td><a href="../xnormal">xNormal</a></td>
 <td>Bakes texture maps such as normals and ambient occlusion.</td>

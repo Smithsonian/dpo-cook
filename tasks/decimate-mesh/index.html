@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,16 +322,10 @@
           
 <h1 class="title">DecimateMesh</h1>
 <div class="content">
-  
-
-<h3 id="description">Description</h3>
-
+  <h3 id="description">Description</h3>
 <p>Reduces the complexity of a geometric mesh by reducing the number of vertices.</p>
-
 <p>Tools: <a href="../tools/meshlab.md">Meshlab</a>, <a href="../tools/mops.md">InstantUV/MopsCLI</a></p>
-
 <h3 id="options">Options</h3>
-
 <table>
 <thead>
 <tr>
@@ -338,7 +336,6 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>inputMeshFile</td>
@@ -347,7 +344,6 @@
 <td></td>
 <td>Input (high poly) mesh file name.</td>
 </tr>
-
 <tr>
 <td>outputMeshFile</td>
 <td>string</td>
@@ -355,7 +351,6 @@
 <td></td>
 <td>Output (low poly) mesh file name.</td>
 </tr>
-
 <tr>
 <td>numFaces</td>
 <td>number</td>
@@ -363,7 +358,6 @@
 <td></td>
 <td>Target number of faces after decimation.</td>
 </tr>
-
 <tr>
 <td>cleanup</td>
 <td>boolean</td>
@@ -371,7 +365,6 @@
 <td>false</td>
 <td>Removes unreferenced and duplicate vertices before decimation if true.</td>
 </tr>
-
 <tr>
 <td>preserveTopology</td>
 <td>boolean</td>
@@ -379,15 +372,13 @@
 <td>true</td>
 <td>If true, preserves the topology of the mesh.</td>
 </tr>
-
 <tr>
 <td>preserveBoundaries</td>
 <td>boolean</td>
 <td>no</td>
 <td>true</td>
-<td>If true, preserves the meshes&rsquo; boundaries, i.e. doesn&rsquo;t remove boundary vertices.</td>
+<td>If true, preserves the meshes' boundaries, i.e. doesn&rsquo;t remove boundary vertices.</td>
 </tr>
-
 <tr>
 <td>preserveTexCoords</td>
 <td>boolean</td>
@@ -395,7 +386,6 @@
 <td>false</td>
 <td>Preserves texture coordinates during decimation.</td>
 </tr>
-
 <tr>
 <td>minComponentSize</td>
 <td>string</td>
@@ -403,7 +393,6 @@
 <td>-</td>
 <td>Meshlab only: Removes components smaller than the given size. Example: &ldquo;2%&rdquo;.</td>
 </tr>
-
 <tr>
 <td>computeVertexNormals</td>
 <td>boolean</td>
@@ -411,7 +400,6 @@
 <td>false</td>
 <td>Meshlab only: Re-computes vertex normals for the decimated mesh.</td>
 </tr>
-
 <tr>
 <td>inspectMesh</td>
 <td>boolean</td>
@@ -419,7 +407,6 @@
 <td>false</td>
 <td>Meshlab only: performs mesh inspection before decimation and generates an inspection report.</td>
 </tr>
-
 <tr>
 <td>timeout</td>
 <td>number</td>
@@ -427,7 +414,6 @@
 <td>0</td>
 <td>Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup).</td>
 </tr>
-
 <tr>
 <td>tool</td>
 <td>string</td>

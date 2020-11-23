@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,12 +322,8 @@
           
 <h1 class="title">Overview</h1>
 <div class="content">
-  
-
-<h3 id="tasks-by-category">Tasks by Category</h3>
-
+  <h3 id="tasks-by-category">Tasks by Category</h3>
 <h4 id="high-level-logging">High Level, Logging</h4>
-
 <table>
 <thead>
 <tr>
@@ -331,27 +331,22 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../recipe">Recipe</a></td>
 <td>Executes a recipe as a sequence of tasks. Execution order depends on success or failure of each task.Task execution is fully parameterized. Each recipe provides a global set of parameters that can be usedto control and orchestrate the various tasks.</td>
 </tr>
-
 <tr>
 <td><a href="../pipeline">Pipeline</a></td>
 <td>Executes a linear sequence of tasks.</td>
 </tr>
-
 <tr>
 <td><a href="../log">Log</a></td>
 <td>Provides logging facilities (log to console, log to file, write report to file).</td>
 </tr>
 </tbody>
 </table>
-
 <h4 id="file-operations">File Operations</h4>
-
 <table>
 <thead>
 <tr>
@@ -359,32 +354,26 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../file-copy">FileCopy</a></td>
 <td>Generic file copy.</td>
 </tr>
-
 <tr>
 <td><a href="../file-operation">FileOperation</a></td>
 <td>Provides operations for renaming and deleting files, and creating, renaming and deleting folders.</td>
 </tr>
-
 <tr>
 <td><a href="../pickup">Pickup</a></td>
 <td>Copies files from a local client directory to the processing server&rsquo;s work directory.</td>
 </tr>
-
 <tr>
 <td><a href="../delivery">Delivery</a></td>
 <td>Copies files from the processing server&rsquo;s work directory to a local client directory.</td>
 </tr>
 </tbody>
 </table>
-
 <h4 id="photogrammetry">Photogrammetry</h4>
-
 <table>
 <thead>
 <tr>
@@ -392,7 +381,6 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../reconstruction">Reconstruction</a></td>
@@ -400,9 +388,7 @@
 </tr>
 </tbody>
 </table>
-
 <h4 id="mesh-processing">Mesh Processing</h4>
-
 <table>
 <thead>
 <tr>
@@ -410,42 +396,34 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../cleanup-mesh">CleanupMesh</a></td>
 <td>Mesh cleaning and healing, such as removing unreferenced vertices.</td>
 </tr>
-
 <tr>
 <td><a href="../convert-mesh">ConvertMesh</a></td>
 <td>Converts mesh files to various file formats. Optionally strips components such as normals and UVs.</td>
 </tr>
-
 <tr>
 <td><a href="../decimate-mesh">DecimateMesh</a></td>
 <td>Reduces the size of a mesh to a target number of faces or vertices.</td>
 </tr>
-
 <tr>
 <td><a href="../fix-mesh">FixMesh</a></td>
 <td>Fixes mesh deficiencies such as flipped triangles.</td>
 </tr>
-
 <tr>
 <td><a href="../remesh">Remesh</a></td>
 <td>Creates a new, regular mesh for an object.</td>
 </tr>
-
 <tr>
 <td><a href="../unwrap-mesh">UnwrapMesh</a></td>
 <td>Creates a UV atlas for a mesh. Internally works with Rizom Labs Unfold, Uknit (hosted on 3ds Max),and InstantUV (Mops CLI).</td>
 </tr>
 </tbody>
 </table>
-
 <h4 id="mesh-analysis">Mesh Analysis</h4>
-
 <table>
 <thead>
 <tr>
@@ -453,7 +431,6 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../inspect-mesh">InspectMesh</a></td>
@@ -461,9 +438,7 @@
 </tr>
 </tbody>
 </table>
-
 <h4 id="texture-generation">Texture Generation</h4>
-
 <table>
 <thead>
 <tr>
@@ -471,7 +446,6 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../bake-maps">BakeMaps</a></td>
@@ -479,9 +453,7 @@
 </tr>
 </tbody>
 </table>
-
 <h4 id="image-processing">Image Processing</h4>
-
 <table>
 <thead>
 <tr>
@@ -489,22 +461,18 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><a href="../convert-image">ConvertImage</a></td>
 <td>Convert images to various file formats using ImageMagick.</td>
 </tr>
-
 <tr>
 <td><a href="../combine-occlusion">CombineOcclusion</a></td>
 <td>Combines three occlusion maps into one RGB map using red, green and blue channels.</td>
 </tr>
 </tbody>
 </table>
-
 <h4 id="image-analysis">Image Analysis</h4>
-
 <p>No tasks available yet.</p>
 
 </div>

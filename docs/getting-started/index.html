@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,49 +322,32 @@
           
 <h1 class="title">Getting Started</h1>
 <div class="content">
-  
-
-<h2 id="prerequisites">Prerequisites</h2>
-
+  <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="hardware">Hardware</h3>
-
 <p>Hardware requirements depend on the tools you plan to run via cook service. Some of the tools may need a lot of RAM
 while others rely on a strong CPU or use GPU (graphics card) based processing.</p>
-
 <p>We have tested the cook service and our standard tool suite on the following configuration:</p>
-
 <ul>
 <li>Intel Xeon or Core i7 processor</li>
 <li>32 GB RAM</li>
 <li>NVIDIA GeForce GTX 1080</li>
 </ul>
-
 <h3 id="software">Software</h3>
-
 <h4 id="operating-system">Operating System</h4>
-
 <p>Cook has been tested with the following versions of Microsoft Windows. We currently don&rsquo;t support any other operating systems, because some of the 3rd party processing tools are only available for Windows.</p>
-
 <ul>
 <li>Windows 10 Professional</li>
 <li>Windows Server 2012 R2 Standard</li>
 </ul>
-
 <h5 id="running-cook-in-a-vm">Running Cook in a VM</h5>
-
 <p>It is currently not advised to run Cook in a virtual machine. Some 3rd party tools have specific hardware requirements, e.g. some need direct access to the GPU. Also, performance may suffer.</p>
-
 <h4 id="applications">Applications</h4>
-
 <p>Before installing Cook Server, you need to install the following applications:</p>
-
 <ul>
 <li>Git: <a href="https://git-scm.com">https://git-scm.com</a></li>
 <li>Node: <a href="https://nodejs.org">https://nodejs.org</a></li>
 </ul>
-
 <p>Depending on your needs, you also need to install the tools you want to use for processing. These tools are currently supported:</p>
-
 <ul>
 <li><a href="../../tools/image-magick">ImageMagick</a></li>
 <li><a href="../../tools/instant-meshes">Instant Meshes</a></li>
@@ -371,18 +358,13 @@ while others rely on a strong CPU or use GPU (graphics card) based processing.</
 <li><a href="../../tools/rizom-uv">RizomUV</a></li>
 <li><a href="../../tools/xnormal">XNormal</a></li>
 </ul>
-
 <p>Support for the following tools is planned, but hasn&rsquo;t been completed yet.</p>
-
 <ul>
 <li><a href="../../tools/blender">Blender</a></li>
 <li><a href="../../tools/reality-capture">Reality Capture</a></li>
 </ul>
-
 <h2 id="installing-cook-server">Installing Cook Server</h2>
-
 <h3 id="cloning-the-github-project">Cloning the Github project</h3>
-
 <ol>
 <li>Navigate to a folder of your choice</li>
 <li>Open a terminal window (shift-right click and select &ldquo;open command window here&rdquo;)</li>
@@ -391,45 +373,38 @@ while others rely on a strong CPU or use GPU (graphics card) based processing.</
 <li>Enter <code>npm install</code></li>
 <li>Enter <code>npm run build</code></li>
 </ol>
-
 <h3 id="configuration">Configuration</h3>
-
-<p>In the <code>server</code> subfolder, you find templates for the 3 required configuration files. Copy and rename the template, then
+<p>In the <code>server</code> subfolder, you find templates for the 3 required server configuration files. Copy and rename the template, then
 edit it to your needs. For example:</p>
 <div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">copy tools.template.json tools.json
-notepad.exe tools.json</code></pre></div>
-<p>Do this for each of the 3 template files. You should end up with 3 configuration files,
+notepad.exe tools.json
+</code></pre></div><p>Do this for each of the 3 template files. You should end up with 3 configuration files,
 <code>server.json</code>, <code>tools.json</code>, and <code>clients.json</code></p>
-
-<h5 id="server-json">server.json</h5>
-
+<h5 id="serverjson">server.json</h5>
 <p>Server configuration (directories, port, etc.)</p>
-
-<h5 id="tools-json">tools.json</h5>
-
+<h5 id="toolsjson">tools.json</h5>
 <p>Information about processing tools: path to the executable, version, timeout in seconds and the maximum number of instances this tool can run simultaneously.</p>
-
 <p>Please have a look at the tool documentation pages to see a configuration example for each tool.</p>
-
-<h5 id="clients-json">clients.json</h5>
-
+<h5 id="clientsjson">clients.json</h5>
 <p>IDs and names for the clients you want to grant access to the server.</p>
-
+<hr>
+<p>In the <code>client</code> subfolder, you find templates for the 1 required clientr configuration files. Copy and rename the template, then
+edit it to your needs. For example:</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">copy .env.template .env
+notepad.exe .env
+</code></pre></div><p>You should end up with 1 environment file,
+<code>.env</code></p>
+<h5 id="env">.env</h5>
+<p>Environment configuration. &lsquo;production&rsquo; or &lsquo;development&rsquo;</p>
 <h2 id="running-cook-server">Running Cook Server</h2>
-
 <h3 id="starting-cook-as-a-service-using-pm2">Starting Cook as a service using PM2</h3>
-
 <ul>
 <li>To start the service, enter <code>npm run start</code></li>
 <li>To stop the service, enter <code>npm run stop</code></li>
 </ul>
-
 <h3 id="running-cook-as-a-foreground-application">Running Cook as a foreground application</h3>
-
 <p>Enter <code>npm run server</code></p>
-
 <h3 id="starting-cook-in-development-mode-rebuilds-on-file-changes">Starting Cook in development mode (rebuilds on file changes)</h3>
-
 <p>Enter <code>npm run watch</code></p>
 
 </div>

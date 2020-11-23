@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,14 +322,9 @@
           
 <h1 class="title">UnwrapMesh</h1>
 <div class="content">
-  
-
-<h3 id="description">Description</h3>
-
+  <h3 id="description">Description</h3>
 <p>Unwraps a mesh&rsquo;s surface onto a plane and generates a set of texture coordinates for map baking.</p>
-
 <h3 id="options">Options</h3>
-
 <table>
 <thead>
 <tr>
@@ -336,7 +335,6 @@
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>inputMeshFile</td>
@@ -345,7 +343,6 @@
 <td></td>
 <td>Input mesh file name.</td>
 </tr>
-
 <tr>
 <td>outputMeshFile</td>
 <td>string</td>
@@ -353,7 +350,6 @@
 <td></td>
 <td>Output mesh file name.</td>
 </tr>
-
 <tr>
 <td>saveObj</td>
 <td>boolean</td>
@@ -361,7 +357,6 @@
 <td>false</td>
 <td>Unfold only: saves the mesh as (additional) OBJ file.</td>
 </tr>
-
 <tr>
 <td>saveFbx</td>
 <td>boolean</td>
@@ -369,7 +364,6 @@
 <td>false</td>
 <td>Unfold only: saves the mesh as (additional) FBX file.</td>
 </tr>
-
 <tr>
 <td>saveCollada</td>
 <td>boolean</td>
@@ -377,7 +371,6 @@
 <td>false</td>
 <td>Unfold only: saves the mesh as (additional) Collada file.</td>
 </tr>
-
 <tr>
 <td>decimate</td>
 <td>boolean</td>
@@ -385,7 +378,6 @@
 <td>false</td>
 <td>Mops only: indicates whether the mesh should be decimated before unwrapping.</td>
 </tr>
-
 <tr>
 <td>numFaces</td>
 <td>number</td>
@@ -393,7 +385,6 @@
 <td></td>
 <td>Mops only: if decimation is enabled, the target number of faces.</td>
 </tr>
-
 <tr>
 <td>mapSize</td>
 <td>number</td>
@@ -401,7 +392,6 @@
 <td>2048</td>
 <td>The size of the texture maps that will be baked (needed to calculate the gap between patches).</td>
 </tr>
-
 <tr>
 <td>segmentationStrength</td>
 <td>number</td>
@@ -409,7 +399,6 @@
 <td>0.5</td>
 <td>A number between 0 and 1 specifying how aggressively the mesh surface is segmented. Default is 0.5.</td>
 </tr>
-
 <tr>
 <td>packEffort</td>
 <td>number</td>
@@ -417,7 +406,6 @@
 <td>0.5</td>
 <td>A number between 0 and 1 specifying how tightly the patches should be packed. Default is 0.5.</td>
 </tr>
-
 <tr>
 <td>cutHandles</td>
 <td>boolean</td>
@@ -425,7 +413,6 @@
 <td>true</td>
 <td>Unfold only: decides whether handles can be cut during segmentation.</td>
 </tr>
-
 <tr>
 <td>unwrapMethod</td>
 <td>string</td>
@@ -433,7 +420,6 @@
 <td>&ldquo;forwardBijective&rdquo;</td>
 <td>Mops only: the algorithm to be used for unwrapping: &ldquo;conformal&rdquo;, &ldquo;fastConformal&rdquo;, &ldquo;isometric&rdquo;, &ldquo;forwardBijective&rdquo;, &ldquo;fixedBoundary&rdquo;.</td>
 </tr>
-
 <tr>
 <td>debug</td>
 <td>boolean</td>
@@ -441,7 +427,6 @@
 <td>false</td>
 <td>Unwrapping tool is run in debug mode. For Unfold: tool doesn&rsquo;t close after it&rsquo;s done.</td>
 </tr>
-
 <tr>
 <td>timeout</td>
 <td>number</td>
@@ -449,7 +434,6 @@
 <td>0</td>
 <td>Maximum task execution time in seconds.</td>
 </tr>
-
 <tr>
 <td>tool</td>
 <td>string</td>

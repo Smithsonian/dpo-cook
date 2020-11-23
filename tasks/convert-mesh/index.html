@@ -175,6 +175,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/generate-downloads/">Recipe: generate-downloads</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
     </li>
     
@@ -318,18 +322,12 @@
           
 <h1 class="title">ConvertMesh</h1>
 <div class="content">
-  
-
-<h3 id="description">Description</h3>
-
+  <h3 id="description">Description</h3>
 <p>Converts geometric mesh data between various file formats.</p>
-
 <p>The task is usually executed by Smithsonian&rsquo;s own MeshSmith tool, except for conversions from FBX to GLB or glTF
 which are done by FBX2glTF. Meshlab can also be used if specified explicitly (set <code>useMeshlab</code> to true), but
 Meshlab understands less input and output formats.</p>
-
 <h3 id="options">Options</h3>
-
 <table>
 <thead>
 <tr>
@@ -340,7 +338,6 @@ Meshlab understands less input and output formats.</p>
 <th>Description</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>inputMeshFile</td>
@@ -349,7 +346,6 @@ Meshlab understands less input and output formats.</p>
 <td></td>
 <td>Input mesh file name.</td>
 </tr>
-
 <tr>
 <td>outputMeshFile</td>
 <td>string</td>
@@ -357,7 +353,6 @@ Meshlab understands less input and output formats.</p>
 <td></td>
 <td>Converted (output) mesh file name.</td>
 </tr>
-
 <tr>
 <td>stripNormals</td>
 <td>boolean</td>
@@ -365,7 +360,6 @@ Meshlab understands less input and output formats.</p>
 <td>false</td>
 <td>Removes normals if true.</td>
 </tr>
-
 <tr>
 <td>stripTexCoords</td>
 <td>boolean</td>
@@ -373,7 +367,6 @@ Meshlab understands less input and output formats.</p>
 <td>false</td>
 <td>Removes UVs (texture coordinates) if true.</td>
 </tr>
-
 <tr>
 <td>joinVertices</td>
 <td>boolean</td>
@@ -381,7 +374,6 @@ Meshlab understands less input and output formats.</p>
 <td>false</td>
 <td>Joins identical vertices if true. Using this option can reduce file size significantly.</td>
 </tr>
-
 <tr>
 <td>useCompression</td>
 <td>boolean</td>
@@ -389,7 +381,6 @@ Meshlab understands less input and output formats.</p>
 <td>false</td>
 <td>FBX2glTF only: use DRACO mesh compression.</td>
 </tr>
-
 <tr>
 <td>computeNormals</td>
 <td>string</td>
@@ -397,7 +388,6 @@ Meshlab understands less input and output formats.</p>
 <td>-</td>
 <td>FBX2glTF only: recompute normals. Valid options: &ldquo;never&rdquo;, &ldquo;broken&rdquo;, &ldquo;missing&rdquo;, &ldquo;always&rdquo;.</td>
 </tr>
-
 <tr>
 <td>scale</td>
 <td>number</td>
@@ -405,7 +395,6 @@ Meshlab understands less input and output formats.</p>
 <td>1.0</td>
 <td>MeshSmith only: scales the mesh by the given factor if set.</td>
 </tr>
-
 <tr>
 <td>translate</td>
 <td>[x,y,z]</td>
@@ -413,7 +402,6 @@ Meshlab understands less input and output formats.</p>
 <td>[0,0,0]</td>
 <td>MeshSmith only: translates the mesh by the given vector if set.</td>
 </tr>
-
 <tr>
 <td>swizzle</td>
 <td>string</td>
@@ -421,7 +409,6 @@ Meshlab understands less input and output formats.</p>
 <td>-</td>
 <td>MeshSmith only: Custom swizzle operation if set. Example: &ldquo;X+Z+Y-&rdquo;.</td>
 </tr>
-
 <tr>
 <td>timeout</td>
 <td>number</td>
@@ -429,7 +416,6 @@ Meshlab understands less input and output formats.</p>
 <td>0</td>
 <td>Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup).</td>
 </tr>
-
 <tr>
 <td>useMeshlab</td>
 <td>boolean</td>
