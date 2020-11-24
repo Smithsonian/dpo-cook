@@ -64,7 +64,6 @@
         "web-asset-usdz": {
             "task": "GenerateUsdz",
             "description": "Create usdz asset",
-            "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
                     "webAssetUsdz": "baseName & '.usdz'"
