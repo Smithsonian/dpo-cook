@@ -1,6 +1,6 @@
 {
     "id": "a12161bb-265f-4979-80db-65f739dcc156",
-    "name": "web-usdz",
+    "name": "generate-usdz",
     "description": "Create usdz web asset",
     "version": "1",
     "start": "pickup",
@@ -64,7 +64,6 @@
         "web-asset-usdz": {
             "task": "GenerateUsdz",
             "description": "Create usdz asset",
-            "skip": "$not(generateBinary)",
             "pre": {
                 "deliverables": {
                     "webAssetUsdz": "baseName & '.usdz'"

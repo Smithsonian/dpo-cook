@@ -1,6 +1,6 @@
 {
     "id": "271d9c8d-08af-45db-a940-3f0115d0ba00",
-    "name": "orient-obj-to-svx",
+    "name": "si-orient-model-to-svx",
     "description": "Orients an .obj to match the supplied .svx",
     "version": "1",
     "start": "log",

@@ -1,7 +1,7 @@
 {
     "id": "05debd35-efab-40d4-9145-cb6d819d1859",
-    "name": "web-thumb",
-    "description": "Generates thumbnail (20k faces, 512x512 maps) glTF/GLB web asset",
+    "name": "generate-web-gltf",
+    "description": "Generates glTF/GLB web asset",
     "version": "13",
     "start": "log",
 
@@ -70,6 +70,10 @@
             "cleanupMesh": {
                 "type": "boolean",
                 "default": false
+            },
+            "optimalPlacement": {
+                "type": "boolean",
+                "default": true
             },
             "decimationTool": {
                 "type": "string",
@@ -232,6 +236,7 @@
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": "tangentSpaceNormals"
             },
             "success": "'unwrap-rizom'",

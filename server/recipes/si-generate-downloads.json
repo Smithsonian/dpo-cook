@@ -1,6 +1,6 @@
 {
     "id": "fcef7b5c-2df5-4a63-8fe9-365dd1a5e39c",
-    "name": "generate-downloads",
+    "name": "si-generate-downloads",
     "description": "Generates download packages based on master assets.",
     "version": "1",
     "start": "log",
@@ -100,10 +100,6 @@
                 "type": "string",
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "RapidCompact"
-            },
-            "minComponentSize": {
-                "type": "string",
-                "default": "'2%'"
             },
             "segmentationStrength150": {
                 "type": "number",
@@ -274,12 +270,14 @@
             "task": "ReorientMesh",
             "description": "Reorient Master mesh to match Voyager orientation and optionally scale to meters",
             "pre": {
-                "reorientedMeshFileMaster": "$firstTrue(highPolyMeshFile, baseName & '-master-geometry.obj')"
+                "deliverables": {
+                    "reorientedMeshFileMaster": "$firstTrue(highPolyMeshFile, baseName & '-master-geometry.obj')"
+                }
             },
             "parameters": {
                 "inputMeshFile": "highPolyMeshFile",
                 "inputVoyagerFile": "documentFile",
-                "outputMeshFile": "reorientedMeshFileMaster",
+                "outputMeshFile": "deliverables.reorientedMeshFileMaster",
                 "scaleToMeters": "scaleToMeters"
             },
             "success": "'sync-mtl-master'",
@@ -290,14 +288,16 @@
             "description": "Sync mtl references for master asset",
             "skip": "$not(bakeDiffuse)",
             "pre": {
-                "mtlFile_master": "$firstTrue(inputMTLFile, baseName & '-master.mtl')"
+                "deliverables": {
+                    "mtlFile_master": "$firstTrue(inputMTLFile, baseName & '-master.mtl')"
+                }
             },
             "parameters": {
-                "objFile": "reorientedMeshFileMaster",
-                "mtlFile": "mtlFile_master",
+                "objFile": "deliverables.reorientedMeshFileMaster",
+                "mtlFile": "deliverables.mtlFile_master",
                 "textureFile": "highPolyDiffuseMapFile"
             },
-            "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-150' : 'decimate-meshlab-150'",
+            "success": "'decimate-meshlab-150'",
             "failure": "$failure"
         },
         "decimate-rapid-150": {
@@ -308,7 +308,7 @@
                 "decimatedMeshFile": "baseName & '-decimated-rapid.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, reorientedMeshFileMaster)",
+                "inputMeshFile": "$firstTrue(processedMeshFile, deliverables.reorientedMeshFileMaster)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces150",
                 "cleanup": "cleanupMesh",
@@ -327,11 +327,10 @@
                 "decimatedMeshFile": "baseName & '-decimated-meshlab-150.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, reorientedMeshFileMaster)",
+                "inputMeshFile": "$firstTrue(processedMeshFile, deliverables.reorientedMeshFileMaster)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces150",
                 "cleanup": "cleanupMesh",
-                "minComponentSize": "minComponentSize",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
@@ -346,11 +345,13 @@
             "skip": "$not(generate150kAssets)",
             "pre": {
                 "unwrappedMeshFbxFile": "baseName & '-150k.fbx'",
-                "scene_unwrappedMesh": "baseName & '-150k.obj'"
+                "deliverables": {
+                    "scene_unwrappedMesh": "baseName & '-150k.obj'"
+                }
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "scene_unwrappedMesh",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSize150",
@@ -365,7 +366,7 @@
             "description": "Calculate mesh size and max. ray distance for bake",
             "skip": "$not(generate150kAssets)",
             "parameters": {
-                "meshFile": "scene_unwrappedMesh",
+                "meshFile": "deliverables.scene_unwrappedMesh",
                 "tool": "'MeshSmith'"
             },
             "post": {
@@ -398,11 +399,13 @@
                 "timeout": 1200
             },
             "post": {
-                "diffuseMapUncompressed150": "bakeDiffuse ? (baseMeshMapName150 & '-diffuse.png') : ''",
-                "vcolMapUncompressed150": "bakeVertexColor ? (baseMeshName150 & '_vcols.png') : ''",
-                "occlusionMapUncompressed150": "bakeOcclusion ? (baseMeshMapName150 & '-occlusion.png') : ''",
-                "normalMapUncompressed150": "bakeNormals ? (baseMeshMapName150 & '-normals.png') : ''",
-                "testMap150": "bakeTest ? (baseMeshMapName150 & '-test.png') : ''"
+                "deliverables": {
+                    "diffuseMapUncompressed150": "bakeDiffuse ? (baseMeshMapName150 & '-diffuse.png') : ''",
+                    "vcolMapUncompressed150": "bakeVertexColor ? (baseMeshName150 & '_vcols.png') : ''",
+                    "occlusionMapUncompressed150": "bakeOcclusion ? (baseMeshMapName150 & '-occlusion.png') : ''",
+                    "normalMapUncompressed150": "bakeNormals ? (baseMeshMapName150 & '-normals.png') : ''",
+                    "testMap150": "bakeTest ? (baseMeshMapName150 & '-test.png') : ''"
+                }
             },
             "success": "'convert-diffuse-map-high'",
             "failure": "$failure"
@@ -412,11 +415,13 @@
             "description": "Convert Diffuse Map",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generate150kAssets)",
             "pre": {
-                "scene_diffuseMapHigh": "baseMeshMapName150 & '-diffuse.jpg'"
+                "deliverables": {
+                    "scene_diffuseMapHigh": "baseMeshMapName150 & '-diffuse.jpg'"
+                }
             },
             "parameters": {
-                "inputImageFile": "bakeVertexColor ? vcolMapUncompressed150 : diffuseMapUncompressed150",
-                "outputImageFile": "scene_diffuseMapHigh",
+                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressed150 : deliverables.diffuseMapUncompressed150",
+                "outputImageFile": "deliverables.scene_diffuseMapHigh",
                 "quality": "diffuseMapQuality150"
             },
             "success": "'convert-occlusion-map-high'",
@@ -427,11 +432,13 @@
             "description": "Convert Occlusion Map High",
             "skip": "$not(bakeOcclusion) or $not(generate150kAssets)",
             "pre": {
-                "scene_occlusionMapHigh": "baseMeshMapName150 & '-occlusion.jpg'"
+                "deliverables": {
+                    "scene_occlusionMapHigh": "baseMeshMapName150 & '-occlusion.jpg'"
+                }
             },
             "parameters": {
-                "inputImageFile": "occlusionMapUncompressed150",
-                "outputImageFile": "scene_occlusionMapHigh",
+                "inputImageFile": "deliverables.occlusionMapUncompressed150",
+                "outputImageFile": "deliverables.scene_occlusionMapHigh",
                 "quality": "occlusionMapQuality150"
             },
             "success": "'convert-normal-map-high'",
@@ -442,11 +449,13 @@
             "description": "Convert Normal Map High",
             "skip": "$not(bakeNormals) or $not(generate150kAssets)",
             "pre": {
-                "scene_normalMapHigh": "baseMeshMapName150 & '-normals.jpg'"
+                "deliverables": {
+                    "scene_normalMapHigh": "baseMeshMapName150 & '-normals.jpg'"
+                }
             },
             "parameters": {
-                "inputImageFile": "normalMapUncompressed150",
-                "outputImageFile": "scene_normalMapHigh",
+                "inputImageFile": "deliverables.normalMapUncompressed150",
+                "outputImageFile": "deliverables.scene_normalMapHigh",
                 "quality": "normalMapQuality150"
             },
             "success": "'web-asset-glb-draco-high'",
@@ -463,10 +472,10 @@
             },
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetHighGlbCompressed",
-                "meshFile": "scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
-                "occlusionMapFile": "bakeOcclusion ? scene_occlusionMapHigh : ''",
-                "normalMapFile": "bakeNormals ? scene_normalMapHigh : ''",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
+                "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": true,
                 "compressionLevel": 10,
@@ -487,10 +496,10 @@
             },
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetHighGlbUncompressed",
-                "meshFile": "scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
-                "occlusionMapFile": "bakeOcclusion ? scene_occlusionMapHigh : ''",
-                "normalMapFile": "bakeNormals ? scene_normalMapHigh : ''",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
+                "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": false,
                 "compressionLevel": 10,
@@ -505,15 +514,17 @@
             "description": "Create glTF asset (high)",
             "skip": "$not(generateGltf) or $not(generate150kAssets)",
             "pre": {
-                "scene_webAssetHighGltf": "baseMeshMapName150 & '.gltf'",
-                "scene_webAssetHighBin": "baseMeshMapName150 & '.bin'"
+                "deliverables": {
+                    "scene_webAssetHighGltf": "baseMeshMapName150 & '.gltf'",
+                    "scene_webAssetHighBin": "baseMeshMapName150 & '.bin'"
+                }
             },
             "parameters": {
-                "outputFile": "scene_webAssetHighGltf",
-                "meshFile": "scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
-                "occlusionMapFile": "bakeOcclusion ? scene_occlusionMapHigh : ''",
-                "normalMapFile": "bakeNormals ? scene_normalMapHigh : ''",
+                "outputFile": "deliverables.scene_webAssetHighGltf",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapHigh : ''",
+                "occlusionMapFile": "bakeOcclusion ? deliverables.scene_occlusionMapHigh : ''",
+                "normalMapFile": "bakeNormals ? deliverables.scene_normalMapHigh : ''",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": "useCompression150",
                 "compressionLevel": 10,
@@ -528,12 +539,14 @@
             "description": "Sync mtl references for 150k asset",
             "skip": "$not(generate150kAssets) or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
             "pre": {
-                "mtlFile_150k": "baseMeshMapName150 & '.mtl'"
+                "deliverables": {
+                    "mtlFile_150k": "baseMeshMapName150 & '.mtl'"
+                }
             },
             "parameters": {
-                "objFile": "scene_unwrappedMesh",
-                "mtlFile": "mtlFile_150k",
-                "textureFile": "scene_diffuseMapHigh"
+                "objFile": "deliverables.scene_unwrappedMesh",
+                "mtlFile": "deliverables.mtlFile_150k",
+                "textureFile": "deliverables.scene_diffuseMapHigh"
             },
             "success": "'usdz-asset'",
             "failure": "$failure"
@@ -548,9 +561,9 @@
                 }
             },
             "parameters": {
-                "objFile": "scene_unwrappedMesh",
-                "mtlFile": "mtlFile_150k",
-                "textureFile": "scene_diffuseMapHigh",
+                "objFile": "deliverables.scene_unwrappedMesh",
+                "mtlFile": "deliverables.mtlFile_150k",
+                "textureFile": "deliverables.scene_diffuseMapHigh",
                 "outputFile": "deliverables.usdz"
             },
             "success": "'inspect-mesh'",
@@ -561,11 +574,13 @@
             "description": "Inspect mesh health and statistics",
             "skip": "$not(inspectMesh)",
             "pre": {
-                "inspectionReport": "inspectMesh ? baseName & '-inspection.json' : ''"
+                "deliverables": {
+                    "inspectionReport": "inspectMesh ? baseName & '-inspection.json' : ''"
+                }
             },
             "parameters": {
                 "meshFile": "highPolyMeshFile",
-                "reportFile": "inspectionReport"
+                "reportFile": "deliverables.inspectionReport"
             },
             "success": "'remesh-hd'",
             "failure": "$failure"
@@ -575,15 +590,17 @@
             "description": "Generate a new quad-based mesh of the master for 1000k obj",
             "skip": "remeshFaces < 1",
             "pre": {
-                "remeshedMeshFile": "$baseMeshName(baseName, remeshFaces) & '-1000k-remeshed.obj'"
+                "deliverables": {
+                    "remeshedMeshFile": "$baseMeshName(baseName, remeshFaces) & '-1000k-remeshed.obj'"
+                }
             },
             "parameters": {
                 "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
-                "outputMeshFile": "remeshedMeshFile",
+                "outputMeshFile": "deliverables.remeshedMeshFile",
                 "numFaces": "numFaces1000"
             },
             "post": {
-                "processedMeshFile": "remeshedMeshFile"
+                "processedMeshFile": "deliverables.remeshedMeshFile"
             },
             "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-hd' : 'decimate-meshlab-hd'",
             "failure": "$failure"
@@ -619,7 +636,6 @@
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces1000",
                 "cleanup": "cleanupMesh",
-                "minComponentSize": "minComponentSize",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
@@ -634,11 +650,13 @@
             "skip": "$not(generate1000kAssets)",
             "pre": {
                 "unwrappedMeshFbxFile": "baseName & '-1000k.fbx'",
-                "unwrappedMesh": "baseName & '-1000k.obj'"
+                "deliverables": {
+                    "unwrappedMesh": "baseName & '-1000k.obj'"
+                }
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "unwrappedMesh",
+                "outputMeshFile": "deliverables.unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSize1000",
@@ -654,7 +672,7 @@
             "description": "Calculate mesh size and max. ray distance for bake for 1000k obj",
             "skip": "$not(generate1000kAssets)",
             "parameters": {
-                "meshFile": "unwrappedMesh",
+                "meshFile": "deliverables.unwrappedMesh",
                 "tool": "'MeshSmith'"
             },
             "post": {
@@ -687,11 +705,13 @@
                 "timeout": 3600
             },
             "post": {
-                "diffuseMapUncompressed": "bakeDiffuse ? (baseName & '-1000k-8192-diffuse.png') : ''",
-                "vcolMapUncompressed": "bakeVertexColor ? (baseName & '-1000k-8192_vcols.png') : ''",
-                "occlusionMapUncompressed": "bakeOcclusion ? (baseName & '-1000k-8192-occlusion.png') : ''",
-                "normalMapUncompressed": "bakeNormals ? (baseName & '-1000k-8192-normals.png') : ''",
-                "testMap": "bakeTest ? (baseMeshMapName1000 & '-test.png') : ''"
+                "deliverables": {
+                    "diffuseMapUncompressed": "bakeDiffuse ? (baseName & '-1000k-8192-diffuse.png') : ''",
+                    "vcolMapUncompressed": "bakeVertexColor ? (baseName & '-1000k-8192_vcols.png') : ''",
+                    "occlusionMapUncompressed": "bakeOcclusion ? (baseName & '-1000k-8192-occlusion.png') : ''",
+                    "normalMapUncompressed": "bakeNormals ? (baseName & '-1000k-8192-normals.png') : ''",
+                    "testMap": "bakeTest ? (baseMeshMapName1000 & '-test.png') : ''"
+                }
             },
             "success": "'convert-diffuse-map-hd'",
             "failure": "$failure"
@@ -701,11 +721,13 @@
             "description": "Convert Diffuse Map for 1000k obj",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generate1000kAssets)",
             "pre": {
-                "diffuseMap": "baseName & '-1000k-8192-diffuse.jpg'"
+                "deliverables": {
+                    "diffuseMap": "baseName & '-1000k-8192-diffuse.jpg'"
+                }
             },
             "parameters": {
-                "inputImageFile": "bakeVertexColor ? vcolMapUncompressed : diffuseMapUncompressed",
-                "outputImageFile": "diffuseMap",
+                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressed : deliverables.diffuseMapUncompressed",
+                "outputImageFile": "deliverables.diffuseMap",
                 "quality": "diffuseMapQuality1000"
             },
             "success": "'convert-occlusion-map-hd'",
@@ -716,11 +738,13 @@
             "description": "Convert Occlusion Map for 1000k obj",
             "skip": "$not(bakeOcclusion) or $not(generate1000kAssets)",
             "pre": {
-                "occlusionMap": "baseName & '-1000k-8192-occlusion.jpg'"
+                "deliverables": {
+                    "occlusionMap": "baseName & '-1000k-8192-occlusion.jpg'"
+                }
             },
             "parameters": {
-                "inputImageFile": "occlusionMapUncompressed",
-                "outputImageFile": "occlusionMap",
+                "inputImageFile": "deliverables.occlusionMapUncompressed",
+                "outputImageFile": "deliverables.occlusionMap",
                 "quality": "occlusionMapQuality1000"
             },
             "success": "'convert-normal-map-hd'",
@@ -731,11 +755,13 @@
             "description": "Convert Normal Map for 1000k obj",
             "skip": "$not(bakeNormals) or $not(generate1000kAssets)",
             "pre": {
-                "normalMap": "baseName & '-1000k-8192-normals.jpg'"
+                "deliverables": {
+                    "normalMap": "baseName & '-1000k-8192-normals.jpg'"
+                }
             },
             "parameters": {
-                "inputImageFile": "normalMapUncompressed",
-                "outputImageFile": "normalMap",
+                "inputImageFile": "deliverables.normalMapUncompressed",
+                "outputImageFile": "deliverables.normalMap",
                 "quality": "normalMapQuality1000"
             },
             "success": "'web-asset-glb-hd'",
@@ -747,15 +773,15 @@
             "skip": "$not(generate1000kAssets)",
             "pre": {
                 "deliverables": {
-                    "webAssetGlb1000k": "scaleToMeters ? baseName & '-1000k-8192_std.glb' : baseName & '-1000k-8192.glb'"
+                    "webAssetGlb": "scaleToMeters ? baseName & '-1000k-8192_std.glb' : baseName & '-1000k-8192.glb'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetGlb1000k",
-                "meshFile": "unwrappedMesh",
-                "diffuseMapFile": "diffuseMap",
-                "occlusionMapFile": "occlusionMap",
-                "normalMapFile": "normalMap",
+                "outputFile": "deliverables.webAssetGlb",
+                "meshFile": "deliverables.unwrappedMesh",
+                "diffuseMapFile": "deliverables.diffuseMap",
+                "occlusionMapFile": "deliverables.occlusionMap",
+                "normalMapFile": "deliverables.normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "zoneMapFile": "zoneMapFile",
                 "alignCenter": "alignCenter",
@@ -774,15 +800,17 @@
             "description": "Create glTF asset for 1000k",
             "skip": "$not(generate1000kAssets)",
             "pre": {
-                "webAssetGltf1000k": "baseName & '-1000k-8192.gltf'",
-                "webAssetBin1000k": "baseName & '-1000k-8192.bin'"
+                "deliverables": {
+                    "webAssetGltf": "baseName & '-1000k-8192.gltf'",
+                    "webAssetBin": "baseName & '-1000k-8192.bin'"
+                }
             },
             "parameters": {
-                "outputFile": "webAssetGltf1000k",
-                "meshFile": "unwrappedMesh",
-                "diffuseMapFile": "diffuseMap",
-                "occlusionMapFile": "occlusionMap",
-                "normalMapFile": "normalMap",
+                "outputFile": "deliverables.webAssetGltf",
+                "meshFile": "deliverables.unwrappedMesh",
+                "diffuseMapFile": "deliverables.diffuseMap",
+                "occlusionMapFile": "deliverables.occlusionMap",
+                "normalMapFile": "deliverables.normalMap",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "zoneMapFile": "zoneMapFile",
                 "alignCenter": "alignCenter",
@@ -800,12 +828,14 @@
             "description": "Sync mtl references for 1000k asset",
             "skip": "$not(generate1000kAssets)  or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
             "pre": {
-                "mtlFile_1000k": "baseName & '-1000k.mtl'"
+                "deliverables": {
+                    "mtlFile_1000k": "baseName & '-1000k.mtl'"
+                }
             },
             "parameters": {
-                "objFile": "unwrappedMesh",
-                "mtlFile": "mtlFile_1000k",
-                "textureFile": "diffuseMap"
+                "objFile": "deliverables.unwrappedMesh",
+                "mtlFile": "deliverables.mtlFile_1000k",
+                "textureFile": "deliverables.diffuseMap"
             },
             "success": "'zip-master'",
             "failure": "$failure"
@@ -813,16 +843,11 @@
         "zip-master": {
             "task": "Zip",
             "description": "Zip up master assets",
-            "pre": {
-                "deliverables": {
-                    "master_zip": "scaleToMeters ? baseName & '-full_resolution-obj_std.zip' : baseName & '-full_resolution-obj.zip'"
-                }
-            },
             "parameters": {
-                "inputFile1": "reorientedMeshFileMaster",
+                "inputFile1": "deliverables.reorientedMeshFileMaster",
                 "inputFile2": "highPolyDiffuseMapFile",
-                "inputFile3": "mtlFile_master",
-                "outputFile": "deliverables.master_zip"
+                "inputFile3": "deliverables.mtlFile_master",
+                "outputFile": "scaleToMeters ? baseName & '-full_resolution-obj_std.zip' : baseName & '-full_resolution-obj.zip'"
             },
             "success": "'zip-150k-gltf'",
             "failure": "$failure"
@@ -831,18 +856,13 @@
             "task": "Zip",
             "description": "Zip up 150k gltf assets",
             "skip": "$not(generate150kAssets)",
-            "pre": {
-                "deliverables": {
-                    "gltf_low_zip": "scaleToMeters ? baseMeshMapName150 & '-gltf_std.zip' : baseMeshMapName150 & '-gltf.zip'"
-                }
-            },
             "parameters": {
-                "inputFile1": "scene_webAssetHighGltf",
-                "inputFile2": "scene_webAssetHighBin",
-                "inputFile3": "scene_diffuseMapHigh",
-                "inputFile4": "scene_occlusionMapHigh",
-                "inputFile5": "scene_normalMapHigh",
-                "outputFile": "deliverables.gltf_low_zip"
+                "inputFile1": "deliverables.scene_webAssetHighGltf",
+                "inputFile2": "deliverables.scene_webAssetHighBin",
+                "inputFile3": "deliverables.scene_diffuseMapHigh",
+                "inputFile4": "deliverables.scene_occlusionMapHigh",
+                "inputFile5": "deliverables.scene_normalMapHigh",
+                "outputFile": "scaleToMeters ? baseMeshMapName150 & '-gltf_std.zip' : baseMeshMapName150 & '-gltf.zip'"
             },
             "success": "'zip-150k-obj'",
             "failure": "$failure"
@@ -851,18 +871,13 @@
             "task": "Zip",
             "description": "Zip up 150k obj assets",
             "skip": "$not(generate150kAssets)",
-            "pre": {
-                "deliverables": {
-                    "obj_low_zip": "scaleToMeters ? baseMeshMapName150 & '-obj_std.zip' : baseMeshMapName150 & '-obj.zip'"
-                }
-            },
             "parameters": {
-                "inputFile1": "scene_unwrappedMesh",
-                "inputFile2": "mtlFile_150k",
-                "inputFile3": "scene_diffuseMapHigh",
-                "inputFile4": "scene_occlusionMapHigh",
-                "inputFile5": "scene_normalMapHigh",
-                "outputFile": "deliverables.obj_low_zip"
+                "inputFile1": "deliverables.scene_unwrappedMesh",
+                "inputFile2": "deliverables.mtlFile_150k",
+                "inputFile3": "deliverables.scene_diffuseMapHigh",
+                "inputFile4": "deliverables.scene_occlusionMapHigh",
+                "inputFile5": "deliverables.scene_normalMapHigh",
+                "outputFile": "scaleToMeters ? baseMeshMapName150 & '-obj_std.zip' : baseMeshMapName150 & '-obj.zip'"
             },
             "success": "'zip-1000k-gltf'",
             "failure": "$failure"
@@ -871,18 +886,13 @@
             "task": "Zip",
             "description": "Zip up 1000k gltf assets",
             "skip": "$not(generate1000kAssets)",
-            "pre": {
-                "deliverables": {
-                    "gltf_high_zip": "scaleToMeters ? baseName & '-1000k-8192-gltf_std.zip' : baseName & '-1000k-8192-gltf.zip'"
-                }
-            },
             "parameters": {
-                "inputFile1": "webAssetGltf1000k",
-                "inputFile2": "webAssetBin1000k",
-                "inputFile3": "diffuseMap",
-                "inputFile4": "occlusionMap",
-                "inputFile5": "normalMap",
-                "outputFile": "deliverables.gltf_high_zip"
+                "inputFile1": "deliverables.webAssetGltf",
+                "inputFile2": "deliverables.webAssetBin",
+                "inputFile3": "deliverables.diffuseMap",
+                "inputFile4": "deliverables.occlusionMap",
+                "inputFile5": "deliverables.normalMap",
+                "outputFile": "scaleToMeters ? baseName & '-1000k-8192-gltf_std.zip' : baseName & '-1000k-8192-gltf.zip'"
             },
             "success": "'zip-1000k-obj'",
             "failure": "$failure"
@@ -891,18 +901,13 @@
             "task": "Zip",
             "description": "Zip up 1000k obj assets",
             "skip": "$not(generate1000kAssets)",
-            "pre": {
-                "deliverables": {
-                    "obj_high_zip": "scaleToMeters ? baseName & '-1000k-8192-obj_std.zip' : baseName & '-1000k-8192-obj.zip'"
-                }
-            },
             "parameters": {
-                "inputFile1": "unwrappedMesh",
-                "inputFile2": "mtlFile_1000k",
-                "inputFile3": "diffuseMap",
-                "inputFile4": "occlusionMap",
-                "inputFile5": "normalMap",
-                "outputFile": "deliverables.obj_high_zip"
+                "inputFile1": "deliverables.unwrappedMesh",
+                "inputFile2": "deliverables.mtlFile_1000k",
+                "inputFile3": "deliverables.diffuseMap",
+                "inputFile4": "deliverables.occlusionMap",
+                "inputFile5": "deliverables.normalMap",
+                "outputFile": "scaleToMeters ? baseName & '-1000k-8192-obj_std.zip' : baseName & '-1000k-8192-obj.zip'"
             },
             "success": "'delivery'",
             "failure": "$failure"

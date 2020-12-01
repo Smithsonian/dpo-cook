@@ -1,6 +1,6 @@
 {
     "id": "c55feac5-5e12-4d61-ac34-a62aa2f378ac",
-    "name": "transform",
+    "name": "convert-transform",
     "description": "Converts and transforms a mesh",
     "version": "1",
     "start": "pickup",

@@ -85,7 +85,7 @@ export default class DocumentTask extends Task
             modelName: { type: "string" },
             units: { type: "string", enum: [ "mm", "cm", "m", "in", "ft", "yd" ] },
             derivativeUsage: { type: "string", enum: [ "Web2D", "Web3D", "Print", "Editorial" ] },
-            derivativeQuality: { type: "string", enum: [ "Thumb", "Low", "Medium", "High", "Highest", "LOD", "Stream"] },
+            derivativeQuality: { type: "string", enum: [ "Thumb", "Low", "Medium", "High", "Highest", "AR", "LOD", "Stream"] },
             modelFile: { type: "string" },
             meshFile: { type: "string" },
             diffuseMapFile: { type: "string" },

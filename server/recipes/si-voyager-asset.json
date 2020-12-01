@@ -1,6 +1,6 @@
 {
     "id": "5490a618-4ebd-4763-a96a-abb9062c786b",
-    "name": "webasset",
+    "name": "si-voyager-asset",
     "description": "Create glTF web asset",
     "version": "4",
     "start": "pickup",
