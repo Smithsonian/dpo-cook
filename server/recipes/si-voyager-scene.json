@@ -23,10 +23,6 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "preDecimatedUnwrappedTargetFile": {
-                "type": "string",
-                "minLength": 1
-            },
             "svxFile": {
                 "type": "string",
                 "minLength": 1,
@@ -46,6 +42,14 @@
                 "minimum": 5000,
                 "multipleOf": 1000,
                 "default": 20000
+            },
+            "preDecimatedUnwrappedThumbTargetFile": {
+                "type": "string",
+                "minLength": 1
+            },
+            "preDecimatedUnwrappedMultiTargetFile": {
+                "type": "string",
+                "minLength": 1
             },
             "numFacesWebMulti": {
                 "type": "integer",
@@ -177,6 +181,11 @@
         "required": [
             "sourceMeshFile", "units"
         ],
+        "advanced": [
+            "bakeTest", "quadsOnly", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthWebMulti", "unwrapSegmentationStrengthWebThumb", "remeshFaces",
+            "modelIndex", "cleanupMesh", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
+            "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance"
+        ],
         "additionalProperties": false
     },
 
@@ -232,7 +241,7 @@
                 "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-webthumb.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, sourceMeshFile)",
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebThumb",
                 "cleanup": "cleanupMesh",
@@ -250,7 +259,7 @@
                 "decimatedMeshFile": "outputFileBaseName & '-decimated-meshlab-webthumb.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFileWebThumb, sourceMeshFile)",
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebThumb",
                 "cleanup": "cleanupMesh",
@@ -434,7 +443,7 @@
                 "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedMultiTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebMulti",
                 "cleanup": "cleanupMesh",
@@ -452,7 +461,7 @@
                 "decimatedMeshFile": "outputFileBaseName & '-decimated-meshlab-webmulti.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedMultiTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFacesWebMulti",
                 "cleanup": "cleanupMesh",

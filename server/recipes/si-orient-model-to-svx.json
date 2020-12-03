@@ -1,45 +1,41 @@
 {
     "id": "271d9c8d-08af-45db-a940-3f0115d0ba00",
     "name": "si-orient-model-to-svx",
-    "description": "Orients an .obj to match the supplied .svx",
-    "version": "1",
+    "description": "Orients a model (obj, ply) to match the supplied .svx",
+    "version": "2",
     "start": "log",
 
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "inputMeshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "inputVoyagerFile": {
+            "svxFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "inputMTLFile": {
+            "sourceMTLFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "highPolyDiffuseMapFile": {
+            "sourceDiffuseMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "outputMeshFile": {
-                "type": "string",
-                "minLength": 1
-            },
-            "baseName": {
+            "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
             }
         },
         "required": [
-            "inputMeshFile",
-            "inputVoyagerFile"
+            "sourceMeshFile",
+            "svxFile"
         ],
         "additionalProperties": false
     },
@@ -49,8 +45,8 @@
             "task": "Log",
             "description": "Enable logging services",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, inputMeshFile))",
-                "baseMeshName": "$baseMeshName($firstTrue(baseName, inputMeshFile))"
+                "baseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(outputFileBaseName, sourceMeshFile))"
             },
             "parameters": {
                 "logToConsole": true,
@@ -63,16 +59,16 @@
             "task": "Pickup",
             "description": "Fetch input files from client",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, inputMeshFile))"
+                "baseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))"
             },
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "inputMeshFile": "inputMeshFile",
-                    "inputVoyagerFile": "inputVoyagerFile",
-                    "inputMTLFile": "inputMTLFile",
-                    "highPolyDiffuseMapFile": "highPolyDiffuseMapFile"
+                    "inputMeshFile": "sourceMeshFile",
+                    "inputVoyagerFile": "svxFile",
+                    "inputMTLFile": "sourceMTLFile",
+                    "highPolyDiffuseMapFile": "sourceDiffuseMapFile"
                 }
             },
             "success": "'reorient'",
@@ -83,12 +79,12 @@
             "description": "Reorient mesh to match Voyager orientation",
             "pre": {
                 "deliverables": {
-                    "reorientedMeshFile": "$firstTrue(outputMeshFile, baseName & '_oriented' & $extName(inputMeshFile))"
+                    "reorientedMeshFile": "$firstTrue(outputMeshFile, outputFileBaseName & '_oriented' & $extName(sourceMeshFile))"
                 }
             },
             "parameters": {
-                "inputMeshFile": "inputMeshFile",
-                "inputVoyagerFile": "inputVoyagerFile",
+                "inputMeshFile": "sourceMeshFile",
+                "inputVoyagerFile": "svxFile",
                 "outputMeshFile": "deliverables.reorientedMeshFile"
             },
             "success": "'delivery'",
