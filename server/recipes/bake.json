@@ -8,22 +8,22 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "highPolyMeshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "highPolyDiffuseMapFile": {
+            "sourceDiffuseMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "lowPolyUnwrappedMeshFile": {
+            "preDecimatedUnwrappedTargetFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "baseName": {
+            "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
             },
@@ -89,8 +89,8 @@
             }
         },
         "required": [
-            "highPolyMeshFile",
-            "lowPolyUnwrappedMeshFile"
+            "sourceMeshFile",
+            "preDecimatedUnwrappedTargetFile"
         ],
         "additionalProperties": false
     },
@@ -101,7 +101,7 @@
             "description": "Calculate mesh size and max. ray distance for bake",
             "skip": "maxRayDistance > 0",
             "parameters": {
-                "meshFile": "lowPolyUnwrappedMeshFile",
+                "meshFile": "preDecimatedUnwrappedTargetFile",
                 "tool": "'MeshSmith'"
             },
             "post": {
@@ -114,16 +114,15 @@
             "task": "BakeMaps",
             "description": "Bake diffuse, normal and occlusion maps using xNormal",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
-                "baseMeshName": "$baseMeshName(highPolyMeshFile, numFaces)",
-                "baseMeshMapName": "$baseMeshMapName(highPolyMeshFile, numFaces, mapSize)",
-                "bakeDiffuse": "$exists(highPolyDiffuseMapFile) or bakeVertexColor",
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))",
+                "baseMeshMapName": "$baseMeshMapName(outputFileBaseName, numFaces, mapSize)",
+                "bakeDiffuse": "$exists(sourceDiffuseMapFile) or bakeVertexColor",
                 "mapBaseName": "baseMeshMapName & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "highPolyMeshFile",
-                "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
-                "lowPolyUnwrappedMeshFile": "lowPolyUnwrappedMeshFile",
+                "highPolyMeshFile": "sourceMeshFile",
+                "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
+                "lowPolyUnwrappedMeshFile": "preDecimatedUnwrappedTargetFile",
                 "mapBaseName": "mapBaseName",
                 "mapSize": "mapSize",
                 "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",

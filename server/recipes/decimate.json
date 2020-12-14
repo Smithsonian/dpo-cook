@@ -8,21 +8,37 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "highPolyMeshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "baseName": {
+            "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
             },
             "numFaces": {
                 "type": "integer",
                 "minimum": 100,
-                "default": 250000
+                "default": 150000
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "Meshlab",
+                    "RapidCompact"
+                ],
+                "default": "RapidCompact"
             },
             "cleanupMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "computeVertexNormals": {
+                "type": "boolean",
+                "default": true
+            },
+            "inspectMesh": {
                 "type": "boolean",
                 "default": false
             },
@@ -37,27 +53,14 @@
             "preserveTexCoords": {
                 "type": "boolean",
                 "default": false
-            },
-            "computeVertexNormals": {
-                "type": "boolean",
-                "default": true
-            },
-            "inspectMesh": {
-                "type": "boolean",
-                "default": false
-            },
-            "tool": {
-                "type": "string",
-                "enum": [
-                    "Meshlab",
-                    "RapidCompact"
-                ],
-                "default": "RapidCompact"
             }
         },
         "required": [
-            "highPolyMeshFile",
+            "sourceMeshFile",
             "numFaces"
+        ],
+        "advanced": [
+            "preserveTopology", "preserveBoundaries", "preserveTexCoords"
         ],
         "additionalProperties": false
     },
@@ -67,14 +70,14 @@
             "task": "Pickup",
             "description": "Fetch input files from client",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
-                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)"
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(outputFileBaseName, sourceMeshFile), numFaces)"
             },
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "highPolyMeshFile": "highPolyMeshFile"
+                    "highPolyMeshFile": "sourceMeshFile"
                 }
             },
             "success": "'inspect-highpoly'",
@@ -86,11 +89,11 @@
             "skip": "$not(inspectMesh)",
             "pre": {
                 "deliverables": {
-                    "highPolyReportFile": "baseName & '-highpoly-inspection.json'"
+                    "highPolyReportFile": "outputFileBaseName & '-highpoly-inspection.json'"
                 }
             },
             "parameters": {
-                "meshFile": "highPolyMeshFile",
+                "meshFile": "sourceMeshFile",
                 "reportFile": "deliverables.highPolyReportFile"
             },
             "success": "'decimate'",
@@ -105,7 +108,7 @@
                 }
             },
             "parameters": {
-                "inputMeshFile": "highPolyMeshFile",
+                "inputMeshFile": "sourceMeshFile",
                 "outputMeshFile": "deliverables.decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": "cleanupMesh",

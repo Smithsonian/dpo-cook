@@ -8,22 +8,22 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "highPolyMeshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "highPolyDiffuseMapFile": {
+            "sourceDiffuseMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "processedMeshFile": {
+            "preDecimatedUnwrappedTargetFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "documentFile": {
+            "svxFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -33,7 +33,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "baseName": {
+            "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
             },
@@ -41,13 +41,21 @@
                 "type": "integer",
                 "minimum": 5000,
                 "multipleOf": 1000,
-                "default": 20000
+                "default": 150000
             },
             "mapSize": {
                 "type": "integer",
                 "minimum": 128,
                 "maximum": 8192,
-                "default": 512
+                "default": 4096
+            },
+            "generateGlb": {
+                "type": "boolean",
+                "default": true
+            },
+            "useCompression": {
+                "type": "boolean",
+                "default": true
             },
             "modelIndex": {
                 "type": "integer",
@@ -79,18 +87,6 @@
                 "type": "string",
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "RapidCompact"
-            },
-            "segmentationStrength": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 1,
-                "default": 0.9
-            },
-            "packEffort": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 1,
-                "default": 0.7
             },
             "bakeOcclusion": {
                 "type": "boolean",
@@ -136,17 +132,25 @@
                 "type": "boolean",
                 "default": true
             },
-            "packContainer": {
-                "type": "boolean",
-                "default": true
+            "unwrapSegmentationStrength": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.9
             },
-            "useCompression": {
-                "type": "boolean",
-                "default": true
+            "unwrapPackEffort": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
             }
         },
         "required": [
-            "highPolyMeshFile"
+            "sourceMeshFile"
+        ],
+        "advanced": [
+            "bakeTest", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrength", "remeshFaces", "modelIndex", "cleanupMesh", "normalMapQuality", 
+            "occlusionMapQuality", "diffuseMapQuality", "occlusionRays", "maxRayDistance"
         ],
         "additionalProperties": false
     },
@@ -156,10 +160,10 @@
             "task": "Log",
             "description": "Enable logging services",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, highPolyMeshFile))",
-                "baseMeshName": "$baseMeshName($firstTrue(baseName, highPolyMeshFile), numFaces)",
-                "baseMeshMapName": "$baseMeshMapName($firstTrue(baseName, highPolyMeshFile), numFaces, mapSize)",
-                "bakeDiffuse": "$exists(highPolyDiffuseMapFile)"
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(outputFileBaseName, sourceMeshFile), numFaces)",
+                "baseMeshMapName": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFaces, mapSize)",
+                "bakeDiffuse": "$exists(sourceDiffuseMapFile)"
             },
             "parameters": {
                 "logToConsole": true,
@@ -174,11 +178,11 @@
             "skip": "$not(inspectMesh)",
             "pre": {
                 "deliverables": {
-                    "inspectionReport": "inspectMesh ? baseName & '-inspection.json' : ''"
+                    "inspectionReport": "inspectMesh ? outputFileBaseName & '-inspection.json' : ''"
                 }
             },
             "parameters": {
-                "meshFile": "highPolyMeshFile",
+                "meshFile": "sourceMeshFile",
                 "reportFile": "deliverables.inspectionReport"
             },
             "success": "'remesh'",
@@ -190,16 +194,16 @@
             "skip": "remeshFaces < 1",
             "pre": {
                 "deliverables": {
-                    "remeshedMeshFile": "$baseMeshName(baseName, remeshFaces) & '-remeshed.obj'"
+                    "remeshedMeshFile": "$baseMeshName(outputFileBaseName, remeshFaces) & '-remeshed.obj'"
                 }
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
                 "outputMeshFile": "deliverables.remeshedMeshFile",
                 "numFaces": "remeshFaces"
             },
             "post": {
-                "processedMeshFile": "deliverables.remeshedMeshFile"
+                "preDecimatedUnwrappedTargetFile": "deliverables.remeshedMeshFile"
             },
             "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid' : 'decimate-meshlab'",
             "failure": "$failure"
@@ -211,7 +215,7 @@
                 "decimatedMeshFile": "baseMeshName & '-decimated-rapid.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": "cleanupMesh",
@@ -229,7 +233,7 @@
                 "decimatedMeshFile": "baseMeshName & '-decimated-meshlab.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFile, highPolyMeshFile)",
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
                 "numFaces": "numFaces",
                 "cleanup": "cleanupMesh",
@@ -257,8 +261,8 @@
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSize",
-                "segmentationStrength": "segmentationStrength",
-                "packEffort": "packEffort"
+                "segmentationStrength": "unwrapSegmentationStrength",
+                "packEffort": "unwrapPackEffort"
             },
             "success": "'inspect-unwrapped'",
             "failure": "$failure"
@@ -284,8 +288,8 @@
                 "mapBaseName": "baseMeshMapName & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "highPolyMeshFile",
-                "highPolyDiffuseMapFile": "highPolyDiffuseMapFile",
+                "highPolyMeshFile": "sourceMeshFile",
+                "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
                 "mapSize": "mapSize",
@@ -366,8 +370,8 @@
             "description": "Create glTF asset",
             "pre": {
                 "deliverables": {
-                    "scene_webAsset": "baseMeshMapName & (packContainer ? '-thumb.glb' : '-thumb.gltf')",
-                    "scene_webAssetBin": "packContainer ? '' : (baseMeshMapName & '-thumb.bin')"
+                    "scene_webAsset": "baseMeshMapName & (generateGlb ? '.glb' : '.gltf')",
+                    "scene_webAssetBin": "generateGlb ? '' : (baseMeshMapName & '.bin')"
                 }
             },
             "parameters": {
@@ -379,8 +383,8 @@
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
                 "useCompression": "useCompression",
                 "compressionLevel": 10,
-                "embedMaps": "packContainer",
-                "writeBinary": "packContainer"
+                "embedMaps": "generateGlb",
+                "writeBinary": "generateGlb"
             },
             "success": "'update-document'",
             "failure": "$failure"
@@ -390,14 +394,14 @@
             "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "scene_document": "$firstTrue(documentFile, 'scene.svx.json')"
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
                 }
             },
             "parameters": {
                 "documentFile": "deliverables.scene_document",
                 "metaDataFile": "metaDataFile",
                 "modelIndex": "modelIndex",
-                "modelName": "baseName",
+                "modelName": "outputFileBaseName",
                 "units": "units",
                 "derivativeQuality": "'Thumb'",
                 "modelFile": "deliverables.scene_webAsset",
