@@ -68,6 +68,8 @@ export interface IRapidCompactToolSettings extends IToolSettings
     collapseUnconnectedVertices?: boolean;
     /** Should duplicate vertices be removed during decimation? Default is false. */
     removeDuplicateVertices?: boolean;
+    /** Uniform scale to apply to a mesh. Default is 1*/
+    scale?: number;
 }
 
 export type RapidCompactInstance = ToolInstance<RapidCompactTool, IRapidCompactToolSettings>;
@@ -88,7 +90,8 @@ export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompa
         preserveTopology: true,
         preserveBoundaries: true,
         collapseUnconnectedVertices: true,
-        removeDuplicateVertices: false
+        removeDuplicateVertices: false,
+        scale: 1
     };
 
     async setupInstance(instance: RapidCompactInstance): Promise<IToolSetup>
@@ -199,6 +202,9 @@ export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompa
             config["export:normalMapFormat"] = extension;
             config["export:occlusionMapFormat"] = extension;
 
+        }
+        if (settings.mode === "convert") {
+            options.push("--scale " + settings.scale);
         }
 
         // write RapidCompact config file

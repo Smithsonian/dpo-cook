@@ -13,16 +13,6 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "sourceDiffuseMapFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "sourceMtlFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
             "outputMeshFileName": {
                 "type": "string",
                 "minLength": 1
@@ -33,7 +23,13 @@
                     "Unity",
                     "RapidCompact"
                 ],
-                "default": "Unity"
+                "default": "RapidCompact"
+            },
+            "scale": {
+                "type": "number",
+                "minimum": 0.000001,
+                "maximum": 100000,
+                "default": 100
             }
         },
         "required": [
@@ -71,9 +67,7 @@
             },
             "parameters": {
                 "outputFile": "deliverables.webAssetUsdz",
-                "objFile": "sourceMeshFile",
-                "textureFile": "sourceDiffuseMapFile",
-                "mtlFile": "sourceMtlFile",
+                "sourceFile": "sourceMeshFile",
                 "tool": "tool"
             },
             "success": "'delivery'",

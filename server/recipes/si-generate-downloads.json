@@ -741,9 +741,7 @@
                 }
             },
             "parameters": {
-                "objFile": "deliverables.scene_unwrappedMesh",
-                "mtlFile": "deliverables.mtlFile_ar",
-                "textureFile": "deliverables.scene_diffuseMapAR",
+                "sourceFile": "deliverables.scene_unwrappedMesh",
                 "outputFile": "deliverables.usdz"
             },
             "success": "'remesh-medium'",
