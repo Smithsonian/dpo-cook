@@ -409,7 +409,6 @@
             "parameters": {
                 "documentFile": "deliverables.scene_document",
                 "modelIndex": 0,
-                "units": "units",
                 "derivativeQuality": "'AR'",
                 "modelFile": "deliverables.scene_voyagerARGlbCompressed",
                 "numFaces": "numFacesAR",
@@ -429,7 +428,6 @@
             "parameters": {
                 "documentFile": "deliverables.scene_document",
                 "modelIndex": 0,
-                "units": "units",
                 "derivativeUsage": "'App3D'",
                 "derivativeQuality": "'AR'",
                 "modelFile": "deliverables.scene_webAssetARGlbCompressed",
@@ -450,7 +448,6 @@
             "parameters": {
                 "documentFile": "deliverables.scene_document",
                 "modelIndex": 0,
-                "units": "units",
                 "derivativeUsage": "'iOSApp3D'",
                 "derivativeQuality": "'AR'",
                 "modelFile": "deliverables.usdz",
