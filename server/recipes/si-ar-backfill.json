@@ -180,6 +180,8 @@
             },
             "post": {
                 "sourceDiffuseMapFile": "$fileExists('material0_basecolor.jpg') ? 'material0_basecolor.jpg' : ''",
+                "sourceNormalMapFile": "$fileExists('material0_normal.jpg') ? 'material0_normal.jpg' : ''",
+                "sourceOcclusionMapFile": "$fileExists('material0_occlusion.jpg') ? 'material0_occlusion.jpg' : ''",
                 "bakeDiffuse": "$fileExists('material0_basecolor.jpg')"
             },
             "success": "'decimate-rapid-ar'",
@@ -251,10 +253,10 @@
                 "mapSize": "mapSizeAR",
                 "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
                 "bakeDiffuse": "bakeDiffuse",
-                "bakeOcclusion": true,
-                "bakeNormals": true,
+                "bakeOcclusion": false,
+                "bakeNormals": false,
                 "bakeVertexColor": "bakeVertexColor",
-                "bakeTest": "bakeTest",
+                "bakeTest": false,
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": true,
                 "timeout": 1200
@@ -262,10 +264,68 @@
             "post": {
                 "deliverables": {
                     "diffuseMapUncompressedAR": "bakeDiffuse ? (baseMeshMapNameAR & '-diffuse.png') : ''",
-                    "vcolMapUncompressedAR": "bakeVertexColor ? (baseMeshMapNameAR & '_vcols.png') : ''",
-                    "occlusionMapUncompressedAR": "(baseMeshMapNameAR & '-occlusion.png')",
-                    "normalMapUncompressedAR": "(baseMeshMapNameAR & '-normals.png')",
-                    "testMapAR": "bakeTest ? (baseMeshMapNameAR & '-test.png') : ''"
+                    "vcolMapUncompressedAR": "bakeVertexColor ? (baseMeshMapNameAR & '_vcols.png') : ''"
+                }
+            },
+            "success": "'bake-ar-normal'",
+            "failure": "$failure"
+        },
+        "bake-ar-normal": {
+            "task": "BakeMaps",
+            "description": "Bake diffuse, normal and occlusion maps using xNormal",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameAR & '-normals.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "convertedObj",
+                "highPolyDiffuseMapFile": "sourceNormalMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeAR",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": true,
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": "bakeVertexColor",
+                "bakeTest": false,
+                "isNormalMap": true,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 1200
+            },
+            "post": {
+                "deliverables": {
+                    "normalMapUncompressedAR": "baseMeshMapNameAR & '-normals-diffuse.png'"
+                }
+            },
+            "success": "'bake-ar-ao'",
+            "failure": "$failure"
+        },
+        "bake-ar-ao": {
+            "task": "BakeMaps",
+            "description": "Bake diffuse, normal and occlusion maps using xNormal",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameAR & '-occlusion.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "convertedObj",
+                "highPolyDiffuseMapFile": "sourceOcclusionMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeAR",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": true,
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": "bakeVertexColor",
+                "bakeTest": false,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 1200
+            },
+            "post": {
+                "deliverables": {
+                    "occlusionMapUncompressedAR": "baseMeshMapNameAR & '-occlusion-diffuse.png'"
                 }
             },
             "success": "'convert-diffuse-map-ar'",

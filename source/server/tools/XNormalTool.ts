@@ -46,6 +46,7 @@ export interface IXNormalToolSettings extends IToolSettings
     normalsFlipZ?: boolean;
     bakeCavity?: boolean;
     bakeTest?: boolean;
+    isNormalMap?: boolean;
 }
 
 export type XNormalInstance = ToolInstance<XNormalTool, IXNormalToolSettings>;
@@ -103,6 +104,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
         const highpolyDiffuseMapPath = instance.getFilePath(settings.highPolyDiffuseMapFile);
         const bakeDiffuse = !!settings.bakeDiffuse && !!highpolyDiffuseMapPath;
         const bakeVertexColor = !!settings.bakeVertexColor;
+        const isNormalMap = settings.isNormalMap;
 
         if (!settings.mapBaseName) {
             throw new Error("XNormalTool.writeTaskScript - missing output base map path");
@@ -116,7 +118,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
                 `<?xml version="1.0" encoding="UTF-8"?>`,
                 `<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="3.19.3">`,
                 `  <HighPolyModel DefaultMeshScale="1.000000">`,
-                `    <Mesh Visible="true" File="${highPolyMeshPath}" Scale="1.000000" IgnorePerVertexColor="${!bakeVertexColor}" AverageNormals="AverageNormals" BaseTexIsTSNM="false" PositionOffset="0.0000;0.0000;0.0000" ${bakeDiffuse ? `BaseTex="${highpolyDiffuseMapPath}"` : ""} />`,
+                `    <Mesh Visible="true" File="${highPolyMeshPath}" Scale="1.000000" IgnorePerVertexColor="${!bakeVertexColor}" AverageNormals="AverageNormals" BaseTexIsTSNM="${isNormalMap}" PositionOffset="0.0000;0.0000;0.0000" ${bakeDiffuse ? `BaseTex="${highpolyDiffuseMapPath}"` : ""} />`,
                 `  </HighPolyModel>`,
 
                 `  <LowPolyModel DefaultMeshScale="1.000000">`,
