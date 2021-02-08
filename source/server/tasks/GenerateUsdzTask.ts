@@ -31,14 +31,12 @@ import { IRapidCompactToolSettings } from "../tools/RapidCompactTool";
 /** Parameters for [[GenerateUsdzTask]]. */
 export interface IGenerateUsdzTaskParameters extends ITaskParameters
 {
-    /** Name of the obj file to sync. */
-    objFile: string;
+    /** Name of the geometry file to convert. */
+    sourceFile: string;
     /** File name of the resulting web asset. */
     outputFile: string;
-    /** Name of the mtl file to sync to the obj. */
-    mtlFile?: string;
-    /** Name of the texture file referenced in the mtl. */
-    textureFile?: string;
+    /** Uniform scale to apply during conversion */
+    scale?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Default tool is Unity. Specify another tool if needed. */
@@ -54,20 +52,19 @@ export default class GenerateUsdzTask extends ToolTask
 {
     static readonly taskName = "GenerateUsdz";
 
-    static readonly description = "Generates a usdz asset from an obj";
+    static readonly description = "Generates a usdz asset from another self-contained format";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
-            objFile: { type: "string", minLength: 1 },
+            sourceFile: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1 },
-            mtlFile: { type: "string", minLength: 1 },
-            textureFile: { type: "string", minLength: 0, default: "" },
+            scale: { type: "number", default: 100},
             timeout: { type: "integer", minimum: 0, default: 0 },
-            tool: { type: "string", enum: [ "Unity", "RapidCompact" ], default: "Unity" }
+            tool: { type: "string", enum: [ "Unity", "RapidCompact" ], default: "RapidCompact" }
         },
         required: [
-            "objFile",
+            "sourceFile",
             "outputFile",
         ],
         additionalProperties: false
@@ -83,10 +80,8 @@ export default class GenerateUsdzTask extends ToolTask
         if (params.tool === "Unity") {
 
             const settings: IUnityToolSettings = {
-                inputMeshFile: params.objFile,
+                inputMeshFile: params.sourceFile,
                 outputMeshFile: params.outputFile,
-                inputTextureFile: params.textureFile,
-                inputMtlFile: params.mtlFile,
                 timeout: params.timeout
             };
 
@@ -95,9 +90,10 @@ export default class GenerateUsdzTask extends ToolTask
         else if(params.tool === "RapidCompact")
         {
             const settings: IRapidCompactToolSettings = {
-                inputMeshFile: params.objFile,
+                inputMeshFile: params.sourceFile,
                 outputMeshFile: params.outputFile,
                 mode: "convert",
+                scale: params.scale,
                 timeout: params.timeout
             };
 

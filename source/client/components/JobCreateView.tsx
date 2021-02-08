@@ -26,6 +26,7 @@ import FlexItem from "@ff/react/FlexItem";
 import Label from "@ff/react/Label";
 import Badge from "@ff/react/Badge";
 import BusyBox from "@ff/react/BusyBox";
+import Checkbox from "@ff/react/Checkbox";
 import LineEdit, { ILineEditBlurEvent } from "@ff/react/LineEdit";
 import Button, { IButtonTapEvent } from "@ff/react/Button";
 import Overlay from "@ff/react/Overlay";
@@ -50,6 +51,7 @@ interface IJobCreateViewState
     filesToUpload: { [param:string]: File };
     isEdited: boolean;
     isUploading: boolean;
+    isAdvancedActive: boolean;
 }
 
 export default class JobCreateView extends React.Component<IJobCreateViewProps, IJobCreateViewState>
@@ -95,13 +97,15 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
         this.onTapReset = this.onTapReset.bind(this);
         this.onTapCreate = this.onTapCreate.bind(this);
         this.onTapUpload = this.onTapUpload.bind(this);
+        this.onTapAdvanced = this.onTapAdvanced.bind(this);
 
         this.state = {
             recipe: null,
             jobOrder: null,
             filesToUpload: null,
             isEdited: false,
-            isUploading: false
+            isUploading: false,
+            isAdvancedActive: false
         };
     }
 
@@ -109,6 +113,7 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
     {
         const jobOrder = this.state.jobOrder;
         const edited = this.state.isEdited;
+        const advanced = this.state.isAdvancedActive;
 
         if (!jobOrder) {
             return null;
@@ -130,12 +135,14 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
                 return 0;
             });
         }
+        const advancedProps = schema.advanced;
 
         const tableRows = sortedProps.map(prop => {
 
             const name = prop.name;
             const isRequired = requiredProps && requiredProps.indexOf(name) > -1;
             const isFile = schemaProps[name].format === "file";
+            const isAdvanced = advancedProps && advancedProps.indexOf(name) > -1; 
 
             let defaultValue = schemaProps[name].default;
             if (defaultValue === undefined || defaultValue === null) {
@@ -148,23 +155,28 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
             const value = jobOrder.parameters[name];
             const text = value !== undefined ? String(value) : "";
 
-            return(<tr key={name}>
-                <td className="sc-name">
-                    {name}
+            if(isAdvanced && !advanced) {
+                return null;
+            }
+            else {
+                return(<tr key={name}>
+                    <td className="sc-name">
+                        {name}
+                        </td>
+                    <td>
+                        {isFile ?
+                            <FileDropTarget id={name} onFiles={this.onDropFiles}>
+                                <LineEdit id={name} text={text} onBlur={this.onParamChange} />
+                            </FileDropTarget> :
+                            <LineEdit id={name} text={text} onBlur={this.onParamChange} />}
                     </td>
-                <td>
-                    {isFile ?
-                        <FileDropTarget id={name} onFiles={this.onDropFiles}>
-                            <LineEdit id={name} text={text} onBlur={this.onParamChange} />
-                        </FileDropTarget> :
-                        <LineEdit id={name} text={text} onBlur={this.onParamChange} />}
-                </td>
-                <td>
-                    {isFile ? <Badge type="file">File</Badge> : null}
-                    {isRequired ? <Badge warning>Required</Badge> : null}
-                    <span className="sc-default-value">{defaultValue}</span>
-                </td>
-            </tr>);
+                    <td>
+                        {isFile ? <Badge type="file">File</Badge> : null}
+                        {isRequired ? <Badge warning>Required</Badge> : null}
+                        <span className="sc-default-value">{defaultValue}</span>
+                    </td>
+                </tr>);
+            }
         });
 
         const overlay = this.state.isUploading ? (
@@ -199,6 +211,13 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
                         <LineEdit id="id" text={jobOrder.id} onBlur={this.onSettingChange} />
                         <Label>Job Name</Label>
                         <LineEdit id="name" text={jobOrder.name} onBlur={this.onSettingChange} />
+
+                        <Checkbox 
+                            shape="square" 
+                            text="Advanced"
+                            selected={this.state.isAdvancedActive}
+                            onTap={this.onTapAdvanced}
+                        />
 
                         <Button
                             faIcon="undo-alt"
@@ -354,6 +373,11 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
             .catch(error => {
                 alert(`SERVER ERROR:\n${error.message}`);
             });
+    }
+
+    protected onTapAdvanced(event: IButtonTapEvent)
+    {
+        this.setState({ isAdvancedActive: !this.state.isAdvancedActive});
     }
 
     protected createJob(jobOrder: IJobOrder): Promise<void>

@@ -1,6 +1,6 @@
 {
     "id": "a12161bb-265f-4979-80db-65f739dcc156",
-    "name": "web-usdz",
+    "name": "generate-usdz",
     "description": "Create usdz web asset",
     "version": "1",
     "start": "pickup",
@@ -8,22 +8,12 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "meshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "diffuseMapFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "mtlFile": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "baseName": {
+            "outputMeshFileName": {
                 "type": "string",
                 "minLength": 1
             },
@@ -33,11 +23,17 @@
                     "Unity",
                     "RapidCompact"
                 ],
-                "default": "Unity"
+                "default": "RapidCompact"
+            },
+            "scale": {
+                "type": "number",
+                "minimum": 0.000001,
+                "maximum": 100000,
+                "default": 100
             }
         },
         "required": [
-            "meshFile"
+            "sourceMeshFile"
         ],
         "additionalProperties": false
     },
@@ -47,15 +43,15 @@
             "task": "Pickup",
             "description": "Fetch input files from client",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, meshFile))"
+                "outputMeshFileName": "$baseName($firstTrue(outputMeshFileName, sourceMeshFile))"
             },
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "meshFile": "meshFile",
-                    "diffuseMapFile": "diffuseMapFile",
-                    "occlusionMapFile": "occlusionMapFile"
+                    "sourceMeshFile": "sourceMeshFile",
+                    "sourceDiffuseMapFile": "sourceDiffuseMapFile",
+                    "sourceMtlFile": "sourceMtlFile"
                 }
             },
             "success": "'web-asset-usdz'",
@@ -66,14 +62,12 @@
             "description": "Create usdz asset",
             "pre": {
                 "deliverables": {
-                    "webAssetUsdz": "baseName & '.usdz'"
+                    "webAssetUsdz": "outputMeshFileName & '.usdz'"
                 }
             },
             "parameters": {
                 "outputFile": "deliverables.webAssetUsdz",
-                "objFile": "meshFile",
-                "textureFile": "diffuseMapFile",
-                "mtlFile": "mtlFile",
+                "sourceFile": "sourceMeshFile",
                 "tool": "tool"
             },
             "success": "'delivery'",

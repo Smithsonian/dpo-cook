@@ -234,6 +234,7 @@ export interface IRecipe extends IRecipeInfo
         type: "object";
         properties: Dictionary<any>;
         required: string[];
+        advanced: string[];
         additionalProperties: false;
     }
 

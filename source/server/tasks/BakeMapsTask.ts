@@ -50,6 +50,8 @@ export interface IBakeMapsTaskParameters extends ITaskParameters
     bakeVertexColor?: boolean;
     /** Bakes a test map for checking the projection quality if true (default: false). */
     bakeTest?: boolean;
+    /** Is the input texture a tangent-space normal map */
+    isNormalMap?: boolean;
     /** Number of sample rays for ambient occlusion (default: 128). */
     occlusionRays?: number;
     /** Maximum cone angle for ambient occlusion sample rays (default: 165). */
@@ -96,6 +98,7 @@ export default class BakeMapsTask extends ToolTask
             bakeNormals: { type: "boolean", default: true },
             bakeVertexColor: { type: "boolean", default: false },
             bakeTest: { type: "boolean", default: false },
+            isNormalMap: { type: "boolean", default: false },
             occlusionRays: { type: "integer", minimum: 1, maximum: 512, default: 128 },
             occlusionConeAngle: { type: "integer", minimum: 1, maximum: 180, default: 165 },
             occlusionAttConstant: { type: "number", minimum: 0, maximum: 1, default: 1 },
@@ -142,6 +145,7 @@ export default class BakeMapsTask extends ToolTask
             bakeNormals: parameters.bakeNormals,
             bakeVertexColor: parameters.bakeVertexColor,
             bakeTest: parameters.bakeTest,
+            isNormalMap: parameters.isNormalMap,
             occlusionRays: parameters.occlusionRays,
             occlusionConeAngle: parameters.occlusionConeAngle,
             occlusionAttConstant: parameters.occlusionAttConstant,

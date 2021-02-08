@@ -1,0 +1,532 @@
+{
+    "id": "ae568c31-4cca-402e-90ee-b0c802fe05cb",
+    "name": "si-ar-backfill",
+    "description": "Generates AR derivatives and inserts into known good scene.",
+    "version": "2",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "sourceDiffuseMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "sourceMTLFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "svxFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "decimationTool": {
+                "type": "string",
+                "enum": [ "Meshlab", "RapidCompact" ],
+                "default": "RapidCompact"
+            },
+            "preDecimatedUnwrappedARTargetFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "bakeVertexColor": {
+                "type": "boolean",
+                "default": false
+            },
+            "diffuseMapQualityLowAR": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 79
+            },
+            "occlusionMapQualityLowAR": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 59
+            },
+            "normalMapQualityLowAR": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 89
+            },
+            "scaleToMeters": {
+                "type": "boolean",
+                "default": true
+            },
+            "numFacesAR": {
+                "type": "integer",
+                "minimum": 10000,
+                "multipleOf": 1000,
+                "default": 100000
+            },
+            "mapSizeAR": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 4096,
+                "default": 2048
+            },
+            "inspectMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "remeshFaces": {
+                "type": "integer",
+                "default": 0
+            },
+            "cleanupMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "unwrapSegmentationStrengthLowAR": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "unwrapPackEffort": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "bakeTest": {
+                "type": "boolean",
+                "default": true
+            },
+            "maxRayDistance": {
+                "type": "number",
+                "default": 0
+            },
+            "occlusionRays": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 512,
+                "default": 128
+            }
+        },
+        "required": [
+            "sourceMeshFile",
+            "svxFile"
+        ],
+        "advanced": [
+            "bakeTest", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthLowAR", "remeshFaces",
+            "cleanupMesh", "normalMapQualityLowAR", "occlusionMapQualityLowAR", "preDecimatedUnwrappedARTargetFile",
+            "diffuseMapQualityLowAR", "occlusionRays", "maxRayDistance", "scaleToMeters",
+            "numFacesAR", "mapSizeAR", "sourceMTLFile", "sourceDiffuseMapFile", "decimationTool"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))",
+                "baseMeshName": "$baseMeshName($firstTrue(outputFileBaseName, sourceMeshFile))",
+                "baseMeshMapNameAR": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFacesAR, mapSizeAR)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))"
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "highPolyMeshFile": "sourceMeshFile",
+                    "inputMTLFile": "sourceMTLFile",
+                    "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
+                    "documentFile": "svxFile"
+                }
+            },
+            "success": "'obj-convert'",
+            "failure": "$failure"
+        },
+        "obj-convert": {
+            "task": "GenerateUsdz",
+            "description": "Convert glb to obj",
+            "pre": {
+                "convertedObj": "baseMeshMapNameAR & '_conv_std.obj'"
+            },
+            "parameters": {
+                "sourceFile": "sourceMeshFile",
+                "outputFile": "convertedObj",
+                "scale": 1
+            },
+            "post": {
+                "sourceDiffuseMapFile": "$fileExists('material0_basecolor.jpg') ? 'material0_basecolor.jpg' : ''",
+                "sourceNormalMapFile": "$fileExists('material0_normal.jpg') ? 'material0_normal.jpg' : ''",
+                "sourceOcclusionMapFile": "$fileExists('material0_occlusion.jpg') ? 'material0_occlusion.jpg' : ''",
+                "bakeDiffuse": "$fileExists('material0_basecolor.jpg')"
+            },
+            "success": "'decimate-rapid-ar'",
+            "failure": "$failure"
+        },
+        "decimate-rapid-ar": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using RapidCompact",
+            "pre": {
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-' & $k(numFacesAR) & '.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "convertedObj",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFacesAR",
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "tool": "'RapidCompact'"
+            },
+            "success": "'unwrap-rizom-ar'",
+            "failure": "$failure"
+        },
+        "unwrap-rizom-ar": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using RizomUV",
+            "pre": {
+                "unwrappedMeshFbxFile": "outputFileBaseName & '-' & $k(numFacesAR) & '.fbx'",
+                "deliverables": {
+                    "scene_unwrappedMesh": "outputFileBaseName & '-' & $k(numFacesAR) & '.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "saveFbx": true,
+                "saveObj": true,
+                "mapSize": "mapSizeAR",
+                "segmentationStrength": "unwrapSegmentationStrengthLowAR",
+                "packEffort": "packEffort"
+            },
+            "success": "'inspect-unwrapped-ar'",
+            "failure": "$failure"
+        },
+        "inspect-unwrapped-ar": {
+            "task": "InspectMesh",
+            "description": "Calculate mesh size and max. ray distance for bake",
+            "parameters": {
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "tool": "'MeshSmith'"
+            },
+            "post": {
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
+            },
+            "success": "'bake-ar'",
+            "failure": "$failure"
+        },
+        "bake-ar": {
+            "task": "BakeMaps",
+            "description": "Bake diffuse, normal and occlusion maps using xNormal",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameAR & '.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "convertedObj",
+                "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeAR",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": "bakeDiffuse",
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": "bakeVertexColor",
+                "bakeTest": false,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 1200
+            },
+            "post": {
+                "deliverables": {
+                    "diffuseMapUncompressedAR": "bakeDiffuse ? (baseMeshMapNameAR & '-diffuse.png') : ''",
+                    "vcolMapUncompressedAR": "bakeVertexColor ? (baseMeshMapNameAR & '_vcols.png') : ''"
+                }
+            },
+            "success": "'bake-ar-normal'",
+            "failure": "$failure"
+        },
+        "bake-ar-normal": {
+            "task": "BakeMaps",
+            "description": "Bake diffuse, normal and occlusion maps using xNormal",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameAR & '-normals.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "convertedObj",
+                "highPolyDiffuseMapFile": "sourceNormalMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeAR",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": true,
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": "bakeVertexColor",
+                "bakeTest": false,
+                "isNormalMap": true,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 1200
+            },
+            "post": {
+                "deliverables": {
+                    "normalMapUncompressedAR": "baseMeshMapNameAR & '-normals-diffuse.png'"
+                }
+            },
+            "success": "'bake-ar-ao'",
+            "failure": "$failure"
+        },
+        "bake-ar-ao": {
+            "task": "BakeMaps",
+            "description": "Bake diffuse, normal and occlusion maps using xNormal",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameAR & '-occlusion.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "convertedObj",
+                "highPolyDiffuseMapFile": "sourceOcclusionMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeAR",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": true,
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": "bakeVertexColor",
+                "bakeTest": false,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 1200
+            },
+            "post": {
+                "deliverables": {
+                    "occlusionMapUncompressedAR": "baseMeshMapNameAR & '-occlusion-diffuse.png'"
+                }
+            },
+            "success": "'convert-diffuse-map-ar'",
+            "failure": "$failure"
+        },
+        "convert-diffuse-map-ar": {
+            "task": "ConvertImage",
+            "description": "Convert Diffuse Map",
+            "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor))",
+            "pre": {
+                "deliverables": {
+                    "scene_diffuseMapAR": "baseMeshMapNameAR & '-diffuse.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedAR : deliverables.diffuseMapUncompressedAR",
+                "outputImageFile": "deliverables.scene_diffuseMapAR",
+                "quality": "diffuseMapQualityLowAR"
+            },
+            "success": "'convert-occlusion-map-ar'",
+            "failure": "$failure"
+        },
+        "convert-occlusion-map-ar": {
+            "task": "ConvertImage",
+            "description": "Convert Occlusion Map AR",
+            "pre": {
+                "deliverables": {
+                    "scene_occlusionMapAR": "baseMeshMapNameAR & '-occlusion.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.occlusionMapUncompressedAR",
+                "outputImageFile": "deliverables.scene_occlusionMapAR",
+                "quality": "occlusionMapQualityLowAR"
+            },
+            "success": "'convert-normal-map-ar'",
+            "failure": "$failure"
+        },
+        "convert-normal-map-ar": {
+            "task": "ConvertImage",
+            "description": "Convert Normal Map AR",
+            "pre": {
+                "deliverables": {
+                    "scene_normalMapAR": "baseMeshMapNameAR & '-normals.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.normalMapUncompressedAR",
+                "outputImageFile": "deliverables.scene_normalMapAR",
+                "quality": "normalMapQualityLowAR"
+            },
+            "success": "'reorient-master'",
+            "failure": "$failure"
+        },
+        "reorient-master": {
+            "task": "ReorientMesh",
+            "description": "Reorient Master mesh to match Voyager orientation and optionally scale to meters",
+            "pre": {
+                "deliverables": {
+                    "reorientedMeshFileMaster": "outputFileBaseName & '-master-reoriented-geometry.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "deliverables.scene_unwrappedMesh",
+                "inputVoyagerFile": "svxFile",
+                "outputMeshFile": "deliverables.reorientedMeshFileMaster",
+                "scaleToMeters": "scaleToMeters"
+            },
+            "success": "'web-asset-glb-draco-ar'",
+            "failure": "$failure"
+        },
+        "web-asset-glb-draco-ar": {
+            "task": "WebAsset",
+            "description": "Create binary, compressed, embedded glTF asset (AR)",
+            "pre": {
+                "deliverables": {
+                    "scene_webAssetARGlbCompressed": "scaleToMeters ? baseMeshMapNameAR & '_std_draco.glb' : baseMeshMapNameAR & '_draco.glb'"
+                }
+            },
+            "parameters": {
+                "outputFile": "deliverables.scene_webAssetARGlbCompressed",
+                "meshFile": "deliverables.reorientedMeshFileMaster",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapAR : ''",
+                "occlusionMapFile": "deliverables.scene_occlusionMapAR",
+                "normalMapFile": "deliverables.scene_normalMapAR",
+                "objectSpaceNormals": false,
+                "useCompression": true,
+                "compressionLevel": 10,
+                "embedMaps": true,
+                "writeBinary": true
+            },
+            "success": "'usdz-asset'",
+            "failure": "$failure"
+        },
+        "usdz-asset": {
+            "task": "GenerateUsdz",
+            "description": "Create usdz for AR asset",
+            "pre": {
+                "deliverables": {
+                    "usdz": "scaleToMeters ? baseMeshMapNameAR & '_std.usdz' : baseMeshMapNameAR & '.usdz'"
+                }
+            },
+            "parameters": {
+                "sourceFile": "deliverables.scene_webAssetARGlbCompressed",
+                "outputFile": "deliverables.usdz"
+            },
+            "success": "'voyager-asset-glb-draco-ar'",
+            "failure": "$failure"
+        },
+        "voyager-asset-glb-draco-ar": {
+            "task": "WebAsset",
+            "description": "Create binary, compressed, embedded glTF asset (AR)",
+            "pre": {
+                "deliverables": {
+                    "scene_voyagerARGlbCompressed": "baseMeshMapNameAR & '_draco.glb'"
+                }
+            },
+            "parameters": {
+                "outputFile": "deliverables.scene_voyagerARGlbCompressed",
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse ? deliverables.scene_diffuseMapAR : ''",
+                "occlusionMapFile": "deliverables.scene_occlusionMapAR",
+                "normalMapFile": "deliverables.scene_normalMapAR",
+                "objectSpaceNormals": false,
+                "useCompression": true,
+                "compressionLevel": 10,
+                "embedMaps": true,
+                "writeBinary": true
+            },
+            "success": "'update-document-ar1'",
+            "failure": "$failure"
+        },
+        "update-document-ar1": {
+            "task": "Document",
+            "description": "Add voyager AR model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "modelIndex": 0,
+                "derivativeQuality": "'AR'",
+                "modelFile": "deliverables.scene_voyagerARGlbCompressed",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
+            },
+            "success": "'update-document-ar2'",
+            "failure": "$failure"
+        },
+        "update-document-ar2": {
+            "task": "Document",
+            "description": "Add Android AR model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "modelIndex": 0,
+                "derivativeUsage": "'App3D'",
+                "derivativeQuality": "'AR'",
+                "modelFile": "deliverables.scene_webAssetARGlbCompressed",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
+            },
+            "success": "'update-document-ar3'",
+            "failure": "$failure"
+        },
+        "update-document-ar3": {
+            "task": "Document",
+            "description": "Add usdz AR model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "modelIndex": 0,
+                "derivativeUsage": "'iOSApp3D'",
+                "derivativeQuality": "'AR'",
+                "modelFile": "deliverables.usdz",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

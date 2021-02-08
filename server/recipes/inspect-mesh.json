@@ -1,14 +1,14 @@
 {
     "id": "ee77ee05-d832-4729-9914-18a96939f205",
     "name": "inspect-mesh",
-    "description": "Inspects a mesh and returns a report with results",
+    "description": "Inspects a mesh and returns a report with results (mesh statistics, bounding box, material properties)",
     "version": "2",
     "start": "log",
 
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "meshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -19,11 +19,11 @@
                     "Meshlab",
                     "MeshSmith"
                 ],
-                "default": "Meshlab"
+                "default": "MeshSmith"
             }
         },
         "required": [
-            "meshFile"
+            "sourceMeshFile"
         ],
         "additionalProperties": false
     },
@@ -32,7 +32,7 @@
         "log": {
             "task": "Log",
             "pre": {
-                "baseName": "$baseName(meshFile)"
+                "baseName": "$baseName(sourceMeshFile)"
             },
             "parameters": {
                 "logToConsole": true,
@@ -51,7 +51,7 @@
                 }
             },
             "parameters": {
-                "meshFile": "meshFile",
+                "meshFile": "sourceMeshFile",
                 "reportFile": "deliverables.inspectionReport",
                 "tool": "inspectionTool"
             },

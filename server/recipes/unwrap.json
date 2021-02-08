@@ -8,36 +8,14 @@
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "decimatedMeshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "baseName": {
+            "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
-            },
-            "mapSize": {
-                "type": "integer",
-                "minimum": 128,
-                "maximum": 8192,
-                "default": 4096
-            },
-            "segmentationStrength": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 1,
-                "default": 0.6
-            },
-            "packEffort": {
-                "type": "number",
-                "minimum": 0,
-                "maximum": 1,
-                "default": 0.7
-            },
-            "cutHandles": {
-                "type": "boolean",
-                "default": true
             },
             "tool": {
                 "type": "string",
@@ -47,10 +25,32 @@
                     "RapidCompact"
                 ],
                 "default": "RizomUV"
+            },
+            "mapSize": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 8192,
+                "default": 4096
+            },
+            "unwrapSegmentationStrength": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.6
+            },
+            "unwrapPackEffort": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "cutHandles": {
+                "type": "boolean",
+                "default": true
             }
         },
         "required": [
-            "decimatedMeshFile",
+            "sourceMeshFile",
             "mapSize"
         ],
         "additionalProperties": false
@@ -61,20 +61,20 @@
             "task": "UnwrapMesh",
             "description": "Unwrap mesh using RizomUV",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, decimatedMeshFile))",
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))",
                 "deliverables": {
-                    "unwrappedMeshObjFile": "baseName & '-unwrapped-' & $lowercase(tool) & '.obj'",
-                    "unwrappedMeshFbxFile": "tool = 'RizomUV' ? baseName & '-unwrapped-' & $lowercase(tool) & '.fbx' : ''"
+                    "unwrappedMeshObjFile": "outputFileBaseName & '-unwrapped-' & $lowercase(tool) & '.obj'",
+                    "unwrappedMeshFbxFile": "tool = 'RizomUV' ? outputFileBaseName & '-unwrapped-' & $lowercase(tool) & '.fbx' : ''"
                 }
             },
             "parameters": {
-                "inputMeshFile": "decimatedMeshFile",
+                "inputMeshFile": "sourceMeshFile",
                 "outputMeshFile": "deliverables.unwrappedMeshObjFile",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSize",
-                "segmentationStrength": "segmentationStrength",
-                "packEffort": "packEffort",
+                "segmentationStrength": "unwrapSegmentationStrength",
+                "packEffort": "unwrapPackEffort",
                 "cutHandles": "cutHandles",
                 "timeout": 1800,
                 "tool": "tool"

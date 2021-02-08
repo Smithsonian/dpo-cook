@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
 import * as path from "path";
 import * as cloneDeep from "clone-deep";
 import * as jsonata from "jsonata";
@@ -440,6 +441,17 @@ export default class RecipeTask extends Task
         const baseMeshMapName = (fileName, numFaces, mapSize) =>
             baseName(fileName) + '-' + k(numFaces) + '-' + mapSize;
 
+        // return true if file exists in path
+        const fileExists = function(fileName) {
+            let exists = false;
+
+            const filePath = path.resolve(jobDir, fileName);
+            if (fs.existsSync(filePath)) {
+                exists = true;
+            }
+            return exists;
+        };
+
         // JSONata variable and function bindings
         data.jsonata.bindings = {
             success: RecipeTask.successToken,
@@ -453,7 +465,8 @@ export default class RecipeTask extends Task
             basePath,
             extName,
             baseMeshName,
-            baseMeshMapName
+            baseMeshMapName,
+            fileExists
         }
     }
 }

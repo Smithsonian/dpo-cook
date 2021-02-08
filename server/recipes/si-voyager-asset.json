@@ -1,49 +1,49 @@
 {
     "id": "5490a618-4ebd-4763-a96a-abb9062c786b",
-    "name": "webasset",
-    "description": "Create glTF web asset",
-    "version": "4",
+    "name": "si-voyager-asset",
+    "description": "Generate Voyager package from single unmodified asset",
+    "version": "5",
     "start": "pickup",
 
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "meshFile": {
+            "sourceMeshFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "diffuseMapFile": {
+            "sourceDiffuseMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "occlusionMapFile": {
+            "sourceOcclusionMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "emissiveMapFile": {
+            "sourceEmissiveMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "metallicRoughnessMapFile": {
+            "sourceMetallicRoughnessMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "normalMapFile": {
+            "sourceNormalMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "zoneMapFile": {
+            "sourceZoneMapFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
             },
-            "documentFile": {
+            "svxFile": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -53,7 +53,7 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "baseName": {
+            "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
             },
@@ -84,7 +84,7 @@
                 "type": "boolean",
                 "default": true
             },
-            "generateBinary": {
+            "generateGlb": {
                 "type": "boolean",
                 "default": true
             },
@@ -98,7 +98,7 @@
             }
         },
         "required": [
-            "meshFile"
+            "sourceMeshFile"
         ],
         "additionalProperties": false
     },
@@ -108,20 +108,20 @@
             "task": "Pickup",
             "description": "Fetch input files from client",
             "pre": {
-                "baseName": "$baseName($firstTrue(baseName, meshFile))"
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))"
             },
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "meshFile": "meshFile",
-                    "diffuseMapFile": "diffuseMapFile",
-                    "occlusionMapFile": "occlusionMapFile",
-                    "emissiveMapFile": "emissiveMapFile",
-                    "metallicRoughnessMapFile": "metallicRoughnessMapFile",
-                    "normalMapFile": "normalMapFile",
-                    "zoneMapFile": "zoneMapFile",
-                    "documentFile": "documentFile",
+                    "meshFile": "sourceMeshFile",
+                    "diffuseMapFile": "sourceDiffuseMapFile",
+                    "occlusionMapFile": "sourceOcclusionMapFile",
+                    "emissiveMapFile": "sourceEmissiveMapFile",
+                    "metallicRoughnessMapFile": "sourceMetallicRoughnessMapFile",
+                    "normalMapFile": "sourceNormalMapFile",
+                    "zoneMapFile": "sourceZoneMapFile",
+                    "documentFile": "svxFile",
                     "metaDataFile": "metaDataFile"
                 }
             },
@@ -131,21 +131,21 @@
         "web-asset-glb": {
             "task": "WebAsset",
             "description": "Create binary, compressed, embedded glTF asset",
-            "skip": "$not(generateBinary)",
+            "skip": "$not(generateGlb)",
             "pre": {
                 "deliverables": {
-                    "webAssetGlb": "baseName & '-web.glb'"
+                    "webAssetGlb": "outputFileBaseName & '-web.glb'"
                 }
             },
             "parameters": {
                 "outputFile": "deliverables.webAssetGlb",
-                "meshFile": "meshFile",
-                "diffuseMapFile": "diffuseMapFile",
-                "occlusionMapFile": "occlusionMapFile",
-                "emissiveMapFile": "emissiveMapFile",
-                "metallicRoughnessMapFile": "metallicRoughnessMapFile",
-                "normalMapFile": "normalMapFile",
-                "zoneMapFile": "zoneMapFile",
+                "meshFile": "sourceMeshFile",
+                "diffuseMapFile": "sourceDiffuseMapFile",
+                "occlusionMapFile": "sourceOcclusionMapFile",
+                "emissiveMapFile": "sourceEmissiveMapFile",
+                "metallicRoughnessMapFile": "sourceMetallicRoughnessMapFile",
+                "normalMapFile": "sourceNormalMapFile",
+                "zoneMapFile": "sourceZoneMapFile",
                 "alignCenter": "alignCenter",
                 "alignFloor": "alignFloor",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -164,19 +164,19 @@
             "skip": "$not(generateGltf)",
             "pre": {
                 "deliverables": {
-                    "webAssetGltf": "baseName & '-web.gltf'",
-                    "webAssetBin": "baseName & '-web.bin'"
+                    "webAssetGltf": "outputFileBaseName & '-web.gltf'",
+                    "webAssetBin": "outputFileBaseName & '-web.bin'"
                 }
             },
             "parameters": {
                 "outputFile": "deliverables.webAssetGltf",
-                "meshFile": "meshFile",
-                "diffuseMapFile": "diffuseMapFile",
-                "occlusionMapFile": "occlusionMapFile",
-                "emissiveMapFile": "emissiveMapFile",
-                "metallicRoughnessMapFile": "metallicRoughnessMapFile",
-                "normalMapFile": "normalMapFile",
-                "zoneMapFile": "zoneMapFile",
+                "meshFile": "sourceMeshFile",
+                "diffuseMapFile": "sourceDiffuseMapFile",
+                "occlusionMapFile": "sourceOcclusionMapFile",
+                "emissiveMapFile": "sourceEmissiveMapFile",
+                "metallicRoughnessMapFile": "sourceMetallicRoughnessMapFile",
+                "normalMapFile": "sourceNormalMapFile",
+                "zoneMapFile": "sourceZoneMapFile",
                 "alignCenter": "alignCenter",
                 "alignFloor": "alignFloor",
                 "objectSpaceNormals": "$not(tangentSpaceNormals)",
@@ -193,14 +193,14 @@
             "description": "Add web model to document.json descriptor file",
             "pre": {
                 "deliverables": {
-                    "document": "$firstTrue(documentFile, 'scene.svx.json')"
+                    "document": "$firstTrue(svxFile, 'scene.svx.json')"
                 }
             },
             "parameters": {
                 "documentFile": "deliverables.document",
                 "metaDataFile": "metaDataFile",
                 "modelIndex": "modelIndex",
-                "modelName": "baseName",
+                "modelName": "outputFileBaseName",
                 "units": "units",
                 "derivativeQuality": "assetQuality",
                 "modelFile": "$firstTrue(deliverables.webAssetGlb, deliverables.webAssetGltf)",
