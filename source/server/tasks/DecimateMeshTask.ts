@@ -47,6 +47,8 @@ export interface IDecimateMeshTaskParameters extends ITaskParameters
     preserveBoundaries?: boolean;
     /** Meshlab only: Preserves texture coordinates during decimation. */
     preserveTexCoords?: boolean;
+    /** Meshlab only: Collapsed vertices placed in optimal positions. Can error and create spikes. */
+    optimalPlacement?: boolean;
     /** Meshlab only: Removes components smaller than the given size. Example: "2%" */
     minComponentSize?: string | number;
     /** Meshlab only: Re-computes vertex normals of the decimated mesh. */
@@ -80,6 +82,7 @@ export default class DecimateMeshTask extends ToolTask
             cleanup: { type: "boolean", default: false },
             preserveTopology: { type: "boolean", default: true },
             preserveBoundaries: { type: "boolean", default: true },
+            optimalPlacement: { type: "boolean", default: true },
             minComponentSize: { oneOf: [{ type: "string" }, { type: "number"}] },
             preserveTexCoords: { type: "boolean", default: false },
             computeVertexNormals: { type: "boolean", default: false },
@@ -118,7 +121,7 @@ export default class DecimateMeshTask extends ToolTask
                         "PreserveTopology": params.preserveTopology,
                         "PreserveBoundary": params.preserveBoundaries,
                         "PreserveNormal": false, // keep surface orientation
-                        "OptimalPlacement": true, // re-position vertices
+                        "OptimalPlacement": params.optimalPlacement, // re-position vertices
                         "PlanarQuadric": false, // optimize planar areas
                         "QualityWeight": false, // use triangle quality as weight factor
                         "AutoClean": true
