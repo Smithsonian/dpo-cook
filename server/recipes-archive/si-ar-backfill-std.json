@@ -1,0 +1,234 @@
+{
+    "id": "ae568c31-4cca-402e-90ee-b0c802fe05cc",
+    "name": "si-ar-backfill-fix",
+    "description": "Generates AR derivatives and inserts into known good scene.",
+    "version": "2",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceVoyagerARGlb": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "sourceVoyagerARGlbSTD": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "sourceUsdz": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "svxFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "decimationTool": {
+                "type": "string",
+                "enum": [ "Meshlab", "RapidCompact" ],
+                "default": "RapidCompact"
+            },
+            "preDecimatedUnwrappedARTargetFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "bakeVertexColor": {
+                "type": "boolean",
+                "default": false
+            },
+            "diffuseMapQualityLowAR": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 79
+            },
+            "occlusionMapQualityLowAR": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 59
+            },
+            "normalMapQualityLowAR": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100,
+                "default": 89
+            },
+            "scaleToMeters": {
+                "type": "boolean",
+                "default": true
+            },
+            "numFacesAR": {
+                "type": "integer",
+                "minimum": 10000,
+                "multipleOf": 1000,
+                "default": 100000
+            },
+            "mapSizeAR": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 4096,
+                "default": 2048
+            },
+            "inspectMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "remeshFaces": {
+                "type": "integer",
+                "default": 0
+            },
+            "cleanupMesh": {
+                "type": "boolean",
+                "default": false
+            },
+            "unwrapSegmentationStrengthLowAR": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "unwrapPackEffort": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "bakeTest": {
+                "type": "boolean",
+                "default": true
+            },
+            "maxRayDistance": {
+                "type": "number",
+                "default": 0
+            },
+            "occlusionRays": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 512,
+                "default": 128
+            }
+        },
+        "required": [
+            "sourceVoyagerARGlb",
+            "svxFile"
+        ],
+        "advanced": [
+            "bakeTest", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthLowAR", "remeshFaces",
+            "cleanupMesh", "normalMapQualityLowAR", "occlusionMapQualityLowAR", "preDecimatedUnwrappedARTargetFile",
+            "diffuseMapQualityLowAR", "occlusionRays", "maxRayDistance", "scaleToMeters",
+            "numFacesAR", "mapSizeAR", "sourceMTLFile", "sourceDiffuseMapFile", "decimationTool"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "'backfill-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "pre": {
+                
+            },
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                }
+            },
+            "success": "'update-document-ar1'",
+            "failure": "$failure"
+        },
+        "update-document-ar1": {
+            "task": "Document",
+            "description": "Add voyager AR model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "modelIndex": 0,
+                "derivativeQuality": "'AR'",
+                "modelFile": "sourceVoyagerARGlb",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
+            },
+            "success": "'update-document-ar2'",
+            "failure": "$failure"
+        },
+        "update-document-ar2": {
+            "task": "Document",
+            "description": "Add Android AR model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "modelIndex": 0,
+                "derivativeUsage": "'App3D'",
+                "derivativeQuality": "'AR'",
+                "modelFile": "sourceVoyagerARGlbSTD",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
+            },
+            "success": "'update-document-ar3'",
+            "failure": "$failure"
+        },
+        "update-document-ar3": {
+            "task": "Document",
+            "description": "Add usdz AR model to document.json descriptor file",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "modelIndex": 0,
+                "derivativeUsage": "'iOSApp3D'",
+                "derivativeQuality": "'AR'",
+                "modelFile": "sourceUsdz",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

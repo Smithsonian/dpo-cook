@@ -106,7 +106,7 @@ export default class MeshlabTool extends Tool
         const { instance, message } = event;
 
         // only handle JSON report data
-        if (!message.startsWith("JSON={")) {
+        if (!message.startsWith("\nJSON={")) {
             return false;
         }
 
@@ -114,7 +114,7 @@ export default class MeshlabTool extends Tool
         const results = report.results = report.results || {};
 
         try {
-            results["inspection"] = JSON.parse(message.substr(5));
+            results["inspection"] = JSON.parse(message.substr(6));
         }
         catch(e) {
             const error = "failed to parse mesh inspection report";

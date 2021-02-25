@@ -1,0 +1,104 @@
+{
+    "id": "bb602690-76c9-11eb-9439-0242ac130002",
+    "name": "si-packrat-inspect",
+    "description": "Inspects a mesh and returns two report with results for mesh statistics and material properties. USed by Packrat for validation.",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "sourceMaterialFiles": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "format": "file"
+                },
+                "format": "file"
+            }
+        },
+        "required": [
+            "sourceMeshFile"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "pre": {
+                "baseName": "$baseName(sourceMeshFile)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "logFile": "baseName & '-log.txt'",
+                "reportFile": "baseName & '-report.json'"
+            },
+            "success": "'inspect-mesh'",
+            "failure": "$failure"
+        },
+        "inspect-mesh": {
+            "task": "InspectMesh",
+            "description": "Validate mesh and inspect topology",
+            "pre": {
+                "deliverables": {
+                    "meshInspectionReport": "baseName & '-mesh-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshFile": "sourceMeshFile",
+                "reportFile": "deliverables.meshInspectionReport",
+                "tool": "'Blender'"
+            },
+            "success": "'inspect-material'",
+            "failure": "$failure"
+        },
+        "inspect-material": {
+            "task": "InspectMesh",
+            "description": "Inspect scene materials",
+            "pre": {
+                "deliverables": {
+                    "materialInspectionReport": "baseName & '-material-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshFile": "sourceMeshFile",
+                "reportFile": "deliverables.materialInspectionReport",
+                "tool": "'MeshSmith'"
+            },
+            "success": "'merge-reports'",
+            "failure": "$failure"
+        },
+        "merge-reports": {
+            "task": "MergeReports",
+            "description": "Merge inspection reports",
+            "pre": {
+                "deliverables": {
+                    "finalInspectionReport": "baseName & '-merged-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshReportFile": "deliverables.meshInspectionReport",
+                "materialReportFile": "deliverables.materialInspectionReport"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "none",
+                "path": "$currentDir",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
