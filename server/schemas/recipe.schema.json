@@ -133,6 +133,20 @@
                                 "required": [
                                     "type"
                                 ]
+                            },
+                            {
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "const": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "type"
+                                ]
                             }
                         ]
                     }
