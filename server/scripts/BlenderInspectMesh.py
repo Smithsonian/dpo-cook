@@ -26,8 +26,6 @@ materials=[]
 textures=[]
 scene={}
 
-g_minx = g_maxx = g_miny = g_maxy = g_minz = g_maxz = 0;
-
 #get args
 argv = sys.argv
 argv = argv[argv.index("--") + 1:]
@@ -47,6 +45,14 @@ elif file_extension == '.fbx':
     bpy.ops.import_scene.fbx(filepath=argv[0])
 elif file_extension == '.glb' or file_extension == '.gltf':
     bpy.ops.import_scene.gltf(filepath=argv[0])
+
+if len(bpy.data.objects) > 0:
+    init_bbox_corners = [bpy.data.objects[0].matrix_world @ Vector(corner) for corner in bpy.data.objects[0].bound_box]
+    g_minx = g_maxx = init_bbox_corners[0].x;
+    g_miny = g_maxy = init_bbox_corners[0].y;
+    g_minz = g_maxz = init_bbox_corners[0].z;
+else:
+    g_minx = g_maxx = g_miny = g_maxy = g_minz = g_maxz = 0;
 
 for obj in bpy.data.objects:
     if obj.type == 'MESH':
