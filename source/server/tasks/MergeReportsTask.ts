@@ -136,6 +136,10 @@ export default class MergeReportsTask extends Task
 
         this.finalReport = this.meshReport;
         this.finalReport["scene"]["materials"] = this.materialReport["scene"]["materials"];
+        this.finalReport["scene"]["statistics"]["numMaterials"] = this.materialReport["scene"]["statistics"]["numMaterials"];
+        this.finalReport["scene"]["statistics"]["numEmbeddedTextures"] = this.materialReport["scene"]["statistics"]["numEmbeddedTextures"];
+        this.finalReport["scene"]["statistics"]["numLinkedTextures"] = this.materialReport["scene"]["statistics"]["numLinkedTextures"];
+        delete this.finalReport["scene"]["statistics"]["numTextures"];
         
         this.report.result["inspection"] = this.finalReport;
 

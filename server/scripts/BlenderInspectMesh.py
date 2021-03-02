@@ -2,7 +2,8 @@ import bpy
 import json
 import os
 import sys
-from mathutils import Vector
+import math
+from mathutils import Euler, Vector
 
 channel_types = ['Base Color', 'Metallic', 'Specular', 'Roughness', 'Transmission', 'Emission', 'Alpha', 'Normal', 'Occlusion']
 channel_names = ['diffuse', 'metalness', 'specular', 'roughness', 'opacity', 'emissive', 'opacity', 'normal', 'occlusion']
@@ -48,6 +49,8 @@ elif file_extension == '.glb' or file_extension == '.gltf':
 
 if len(bpy.data.objects) > 0:
     init_bbox_corners = [bpy.data.objects[0].matrix_world @ Vector(corner) for corner in bpy.data.objects[0].bound_box]
+    if file_extension == '.obj':
+        init_bbox_corners = [Euler((math.radians(-90.0), 0.0, 0.0)).to_matrix() @ Vector(corner) for corner in init_bbox_corners]
     g_minx = g_maxx = init_bbox_corners[0].x;
     g_miny = g_maxy = init_bbox_corners[0].y;
     g_minz = g_maxz = init_bbox_corners[0].z;
@@ -80,6 +83,9 @@ for obj in bpy.data.objects:
                 
         
         bbox_corners = [obj.matrix_world @ Vector(corner) for corner in obj.bound_box]
+
+        if file_extension == '.obj':
+            bbox_corners = [Euler((math.radians(-90.0), 0.0, 0.0)).to_matrix() @ Vector(corner) for corner in bbox_corners]
         
         minx = maxx = bbox_corners[0].x
         miny = maxy = bbox_corners[0].y
