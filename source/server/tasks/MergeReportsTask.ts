@@ -92,10 +92,12 @@ export default class MergeReportsTask extends Task
             this.materialReport = JSON.parse(json);
         })
         .catch(() => {throw new Error("could not load material report file");});
- 
+
+        const meshes = this.meshReport["meshes"];
+        const fileExt = path.extname(this.materialReport["filePath"]);
+        
         // merge reports
-        if(this.meshReport["scene"]["statistics"]["numMeshes"] > 1) {
-            const meshes = this.meshReport["meshes"];
+        if(this.meshReport["scene"]["statistics"]["numMeshes"] > 0) {
             const materials = this.materialReport["scene"]["materials"];
             meshes.forEach((mesh, meshIdx) => {
                 const indices = mesh["statistics"]["materialIndex"];
@@ -110,7 +112,7 @@ export default class MergeReportsTask extends Task
                     else {
                         
                         // try to find a match using geometry bounds
-                        const bbMatches =this.materialReport["meshes"].filter(mMesh => {
+                        const bbMatches = this.materialReport["meshes"].filter(mMesh => {
                             const bb1 = mMesh["geometry"]["boundingBox"];
                             const bb2 = mesh["geometry"]["boundingBox"];
 
@@ -123,14 +125,50 @@ export default class MergeReportsTask extends Task
                         });
 
                         if(bbMatches.length === 1) {
-                            this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"][indexIdx] = bbMatches[0]["statistics"]["materialIndex"][indexIdx];
+                            const matIndex = bbMatches[0]["statistics"]["materialIndex"][indexIdx];
+                            if(matIndex) {
+                                this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"][indexIdx] = matIndex;
+                            }
+                            else {
+                                this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"].splice(indexIdx,1);
+                            }
                         }
                         else {
                             // no match found
-                            this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"][indexIdx] = -1;
+                            this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"].splice(indexIdx,1);
+                            this.logTaskEvent("debug", `Warning: Could not find a mapping for material "${materialName}"`);
                         }
                     }
                 }); 
+            });
+        }
+        
+        // OBJ vertex color not supported by Blender, so check for any vc mismatches
+        const matMeshes = this.materialReport["meshes"];
+        if(fileExt === ".obj") {
+            matMeshes.forEach((mesh) => {
+                if(mesh["statistics"]["hasVertexColors"] === true) {
+                    const bbMatches = meshes.filter(mMesh => {
+                        const bb1 = mMesh["geometry"]["boundingBox"];
+                        const bb2 = mesh["geometry"]["boundingBox"];
+
+                        return Math.abs(bb1.max[0]-bb2.max[0]) <  0.00001 &&
+                            Math.abs(bb1.max[1]-bb2.max[1]) <  0.00001 &&
+                            Math.abs(bb1.max[2]-bb2.max[2]) <  0.00001 &&
+                            Math.abs(bb1.min[0]-bb2.min[0]) <  0.00001 &&
+                            Math.abs(bb1.min[1]-bb2.min[1]) <  0.00001 &&
+                            Math.abs(bb1.min[2]-bb2.min[2]) <  0.00001;
+                    });
+
+                    if(bbMatches.length === 1) {
+                        bbMatches[0]["statistics"]["hasVertexColors"] = true;
+                        bbMatches[0]["statistics"]["numColorChannels"] = mesh["statistics"]["numColorChannels"];
+                    }
+                    else {
+                        // no match found
+                        throw new Error("Error: Could not sync vertex color between mesh and material reports.");
+                    }
+                }
             });
         }
 

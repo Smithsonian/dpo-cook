@@ -191,7 +191,7 @@ export default class MeshSmithTool extends Tool<MeshSmithTool, IMeshSmithToolSet
 
         if (event.state === "error") {
             const report = event.instance.report.execution;
-            if (report.results.error) {
+            if (report.results && report.results.error) {
                 report.error = report.results.error;
             }
         }
