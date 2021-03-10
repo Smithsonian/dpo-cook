@@ -3,7 +3,8 @@ import json
 import os
 import sys
 import math
-from mathutils import Euler, Vector
+import bmesh
+from mathutils import Vector, Euler, bvhtree
 
 channel_types = ['Base Color', 'Metallic', 'Specular', 'Roughness', 'Transmission', 'Emission', 'Alpha', 'Normal', 'Occlusion']
 channel_names = ['diffuse', 'metalness', 'specular', 'roughness', 'opacity', 'emissive', 'opacity', 'normal', 'occlusion']
@@ -16,7 +17,41 @@ def find_channel(node, channels):
             else:
                 find_channel(link.to_node, channels)
                 
+def is_manifold(object: bpy.types.Object, check_boundaries = True) -> bool:
+    bpy.context.view_layer.objects.active = object
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_non_manifold(extend=False, use_boundary=check_boundaries)
+    bm = bmesh.from_edit_mesh(object.data)
 
+    is_manifold = True
+    
+    for v in bm.verts:
+        if v.select:
+            is_manifold = False
+            break
+        
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.context.view_layer.objects.active = None
+    
+    return is_manifold
+
+def self_intersecting(object: bpy.types.Object) -> bool:
+    bpy.context.view_layer.objects.active = object
+    bpy.ops.object.mode_set(mode='EDIT')
+    bm = bmesh.from_edit_mesh(object.data)
+
+    is_intersecting = False
+
+    bvh_tree = bvhtree.BVHTree.FromBMesh(bm, epsilon=0.000001)
+    intersections = bvh_tree.overlap(bvh_tree)
+
+    if intersections:
+        is_intersecting = True
+        
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.context.view_layer.objects.active = None
+    
+    return is_intersecting
 
 mesh_count = 0;
 face_count = 0;
@@ -69,6 +104,10 @@ for obj in bpy.data.objects:
         statistics["hasTexCoords"] = obj.data.uv_layers.active is not None
         statistics["hasVertexColors"] = len(obj.data.vertex_colors) > 0
         statistics["hasBones"] = obj.find_armature() is not None
+        statistics["isTwoManifoldUnbounded"] = is_manifold(obj, True)
+        statistics["isTwoManifoldBounded"] = is_manifold(obj, False)
+        statistics["selfIntersecting"] = self_intersecting(obj)
+        statistics["isWatertight"] = statistics["isTwoManifoldUnbounded"] and not statistics["selfIntersecting"]
 
         material_indices = []
         
