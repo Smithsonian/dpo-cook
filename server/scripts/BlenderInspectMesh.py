@@ -4,6 +4,7 @@ import os
 import sys
 import math
 import bmesh
+from io_mesh_stl import stl_utils
 from mathutils import Vector, Euler, bvhtree
 
 channel_types = ['Base Color', 'Metallic', 'Specular', 'Roughness', 'Transmission', 'Emission', 'Alpha', 'Normal', 'Occlusion']
@@ -53,6 +54,67 @@ def self_intersecting(object: bpy.types.Object) -> bool:
     
     return is_intersecting
 
+# Check for ply format - pulled from importer (import_ply.py)
+def is_ply_ascii(filepath) -> bool:
+    import re
+    
+    with open(filepath, 'rb') as plyf:
+        signature = plyf.peek(5)
+
+        custom_line_sep = None
+        if signature[3] != ord(b'\n'):
+            if signature[3] != ord(b'\r'):
+                print("Unknown line separator")
+                return invalid_ply
+            if signature[4] == ord(b'\n'):
+                custom_line_sep = b"\r\n"
+            else:
+                custom_line_sep = b"\r"
+
+        # Work around binary file reading only accepting "\n" as line separator.
+        plyf_header_line_iterator = lambda plyf: plyf
+        if custom_line_sep is not None:
+            def _plyf_header_line_iterator(plyf):
+                buff = plyf.peek(2**16)
+                while len(buff) != 0:
+                    read_bytes = 0
+                    buff = buff.split(custom_line_sep)
+                    for line in buff[:-1]:
+                        read_bytes += len(line) + len(custom_line_sep)
+                        if line.startswith(b'end_header'):
+                            # Since reader code might (will) break iteration at this point,
+                            # we have to ensure file is read up to here, yield, amd return...
+                            plyf.read(read_bytes)
+                            yield line
+                            return
+                        yield line
+                    plyf.read(read_bytes)
+                    buff = buff[-1] + plyf.peek(2**16)
+            plyf_header_line_iterator = _plyf_header_line_iterator
+
+        valid_header = False
+        for line in plyf_header_line_iterator(plyf):
+            tokens = re.split(br'[ \r\n]+', line)
+
+            if len(tokens) == 0:
+                continue
+            if tokens[0] == b'end_header':
+                valid_header = True
+                break
+            elif tokens[0] == b'comment':
+                continue
+            elif tokens[0] == b'obj_info':
+                continue
+            elif tokens[0] == b'format':
+                format = tokens[1]
+                break
+        
+        if format == b'ascii':
+            return True
+        
+        return False
+
+
 mesh_count = 0;
 face_count = 0;
 vertex_count = 0;
@@ -61,6 +123,8 @@ meshes=[]
 materials=[]
 textures=[]
 scene={}
+
+isAscii = True
 
 #get args
 argv = sys.argv
@@ -75,12 +139,18 @@ if file_extension == '.obj':
     bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
 elif file_extension == '.ply':
     bpy.ops.import_mesh.ply(filepath=argv[0])
+    isAscii = is_ply_ascii(argv[0])
 elif file_extension == '.stl':
     bpy.ops.import_mesh.stl(filepath=argv[0])
+    with open(argv[0], 'rb') as data:
+        isAscii = stl_utils._is_ascii_file(data)
 elif file_extension == '.fbx':
     bpy.ops.import_scene.fbx(filepath=argv[0])
+    isAscii = False
 elif file_extension == '.glb' or file_extension == '.gltf':
     bpy.ops.import_scene.gltf(filepath=argv[0])
+    if file_extension == '.glb':
+        isAscii = False
 
 if len(bpy.data.objects) > 0:
     init_bbox_corners = [bpy.data.objects[0].matrix_world @ Vector(corner) for corner in bpy.data.objects[0].bound_box]
@@ -221,7 +291,8 @@ scene_statistics =  {
     "numMaterials": len(materials),
     "numMeshes": mesh_count,
     "numTextures": len(textures),
-    "numVertices": vertex_count
+    "numVertices": vertex_count,
+    "fileEncoding": "ASCII" if isAscii else "BINARY"
 }
 
 scene = {
