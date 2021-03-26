@@ -21,6 +21,7 @@ import Job from "../app/Job";
 
 import MeshlabTool, { IMeshlabToolSettings } from "../tools/MeshlabTool";
 import MeshSmithTool, { IMeshSmithToolSettings } from "../tools/MeshSmithTool";
+import BlenderTool, { IBlenderToolSettings } from "../tools/BlenderTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask, { IToolMessageEvent, ToolInstance } from "../app/ToolTask";
@@ -39,8 +40,8 @@ export interface IInspectMeshTaskParameters extends ITaskParameters
     reportFile?: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** The inspection tool to be used, either "Meshlab" or "MeshSmith". Default is Meshlab. */
-    tool?: "Meshlab" | "MeshSmith";
+    /** The inspection tool to be used. Default is Meshlab. */
+    tool?: "Meshlab" | "MeshSmith" | "Blender";
 }
 
 /**
@@ -67,7 +68,7 @@ export default class InspectMeshTask extends ToolTask
             meshFile: { type: "string", minLength: 1 },
             reportFile: { type: "string", minLength: 1, default: undefined },
             timeout: { type: "integer", minimum: 0, default: 0 },
-            tool: { type: "string", enum: [ "Meshlab", "MeshSmith" ], default: "Meshlab" }
+            tool: { type: "string", enum: [ "Meshlab", "MeshSmith", "Blender" ], default: "Meshlab" }
         },
         required: [
             "meshFile"
@@ -103,6 +104,15 @@ export default class InspectMeshTask extends ToolTask
 
             this.addTool("MeshSmith", settings);
         }
+        else if (params.tool === "Blender") {
+            const settings: IBlenderToolSettings = {
+                inputMeshFile: params.meshFile,
+                mode: "inspect",
+                timeout: params.timeout
+            };
+
+            this.addTool("Blender", settings);
+        }
         else {
             throw new Error("InspectMeshTask.constructor - unknown tool: " + params.tool);
         }
@@ -110,7 +120,7 @@ export default class InspectMeshTask extends ToolTask
 
     protected async instanceDidExit(instance: ToolInstance)
     {
-        if (instance.tool instanceof MeshlabTool || instance.tool instanceof MeshSmithTool) {
+        if (instance.tool instanceof MeshlabTool || instance.tool instanceof MeshSmithTool || instance.tool instanceof BlenderTool) {
 
             const results = instance.report.execution.results;
             const inspection = results && results["inspection"];

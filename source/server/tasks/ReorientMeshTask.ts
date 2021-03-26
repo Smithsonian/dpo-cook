@@ -98,8 +98,9 @@ export default class ReorientMeshTask extends ToolTask
             const settings: IBlenderToolSettings = {
                 inputMeshFile: params.inputMeshFile,
                 inputVoyagerFile: params.inputVoyagerFile,
-                outputMeshFile: params.outputMeshFile,
+                outputFile: params.outputMeshFile,
                 scaleToMeters: params.scaleToMeters,
+                mode: "standardize",
                 timeout: params.timeout
             };
 

@@ -17,15 +17,16 @@
 
 import * as path from "path";
 
-import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
+import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
 export interface IBlenderToolSettings extends IToolSettings
 {
     inputMeshFile: string;
+    mode: string;
     inputVoyagerFile?: string;
-    outputMeshFile?: string;
+    outputFile?: string;
     scaleToMeters?: boolean;
 }
 
@@ -37,6 +38,29 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
 
     protected static readonly defaultSettings: Partial<IBlenderToolSettings> = { };
 
+    onInstanceMessage(event: IToolMessageEvent): boolean
+    {
+        const { instance, message } = event;
+
+        // only handle JSON report data
+        if (!message.startsWith("\nJSON=")) {
+            return false;
+        }
+
+        const report = instance.report.execution;
+        const results = report.results = report.results || {};
+
+        try {
+            results["inspection"] = JSON.parse(message.substr(6));
+        }
+        catch(e) {
+            const error = "failed to parse mesh inspection report";
+            results["inspection"] = { error };
+        }
+
+        return true;
+    }
+
     async setupInstance(instance: BlenderInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
@@ -46,7 +70,13 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             throw new Error("missing input mesh file");
         } 
 
-        const operation = `--background --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputMeshFile)}" "${settings.scaleToMeters}"`;
+        let operation = `--background`;
+        if(settings.mode === "standardize") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputFile)}" "${settings.scaleToMeters}"`;
+        }
+        else if(settings.mode === "inspect") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderInspectMesh.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}"`;
+        }
 
         const command = `"${this.configuration.executable}" ${operation}`;
 

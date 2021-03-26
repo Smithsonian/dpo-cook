@@ -39,7 +39,7 @@ export interface IJobOrder
     recipe?: IRecipe;
     /** Parameters for the recipe to be executed. */
     parameters: {
-        [id:string]: number | boolean | string;
+        [id:string]: number | boolean | string | string[];
     };
 
     /** Priority of this job. */
