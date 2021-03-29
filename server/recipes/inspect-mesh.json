@@ -13,11 +13,20 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "sourceMaterialFiles": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "format": "file"
+                },
+                "format": "file"
+            },
             "inspectionTool": {
                 "type": "string",
                 "enum": [
                     "Meshlab",
-                    "MeshSmith"
+                    "MeshSmith",
+                    "Blender"
                 ],
                 "default": "MeshSmith"
             }
