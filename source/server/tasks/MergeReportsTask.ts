@@ -101,8 +101,14 @@ export default class MergeReportsTask extends Task
             const materials = this.materialReport["scene"]["materials"];
             meshes.forEach((mesh, meshIdx) => {
                 const indices = mesh["statistics"]["materialIndex"];
+
+                if(indices.length === 0 && materials.length > 0) {
+                    // no index, but we have materials so check for a match
+                    indices.push(-1);
+                }
+
                 indices.forEach((index, indexIdx) => {
-                    const materialName = this.meshReport["scene"]["materials"][index]["name"];
+                    const materialName = index >= 0 ? this.meshReport["scene"]["materials"][index]["name"] : "UNKNOWN_MATERIAL";
                  
                     // look for material name match
                     const matches = materials.filter(mat => mat["name"] === materialName);
@@ -125,8 +131,8 @@ export default class MergeReportsTask extends Task
                         });
 
                         if(bbMatches.length === 1) {
-                            const matIndex = bbMatches[0]["statistics"]["materialIndex"][indexIdx];
-                            if(matIndex) {
+                            const matIndex = bbMatches[0]["statistics"]["materialIndex"];
+                            if(matIndex >= 0) {
                                 this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"][indexIdx] = matIndex;
                             }
                             else {
