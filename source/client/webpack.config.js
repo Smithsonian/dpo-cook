@@ -81,8 +81,8 @@ module.exports = {
             ENV_VERSION: JSON.stringify(`${moment().format("YYYY-MM-DD")} ${version}`)
         }),
         new MiniCssExtractPlugin({
-            filename: "[name].css",
-            allChunks: true
+            filename: "[name].css"
+            //allChunks: true
         })
     ],
 
