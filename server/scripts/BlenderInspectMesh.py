@@ -151,6 +151,9 @@ elif file_extension == '.glb' or file_extension == '.gltf':
     bpy.ops.import_scene.gltf(filepath=argv[0])
     if file_extension == '.glb':
         isAscii = False
+else:
+    print("Error: Unsupported file type: " + file_extension)
+    sys.exit(1)
 
 if len(bpy.data.objects) > 0:
     init_bbox_corners = [bpy.data.objects[0].matrix_world @ Vector(corner) for corner in bpy.data.objects[0].bound_box]
