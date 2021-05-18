@@ -4,6 +4,7 @@ import os
 import sys
 import math
 import bmesh
+import struct
 from io_mesh_stl import stl_utils
 from mathutils import Vector, Euler, bvhtree
 
@@ -115,9 +116,9 @@ def is_ply_ascii(filepath) -> bool:
         return False
 
 
-mesh_count = 0;
-face_count = 0;
-vertex_count = 0;
+mesh_count = 0
+face_count = 0
+vertex_count = 0
 
 meshes=[]
 materials=[]
@@ -125,6 +126,7 @@ textures=[]
 scene={}
 
 isAscii = True
+isDracoCompressed = False
 
 #get args
 argv = sys.argv
@@ -144,6 +146,8 @@ elif file_extension == '.stl':
     bpy.ops.import_mesh.stl(filepath=argv[0])
     with open(argv[0], 'rb') as data:
         isAscii = stl_utils._is_ascii_file(data)
+elif file_extension == '.x3d':
+    bpy.ops.import_scene.x3d(filepath=argv[0])
 elif file_extension == '.fbx':
     bpy.ops.import_scene.fbx(filepath=argv[0])
     isAscii = False
@@ -151,6 +155,16 @@ elif file_extension == '.glb' or file_extension == '.gltf':
     bpy.ops.import_scene.gltf(filepath=argv[0])
     if file_extension == '.glb':
         isAscii = False
+    with open(argv[0], 'rb') as data:
+        #read header to see if using compression
+        content = memoryview(data.read())
+        chunk_header = struct.unpack_from('<I4s', content, 12)
+        data_length = chunk_header[0]
+        data_type = chunk_header[1]
+        data_gltf = content[12 + 8: 12 + 8 + data_length]
+        gltf_string = data_gltf.tobytes().decode('utf-8')
+        if "KHR_draco_mesh_compression" in gltf_string:
+            isDracoCompressed = True
 else:
     print("Error: Unsupported file type: " + file_extension)
     sys.exit(1)
@@ -159,11 +173,11 @@ if len(bpy.data.objects) > 0:
     init_bbox_corners = [bpy.data.objects[0].matrix_world @ Vector(corner) for corner in bpy.data.objects[0].bound_box]
     if file_extension == '.obj':
         init_bbox_corners = [Euler((math.radians(-90.0), 0.0, 0.0)).to_matrix() @ Vector(corner) for corner in init_bbox_corners]
-    g_minx = g_maxx = init_bbox_corners[0].x;
-    g_miny = g_maxy = init_bbox_corners[0].y;
-    g_minz = g_maxz = init_bbox_corners[0].z;
+    g_minx = g_maxx = init_bbox_corners[0].x
+    g_miny = g_maxy = init_bbox_corners[0].y
+    g_minz = g_maxz = init_bbox_corners[0].z
 else:
-    g_minx = g_maxx = g_miny = g_maxy = g_minz = g_maxz = 0;
+    g_minx = g_maxx = g_miny = g_maxy = g_minz = g_maxz = 0
 
 for obj in bpy.data.objects:
     if obj.type == 'MESH':
@@ -295,7 +309,8 @@ scene_statistics =  {
     "numMeshes": mesh_count,
     "numTextures": len(textures),
     "numVertices": vertex_count,
-    "fileEncoding": "ASCII" if isAscii else "BINARY"
+    "fileEncoding": "ASCII" if isAscii else "BINARY",
+    "isDracoCompressed": isDracoCompressed
 }
 
 scene = {
@@ -312,14 +327,11 @@ report = {
 
 print("JSON="+json.dumps(report))
 
-### encode report as JSON 
-##data = json.dumps(report, indent=1, ensure_ascii=True)
-##
-### set output path
-##dir = os.path.dirname(filename)
-##file_name = os.path.join(dir, "blender_inspection_report.json")
-##
-### write JSON file
-##with open(file_name, 'w') as outfile:
-##    outfile.write(data + '\n')
+# If we have a draco compressed glb, re-save uncompressed for now
+if file_extension == '.glb' and isDracoCompressed == True:
+    path = bpy.data.filepath
+    dir = os.path.dirname(path)
+    save_file = os.path.join(dir, argv[0])
+    bpy.ops.export_scene.gltf(filepath=save_file, check_existing=False)
+    
 
