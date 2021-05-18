@@ -1,7 +1,7 @@
 {
     "id": "bb602690-76c9-11eb-9439-0242ac130002",
     "name": "si-packrat-inspect",
-    "description": "Inspects a mesh and returns two report with results for mesh statistics and material properties. USed by Packrat for validation.",
+    "description": "Inspects a mesh and returns two report with results for mesh statistics and material properties. Used by Packrat for validation.",
     "version": "1",
     "start": "log",
 
