@@ -679,11 +679,11 @@
             "skip": "$not(generateGlb) or $not(generateARAssets)",
             "pre": {
                 "deliverables": {
-                    "webAssetGlbLowCompressed": "scaleToMeters ? baseMeshMapNameAR & '_std_draco.glb' : baseMeshMapNameAR & '_draco.glb'"
+                    "webAssetGlbARCompressed": "scaleToMeters ? baseMeshMapNameAR & '_std_draco.glb' : baseMeshMapNameAR & '_draco.glb'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetGlbLowCompressed",
+                "outputFile": "deliverables.webAssetGlbARCompressed",
                 "meshFile": "scene_unwrappedMesh",
                 "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapAR : ''",
                 "occlusionMapFile": "scene_occlusionMapAR",
