@@ -363,7 +363,7 @@
                 "mapBaseName": "baseMeshMapNameLow & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "sourceMeshFile",
+                "highPolyMeshFile": "reorientedMeshFileMaster",
                 "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
@@ -438,10 +438,12 @@
             "description": "Create binary, uncompressed, embedded glTF asset (low)",
             "skip": "$not(generateGlb) or $not(generateLowAssets)",
             "pre": {
-                "scene_webAssetHighGlbUncompressed": "scaleToMeters ? baseMeshMapNameLow & '_std.glb' : baseMeshMapNameLow & '.glb'"
+                "deliverables": {
+                    "webAssetGlbLowUncompressed": "scaleToMeters ? baseMeshMapNameLow & '_std.glb' : baseMeshMapNameLow & '.glb'"
+                }
             },
             "parameters": {
-                "outputFile": "scene_webAssetHighGlbUncompressed",
+                "outputFile": "deliverables.webAssetGlbLowUncompressed",
                 "meshFile": "scene_unwrappedMeshLow",
                 "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "scene_occlusionMapHigh",
@@ -588,7 +590,7 @@
                 "mapBaseName": "baseMeshMapNameAR & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "sourceMeshFile",
+                "highPolyMeshFile": "reorientedMeshFileMaster",
                 "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
@@ -813,7 +815,7 @@
                 "mapBaseName": "baseMeshMapNameMedium & '.png'"
             },
             "parameters": {
-                "highPolyMeshFile": "sourceMeshFile",
+                "highPolyMeshFile": "reorientedMeshFileMaster",
                 "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
                 "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
                 "mapBaseName": "mapBaseName",
