@@ -11,7 +11,7 @@ summary: All-in-one mesh simplification, UV unwrapping, and map baking tool.
 
 ### Installation
 
-- Recommended version with Cook: *1.6*
+- Recommended version with Cook: *4.2.1*
 - Windows binary available to registered customers
 
 ### Configuration
@@ -20,8 +20,8 @@ Example configuration for RapidCompact in the `tools.json` configuration file:
 
 ```json
 "RapidCompact": {
-    "executable": "C:\\Program Files\\RapidCompact CLI 1.6.0\\rpdx.exe",
-    "version": "1.6",
+    "executable": "C:\\Program Files\\RapidCompact CLI 4.2.1\\rpdx.exe",
+    "version": "4.2.1",
     "maxInstances": 3,
     "timeout": 900
 }
