@@ -128,6 +128,13 @@ scene={}
 isAscii = True
 isDracoCompressed = False
 
+bpy.ops.object.select_all(action='SELECT')
+bpy.ops.object.delete(use_global=False)
+                            
+bpy.ops.outliner.orphans_purge()
+bpy.ops.outliner.orphans_purge()
+bpy.ops.outliner.orphans_purge()
+
 #get args
 argv = sys.argv
 argv = argv[argv.index("--") + 1:]
