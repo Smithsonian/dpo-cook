@@ -12,6 +12,13 @@ def run():
 	do_scale = False
 	scale_factor = 1.0
 
+	bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.delete(use_global=False)
+                            
+        bpy.ops.outliner.orphans_purge()
+        bpy.ops.outliner.orphans_purge()
+        bpy.ops.outliner.orphans_purge()
+
 	#get args
 	argv = sys.argv
 	argv = argv[argv.index("--") + 1:]
@@ -28,7 +35,7 @@ def run():
 		
 
 	#load and parse voyager file
-	f=open(argv[1],'r') 
+	f=open(argv[1], mode="r", encoding="utf-8") 
 	data=json.load(f) 
 	f.close()
 
