@@ -154,6 +154,8 @@ elif file_extension == '.stl':
         isAscii = stl_utils._is_ascii_file(data)
 elif file_extension == '.x3d':
     bpy.ops.import_scene.x3d(filepath=argv[0])
+elif file_extension == '.dae':
+    bpy.ops.wm.collada_import(filepath=argv[0])
 elif file_extension == '.fbx':
     bpy.ops.import_scene.fbx(filepath=argv[0])
     isAscii = False
