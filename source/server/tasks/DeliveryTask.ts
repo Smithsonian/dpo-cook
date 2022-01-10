@@ -17,7 +17,8 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import * as webDAV from "webdav";
+//import {createClient} from "webdav/web";
+const { createClient } = require("webdav");
 
 import Job from "../app/Job";
 
@@ -108,10 +109,12 @@ export default class DeliveryTask extends Task
         let remoteClient;
 
         if (params.method === "webDAV") {
-            remoteClient = webDAV(
+            remoteClient = createClient(
                 params.path,
-                params.credentials.user,
-                params.credentials.password
+                {
+                    username: params.credentials.user,
+                    password: params.credentials.password
+                }
             );
         }
 
