@@ -16,8 +16,8 @@
             "inspectionTool": {
                 "type": "string",
                 "enum": [
-                    "Meshlab",
-                    "MeshSmith"
+                    "MeshSmith",
+                    "Blender"
                 ],
                 "default": "MeshSmith"
             }

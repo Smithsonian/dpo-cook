@@ -85,7 +85,7 @@
         },
         "inspect-highpoly": {
             "task": "InspectMesh",
-            "description": "Inspect high poly mesh using Meshlab",
+            "description": "Inspect high poly mesh",
             "skip": "$not(inspectMesh)",
             "pre": {
                 "deliverables": {
@@ -125,7 +125,7 @@
         },
         "inspect-decimated": {
             "task": "InspectMesh",
-            "description": "Inspect decimated mesh using Meshlab",
+            "description": "Inspect decimated mesh",
             "skip": "$not(inspectMesh)",
             "pre": {
                 "deliverables": {
