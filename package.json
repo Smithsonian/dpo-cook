@@ -68,11 +68,11 @@
         "@types/express-session": "^1.17.4",
         "@types/json-schema": "^7.0.7",
         "@types/mocha": "^9.0.0",
-        "@types/node": "^14.14.37",
+        "@types/node": "^17.0.8",
         "@types/react": "^17.0.3",
         "@types/reactable": "^0.14.6",
         "@types/socket.io": "^2.1.13",
-        "apidoc": "^0.27.1",
+        "apidoc": "^0.50.3",
         "awesome-typescript-loader": "^5.2.1",
         "chai": "^4.3.4",
         "comment-json": "^4.1.1",
@@ -93,10 +93,10 @@
         "sass-loader": "^12.4.0",
         "source-map-loader": "^0.2.4",
         "three": "^0.127.0",
-        "typedoc": "^0.17.8",
-        "typescript": "^3.9.9",
-        "webdav": "^4.7.0",
-        "webpack": "^5.50.0",
-        "webpack-cli": "^4.8.0"
+        "typedoc": "^0.22.11",
+        "typescript": "^3.9.10",
+        "webdav": "^4.8.0",
+        "webpack": "^5.66.0",
+        "webpack-cli": "^4.9.1"
     }
 }

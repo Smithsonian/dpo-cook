@@ -41,7 +41,7 @@ export interface IInspectMeshTaskParameters extends ITaskParameters
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** The inspection tool to be used. Default is Meshlab. */
-    tool?: "Meshlab" | "MeshSmith" | "Blender";
+    tool?: /*"Meshlab" |*/ "MeshSmith" | "Blender";
 }
 
 /**
@@ -68,7 +68,7 @@ export default class InspectMeshTask extends ToolTask
             meshFile: { type: "string", minLength: 1 },
             reportFile: { type: "string", minLength: 1, default: undefined },
             timeout: { type: "integer", minimum: 0, default: 0 },
-            tool: { type: "string", enum: [ "Meshlab", "MeshSmith", "Blender" ], default: "Meshlab" }
+            tool: { type: "string", enum: [ "MeshSmith", "Blender" ], default: "Blender" }
         },
         required: [
             "meshFile"
@@ -83,7 +83,8 @@ export default class InspectMeshTask extends ToolTask
     {
         super(params, context);
 
-        if (params.tool === "Meshlab") {
+        // Uncomment when Python inspect script is available
+        /*if (params.tool === "Meshlab") {
             const settings: IMeshlabToolSettings = {
                 inputMeshFile: params.meshFile,
                 filters: [{
@@ -93,8 +94,9 @@ export default class InspectMeshTask extends ToolTask
             };
 
             this.addTool("Meshlab", settings);
-        }
-        else if (params.tool === "MeshSmith") {
+        }*/
+
+        if (params.tool === "MeshSmith") {
             const settings: IMeshSmithToolSettings = {
                 inputFile: params.meshFile,
                 //outputFile: params.reportFile,
@@ -120,7 +122,7 @@ export default class InspectMeshTask extends ToolTask
 
     protected async instanceDidExit(instance: ToolInstance)
     {
-        if (instance.tool instanceof MeshlabTool || instance.tool instanceof MeshSmithTool || instance.tool instanceof BlenderTool) {
+        if (/*instance.tool instanceof MeshlabTool ||*/ instance.tool instanceof MeshSmithTool || instance.tool instanceof BlenderTool) {
 
             const results = instance.report.execution.results;
             const inspection = results && results["inspection"];

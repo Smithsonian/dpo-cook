@@ -162,11 +162,11 @@ export default class DecimateMeshTask extends ToolTask
                 );
             }
 
-            if (params.inspectMesh) {
+            /*if (params.inspectMesh) {
                 settings.filters.unshift({
                     name: "MeshReport"
                 });
-            }
+            }*/
 
             this.addTool("Meshlab", settings);
         }
