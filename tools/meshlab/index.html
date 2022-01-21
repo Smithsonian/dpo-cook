@@ -327,19 +327,20 @@
 </ul>
 <h3 id="installation">Installation</h3>
 <ul>
-<li>In order to enable mesh statistics, you need to install a modified meshlab server version from
-<a href="https://github.com/framefactory/meshlab">https://github.com/framefactory/meshlab</a></li>
-<li>An precompiled binary is available on the Smithsonian internal digitization drive</li>
-<li>Recommended version with Cook: <em>2019.12, 2019-12-02</em></li>
+<li>Cook supports both older (meshlabserver.exe) and newer (PyMeshLab) versions.</li>
+<li>Most recent version tested with Cook: &ldquo;v2021.10&rdquo;</li>
 </ul>
 <h3 id="configuration">Configuration</h3>
-<p>Example configuration for Meshlab in the <code>tools.json</code> configuration file:</p>
+<p>Example configuration for Meshlab in the <code>tools.json</code> configuration file. The top two commented
+lines reflect how to configure the older &lsquo;meshlabserver&rsquo; versions:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;Meshlab&#34;</span><span class="err">:</span> <span class="p">{</span>
-    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Tools\\MeshlabMini\\meshlabserver.exe&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;2019.12, 2019-12-02&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-    <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">1800</span>
-<span class="p">}</span>
+  <span class="c1">//&#34;executable&#34;: &#34;C:\\Tools\\MeshlabMini\\meshlabserver.exe&#34;,
+</span><span class="c1"></span>  <span class="c1">//&#34;version&#34;: &#34;v2019.5, 2019-05-02&#34;,
+</span><span class="c1"></span>  <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Python39\\python.exe&#34;</span><span class="p">,</span>  <span class="c1">// 2021 versions and on use PyMeshLab
+</span><span class="c1"></span>  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;v2021.10&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">1800</span> <span class="c1">// 30 minutes
+</span><span class="c1"></span><span class="p">}</span>
 </code></pre></div>
 </div>
 
