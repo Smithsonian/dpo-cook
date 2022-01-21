@@ -119,6 +119,8 @@ def is_ply_ascii(filepath) -> bool:
 mesh_count = 0
 face_count = 0
 vertex_count = 0
+tri_count = 0
+edge_count = 0
 
 meshes=[]
 materials=[]
@@ -154,6 +156,8 @@ elif file_extension == '.stl':
         isAscii = stl_utils._is_ascii_file(data)
 elif file_extension == '.x3d':
     bpy.ops.import_scene.x3d(filepath=argv[0])
+elif file_extension == '.dae':
+    bpy.ops.wm.collada_import(filepath=argv[0])
 elif file_extension == '.fbx':
     bpy.ops.import_scene.fbx(filepath=argv[0])
     isAscii = False
@@ -187,9 +191,20 @@ else:
 
 for obj in bpy.data.objects:
     if obj.type == 'MESH':
+
+        # compute triangle count
+        triangle_count = 0
+        for face in obj.data.polygons:
+            verts = face.vertices
+            tris = len(verts)-2
+            triangle_count += tris
+
+        # fill stats structure
         statistics={}
         statistics["numFaces"] = len(obj.data.polygons)
+        statistics["numTriangles"] = triangle_count
         statistics["numVertices"] = len(obj.data.vertices)
+        statistics["numEdges"] = len(obj.data.edges)
         statistics["numTexCoordChannels"] = len(obj.data.uv_layers.keys())
         statistics["numColorChannels"] = len(obj.data.vertex_colors)
         statistics["hasNormals"] = obj.data.has_custom_normals
@@ -260,6 +275,8 @@ for obj in bpy.data.objects:
         mesh_count += 1
         face_count += statistics["numFaces"]
         vertex_count += statistics["numVertices"]
+        tri_count += statistics["numTriangles"]
+        edge_count += statistics["numEdges"]
 
 scene_bounds = {
     "min" : [g_minx, g_miny, g_minz],
@@ -310,11 +327,13 @@ scene_statistics =  {
     "numAnimations": len(bpy.data.actions),
     "numCameras": len(bpy.data.cameras),
     "numFaces": face_count,
+    "numTriangles": tri_count,
     "numLights": len(bpy.data.lights),
     "numMaterials": len(materials),
     "numMeshes": mesh_count,
     "numTextures": len(textures),
     "numVertices": vertex_count,
+    "numEdges": edge_count,
     "fileEncoding": "ASCII" if isAscii else "BINARY",
     "isDracoCompressed": isDracoCompressed
 }

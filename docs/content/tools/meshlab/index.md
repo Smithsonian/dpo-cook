@@ -12,20 +12,21 @@ summary: Mesh manipulation tool.
 
 ### Installation
 
-- In order to enable mesh statistics, you need to install a modified meshlab server version from
-https://github.com/framefactory/meshlab
-- An precompiled binary is available on the Smithsonian internal digitization drive
-- Recommended version with Cook: *2019.12, 2019-12-02*
+- Cook supports both older (meshlabserver.exe) and newer (PyMeshLab) versions.
+- Most recent version tested with Cook: "v2021.10"
 
 ### Configuration
 
-Example configuration for Meshlab in the `tools.json` configuration file:
+Example configuration for Meshlab in the `tools.json` configuration file. The top two commented
+lines reflect how to configure the older 'meshlabserver' versions:
 
 ```json
 "Meshlab": {
-    "executable": "C:\\Tools\\MeshlabMini\\meshlabserver.exe",
-    "version": "2019.12, 2019-12-02",
-    "maxInstances": 3,
-    "timeout": 1800
+  //"executable": "C:\\Tools\\MeshlabMini\\meshlabserver.exe",
+  //"version": "v2019.5, 2019-05-02",
+  "executable": "C:\\Python39\\python.exe",  // 2021 versions and on use PyMeshLab
+  "version": "v2021.10",
+  "maxInstances": 3,
+  "timeout": 1800 // 30 minutes
 }
 ```

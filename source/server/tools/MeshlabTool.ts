@@ -56,8 +56,8 @@ export default class MeshlabTool extends Tool
         "RemoveIsolatedFoldedFaces": { name: "Remove Isolated Folded Faces by Edge Flip" },
         "RemoveIsolatedPieces": { name: "Remove Isolated pieces (wrt Diameter)" },
         "ComputeFaceNormals": { name: "Re-Compute Face Normals" },
-        "ComputeVertexNormals": { name: "Re-Compute Vertex Normals" },
-        "MeshReport": { name: "Generate JSON Report", type: "xml" }
+        "ComputeVertexNormals": { name: "Re-Compute Vertex Normals" }
+        /*"MeshReport": { name: "Generate JSON Report", type: "xml" }*/
     };
 
     inspectionReport: any = null;
@@ -76,22 +76,35 @@ export default class MeshlabTool extends Tool
 
         return this.writeFilterScript(instance)
             .then(script => {
-                let command = `"${this.configuration.executable}" -i "${inputMeshPath}"`;
+
+                let command = `"${this.configuration.executable}"`;
+                const isPyMeshLab = this.configuration.executable.toLowerCase().indexOf("meshlabserver") === -1;
+
+                if(isPyMeshLab) {
+                    command += ` "${instance.getFilePath("../../scripts/MeshlabExecuteFilter.py")}"`;
+                }
+
+                command += ` -i "${inputMeshPath}"`;
 
                 if (outputMeshPath) {
                     command += ` -o "${outputMeshPath}"`;
 
-                    if (settings.writeNormals || settings.writeTexCoords) {
-                        command += " -m";
-                        if (settings.writeNormals) {
-                            command += " vn";
-                        }
-                        if (settings.writeTexCoords) {
-                            command += " wt";
+                    if(!isPyMeshLab) {
+                        if (settings.writeNormals || settings.writeTexCoords) {
+                            command += " -m";
+                            if (settings.writeNormals) {
+                                command += " vn";
+                            }
+                            if (settings.writeTexCoords) {
+                                command += " wt";
+                            }
                         }
                     }
+                    else {
+                        command += ` -vn ${settings.writeNormals} -wt ${settings.writeTexCoords}`;
+                    }
                 }
-
+                
                 command += ` -s "${instance.getFilePath(script.fileName)}"`;
 
                 return {
