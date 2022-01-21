@@ -1,186 +1,94 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/getting-started/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/overview/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/overview/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/blender/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/log/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/pickup/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/web-thumb/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/delivery/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/web-multi/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/web-api/</loc>
-  </url>
-  
-  <url>
-    <loc>https://smithsonian.github.io/dpo-cook/recipes/generate-downloads/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/web-hd/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/web-ui/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/cli/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/writing-recipes/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/</loc>
     <lastmod>2019-06-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/bake-maps/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/categories/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/cleanup-mesh/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/combine-occlusion/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/convert-image/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/convert-mesh/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/decimate-mesh/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/file-copy/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/file-operation/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/fix-mesh/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/image-magick/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshfix/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshlab/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/reality-capture/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/recipe/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/remesh/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tags/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/unwrap-mesh/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/web-asset/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/xnormal/</loc>
   </url>
-  
 </urlset>

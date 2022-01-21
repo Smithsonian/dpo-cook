@@ -98,15 +98,6 @@
     </item>
     
     <item>
-      <title>Recipe: generate-downloads</title>
-      <link>https://smithsonian.github.io/dpo-cook/recipes/generate-downloads/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://smithsonian.github.io/dpo-cook/recipes/generate-downloads/</guid>
-      <description>Generates a set of assets geared towards public consumption.</description>
-    </item>
-    
-    <item>
       <title>Recipe: web-hd</title>
       <link>https://smithsonian.github.io/dpo-cook/recipes/web-hd/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
