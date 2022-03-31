@@ -268,13 +268,13 @@ export default class DocumentTask extends Task
                 const keys = Object.keys(metaData);
                 if (keys.length > 0) {
                     let meta;
-                    if (isFinite(node.meta)) {
-                        meta = document.metas[node.meta];
+                    if (isFinite(scene.meta)) {
+                        meta = document.metas[scene.meta];
                     }
                     else {
                         meta = {};
                         document.metas = document.metas || [];
-                        node.meta = document.metas.length;
+                        scene.meta = document.metas.length;
                         document.metas.push(meta);
                     }
 
