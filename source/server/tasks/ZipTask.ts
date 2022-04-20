@@ -36,9 +36,11 @@ export interface IZipTaskParameters extends ITaskParameters
     inputFile5?: string;
     /** Name to give generated zip file. */
     outputFile?: string;
+    /** Degree of compression */
+    compressionLevel?,
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Default tool is MeshSmith. Specify another tool if needed. */
+    /** Default tool is 7Zip. Specify another tool if needed. */
     tool?: "SevenZip";
 }
 
@@ -62,6 +64,7 @@ export default class ZipTask extends ToolTask
             inputFile4: { type: "string", minLength: 1 },
             inputFile5: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1, default: "CookArchive.zip" },
+            compressionLevel: { type: "integer", minimum: 0, default: 5 },
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "SevenZip" ], default: "SevenZip" }
         },
@@ -85,6 +88,7 @@ export default class ZipTask extends ToolTask
                 inputFile3: params.inputFile3,
                 inputFile4: params.inputFile4,
                 inputFile5: params.inputFile5,
+                compressionLevel: params.compressionLevel,
                 outputFile: params.outputFile,
                 timeout: params.timeout
             };

@@ -14,17 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import Job from "../app/Job";
+import { promises as fs } from "fs";
 import * as path from "path";
 
-import Job from "../app/Job";
-
-import { ICscriptToolSettings } from "../tools/CscriptTool";
-
 import Task, { ITaskParameters } from "../app/Task";
-import ToolTask from "../app/ToolTask";
+import ToolTask, { ToolInstance } from "../app/ToolTask";
 import { IUnityToolSettings } from "../tools/UnityTool";
 import { IRapidCompactToolSettings } from "../tools/RapidCompactTool";
+import BlenderTool, { IBlenderToolSettings } from "../tools/BlenderTool";
+import { IZipTaskParameters } from "./ZipTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -39,8 +38,8 @@ export interface IGenerateUsdzTaskParameters extends ITaskParameters
     scale?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Default tool is Unity. Specify another tool if needed. */
-    tool?: "Unity" | "RapidCompact";
+    /** Default tool is Blender. Specify another tool if needed. */
+    tool?: "Blender" | "Unity" | "RapidCompact";
 }
 
 /**
@@ -61,7 +60,7 @@ export default class GenerateUsdzTask extends ToolTask
             outputFile: { type: "string", minLength: 1 },
             scale: { type: "number", default: 100},
             timeout: { type: "integer", minimum: 0, default: 0 },
-            tool: { type: "string", enum: [ "Unity", "RapidCompact" ], default: "RapidCompact" }
+            tool: { type: "string", enum: [ "Blender", "Unity", "RapidCompact" ], default: "Blender" }
         },
         required: [
             "sourceFile",
@@ -99,8 +98,50 @@ export default class GenerateUsdzTask extends ToolTask
 
             this.addTool("RapidCompact", settings);
         }
+        else if(params.tool === "Blender")
+        {
+            const settings: IBlenderToolSettings = {
+                inputMeshFile: params.sourceFile,
+                mode: "convert",
+                //scale: params.scale,
+                timeout: params.timeout
+            };
+
+            this.addTool("Blender", settings);
+        }
         else {
             throw new Error("GenerateUsdzTask.constructor - unknown tool: " + params.tool);  
         }
+    }
+
+    protected async instanceDidExit(instance: ToolInstance)
+    {
+        if (instance.tool instanceof BlenderTool) {
+            const params = this.parameters as IGenerateUsdzTaskParameters;
+            const filename = path.parse(params.sourceFile).name;
+            const usdaName = filename + ".usda"
+            const usdFilePath = path.resolve(this.context.jobDir, usdaName);
+
+            await fs.readFile(usdFilePath, "utf8").then(file => {
+                file = file.replace(/\\/g, "/");
+                const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
+                fs.writeFile(newUsdFilePath, file).then(file => {
+
+                    const zipMeshParams: IZipTaskParameters = {
+                        inputFile1: newUsdFilePath,
+                        inputFile2: "textures",
+                        outputFile: filename + ".usdz",
+                        compressionLevel: 0,
+                        tool: "SevenZip"
+                    };
+            
+                    const zipTask = this.context.manager.createTask("Zip", zipMeshParams, this.context);
+                    return zipTask.run().catch((e) => {throw new Error("Could not zip usdz: "+e);});
+                }).catch(() => {throw new Error("could not write updated USD file");});
+            })
+            .catch(() => {throw new Error("could not read generated USD file");}); 
+        }
+
+        return Promise.resolve();
     }
 }
