@@ -28,6 +28,7 @@ export interface ISevenZipToolSettings extends IToolSettings
     inputFile3: string;
     inputFile4: string;
     inputFile5: string;
+    compressionLevel: number;
     outputFile: string;
 }
 
@@ -50,12 +51,14 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
         if(settings.inputFile4) activeFiles.push(settings.inputFile4);
         if(settings.inputFile5) activeFiles.push(settings.inputFile5);
 
-        let operation = `a "${instance.getFilePath(settings.outputFile)}"`;
+        let operation = `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
 
         activeFiles.forEach(function(file) {
             const inputFilePath = instance.getFilePath(file);
             operation += ` "${inputFilePath}"`;
         });
+
+        operation += ` -mx=${settings.compressionLevel}`;
 
         //if (!inputFilePath) {
         //    throw new Error("missing input mesh file");

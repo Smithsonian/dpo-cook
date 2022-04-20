@@ -20,10 +20,11 @@
             "tool": {
                 "type": "string",
                 "enum": [
+                    "Blender",
                     "Unity",
                     "RapidCompact"
                 ],
-                "default": "RapidCompact"
+                "default": "Blender"
             },
             "scale": {
                 "type": "number",

@@ -59,7 +59,7 @@
             "decimationTool": {
                 "type": "string",
                 "enum": [ "Meshlab", "RapidCompact" ],
-                "default": "RapidCompact"
+                "default": "Meshlab"
             },
             "preDecimatedUnwrappedLowTargetFile": {
                 "type": "string",
