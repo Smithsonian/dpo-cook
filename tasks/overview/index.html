@@ -152,10 +152,6 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
-    </li>
-    
-    <li class="">
       <a href="/dpo-cook/docs/writing-recipes/">Writing recipes</a>
     </li>
     
@@ -167,15 +163,51 @@
   <ul>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-thumb/">Recipe: web-thumb</a>
+      <a href="/dpo-cook/recipes/bake/">Recipe: bake</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-multi/">Recipe: web-multi</a>
+      <a href="/dpo-cook/recipes/decimate/">Recipe: decimate</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
+      <a href="/dpo-cook/recipes/decimate-unwrap/">Recipe: decimate-unwrap</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/generate-usdz/">Recipe: generate-usdz</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/generate-web-gltf/">Recipe: generate-web-gltf</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/inspect-mesh/">Recipe: inspect-mesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/unwrap/">Recipe: unwrap</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-generate-downloads/">Recipe: si-generate-downloads</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-orient-model-to-svx/">Recipe: si-orient-model-to-svx</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-packrat-inspect/">Recipe: si-packrat-inspect</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-voyager-asset/">Recipe: si-voyager-asset</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-voyager-scene/">Recipe: si-voyager-scene</a>
     </li>
     
   </ul>
@@ -238,7 +270,15 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tasks/generate-usdz/">GenerateUSDZ</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tasks/inspect-mesh/">InspectMesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/merge-reports/">MergeReports</a>
     </li>
     
     <li class="">
@@ -250,11 +290,23 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tasks/reorient-mesh/">ReorientMesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/sync-obj-mtl/">SyncObjMtl</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tasks/unwrap-mesh/">UnwrapMesh</a>
     </li>
     
     <li class="">
       <a href="/dpo-cook/tasks/web-asset/">WebAsset</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/zip/">Zip</a>
     </li>
     
   </ul>
@@ -367,20 +419,9 @@
 <td><a href="../delivery">Delivery</a></td>
 <td>Copies files from the processing server&rsquo;s work directory to a local client directory.</td>
 </tr>
-</tbody>
-</table>
-<h4 id="photogrammetry">Photogrammetry</h4>
-<table>
-<thead>
 <tr>
-<th>Task</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../reconstruction">Reconstruction</a></td>
-<td>Uses RealityCapture photogrammetry software to create a 3D model from a set of 2D images.</td>
+<td><a href="../zip">Zip</a></td>
+<td>Zips multiple files into a single archive.</td>
 </tr>
 </tbody>
 </table>
@@ -417,6 +458,18 @@
 <td><a href="../unwrap-mesh">UnwrapMesh</a></td>
 <td>Creates a UV atlas for a mesh. Internally works with Rizom Labs Unfold, Uknit (hosted on 3ds Max),and InstantUV (Mops CLI).</td>
 </tr>
+<tr>
+<td><a href="../generate-usdz">GenerateUSDZ</a></td>
+<td>Generates a USDZ format model from a self-contained format like glb</td>
+</tr>
+<tr>
+<td><a href="../reorient-mesh">ReorientMesh</a></td>
+<td>Standardizes scale and orientation relative to a provided <a href="https://smithsonian.github.io/dpo-voyager/document/overview/">Voyager SVX file</a></td>
+</tr>
+<tr>
+<td><a href="../sync-obj-mtl">SyncObjMtl</a></td>
+<td>Makes sure a .mtl file exists for the supplied .obj and that the .obj correctly references it.</td>
+</tr>
 </tbody>
 </table>
 <h4 id="mesh-analysis">Mesh Analysis</h4>
@@ -431,6 +484,10 @@
 <tr>
 <td><a href="../inspect-mesh">InspectMesh</a></td>
 <td>Provides mesh analysis (manifoldness, watertight, dimensions, center, volume, etc.)</td>
+</tr>
+<tr>
+<td><a href="../merge-reports">MergeReports</a></td>
+<td>Combines mesh stats from one inspection report with material stats from another.</td>
 </tr>
 </tbody>
 </table>

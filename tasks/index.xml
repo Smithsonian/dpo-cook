@@ -124,12 +124,30 @@
     </item>
     
     <item>
+      <title>GenerateUSDZ</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/generate-usdz/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/generate-usdz/</guid>
+      <description>Convert a glb into a USDZ</description>
+    </item>
+    
+    <item>
       <title>InspectMesh</title>
       <link>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</guid>
       <description>Inspects a mesh file and provides a detailed report with topological, geometric, and statistical information.</description>
+    </item>
+    
+    <item>
+      <title>MergeReports</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</guid>
+      <description>Merge two mesh inspection reports</description>
     </item>
     
     <item>
@@ -151,6 +169,24 @@
     </item>
     
     <item>
+      <title>ReorientMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/reorient-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/reorient-mesh/</guid>
+      <description>Standardize mesh scale and orientation</description>
+    </item>
+    
+    <item>
+      <title>SyncObjMtl</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/sync-obj-mtl/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/sync-obj-mtl/</guid>
+      <description>Ensures a mtl file exists and the obj references it correctly.</description>
+    </item>
+    
+    <item>
       <title>UnwrapMesh</title>
       <link>https://smithsonian.github.io/dpo-cook/tasks/unwrap-mesh/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -166,6 +202,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/tasks/web-asset/</guid>
       <description>Generates gltf and glb web assets.</description>
+    </item>
+    
+    <item>
+      <title>Zip</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/zip/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/zip/</guid>
+      <description>Zip files to archive.</description>
     </item>
     
   </channel>

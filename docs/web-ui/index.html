@@ -152,10 +152,6 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
-    </li>
-    
-    <li class="">
       <a href="/dpo-cook/docs/writing-recipes/">Writing recipes</a>
     </li>
     
@@ -167,15 +163,51 @@
   <ul>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-thumb/">Recipe: web-thumb</a>
+      <a href="/dpo-cook/recipes/bake/">Recipe: bake</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-multi/">Recipe: web-multi</a>
+      <a href="/dpo-cook/recipes/decimate/">Recipe: decimate</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
+      <a href="/dpo-cook/recipes/decimate-unwrap/">Recipe: decimate-unwrap</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/generate-usdz/">Recipe: generate-usdz</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/generate-web-gltf/">Recipe: generate-web-gltf</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/inspect-mesh/">Recipe: inspect-mesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/unwrap/">Recipe: unwrap</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-generate-downloads/">Recipe: si-generate-downloads</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-orient-model-to-svx/">Recipe: si-orient-model-to-svx</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-packrat-inspect/">Recipe: si-packrat-inspect</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-voyager-asset/">Recipe: si-voyager-asset</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-voyager-scene/">Recipe: si-voyager-scene</a>
     </li>
     
   </ul>
@@ -238,7 +270,15 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tasks/generate-usdz/">GenerateUSDZ</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tasks/inspect-mesh/">InspectMesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/merge-reports/">MergeReports</a>
     </li>
     
     <li class="">
@@ -250,11 +290,23 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tasks/reorient-mesh/">ReorientMesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/sync-obj-mtl/">SyncObjMtl</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tasks/unwrap-mesh/">UnwrapMesh</a>
     </li>
     
     <li class="">
       <a href="/dpo-cook/tasks/web-asset/">WebAsset</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/zip/">Zip</a>
     </li>
     
   </ul>
@@ -318,7 +370,57 @@
           
 <h1 class="title">Web UI</h1>
 <div class="content">
-  
+  <p>The easiest way to kick off a Cook job is through the web UI.</p>
+<p><a href="../getting-started/">Launch a Cook server instance</a> and then connect to the UI via your preferred web browser at the port specified in your server.json config file.</p>
+<p>The template port is 8000, so in that case the URI for a default local installation would be http://localhost:8000/, but this could vary based on your configuration and
+web server root.</p>
+<h2 id="interface-components">Interface Components</h2>
+<p><img src="./CookUI_anno.png" alt="Numbered image of Cook Interface"></p>
+<hr>
+<h4 id="1-create-job-tab-header">1. Create Job Tab Header</h4>
+<p><img src="./CookTabs.jpg" alt="Create Job Tab Header"></p>
+<p>The Create Job tab is where you will configure and upload a new Cook job.</p>
+<p>The header has the following fields/functions:</p>
+<p><strong>Job ID</strong> - Unique ID that is automatically generated when the window or recipe is reloaded. Most of the time this can be ignored, but every job ID must be unique to successfully start
+so if you want to launch an additional job without reloading you will need to edit this ID to make it unique.</p>
+<p><strong>Job Name</strong> - Name that will show up in the Job tab (5.) to help identify specific jobs when there are many.</p>
+<p><strong>Advanced</strong> - Checkbox that shows/hides less common parameters for the currently loaded recipe.</p>
+<p><img src="./RefreshRecipe.jpg" alt="Refresh Button"> <strong>Initialize job from recipe</strong> - Loads the currently selected recipe into the main Job Tab window (2.).</p>
+<p><img src="./CreateJob.jpg" alt="Create Job Button"> <strong>Create job on server</strong> - Creates a job without uploading assets. Useful if you are transferring assets in some other way.</p>
+<p><img src="./UploadJob.jpg" alt="Upload Job Button"> <strong>Create job on server, upload files</strong> - Creates a job and uploads assets to the server. Best way to create a job in most cases.</p>
+<p><strong>Using Recipe</strong> - At the bottom of the header the currently loaded recipe name and description is displayed.</p>
+<hr>
+<h4 id="2-create-job-tab-body">2. Create Job Tab Body</h4>
+<p>The body of the Create Job tab displays all of the inputs and options for the currently selected recipe.</p>
+<p><strong>File Inputs</strong> - File inputs can be identified by a purple text box and <img src="./CookFile.jpg" alt="Blue File Decorator"> decorator. You can set these inputs by drag-and-dropping files directly to the input box.
+Example: <img src="./FileInput.jpg" alt="File Input Screenshot"></p>
+<p><strong>Text Inputs</strong> - Text inputs will display the parameter name on the left and default value on the right of the text input box. Type the desired value into the text box or leave it blank to use the default.
+Example: <img src="./TextInput.jpg" alt="Text Input Screenshot"></p>
+<p><strong>Required</strong> - Any parameter with the <img src="./ReqDeco.jpg" alt="Required Param Decorator"> decorator must have a value for the recipe job to be successfully created.</p>
+<hr>
+<h4 id="3-client-id">3. Client ID</h4>
+<p><strong>IMPORTANT</strong> - The Client ID field <strong>must</strong> be set and match an entry in your clients.json config or Cook <strong>will not</strong> process any jobs.</p>
+<hr>
+<h4 id="4-job-and-recipe-info">4. Job and Recipe Info</h4>
+<p>This section contains several tabs of information described below.</p>
+<p><strong>Job Info Tab</strong> - Provides high-level information on the active job, or job currently selected in the Jobs tab (5.). This includes info like the recipe being run, start and end times, and job status.</p>
+<p><strong>Job Report Tab</strong> - Provides low-level information on the active job, or job currently selected in the Jobs tab (5.). It will update in real-time as a job runs and display log information on each recipe
+step as it becomes available.</p>
+<p><strong>Recipe Tab</strong> - Displays the content of the currently selected recipe (parameters and task steps) in an expandable tree format.</p>
+<p><strong>Server Info Tab</strong> - Displays high-level info on jobs and users currently active on the Cook server.</p>
+<hr>
+<h4 id="5-jobs--recipes-tabs">5. Jobs / Recipes Tabs</h4>
+<p>These tabs allow you to select a recipe for a new Cook job and monitor any active jobs.</p>
+<p><strong>Recipes</strong> - Lists the ID, name, version, and description of each available recipe. Select a recipe entry here and click the &ldquo;Initialize Job&rdquo; button (1.) to load it to the Job Tab (2.).</p>
+<p><strong>Jobs</strong> - Lists the ID, name, recipe, and state for all jobs on the server. Current step and start/end time may also be provided if the job is in a relevant state - this attributes will also update as a job runs. 
+This tab also provides job-level controls, described in (6.) below.</p>
+<hr>
+<h4 id="6-job-level-controls">6. Job-level Controls</h4>
+<p><img src="./StartJob.jpg" alt="Play Icon"> <strong>Start job</strong> - Kicks off the Cook job. The input assets must exist on the server to succeed.</p>
+<p><img src="./StopJob.jpg" alt="Stop Icon"> <strong>Cancel job</strong> - Stops a currently running Cook job.</p>
+<p><img src="./DeleteJob.jpg" alt="Trashcan Icon"> <strong>Delete job and files</strong> - Removes a Cook job and all associated files from the server.</p>
+<p><img src="./ContentFolder.jpg" alt="Folder Icon"> <strong>Copy WebDAV folder path to clipboard</strong> - Copys a link to the job asset folder to your clipboard for easy access to output.</p>
+
 </div>
 
         </div>

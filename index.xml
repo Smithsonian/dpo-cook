@@ -6,7 +6,7 @@
     <description>Recent content in Smithsonian Cook on Cook Documentation</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 02 Jun 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://smithsonian.github.io/dpo-cook/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 19 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://smithsonian.github.io/dpo-cook/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Getting Started</title>
       <link>https://smithsonian.github.io/dpo-cook/docs/getting-started/</link>
@@ -62,12 +62,66 @@
     </item>
     
     <item>
-      <title>Recipe: web-thumb</title>
-      <link>https://smithsonian.github.io/dpo-cook/recipes/web-thumb/</link>
+      <title>Recipe: bake</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/bake/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://smithsonian.github.io/dpo-cook/recipes/web-thumb/</guid>
-      <description>Generates thumbnail web asset</description>
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/bake/</guid>
+      <description>Bakes diffuse, occlusion, normal maps</description>
+    </item>
+    
+    <item>
+      <title>Recipe: decimate</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/decimate/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/decimate/</guid>
+      <description>Decimate a high resolution mesh</description>
+    </item>
+    
+    <item>
+      <title>Recipe: decimate-unwrap</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/decimate-unwrap/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/decimate-unwrap/</guid>
+      <description>Decimates a mesh and generates UV coordinates</description>
+    </item>
+    
+    <item>
+      <title>Recipe: generate-usdz</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/generate-usdz/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/generate-usdz/</guid>
+      <description>Generates a USDZ format asset</description>
+    </item>
+    
+    <item>
+      <title>Recipe: generate-web-gltf</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/generate-web-gltf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/generate-web-gltf/</guid>
+      <description>Generates a glTF/GLB web asset</description>
+    </item>
+    
+    <item>
+      <title>Recipe: inspect-mesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/inspect-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/inspect-mesh/</guid>
+      <description>Generates statistics on a mesh/scene</description>
+    </item>
+    
+    <item>
+      <title>Recipe: unwrap</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/unwrap/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/unwrap/</guid>
+      <description>Unwrap mesh to generate UVs.</description>
     </item>
     
     <item>
@@ -80,12 +134,48 @@
     </item>
     
     <item>
-      <title>Recipe: web-multi</title>
-      <link>https://smithsonian.github.io/dpo-cook/recipes/web-multi/</link>
+      <title>Recipe: si-generate-downloads</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/si-generate-downloads/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://smithsonian.github.io/dpo-cook/recipes/web-multi/</guid>
-      <description>Generates low, medium, and high quality web assets.</description>
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/si-generate-downloads/</guid>
+      <description>The SI pipeline for asset download creation.</description>
+    </item>
+    
+    <item>
+      <title>Recipe: si-orient-model-to-svx</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/si-orient-model-to-svx/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/si-orient-model-to-svx/</guid>
+      <description>Aligns a model with a Voyager scene orientation</description>
+    </item>
+    
+    <item>
+      <title>Recipe: si-packrat-inspect</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/si-packrat-inspect/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/si-packrat-inspect/</guid>
+      <description>Generates mesh reports for SI Packrat</description>
+    </item>
+    
+    <item>
+      <title>Recipe: si-voyager-asset</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-asset/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-asset/</guid>
+      <description>Generates Voyager package from single unmodified asset</description>
+    </item>
+    
+    <item>
+      <title>Recipe: si-voyager-scene</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-scene/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-scene/</guid>
+      <description>Generates low, medium, high, and AR assets for full Voyager package</description>
     </item>
     
     <item>
@@ -98,30 +188,12 @@
     </item>
     
     <item>
-      <title>Recipe: web-hd</title>
-      <link>https://smithsonian.github.io/dpo-cook/recipes/web-hd/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://smithsonian.github.io/dpo-cook/recipes/web-hd/</guid>
-      <description>Generates highest quality web asset.</description>
-    </item>
-    
-    <item>
       <title>Web UI</title>
       <link>https://smithsonian.github.io/dpo-cook/docs/web-ui/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/docs/web-ui/</guid>
       <description>Controlling the Cook via web user interface.</description>
-    </item>
-    
-    <item>
-      <title>Remote CLI</title>
-      <link>https://smithsonian.github.io/dpo-cook/docs/cli/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://smithsonian.github.io/dpo-cook/docs/cli/</guid>
-      <description>Controlling the Cook via command line interface.</description>
     </item>
     
     <item>
@@ -215,6 +287,15 @@
     </item>
     
     <item>
+      <title>GenerateUSDZ</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/generate-usdz/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/generate-usdz/</guid>
+      <description>Convert a glb into a USDZ</description>
+    </item>
+    
+    <item>
       <title>Image Magick</title>
       <link>https://smithsonian.github.io/dpo-cook/tools/image-magick/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -239,6 +320,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</guid>
       <description>Remeshing tool, generates high quality, field-aligned, quad-dominant meshes.</description>
+    </item>
+    
+    <item>
+      <title>MergeReports</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</guid>
+      <description>Merge two mesh inspection reports</description>
     </item>
     
     <item>
@@ -305,12 +395,30 @@
     </item>
     
     <item>
+      <title>ReorientMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/reorient-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/reorient-mesh/</guid>
+      <description>Standardize mesh scale and orientation</description>
+    </item>
+    
+    <item>
       <title>Rizom UV</title>
       <link>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</guid>
       <description>UV unwrapping tool.</description>
+    </item>
+    
+    <item>
+      <title>SyncObjMtl</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/sync-obj-mtl/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/sync-obj-mtl/</guid>
+      <description>Ensures a mtl file exists and the obj references it correctly.</description>
     </item>
     
     <item>
@@ -338,6 +446,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/tools/xnormal/</guid>
       <description>Texture baking tool.</description>
+    </item>
+    
+    <item>
+      <title>Zip</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/zip/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/zip/</guid>
+      <description>Zip files to archive.</description>
     </item>
     
   </channel>

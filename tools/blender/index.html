@@ -152,10 +152,6 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/docs/cli/">Remote CLI</a>
-    </li>
-    
-    <li class="">
       <a href="/dpo-cook/docs/writing-recipes/">Writing recipes</a>
     </li>
     
@@ -167,15 +163,51 @@
   <ul>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-thumb/">Recipe: web-thumb</a>
+      <a href="/dpo-cook/recipes/bake/">Recipe: bake</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-multi/">Recipe: web-multi</a>
+      <a href="/dpo-cook/recipes/decimate/">Recipe: decimate</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/recipes/web-hd/">Recipe: web-hd</a>
+      <a href="/dpo-cook/recipes/decimate-unwrap/">Recipe: decimate-unwrap</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/generate-usdz/">Recipe: generate-usdz</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/generate-web-gltf/">Recipe: generate-web-gltf</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/inspect-mesh/">Recipe: inspect-mesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/unwrap/">Recipe: unwrap</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-generate-downloads/">Recipe: si-generate-downloads</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-orient-model-to-svx/">Recipe: si-orient-model-to-svx</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-packrat-inspect/">Recipe: si-packrat-inspect</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-voyager-asset/">Recipe: si-voyager-asset</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/recipes/si-voyager-scene/">Recipe: si-voyager-scene</a>
     </li>
     
   </ul>
@@ -238,7 +270,15 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tasks/generate-usdz/">GenerateUSDZ</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tasks/inspect-mesh/">InspectMesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/merge-reports/">MergeReports</a>
     </li>
     
     <li class="">
@@ -250,11 +290,23 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/tasks/reorient-mesh/">ReorientMesh</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/sync-obj-mtl/">SyncObjMtl</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/tasks/unwrap-mesh/">UnwrapMesh</a>
     </li>
     
     <li class="">
       <a href="/dpo-cook/tasks/web-asset/">WebAsset</a>
+    </li>
+    
+    <li class="">
+      <a href="/dpo-cook/tasks/zip/">Zip</a>
     </li>
     
   </ul>
@@ -318,9 +370,7 @@
           
 <h1 class="title">Blender</h1>
 <div class="content">
-  <h3 id="note">Note</h3>
-<p><em>Blender support is planned for a future release of Cook.</em></p>
-<h3 id="information">Information</h3>
+  <h3 id="information">Information</h3>
 <ul>
 <li>Developer: Blender Foundation</li>
 <li>Website: <a href="https://www.blender.org/">https://www.blender.org/</a></li>
@@ -328,14 +378,14 @@
 </ul>
 <h3 id="installation">Installation</h3>
 <ul>
-<li>Recommended version with Cook: <em>2.81</em></li>
-<li>Windows binary: <a href="https://www.blender.org/download/Blender2.81/blender-2.81-windows64.msi/">https://www.blender.org/download/Blender2.81/blender-2.81-windows64.msi/</a></li>
+<li>Recommended version with Cook: <em>3.1</em></li>
+<li>Windows binary: <a href="https://www.blender.org/download/release/Blender3.1/blender-3.1.2-windows-x64.msi/">https://www.blender.org/download/release/Blender3.1/blender-3.1.2-windows-x64.msi/</a></li>
 </ul>
 <h3 id="configuration">Configuration</h3>
 <p>Example configuration for Blender in the <code>tools.json</code> configuration file:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;Blender&#34;</span><span class="err">:</span> <span class="p">{</span>
-    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\Blender Foundation\\Blender\\blender.exe&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;2.81&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\Blender Foundation\\Blender 3.1\\blender.exe&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;3.1.2&#34;</span><span class="p">,</span>
     <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">600</span>
 <span class="p">}</span>

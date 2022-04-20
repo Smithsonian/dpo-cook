@@ -14,24 +14,40 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/pickup/</loc>
   </url><url>
-    <loc>https://smithsonian.github.io/dpo-cook/recipes/web-thumb/</loc>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/bake/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/decimate/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/decimate-unwrap/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/generate-usdz/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/generate-web-gltf/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/inspect-mesh/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/unwrap/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/delivery/</loc>
   </url><url>
-    <loc>https://smithsonian.github.io/dpo-cook/recipes/web-multi/</loc>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/si-generate-downloads/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/si-orient-model-to-svx/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/si-packrat-inspect/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-asset/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-scene/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/web-api/</loc>
   </url><url>
-    <loc>https://smithsonian.github.io/dpo-cook/recipes/web-hd/</loc>
-  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/web-ui/</loc>
-  </url><url>
-    <loc>https://smithsonian.github.io/dpo-cook/docs/cli/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/writing-recipes/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/</loc>
-    <lastmod>2019-06-02T00:00:00+00:00</lastmod>
+    <lastmod>2022-04-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/bake-maps/</loc>
   </url><url>
@@ -55,11 +71,15 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/fix-mesh/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/generate-usdz/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/image-magick/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/inspect-mesh/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshfix/</loc>
   </url><url>
@@ -77,7 +97,11 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/remesh/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/reorient-mesh/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/sync-obj-mtl/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tags/</loc>
   </url><url>
@@ -90,5 +114,7 @@
     <loc>https://smithsonian.github.io/dpo-cook/tasks/web-asset/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/xnormal/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/zip/</loc>
   </url>
 </urlset>
