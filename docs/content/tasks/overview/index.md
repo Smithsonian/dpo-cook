@@ -22,12 +22,7 @@ weight: 100
 | [FileOperation](../file-operation) | Provides operations for renaming and deleting files, and creating, renaming and deleting folders. |
 | [Pickup](../pickup)               | Copies files from a local client directory to the processing server's work directory.             |
 | [Delivery](../delivery)           | Copies files from the processing server's work directory to a local client directory.             |
-
-#### Photogrammetry
-
-| Task                                      | Description                                                                                      |
-|-------------------------------------------|--------------------------------------------------------------------------------------------------|
-| [Reconstruction](../reconstruction) | Uses RealityCapture photogrammetry software to create a 3D model from a set of 2D images.        |
+| [Zip](../zip)			    | Zips multiple files into a single archive.
 
 #### Mesh Processing
 
@@ -39,12 +34,16 @@ weight: 100
 | [FixMesh](../fix-mesh)           | Fixes mesh deficiencies such as flipped triangles.                                                                          |
 | [Remesh](../remesh)             | Creates a new, regular mesh for an object.                                                                                  |
 | [UnwrapMesh](../unwrap-mesh)     | Creates a UV atlas for a mesh. Internally works with Rizom Labs Unfold, Uknit (hosted on 3ds Max),and InstantUV (Mops CLI). |
+| [GenerateUSDZ](../generate-usdz) | Generates a USDZ format model from a self-contained format like glb                          |
+| [ReorientMesh](../reorient-mesh) | Standardizes scale and orientation relative to a provided [Voyager SVX file](https://smithsonian.github.io/dpo-voyager/document/overview/) |
+| [SyncObjMtl](../sync-obj-mtl)    | Makes sure a .mtl file exists for the supplied .obj and that the .obj correctly references it. |
 
 #### Mesh Analysis
 
 | Task                                | Description                                                                         |
 |-------------------------------------|-------------------------------------------------------------------------------------|
 | [InspectMesh](../inspect-mesh) | Provides mesh analysis (manifoldness, watertight, dimensions, center, volume, etc.) |
+| [MergeReports](../merge-reports) | Combines mesh stats from one inspection report with material stats from another. |
 
 #### Texture Generation
 
