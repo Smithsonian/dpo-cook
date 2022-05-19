@@ -318,7 +318,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
                 return data => {
                     chunk += data.toString();
                     while(true) {
-                        const eol = chunk.indexOf(os.EOL);
+                        const eol = Math.max(chunk.indexOf(os.EOL),chunk.indexOf("\n"));
                         if (eol >= 0) {
                             const line = chunk.substring(0, eol);
                             chunk = chunk.substring(eol + os.EOL.length - 1);

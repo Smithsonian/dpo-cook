@@ -1,0 +1,121 @@
+{
+    "id": "a0af238a-988f-4f3c-bedc-7db0b8220ed5",
+    "name": "photogrammetry",
+    "description": "Create mesh and texture from image set",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "Metashape"
+                ],
+                "default": "Metashape"
+            },
+            "scalebarCSV": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "generatePointCloud": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "required": [
+            "sourceImageFolder"
+        ],
+        "advanced": [
+            
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))",
+                "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "sourceImageFolder": "sourceImageFolder"
+                }
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "pre": {
+                "deliverables": {
+                    "objZipLow": "scaleToMeters ? baseMeshMapNameLow & '-obj_std.zip' : baseMeshMapNameLow & '-obj.zip'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "sourceImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "'photogrammetry'",
+            "failure": "$failure"
+        },
+        "photogrammetry": {
+            "task": "Photogrammetry",
+            "description": "Create mesh and texture from image set.",
+            "pre": {
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'",
+                    "textureFile": "baseMeshName & '-texture-' & '.png'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "sourceImageFolder",
+                "outputFile": "deliverables.meshFile",
+                "scalebarFile": "scalebarCSV",
+                "generatePointCloud": "generatePointCloud",
+                "tool": "tool",
+                "timeout": 43200
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
