@@ -71,19 +71,19 @@ if args.sb != None:
         minimum_dist=5
     )
 
-    # Detect Cross non-coded markers
-    # Non-coded target options: [CircularTarget, CrossTarget]
-    chunk.detectMarkers\
-    (
-        target_type=Metashape.TargetType.CrossTarget,
-        tolerance=25,
-        filter_mask=False,
-        inverted=False,
-        noparity=False,
-        maximum_residual=5,
-        minimum_size=0,
-        minimum_dist=5
-    )
+##    # Detect Cross non-coded markers
+##    # Non-coded target options: [CircularTarget, CrossTarget]
+##    chunk.detectMarkers\
+##    (
+##        target_type=Metashape.TargetType.CrossTarget,
+##        tolerance=25,
+##        filter_mask=False,
+##        inverted=False,
+##        noparity=False,
+##        maximum_residual=5,
+##        minimum_size=0,
+##        minimum_dist=5
+##    )
 
 ##    """Remove Markers with less than X number of projections"""
 ##    for marker in chunk.markers:
@@ -231,3 +231,5 @@ chunk.exportModel\
     save_comment=True,
     format=Metashape.ModelFormatOBJ,
 )
+
+doc.save(imagePath+"\\..\\"+name+".psx")
