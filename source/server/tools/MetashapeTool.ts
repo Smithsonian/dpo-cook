@@ -36,28 +36,27 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 
     protected static readonly defaultSettings: Partial<IMetashapeToolSettings> = { };
 
-    /*onInstanceMessage(event: IToolMessageEvent): boolean
+    onInstanceMessage(event: IToolMessageEvent): boolean
     {
         const { instance, message } = event;
-console.log("MESSAGE\n"+message);
-        // only handle JSON report data
-        if (!message.startsWith("\nJSON=")) {
-            return false;
-        }
 
-        const report = instance.report.execution;
-        const results = report.results = report.results || {};
-
-        try {
-            results["inspection"] = JSON.parse(message.substr(6));
-        }
-        catch(e) {
-            const error = "failed to parse mesh inspection report";
-            results["inspection"] = { error };
+        // keep useful messages
+        if (message.endsWith(" seconds") || message.endsWith(" sec") || message.endsWith(" points") || message.endsWith(" targets") ||
+        message.startsWith("Data preload") || message.startsWith("Adding Scalebar") || message.startsWith("Build") || 
+        message.startsWith("Detect") || message.startsWith("Export") || message.startsWith("CPU") || message.startsWith("Peak m") ||  
+        message.includes("done by")) {
+            if(message.startsWith("optimize") || message.startsWith("loaded ") || message.startsWith("overlap")
+            || message.startsWith("calculating") || message.startsWith("setting ") || message.includes("tracks ")
+            || message.includes("matches")) {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
 
         return true;
-    }*/
+    }
 
     async setupInstance(instance: MetashapeInstance): Promise<IToolSetup>
     {

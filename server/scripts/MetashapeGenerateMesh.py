@@ -210,6 +210,8 @@ chunk.buildTexture\
     transfer_texture=True
 )
 
+chunk.updateTransform()
+
 chunk.exportModel\
 (
     path=imagePath+"\\..\\"+name+".obj",
