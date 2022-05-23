@@ -40,6 +40,11 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
     {
         const { instance, message } = event;
 
+        // keep errors
+        if (message.toLowerCase().includes("error")) {
+            return false;
+        }
+
         // keep useful messages
         if (message.endsWith(" seconds") || message.endsWith(" sec") || message.endsWith(" points") || message.endsWith(" targets") ||
         message.startsWith("Data preload") || message.startsWith("Adding Scalebar") || message.startsWith("Build") || 
