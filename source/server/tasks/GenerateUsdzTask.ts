@@ -102,6 +102,7 @@ export default class GenerateUsdzTask extends ToolTask
         {
             const settings: IBlenderToolSettings = {
                 inputMeshFile: params.sourceFile,
+                outputFile: params.outputFile,
                 mode: "convert",
                 //scale: params.scale,
                 timeout: params.timeout
@@ -118,7 +119,7 @@ export default class GenerateUsdzTask extends ToolTask
     {
         if (instance.tool instanceof BlenderTool) {
             const params = this.parameters as IGenerateUsdzTaskParameters;
-            const filename = path.parse(params.sourceFile).name;
+            const filename = path.parse(params.outputFile).name;
             const usdaName = filename + ".usda"
             const usdFilePath = path.resolve(this.context.jobDir, usdaName);
 
