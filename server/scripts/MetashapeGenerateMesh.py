@@ -55,6 +55,12 @@ chunk.matchPhotos\
 # align the matched image pairs
 chunk.alignCameras()
 
+# optimize cameras
+chunk.optimizeCameras\
+(
+    adaptive_fitting=True
+)
+
 if args.sb != None:
     ## Detect markers
     # Detect Circular 12bit coded markers
@@ -148,7 +154,7 @@ if args.sb != None:
 chunk.buildDepthMaps\
 (
     downscale=1,
-    filter_mode=Metashape.AggressiveFiltering,
+    filter_mode=Metashape.MildFiltering,
     reuse_depth=False,
     max_neighbors=-1,
     subdivide_task=True,
@@ -178,7 +184,7 @@ modelQuality = [Metashape.FaceCount.HighFaceCount]
 chunk.buildModel\
 (
     surface_type=Metashape.Arbitrary,
-    interpolation=Metashape.EnabledInterpolation,
+    interpolation=Metashape.DisabledInterpolation,
     face_count=modelQuality[0],
     face_count_custom=200000,
     source_data = Metashape.DenseCloudData if denseCloudFlag == True else Metashape.DepthMapsData,
@@ -204,8 +210,8 @@ chunk.buildTexture\
 (
     blending_mode=Metashape.MosaicBlending,
     texture_size=8192,
-    fill_holes=True,
-    ghosting_filter=True,
+    fill_holes=False,
+    ghosting_filter=False,
     texture_type=Metashape.Model.DiffuseMap,
     transfer_texture=True
 )
