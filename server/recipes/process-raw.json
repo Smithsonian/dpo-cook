@@ -1,0 +1,113 @@
+{
+    "id": "466c3283-0b15-4312-901b-6e307fd6be44",
+    "name": "process-raw",
+    "description": "Process raw images for photogrammetry workflow",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "RawTherapee"
+                ],
+                "default": "RawTherapee"
+            }
+        },
+        "required": [
+            "sourceImageFolder"
+        ],
+        "advanced": [
+            
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "sourceImageFolder": "sourceImageFolder"
+                }
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "parameters": {
+                "inputFile1": "sourceImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "'make-dir'",
+            "failure": "$failure"
+        },
+        "make-dir": {
+            "task": "FileOperation",
+            "description": "Make output folder",
+            "parameters": {
+                "name": "outputFileBaseName & '_processed'",
+                "operation": "'CreateFolder'"
+            },
+            "success": "'process-raw'",
+            "failure": "$failure"
+        },
+        "process-raw": {
+            "task": "ProcessRaw",
+            "description": "Convert raw images to jpg and process for photogrammetry pipeline.",
+            "pre": {
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "sourceImageFolder",
+                
+                "tool": "tool",
+                "timeout": 4300
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
