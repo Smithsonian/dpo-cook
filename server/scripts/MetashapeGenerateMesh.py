@@ -35,7 +35,7 @@ chunk.addPhotos(imageFiles)
 
 chunk.matchPhotos\
 (
-    downscale=1,
+    downscale=0,
     generic_preselection=True,
     reference_preselection=False,
     #reference_preselection_mode=Metashape.ReferencePreselectionSource,
