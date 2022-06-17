@@ -25,6 +25,8 @@ export interface IRawTherapeeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
     outputFile?: string;
+    wbTint?: number;
+    wbTemperature?: number;
 }
 
 export type RawTherapeeInstance = ToolInstance<RawTherapeeTool, IRawTherapeeToolSettings>;
@@ -118,8 +120,8 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `[White Balance]`,
             `Enabled=true`,
             `Setting=Camera`,
-            `Temperature=5564`,
-            `Green=1.0349999999999999`,
+            `Temperature=${settings.wbTemperature}`,
+            `Green=${settings.wbTint}`,
             `Equal=1`,
             `TemperatureBias=0`,
             

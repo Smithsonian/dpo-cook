@@ -34,6 +34,10 @@ export interface IProcessRawTaskParameters extends ITaskParameters
     inputImageFolder: string;
     /** Base name used for output files */
     outputFile: string;
+    /** Tint value used for white balancing */
+    wbTint?: number;
+    /** Temperature value used for white balancing */
+    wbTemperature?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for ProcessRaw pre-processing ("RawTherapee", default: "RawTherapee"). */
@@ -57,6 +61,8 @@ export default class ProcessRawTask extends ToolTask
         properties: {
             inputImageFolder: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1 },
+            wbTemperature: { type: "integer", default: 5564},
+            wbTint: { type: "number", default: 1.035},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "RawTherapee" ], default: "RawTherapee" }
         },
@@ -76,6 +82,8 @@ export default class ProcessRawTask extends ToolTask
         if (params.tool === "RawTherapee") {
             const toolOptions: IRawTherapeeToolSettings = {
                 imageInputFolder: params.inputImageFolder,
+                wbTint: params.wbTint,
+                wbTemperature: params.wbTemperature,
                 //mode: "create",
                 timeout: params.timeout
             };
