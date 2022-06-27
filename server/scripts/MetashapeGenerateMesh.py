@@ -45,11 +45,7 @@ chunk.matchPhotos\
     tiepoint_limit=4000,
     keep_keypoints=False,
     guided_matching=False,
-    reset_matches=False,
-    subdivide_task=True,
-    workitem_size_cameras=20,
-    workitem_size_pairs=80,
-    max_workgroup_size=100
+    reset_matches=False
 )
 
 # align the matched image pairs
@@ -156,7 +152,7 @@ chunk.buildDepthMaps\
     downscale=1,
     filter_mode=Metashape.MildFiltering,
     reuse_depth=False,
-    max_neighbors=-1,
+    max_neighbors=16,
     subdivide_task=True,
     workitem_size_cameras=20,
     max_workgroup_size=100
