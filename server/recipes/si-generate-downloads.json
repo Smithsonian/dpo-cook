@@ -696,6 +696,27 @@
                 "embedMaps": true,
                 "writeBinary": true
             },
+            "success": "'update-document-ar'",
+            "failure": "$failure"
+        },
+        "update-document-ar": {
+            "task": "Document",
+            "description": "Add AR model to document.json descriptor file (App3D)",
+            "skip": "$not(generateGlb) or $not(generateARAssets)",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "derivativeQuality": "'AR'",
+                "derivativeUsage": "'App3D'",
+                "modelIndex": 0,
+                "modelFile": "deliverables.webAssetGlbARCompressed",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
+            },
             "success": "'usdz-asset'",
             "failure": "$failure"
         },
@@ -711,6 +732,27 @@
             "parameters": {
                 "sourceFile": "scene_unwrappedMesh",
                 "outputFile": "deliverables.usdz"
+            },
+            "success": "'update-document-usdz'",
+            "failure": "$failure"
+        },
+        "update-document-usdz": {
+            "task": "Document",
+            "description": "Add AR (usdz) model to document.json descriptor file (iOSApp3D)",
+            "skip": "$not(generateARAssets) or $not(generateUsdz)",
+            "pre": {
+                "deliverables": {
+                    "scene_document": "$firstTrue(svxFile, 'scene.svx.json')"
+                }
+            },
+            "parameters": {
+                "documentFile": "deliverables.scene_document",
+                "derivativeQuality": "'AR'",
+                "derivativeUsage": "'iOSApp3D'",
+                "modelIndex": 0,
+                "modelFile": "deliverables.usdz",
+                "numFaces": "numFacesAR",
+                "mapSize": "mapSizeAR"
             },
             "success": "'remesh-medium'",
             "failure": "$failure"

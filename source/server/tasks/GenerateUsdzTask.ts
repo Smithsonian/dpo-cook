@@ -123,24 +123,30 @@ export default class GenerateUsdzTask extends ToolTask
             const usdaName = filename + ".usda"
             const usdFilePath = path.resolve(this.context.jobDir, usdaName);
 
-            await fs.readFile(usdFilePath, "utf8").then(file => {
-                file = file.replace(/\\/g, "/");
-                const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
-                fs.writeFile(newUsdFilePath, file).then(file => {
+            let zipTask: Task = null;
 
-                    const zipMeshParams: IZipTaskParameters = {
-                        inputFile1: newUsdFilePath,
-                        inputFile2: "textures",
-                        outputFile: filename + ".usdz",
-                        compressionLevel: 0,
-                        tool: "SevenZip"
-                    };
-            
-                    const zipTask = this.context.manager.createTask("Zip", zipMeshParams, this.context);
-                    return zipTask.run().catch((e) => {throw new Error("Could not zip usdz: "+e);});
-                }).catch(() => {throw new Error("could not write updated USD file");});
+            const file = await fs.readFile(usdFilePath, "utf8").then(infile => {
+                infile = infile.replace(/\\/g, "/");
+                return infile;
             })
-            .catch(() => {throw new Error("could not read generated USD file");}); 
+            .catch(() => {throw new Error("could not read generated USD file");});
+
+            const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
+            await fs.writeFile(newUsdFilePath, file).then(file => {
+
+                const zipMeshParams: IZipTaskParameters = {
+                    inputFile1: newUsdFilePath,
+                    inputFile2: "textures",
+                    outputFile: filename + ".usdz",
+                    compressionLevel: 0,
+                    tool: "SevenZip"
+                };
+        
+                zipTask = this.context.manager.createTask("Zip", zipMeshParams, this.context);
+                return Promise.resolve();
+            }).catch(() => {throw new Error("could not write updated USD file");});
+
+            await zipTask.run().catch((e) => {throw new Error("Could not zip usdz: "+e);});
         }
 
         return Promise.resolve();
