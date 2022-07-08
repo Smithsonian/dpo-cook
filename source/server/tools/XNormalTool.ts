@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+ import * as fs from "fs";
 import * as path from "path";
 
 import uniqueId from "../utils/uniqueId";
@@ -81,6 +82,17 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
         const lowPolyMeshPath = instance.getFilePath(settings.lowPolyUnwrappedMeshFile);
         if (!lowPolyMeshPath) {
             throw new Error("XNormalTool.writeTaskScript - missing lowres mesh file");
+        }
+
+        if(!!settings.highPolyDiffuseMapFile && settings.highPolyDiffuseMapFile.endsWith(".jpeg")) {
+            // xNormal does not support .jpeg extension
+            const newFilename = settings.highPolyDiffuseMapFile.replace(".jpeg", ".jpg");
+            const newURI = instance.getFilePath(newFilename);
+            if(!fs.existsSync(newURI)) {
+                const oldURI = instance.getFilePath(settings.highPolyDiffuseMapFile);
+                await instance.renameFile(oldURI, newURI);
+            }
+            settings.highPolyDiffuseMapFile = newFilename;
         }
 
         const maxRayDistance = settings.maxRayDistance;
