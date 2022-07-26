@@ -20,7 +20,9 @@
             "tool": {
                 "type": "string",
                 "enum": [
-                    "Metashape"
+                    "Metashape",
+                    "RealityCapture",
+                    "Meshroom"
                 ],
                 "default": "Metashape"
             },
@@ -30,6 +32,10 @@
                 "format": "file"
             },
             "generatePointCloud": {
+                "type": "boolean",
+                "default": false
+            },
+            "optimizeMarkers": {
                 "type": "boolean",
                 "default": false
             }
@@ -100,6 +106,7 @@
                 "outputFile": "deliverables.meshFile",
                 "scalebarFile": "scalebarCSV",
                 "generatePointCloud": "generatePointCloud",
+                "optimizeMarkers": "optimizeMarkers",
                 "tool": "tool",
                 "timeout": 43200
             },

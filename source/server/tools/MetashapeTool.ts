@@ -26,6 +26,7 @@ export interface IMetashapeToolSettings extends IToolSettings
     outputFile?: string;
     scalebarFile?: string;
     generatePointCloud?: boolean;
+    optimizeMarkers?: boolean;
 }
 
 export type MetashapeInstance = ToolInstance<MetashapeTool, IMetashapeToolSettings>;
@@ -81,7 +82,7 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
             operation += ` -sb "${sbFIlePath}"`;
         }
 
-        operation += ` -bdc ${settings.generatePointCloud}`;
+        operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} `;
 
         //operation += `-platform offscreen `;
 

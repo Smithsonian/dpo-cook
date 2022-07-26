@@ -18,7 +18,7 @@
 import * as path from "path";
 import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
-export interface IRealityCaptureToolSettings extends IToolSettings
+export interface IMeshroomToolSettings extends IToolSettings
 {
     imageInputFolder: string;
     outputFile?: string;
@@ -28,30 +28,29 @@ export interface IRealityCaptureToolSettings extends IToolSettings
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export type RealityCaptureInstance = ToolInstance<RealityCaptureTool, IRealityCaptureToolSettings>;
+export type MeshroomInstance = ToolInstance<MeshroomTool, IMeshroomToolSettings>;
 
-export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealityCaptureToolSettings>
+export default class MeshroomTool extends Tool<MeshroomTool, IMeshroomToolSettings>
 {
-    static readonly toolName = "RealityCapture";
+    static readonly toolName = "Meshroom";
 
-    protected static readonly defaultOptions: Partial<IRealityCaptureToolSettings> = {};
+    protected static readonly defaultOptions: Partial<IMeshroomToolSettings> = {};
 
-    async setupInstance(instance: RealityCaptureInstance): Promise<IToolSetup>
+    async setupInstance(instance: MeshroomInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
         const name = path.parse(settings.imageInputFolder).name;
 
         const inputImageFolder = instance.getFilePath(name);
         if (!inputImageFolder) {
-            throw new Error("RealityCaptureTool: missing image folder name");
+            throw new Error("MeshroomTool: missing image folder name");
         }
 
         const outputDirectory = instance.workDir;
 
         let operations = "";
-        operations += ` -stdConsole -newScene -addFolder "${inputImageFolder}" -align -setReconstructionRegionAuto -calculateNormalModel -selectMarginalTriangles`;
-        operations += ` -removeSelectedTriangles -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}_rc.obj" -quit`;
-
+        operations += ` -i "${inputImageFolder}" -p "photogrammetry" -o "${outputDirectory}" --save "${outputDirectory}\\project.mg"`;
+        
         const command = `"${this.configuration.executable}" ${operations}`;
 
         return Promise.resolve({ command });

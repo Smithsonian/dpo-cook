@@ -18,8 +18,8 @@
 import Job from "../app/Job";
 
 import { IMetashapeToolSettings } from "../tools/MetashapeTool";
-
-import MetashapeTool from "../tools/MetashapeTool";
+import { IRealityCaptureToolSettings } from "../tools/RealityCaptureTool";
+import { IMeshroomToolSettings } from "../tools/MeshroomTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask, { IToolMessageEvent } from "../app/ToolTask";
@@ -38,17 +38,19 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     scalebarFile: string;
     /** Flag to enable building a dense point cloud */
     generatePointCloud: boolean;
+    /** Flag to enable discarding high-error markers */
+    optimizeMarkers: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Tool to use for photogrammetry ("Metashape", default: "Metashape"). */
-    tool?: "Metashape";
+    /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
+    tool?: "Metashape" | "RealityCapture" | "Meshroom";
 }
 
 /**
  * Generates a mesh and texture from an image set
  *
  * Parameters: [[IPhotogrammetryTaskParameters]]
- * Tools: [[MetashapeTool]]
+ * Tools: [[MetashapeTool]], [[RealityCaptureTool]]
  */
 export default class PhotogrammetryTask extends ToolTask
 {
@@ -63,8 +65,9 @@ export default class PhotogrammetryTask extends ToolTask
             outputFile: { type: "string", minLength: 1 },
             scalebarFile: { type: "string", minLength: 1 },
             generatePointCloud: { type: "boolean", default: false},
+            optimizeMarkers: { type: "boolean", default: false},
             timeout: { type: "integer", default: 0 },
-            tool: { type: "string", enum: [ "Metashape" ], default: "Metashape" }
+            tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
         },
         required: [
             "inputImageFolder",
@@ -86,45 +89,37 @@ export default class PhotogrammetryTask extends ToolTask
                 outputFile: params.outputFile,
                 scalebarFile: params.scalebarFile,
                 generatePointCloud: params.generatePointCloud,
+                optimizeMarkers: params.optimizeMarkers,
                 //mode: "create",
                 timeout: params.timeout
             };
 
             this.addTool("Metashape", toolOptions);
         }
+        else if (params.tool === "RealityCapture") {
+            const toolOptions: IRealityCaptureToolSettings = {
+                imageInputFolder: params.inputImageFolder,
+                outputFile: params.outputFile,
+                scalebarFile: params.scalebarFile,
+                generatePointCloud: params.generatePointCloud,
+                timeout: params.timeout
+            };
+
+            this.addTool("RealityCapture", toolOptions);
+        }
+        else if (params.tool === "Meshroom") {
+            const toolOptions: IMeshroomToolSettings = {
+                imageInputFolder: params.inputImageFolder,
+                outputFile: params.outputFile,
+                scalebarFile: params.scalebarFile,
+                generatePointCloud: params.generatePointCloud,
+                timeout: params.timeout
+            };
+
+            this.addTool("Meshroom", toolOptions);
+        }
         else {
             throw new Error("PhotogrammetryTask.constructor - unknown tool: " + params.tool);
         }
     }
-
-    /**
-     * Watch instance messages for a JSON formatted inspection report.
-     * @param event
-     */
-    /*protected onInstanceMessage(event: IToolMessageEvent)
-    {
-        const { instance, message } = event;
-        const inspectMesh = (this.parameters as IDecimateMeshTaskParameters).inspectMesh;
-
-        if (inspectMesh && instance.tool instanceof MeshlabTool && message.startsWith("JSON={")) {
-
-            let inspectionReport = null;
-
-            try {
-                inspectionReport = JSON.parse(message.substr(5));
-                this.report.result["inspection"] = inspectionReport;
-
-                if (typeof inspectMesh === "string") {
-                    const reportFilePath = instance.getFilePath(inspectMesh);
-                    fs.writeFileSync(reportFilePath, JSON.stringify(inspectionReport), "utf8");
-                }
-            }
-            catch(e) {
-                this.logTaskEvent("warning", "failed to parse mesh inspection report");
-            }
-        }
-        else {
-            super.onInstanceMessage(event);
-        }
-    }*/
 }

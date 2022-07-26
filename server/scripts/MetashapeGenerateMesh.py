@@ -16,6 +16,7 @@ argv = sys.argv
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", required=True, help="Input filepath")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
+parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
 parser.add_argument("-bdc", required=False, default="False", help="Build dense cloud")
 args = parser.parse_args()
 
@@ -67,69 +68,45 @@ if args.sb != None:
         tolerance=25,
         filter_mask=False,
         inverted=False,
-        noparity=False,
+        noparity=True,
         maximum_residual=5,
         minimum_size=0,
         minimum_dist=5
     )
 
-##    # Detect Cross non-coded markers
-##    # Non-coded target options: [CircularTarget, CrossTarget]
-##    chunk.detectMarkers\
-##    (
-##        target_type=Metashape.TargetType.CrossTarget,
-##        tolerance=25,
-##        filter_mask=False,
-##        inverted=False,
-##        noparity=False,
-##        maximum_residual=5,
-##        minimum_size=0,
-##        minimum_dist=5
-##    )
 
-##    """Remove Markers with less than X number of projections"""
-##    for marker in chunk.markers:
-##        # if marker has less than 9 projections, remove from chunk
-##        if len(marker.projections) < 9:
-##            chunk.remove(marker)
-##            #print(" ^^^^ Removed: " + marker.label + " for having only " + str(len(marker.projections)) + " projections ^^^^ ")
-##    """Optimize Marker Error Per Camera"""
-##    # print out the current projection count for each marker
-##    #for m in chunk.markers:
-##    #    print("Marker: " + m.label + " has " + str(len(m.projections)) + " projections")
-##    # for each marker in list of markers for active chunk, remove markers from each camera with error greater than 0.5
-##    for marker in chunk.markers:
-##        # skip marker if it has no position
-##        if not marker.position:
-##            #print(marker.label + " is not defined in 3D, skipping...")
-##            continue
-##        # reference the position of the marker
-##        position = marker.position
-##        # for each camera in the list of cameras for current marker
-##        for camera in marker.projections.keys():
-##            if not camera.transform:
-##                continue
-##
-##            proj = marker.projections[camera].coord
-##            reproj = camera.project(position)
-##            error = (proj - reproj).norm()
-##
-##            # remove markers with projection error greater than 0.5
-##            if error > 0.5:
-##                # set the current marker projection to none for current camera/marker combination
-##                marker.projections[camera] = None
-##                #print("**** Removed: " + str(marker) + " with error of : " + str(error) + " ****")
-##
-##    """Remove Markers with less than X number of projections"""
-##    for marker in chunk.markers:
-##        # if marker has less than 9 projections, remove from chunk
-##        if len(marker.projections) < 9:
-##            chunk.remove(marker)
-##            #print(" ^^^^ Removed: " + marker.label + " for having only " + str(len(marker.projections)) + " projections ^^^^ ")
+    optimizeMarkerFlag = convert(args.optm);
+    if optimizeMarkerFlag == True:
+        """Optimize Marker Error Per Camera"""
+        # print out the current projection count for each marker
+        #for m in chunk.markers:
+        #    print("Marker: " + m.label + " has " + str(len(m.projections)) + " projections")
+        # for each marker in list of markers for active chunk, remove markers from each camera with error greater than 0.5
+        for marker in chunk.markers:
+            # skip marker if it has no position
+            if not marker.position:
+                #print(marker.label + " is not defined in 3D, skipping...")
+                continue
+            # reference the position of the marker
+            position = marker.position
+            # for each camera in the list of cameras for current marker
+            for camera in marker.projections.keys():
+                if not camera.transform:
+                    continue
 
+                proj = marker.projections[camera].coord
+                reproj = camera.project(position)
+                error = (proj - reproj).norm()
 
-##    for marker in chunk.markers:
-##        print("marker is " + str(marker.label))
+                # remove markers with projection error greater than 0.5
+                if error > 0.5:
+                    # set the current marker projection to none for current camera/marker combination
+                    marker.projections[camera] = None
+                    print("**** Removed: " + str(marker) + " with error of : " + str(error) + " ****")
+
+        #for marker in chunk.markers:
+        #    print("marker is " + str(marker.label))
+        
 
     # Add scalebars
     with open(args.sb, newline='') as scalebarlist:
