@@ -49,11 +49,97 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         const outputDirectory = instance.workDir;
 
         let operations = "";
-        operations += ` -stdConsole -newScene -addFolder "${inputImageFolder}" -align -setReconstructionRegionAuto -calculateNormalModel -selectMarginalTriangles`;
+        operations += ` -stdConsole -newScene -addFolder "${inputImageFolder}"`;
+
+        // add scaling info
+        if(settings.scalebarFile) {
+            operations += ` -detectMarkers`;
+
+            const sbFile: string = await instance.readFile(settings.scalebarFile).then(data => { return data as string })
+            .catch( err => { throw new Error(`Error reading scalebar file. ${err}`) });
+
+            const scalebars = sbFile.split(/\r?\n/);
+            scalebars.forEach((line, idx) => {
+                if(/^\d/.test(line)) { // only parse lines that start with a number
+                    const values = line.split(",");
+                    if(values.length === 3) {
+                        operations += ` -defineDistance ${this.convertMarkerCode(parseInt(values[0]))} ${this.convertMarkerCode(parseInt(values[1]))} ${values[2]} scalebar${idx}`;
+                    }
+                }
+            });
+        }
+
+        operations += ` -align -selectMaximalComponent -setReconstructionRegionAuto -calculateHighModel -selectMarginalTriangles`;
         operations += ` -removeSelectedTriangles -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}_rc.obj" -quit`;
 
         const command = `"${this.configuration.executable}" ${operations}`;
 
         return Promise.resolve({ command });
+    }
+
+    // Converts from Metshape numbering to RC naming style
+    private convertMarkerCode(code: number) : string {
+        let returnCode = "0";
+
+        if(code < 16) {
+            returnCode = (code + 16).toString(16);
+        }
+        else if(code < 39) {
+            returnCode = (code + 17).toString(16);
+        }
+        else if(code < 46) {
+            returnCode = (code + 18).toString(16);
+        }
+        else if(code < 54) {
+            returnCode = (code + 22).toString(16);
+        }
+        else if(code < 57) {
+            returnCode = (code + 23).toString(16);
+        }
+        else if(code < 60) {
+            returnCode = (code + 24).toString(16);
+        }
+        else if(code < 63) {
+            returnCode = (code + 25).toString(16);
+        }
+        else if(code < 70) {
+            returnCode = (code + 26).toString(16);
+        }
+        else if(code < 71) {
+            returnCode = (code + 29).toString(16);
+        }
+        else if(code < 74) {
+            returnCode = (code + 30).toString(16);
+        }
+        else if(code < 81) {
+            returnCode = (code + 31).toString(16);
+        }
+        else if(code < 88) {
+            returnCode = (code + 32).toString(16);
+        }
+        else if(code < 91) {
+            returnCode = (code + 33).toString(16);
+        }
+        else if(code < 94) {
+            returnCode = (code + 34).toString(16);
+        }
+        else if(code < 96) {
+            returnCode = (code + 52).toString(16);
+        }
+        else if(code < 99) {
+            returnCode = (code + 53).toString(16);
+        }
+        else if(code < 104) {
+            returnCode = (code + 54).toString(16);
+        }
+        else {
+            // throw error?
+        }
+
+        while (returnCode.length < 3) {
+            returnCode = "0" + returnCode;
+        }
+
+        return "1x12:"+returnCode;
     }
 }

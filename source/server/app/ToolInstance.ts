@@ -216,6 +216,16 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
     }
 
     /**
+     * Helper method, reads a file from the instance's work directory.
+     * @param fileName
+     */
+     async readFile(fileName: string): Promise<unknown>
+     {
+         const filePath = this.getFilePath(fileName);
+         return fs.readFile(filePath, "utf8");
+     }
+
+    /**
      * Helper method, renames a file in the instance's work directory.
      * @param oldFileName
      * @param newFileName
