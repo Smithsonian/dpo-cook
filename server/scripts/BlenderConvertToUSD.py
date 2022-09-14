@@ -48,4 +48,4 @@ if len(bpy.data.objects) > 0:
     dir = os.path.dirname(path)
     save_file = os.path.join(dir, mod_filename + ".usdc")
     print("Saving file: " + save_file)
-    bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_texture_paths=True)
+    bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_paths=True)
