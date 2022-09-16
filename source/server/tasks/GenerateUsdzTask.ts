@@ -125,15 +125,8 @@ export default class GenerateUsdzTask extends ToolTask
 
             let zipTask: Task = null;
 
-            /*const file = await fs.readFile(usdFilePath, "utf8").then(infile => {
-                infile = infile.replace(/\\/g, "/");
-                return infile;
-            })
-            .catch(() => {throw new Error("could not read generated USD file");});*/
-
             const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
             await fs.rename(usdFilePath, newUsdFilePath).then( () => {
-            //await fs.writeFile(newUsdFilePath, file).then(file => {
 
                 const zipMeshParams: IZipTaskParameters = {
                     inputFile1: newUsdFilePath,
