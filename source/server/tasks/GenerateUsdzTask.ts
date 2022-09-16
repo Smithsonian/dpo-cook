@@ -120,19 +120,13 @@ export default class GenerateUsdzTask extends ToolTask
         if (instance.tool instanceof BlenderTool) {
             const params = this.parameters as IGenerateUsdzTaskParameters;
             const filename = path.parse(params.outputFile).name;
-            const usdaName = filename + ".usda"
+            const usdaName = filename + ".usdc"
             const usdFilePath = path.resolve(this.context.jobDir, usdaName);
 
             let zipTask: Task = null;
 
-            const file = await fs.readFile(usdFilePath, "utf8").then(infile => {
-                infile = infile.replace(/\\/g, "/");
-                return infile;
-            })
-            .catch(() => {throw new Error("could not read generated USD file");});
-
             const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
-            await fs.writeFile(newUsdFilePath, file).then(file => {
+            await fs.rename(usdFilePath, newUsdFilePath).then( () => {
 
                 const zipMeshParams: IZipTaskParameters = {
                     inputFile1: newUsdFilePath,
@@ -144,7 +138,7 @@ export default class GenerateUsdzTask extends ToolTask
         
                 zipTask = this.context.manager.createTask("Zip", zipMeshParams, this.context);
                 return Promise.resolve();
-            }).catch(() => {throw new Error("could not write updated USD file");});
+            }).catch((error) => {throw new Error("could not rename USD file. "+error);});
 
             await zipTask.run().catch((e) => {throw new Error("Could not zip usdz: "+e);});
         }
