@@ -102,6 +102,10 @@ export default class MergeReportsTask extends Task
             meshes.forEach((mesh, meshIdx) => {
                 const indices = mesh["statistics"]["materialIndex"];
 
+                if(materials.length === 0) {
+                    this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"].length = 0;        
+                }
+
                 if(indices.length === 0 && materials.length > 0) {
                     // no index, but we have materials so check for a match
                     indices.push(-1);
