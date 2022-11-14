@@ -22,7 +22,8 @@
                 "enum": [
                     "RizomUV",
                     "Unknit",
-                    "RapidCompact"
+                    "RapidCompact",
+                    "Blender"
                 ],
                 "default": "RizomUV"
             },

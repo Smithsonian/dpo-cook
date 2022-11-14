@@ -80,6 +80,9 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
         else if(settings.mode === "convert") {
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvertToUSD.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.outputFile)}"`;
         }
+        else if(settings.mode === "unwrap") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderUnwrap.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.outputFile)}"`;
+        }
 
         const command = `"${this.configuration.executable}" ${operation}`;
 

@@ -20,6 +20,7 @@ import Job from "../app/Job";
 import { IRizomUVToolSettings } from "../tools/RizomUVTool";
 import { IUnknitToolSettings } from "../tools/UnknitTool";
 import { IRapidCompactToolSettings } from "../tools/RapidCompactTool";
+import { IBlenderToolSettings } from "../tools/BlenderTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask from "../app/ToolTask";
@@ -31,7 +32,7 @@ const limit = (n, min, max) => n < min ? min : (n > max ? max: n);
 export type TUnwrapMethod =
     "conformal" | "fastConformal" | "isometric" | "forwardBijective" | "fixedBoundary";
 export type TUnwrapTool =
-    "RizomUV" | "Unknit" | "RapidCompact";
+    "RizomUV" | "Unknit" | "RapidCompact" | "Blender";
 
 /** Parameters for [[UnwrapMeshTask]] */
 export interface IUnwrapMeshTaskParameters extends ITaskParameters
@@ -64,7 +65,7 @@ export interface IUnwrapMeshTaskParameters extends ITaskParameters
     debug?: boolean,
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number,
-    /** Tool to be used for unwrapping, options are "RizomUV", "RapidCompact", "Unknit". Default is "RizomUV". */
+    /** Tool to be used for unwrapping, options are "RizomUV", "RapidCompact", "Unknit", "Blender". Default is "RizomUV". */
     tool?: TUnwrapTool;
 }
 
@@ -103,7 +104,7 @@ export default class UnwrapMeshTask extends ToolTask
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: {
                 type: "string",
-                enum: [ "RizomUV", "Unknit", "RapidCompact" ],
+                enum: [ "RizomUV", "Unknit", "RapidCompact", "Blender" ],
                 default: "RizomUV"
             }
         },
@@ -186,6 +187,16 @@ export default class UnwrapMeshTask extends ToolTask
                 };
 
                 this.addTool("Unknit", unknitSettings);
+                break;
+
+            case "Blender":
+                const blenderSettings: IBlenderToolSettings = {
+                    inputMeshFile: params.inputMeshFile,
+                    outputFile: params.outputMeshFile,
+                    mode: "unwrap"
+                };
+
+                this.addTool("Blender", blenderSettings);
                 break;
 
             default:

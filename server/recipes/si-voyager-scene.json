@@ -86,6 +86,11 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
             },
+            "unwrapTool": {
+                "type": "string",
+                "enum": [ "RizomUV", "Blender" ],
+                "default": "RizomUV"
+            },
             "bakeVertexColor": {
                 "type": "boolean",
                 "default": false
@@ -249,7 +254,7 @@
                 "preserveBoundaries": true,
                 "tool": "'RapidCompact'"
             },
-            "success": "'unwrap-rizom-webthumb'",
+            "success": "unwrapTool = 'RizomUV' ? 'unwrap-rizom-webthumb' : 'unwrap-blender-webthumb'",
             "failure": "'decimate-meshlab-webthumb'"
         },
         "decimate-meshlab-webthumb": {
@@ -268,7 +273,7 @@
                 "preserveTexCoords": false,
                 "computeVertexNormals": true
             },
-            "success": "'unwrap-rizom-webthumb'",
+            "success": "unwrapTool = 'RizomUV' ? 'unwrap-rizom-webthumb' : 'unwrap-blender-webthumb'",
             "failure": "$failure"
         },
         "unwrap-rizom-webthumb": {
@@ -288,6 +293,25 @@
                 "mapSize": "mapSizeWebThumb",
                 "segmentationStrength": "unwrapSegmentationStrengthWebThumb",
                 "packEffort": "unwrapPackEffort"
+            },
+            "success": "'inspect-unwrapped-webthumb'",
+            "failure": "'unwrap-blender-webthumb'"
+        },
+        "unwrap-blender-webthumb": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using Blender",
+            "pre": {
+                "deliverables": {
+                    "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-webthumb.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "mapSize": "mapSizeWebThumb",
+                "segmentationStrength": "unwrapSegmentationStrengthWebThumb",
+                "packEffort": "unwrapPackEffort",
+                "tool": "'Blender'"
             },
             "success": "'inspect-unwrapped-webthumb'",
             "failure": "$failure"
@@ -315,7 +339,7 @@
             "parameters": {
                 "highPolyMeshFile": "sourceMeshFile",
                 "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
-                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "lowPolyUnwrappedMeshFile": "unwrapTool = 'RizomUV' ? unwrappedMeshFbxFile : deliverables.scene_unwrappedMesh",
                 "mapBaseName": "mapBaseName",
                 "mapSize": "mapSizeWebThumb",
                 "maxRayDistance": "maxRayDistance",
@@ -451,7 +475,7 @@
                 "preserveBoundaries": true,
                 "tool": "'RapidCompact'"
             },
-            "success": "'unwrap-rizom-webmulti'",
+            "success": "unwrapTool = 'RizomUV' ? 'unwrap-rizom-webmulti' : 'unwrap-blender-webmulti'",
             "failure": "'decimate-meshlab-webmulti'"
         },
         "decimate-meshlab-webmulti": {
@@ -470,7 +494,7 @@
                 "preserveTexCoords": false,
                 "computeVertexNormals": true
             },
-            "success": "'unwrap-rizom-webmulti'",
+            "success": "unwrapTool = 'RizomUV' ? 'unwrap-rizom-webmulti' : 'unwrap-blender-webmulti'",
             "failure": "$failure"
         },
         "unwrap-rizom-webmulti": {
@@ -490,6 +514,25 @@
                 "mapSize": "mapSizeWebMulti",
                 "segmentationStrength": "unwrapSegmentationStrengthWebMulti",
                 "packEffort": "unwrapPackEffort"
+            },
+            "success": "'inspect-unwrapped-webmulti'",
+            "failure": "'unwrap-blender-webmulti'"
+        },
+        "unwrap-blender-webmulti": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using Blender",
+            "pre": {
+                "deliverables": {
+                    "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-webmulti.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "mapSize": "mapSizeWebMulti",
+                "segmentationStrength": "unwrapSegmentationStrengthWebMulti",
+                "packEffort": "unwrapPackEffort",
+                "tool": "'Blender'"
             },
             "success": "'inspect-unwrapped-webmulti'",
             "failure": "$failure"
@@ -516,7 +559,7 @@
             "parameters": {
                 "highPolyMeshFile": "sourceMeshFile",
                 "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
-                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "lowPolyUnwrappedMeshFile": "unwrapTool = 'RizomUV' ? unwrappedMeshFbxFile : deliverables.scene_unwrappedMesh",
                 "mapBaseName": "mapBaseName",
                 "mapSize": "mapSizeWebMulti",
                 "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
@@ -828,7 +871,7 @@
                 "preserveBoundaries": true,
                 "tool": "'RapidCompact'"
             },
-            "success": "'unwrap-rizom-web-ar'",
+            "success": "unwrapTool = 'RizomUV' ? 'unwrap-rizom-web-ar' : 'unwrap-blender-web-ar'",
             "failure": "'decimate-meshlab-web-ar'"
         },
         "decimate-meshlab-web-ar": {
@@ -847,7 +890,7 @@
                 "preserveTexCoords": false,
                 "computeVertexNormals": true
             },
-            "success": "'unwrap-rizom-web-ar'",
+            "success": "unwrapTool = 'RizomUV' ? 'unwrap-rizom-web-ar' : 'unwrap-blender-web-ar'",
             "failure": "$failure"
         },
         "unwrap-rizom-web-ar": {
@@ -867,6 +910,25 @@
                 "mapSize": "mapSizeWebAR",
                 "segmentationStrength": "unwrapSegmentationStrengthWebMulti",
                 "packEffort": "unwrapPackEffort"
+            },
+            "success": "'inspect-unwrapped-web-ar'",
+            "failure": "'unwrap-blender-web-ar'"
+        },
+        "unwrap-blender-web-ar": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using Blender",
+            "pre": {
+                "deliverables": {
+                    "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-web-ar.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "mapSize": "mapSizeWebAR",
+                "segmentationStrength": "unwrapSegmentationStrengthWebMulti",
+                "packEffort": "unwrapPackEffort",
+                "tool": "'Blender'"
             },
             "success": "'inspect-unwrapped-web-ar'",
             "failure": "$failure"
@@ -894,7 +956,7 @@
             "parameters": {
                 "highPolyMeshFile": "sourceMeshFile",
                 "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
-                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "lowPolyUnwrappedMeshFile": "unwrapTool = 'RizomUV' ? unwrappedMeshFbxFile : deliverables.scene_unwrappedMesh",
                 "mapBaseName": "mapBaseName",
                 "mapSize": "mapSizeWebAR",
                 "maxRayDistance": "maxRayDistance",
