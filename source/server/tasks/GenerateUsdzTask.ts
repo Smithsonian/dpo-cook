@@ -124,17 +124,24 @@ export default class GenerateUsdzTask extends ToolTask
             const usdFilePath = path.resolve(this.context.jobDir, usdaName);
 
             let zipTask: Task = null;
+            let textureDir: string = "textures";
+
+            const texturePath = path.resolve(this.context.jobDir, textureDir);
+            await fs.opendir(texturePath).then( (dir) => { dir.close(); return Promise.resolve(); }).catch((error) => {textureDir = "";});
 
             const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
             await fs.rename(usdFilePath, newUsdFilePath).then( () => {
 
-                const zipMeshParams: IZipTaskParameters = {
+                let zipMeshParams: IZipTaskParameters = {
                     inputFile1: newUsdFilePath,
-                    inputFile2: "textures",
                     outputFile: filename + ".usdz",
                     compressionLevel: 0,
                     tool: "SevenZip"
                 };
+
+                if(textureDir.length > 0) {
+                    zipMeshParams.inputFile2 = textureDir;
+                }
         
                 zipTask = this.context.manager.createTask("Zip", zipMeshParams, this.context);
                 return Promise.resolve();
