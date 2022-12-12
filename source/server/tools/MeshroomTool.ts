@@ -49,7 +49,7 @@ export default class MeshroomTool extends Tool<MeshroomTool, IMeshroomToolSettin
         const outputDirectory = instance.workDir;
 
         let operations = "";
-        operations += ` -i "${inputImageFolder}" -p "photogrammetry" -o "${outputDirectory}" --save "${outputDirectory}\\project.mg"`;
+        operations += ` -I "${inputImageFolder}" -p "photogrammetry" -o "${outputDirectory}" --save "${outputDirectory}\\project.mg"`;
         
         const command = `"${this.configuration.executable}" ${operations}`;
 
