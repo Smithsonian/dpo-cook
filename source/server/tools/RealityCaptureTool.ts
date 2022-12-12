@@ -49,7 +49,7 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         const outputDirectory = instance.workDir;
 
         let operations = "";
-        operations += ` -stdConsole -newScene -addFolder "${inputImageFolder}"`;
+        operations += ` -set "appIncSubdirs=true" -stdConsole -newScene -addFolder "${inputImageFolder}"`;
 
         // add scaling info
         if(settings.scalebarFile) {
@@ -77,7 +77,7 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         return Promise.resolve({ command });
     }
 
-    // Converts from Metshape numbering to RC naming style
+    // Converts from Metashape numbering to RC naming style
     private convertMarkerCode(code: number) : string {
         let returnCode = "0";
 

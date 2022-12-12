@@ -64,7 +64,9 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
             operation += ` -mx=${settings.compressionLevel}`;
         }
         else if(settings.operation === "unzip") {
-            operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}" -r`;
+            const name = path.parse(settings.inputFile1).name;
+
+            operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}\\${name}\\" -r`;
         }
 
         //if (!inputFilePath) {

@@ -26,10 +26,11 @@ chunk = doc.addChunk()
 imagePath = args.input
 name = os.path.basename(os.path.normpath(imagePath))
 
-# Grab images from directory
-_, _, imageFiles = next(walk(imagePath), (None, None, []))
-for i, file in enumerate(imageFiles):
-    imageFiles[i] = os.path.join(imagePath, file)
+# Grab images from directory (include subdirectories)
+imageFiles=[]
+for r, d, f in walk(imagePath):
+    for i, file in enumerate(f):
+        imageFiles.append(os.path.join(r, file))
 
 # Add photos
 chunk.addPhotos(imageFiles)
