@@ -91,7 +91,7 @@ module.exports = {
             {
                 // Typescript/JSX files
                 test: /\.tsx?$/,
-                loader: "awesome-typescript-loader"
+                loader: "ts-loader"
             },
             {
                 // Enforce source maps for all javascript files
