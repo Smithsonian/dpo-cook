@@ -76,7 +76,7 @@
         "@types/socket.io": "^2.1.13",
         "apidoc": "^0.50.5",
         "chai": "^4.3.7",
-        "comment-json": "^4.2.3",
+        "comment-json": "^4.1.1",
         "concurrently": "^7.6.0",
         "css-loader": "^5.2.7",
         "express-handlebars": "^6.0.7",

@@ -28,7 +28,7 @@
                     "Meshlab",
                     "RapidCompact"
                 ],
-                "default": "RapidCompact"
+                "default": "Meshlab"
             },
             "cleanupMesh": {
                 "type": "boolean",
