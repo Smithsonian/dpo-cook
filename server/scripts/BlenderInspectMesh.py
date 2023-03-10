@@ -288,33 +288,82 @@ scene_geometry["boundingBox"] = scene_bounds
 scene_geometry["center"] = [(g_minx+g_maxx)/2.0, (g_miny+g_maxy)/2.0, (g_minz+g_maxz)/2.0]
 scene_geometry["size"] = [g_maxx-g_minx, g_maxy-g_miny, g_maxz-g_minz]
 
+
+# Gather default values
+bsdf_defaults = []
+tempmat = bpy.data.materials.new("Default")
+tempmat.use_nodes = True
+node_tree = tempmat.node_tree
+temp_nodes = node_tree.nodes
+bsdf = temp_nodes.get("Principled BSDF")
+for temp_inp in bsdf.inputs:
+    bsdf_defaults.append(temp_inp.default_value)
+bpy.data.materials.remove(tempmat)
+
+
 scene_materials=[]
 for key in materials:
     g_material = bpy.data.materials[key]
     channels=[]
 
     nodes = g_material.node_tree.nodes
+
+    # Walk through BSDF finding values that have changed from defaults
+    bsdf_node = nodes.get("Principled BSDF")
+    for idx, inp in enumerate(bsdf_node.inputs):
+        if(hasattr(inp.default_value, '__len__') and (not isinstance(inp.default_value, str))):
+            val1 = str(inp.default_value[:])
+            val2 = str(bsdf_defaults[idx][:])
+            compare = val1 == val2
+            val1 = val1[1:-1]
+        else:
+            val1 = str(inp.default_value)
+            compare = inp.default_value == bsdf_defaults[idx]
+                
+        if(not compare):
+            if inp.name in channel_types:
+                channel = {
+                "type" : channel_names[channel_types.index(inp.name)],
+                "value" : val1
+                }
+                channels.append(channel)
+            else:
+                if inp.name == "IOR":
+                    channel = {
+                    "type" : "reflection",
+                    "ior" : val1
+                    }
+                    channels.append(channel)
+
+    # Walk through texture nodes and assign/create channels
     for node in nodes:
         if node.type == 'TEX_IMAGE':
             out_channels = []
             channel_name = ""
+            image_name = node.image.name
+            if node.image.packed_file != None:
+                image_name = "embedded*"+node.image.name
             find_channel(node, out_channels)
             if len(out_channels) == 0:
                 channel = {
                 "type" : "unknown",
-                "uri" : node.image.name
+                "uri" : image_name
                 }
                 channels.append(channel)
             else:
                 for name in out_channels:
-                    channel = {
-                    "type" : channel_names[channel_types.index(name)],
-                    "uri" : node.image.name
-                    }
-                    channels.append(channel)
+                    conv_name = channel_names[channel_types.index(name)]
+                    channel = next((ch for ch in channels if ch["type"] == conv_name), False)
+                    if channel == False:
+                        channel = {
+                        "type" : conv_name,
+                        "uri" : image_name
+                        }
+                        channels.append(channel)
+                    else:
+                        channel["uri"] = image_name
             if node.image.name not in textures:
-                textures.append(node.image.name)
-                    
+                textures.append(node.image.name)     
     
     mat = {
         "name" : key,
