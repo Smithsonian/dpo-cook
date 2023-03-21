@@ -1,0 +1,105 @@
+{
+    "id": "1629ceb6-0adc-4264-9e20-83ec87ce97ed",
+    "name": "mesh-from-volume",
+    "description": "Create a mesh from a volumetric data set.",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "3DSlicer"
+                ],
+                "default": "3DSlicer"
+            }
+        },
+        "required": [
+            "sourceImageFolder"
+        ],
+        "advanced": [
+            
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))",
+                "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "sourceImageFolder": "sourceImageFolder"
+                }
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "parameters": {
+                "inputFile1": "sourceImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "'process-volume'",
+            "failure": "$failure"
+        },
+        "process-volume": {
+            "task": "ProcessVolume",
+            "description": "Create mesh from volumetric image set.",
+            "pre": {
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'",
+                    "textureFile": "baseMeshName & '-texture-' & '.png'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "sourceImageFolder",
+                "outputFile": "deliverables.meshFile",
+                "tool": "tool",
+                "timeout": 43200
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

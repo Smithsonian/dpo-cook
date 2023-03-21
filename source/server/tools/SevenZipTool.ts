@@ -29,6 +29,7 @@ export interface ISevenZipToolSettings extends IToolSettings
     inputFile4: string;
     inputFile5: string;
     compressionLevel: number;
+    operation: string;
     outputFile: string;
 }
 
@@ -44,6 +45,7 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
     {
         const settings = instance.settings;
         const activeFiles = [];
+        let operation = ``;
 
         if(settings.inputFile1) activeFiles.push(settings.inputFile1);
         if(settings.inputFile2) activeFiles.push(settings.inputFile2);
@@ -51,18 +53,21 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
         if(settings.inputFile4) activeFiles.push(settings.inputFile4);
         if(settings.inputFile5) activeFiles.push(settings.inputFile5);
 
-        let operation = `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
+        if(settings.operation === "zip") {
+            operation += `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
 
-        activeFiles.forEach(function(file) {
-            const inputFilePath = instance.getFilePath(file);
-            operation += ` "${inputFilePath}"`;
-        });
+            activeFiles.forEach(function(file) {
+                const inputFilePath = instance.getFilePath(file);
+                operation += ` "${inputFilePath}"`;
+            });
 
-        operation += ` -mx=${settings.compressionLevel}`;
+            operation += ` -mx=${settings.compressionLevel}`;
+        }
+        else if(settings.operation === "unzip") {
+            const name = path.parse(settings.inputFile1).name;
 
-        //if (!inputFilePath) {
-        //    throw new Error("missing input mesh file");
-        //} 
+            operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}\\${name}\\" -r`;
+        }
 
         const command = `"${this.configuration.executable}" ${operation}`;
 
