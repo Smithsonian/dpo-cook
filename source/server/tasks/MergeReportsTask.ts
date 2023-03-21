@@ -44,6 +44,7 @@ export interface IMergeReportsTaskParameters extends ITaskParameters
 export default class MergeReportsTask extends Task
 {
     static readonly taskName = "MergeReports";
+    static readonly tolerance = 0.001;
 
     static readonly description = "Merges mesh and material inspection reports into one.";
 
@@ -97,89 +98,53 @@ export default class MergeReportsTask extends Task
         const fileExt = path.extname(this.materialReport["filePath"]);
         
         // merge reports
-        if(this.meshReport["scene"]["statistics"]["numMeshes"] > 0) {
-            const materials = this.materialReport["scene"]["materials"];
+        const meshCount = this.meshReport["scene"]["statistics"]["numMeshes"];
+        if(meshCount > 1) {
             meshes.forEach((mesh, meshIdx) => {
-                const indices = mesh["statistics"]["materialIndex"];
+                let materialMatchIdx = -1;
 
-                if(materials.length === 0) {
-                    this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"].length = 0;        
+                // find corresponding mesh in material report by face count
+                const fcMatches = this.materialReport["meshes"].filter(mMesh => {
+                    return mMesh["statistics"]["numFaces"] === mesh["statistics"]["numFaces"];
+                });
+
+                if(fcMatches.length === 1) {
+                    materialMatchIdx = this.materialReport["meshes"].indexOf(fcMatches[0])
                 }
-
-                if(indices.length === 0 && materials.length > 0) {
-                    // no index, but we have materials so check for a match
-                    indices.push(-1);
-                }
-
-                indices.forEach((index, indexIdx) => {
-                    const materialName = index >= 0 ? this.meshReport["scene"]["materials"][index]["name"] : "UNKNOWN_MATERIAL";
-                 
-                    // look for material name match
-                    const matches = materials.filter(mat => mat["name"] === materialName);
-                    if(matches.length === 1) {
-                        this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"][indexIdx] = materials.findIndex(mat => mat["name"] === materialName);
-                    }
-                    else {
-                        
-                        // try to find a match using geometry bounds
-                        const bbMatches = this.materialReport["meshes"].filter(mMesh => {
-                            const bb1 = mMesh["geometry"]["boundingBox"];
-                            const bb2 = mesh["geometry"]["boundingBox"];
-
-                            return Math.abs(bb1.max[0]-bb2.max[0]) <  0.00001 &&
-                                Math.abs(bb1.max[1]-bb2.max[1]) <  0.00001 &&
-                                Math.abs(bb1.max[2]-bb2.max[2]) <  0.00001 &&
-                                Math.abs(bb1.min[0]-bb2.min[0]) <  0.00001 &&
-                                Math.abs(bb1.min[1]-bb2.min[1]) <  0.00001 &&
-                                Math.abs(bb1.min[2]-bb2.min[2]) <  0.00001;
-                        });
-
-                        if(bbMatches.length === 1) {
-                            const matIndex = bbMatches[0]["statistics"]["materialIndex"];
-                            if(matIndex >= 0) {
-                                this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"][indexIdx] = matIndex;
-                            }
-                            else {
-                                this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"].splice(indexIdx,1);
-                            }
-                        }
-                        else {
-                            // no match found
-                            this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"].splice(indexIdx,1);
-                            this.logTaskEvent("debug", `Warning: Could not find a mapping for material "${materialName}"`);
-                        }
-                    }
-                }); 
-            });
-        }
-        
-        // OBJ vertex color not supported by Blender, so check for any vc mismatches
-        const matMeshes = this.materialReport["meshes"];
-        if(fileExt === ".obj") {
-            matMeshes.forEach((mesh) => {
-                if(mesh["statistics"]["hasVertexColors"] === true) {
-                    const bbMatches = meshes.filter(mMesh => {
+                else {   
+                    // no face count match, so get mesh with closest bounding box
+                    let bbError = Infinity;
+                    this.materialReport["meshes"].forEach((mMesh, mMeshIdx) => {
                         const bb1 = mMesh["geometry"]["boundingBox"];
                         const bb2 = mesh["geometry"]["boundingBox"];
 
-                        return Math.abs(bb1.max[0]-bb2.max[0]) <  0.00001 &&
-                            Math.abs(bb1.max[1]-bb2.max[1]) <  0.00001 &&
-                            Math.abs(bb1.max[2]-bb2.max[2]) <  0.00001 &&
-                            Math.abs(bb1.min[0]-bb2.min[0]) <  0.00001 &&
-                            Math.abs(bb1.min[1]-bb2.min[1]) <  0.00001 &&
-                            Math.abs(bb1.min[2]-bb2.min[2]) <  0.00001;
+                        const error = Math.abs(bb1.max[0]-bb2.max[0]) +
+                            Math.abs(bb1.max[1]-bb2.max[1]) +
+                            Math.abs(bb1.max[2]-bb2.max[2]) +
+                            Math.abs(bb1.min[0]-bb2.min[0]) +
+                            Math.abs(bb1.min[1]-bb2.min[1]) +
+                            Math.abs(bb1.min[2]-bb2.min[2]);
+                            
+                        if(error < bbError) {
+                            bbError = error;
+                            materialMatchIdx = mMeshIdx;
+                        }
                     });
 
-                    if(bbMatches.length === 1) {
-                        bbMatches[0]["statistics"]["hasVertexColors"] = true;
-                        bbMatches[0]["statistics"]["numColorChannels"] = mesh["statistics"]["numColorChannels"];
-                    }
-                    else {
-                        // no match found
-                        throw new Error("Error: Could not sync vertex color between mesh and material reports.");
-                    }
+                    this.logTaskEvent("debug", `Info: Matched mesh ${meshIdx} with bounds error of "${bbError}"`);
                 }
+
+                // assign material specific values to mesh report
+                this.meshReport["meshes"][meshIdx]["statistics"]["materialIndex"] = this.materialReport["meshes"][materialMatchIdx]["statistics"]["materialIndex"];
+                this.meshReport["meshes"][meshIdx]["statistics"]["hasVertexColors"] = this.materialReport["meshes"][materialMatchIdx]["statistics"]["hasVertexColors"];
+                this.meshReport["meshes"][meshIdx]["statistics"]["numColorChannels"] = this.materialReport["meshes"][materialMatchIdx]["statistics"]["numColorChannels"];
             });
+        }
+        else if(meshCount === 1) {
+            // assign material specific values to mesh report
+            this.meshReport["meshes"][0]["statistics"]["materialIndex"] = this.materialReport["meshes"][0]["statistics"]["materialIndex"];
+            this.meshReport["meshes"][0]["statistics"]["hasVertexColors"] = this.materialReport["meshes"][0]["statistics"]["hasVertexColors"];
+            this.meshReport["meshes"][0]["statistics"]["numColorChannels"] = this.materialReport["meshes"][0]["statistics"]["numColorChannels"];
         }
 
         this.finalReport = this.meshReport;
