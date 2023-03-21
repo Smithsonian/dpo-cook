@@ -108,7 +108,7 @@
                 "generatePointCloud": "generatePointCloud",
                 "optimizeMarkers": "optimizeMarkers",
                 "tool": "tool",
-                "timeout": 43200
+                "timeout": 86400
             },
             "success": "'delivery'",
             "failure": "$failure"
