@@ -1,6 +1,6 @@
 /**
  * 3D Foundation Project
- * Copyright 2019 Smithsonian Institution
+ * Copyright 2023 Smithsonian Institution
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,7 @@ export default class GenerateUsdzTask extends ToolTask
         {
             const settings: IBlenderToolSettings = {
                 inputMeshFile: params.sourceFile,
+                outputFile: params.outputFile,
                 mode: "convert",
                 //scale: params.scale,
                 timeout: params.timeout
@@ -118,28 +119,35 @@ export default class GenerateUsdzTask extends ToolTask
     {
         if (instance.tool instanceof BlenderTool) {
             const params = this.parameters as IGenerateUsdzTaskParameters;
-            const filename = path.parse(params.sourceFile).name;
-            const usdaName = filename + ".usda"
+            const filename = path.parse(params.outputFile).name;
+            const usdaName = filename + ".usdc"
             const usdFilePath = path.resolve(this.context.jobDir, usdaName);
 
-            await fs.readFile(usdFilePath, "utf8").then(file => {
-                file = file.replace(/\\/g, "/");
-                const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
-                fs.writeFile(newUsdFilePath, file).then(file => {
+            let zipTask: Task = null;
+            let textureDir: string = "textures";
 
-                    const zipMeshParams: IZipTaskParameters = {
-                        inputFile1: newUsdFilePath,
-                        inputFile2: "textures",
-                        outputFile: filename + ".usdz",
-                        compressionLevel: 0,
-                        tool: "SevenZip"
-                    };
-            
-                    const zipTask = this.context.manager.createTask("Zip", zipMeshParams, this.context);
-                    return zipTask.run().catch((e) => {throw new Error("Could not zip usdz: "+e);});
-                }).catch(() => {throw new Error("could not write updated USD file");});
-            })
-            .catch(() => {throw new Error("could not read generated USD file");}); 
+            const texturePath = path.resolve(this.context.jobDir, textureDir);
+            await fs.opendir(texturePath).then( (dir) => { dir.close(); return Promise.resolve(); }).catch((error) => {textureDir = "";});
+
+            const newUsdFilePath = usdFilePath.replace(usdaName, "a_" + usdaName);  // alpha hack to make sure usd is added to zip before textures
+            await fs.rename(usdFilePath, newUsdFilePath).then( () => {
+
+                let zipMeshParams: IZipTaskParameters = {
+                    inputFile1: newUsdFilePath,
+                    outputFile: filename + ".usdz",
+                    compressionLevel: 0,
+                    tool: "SevenZip"
+                };
+
+                if(textureDir.length > 0) {
+                    zipMeshParams.inputFile2 = textureDir;
+                }
+        
+                zipTask = this.context.manager.createTask("Zip", zipMeshParams, this.context);
+                return Promise.resolve();
+            }).catch((error) => {throw new Error("could not rename USD file. "+error);});
+
+            await zipTask.run().catch((e) => {throw new Error("Could not zip usdz: "+e);});
         }
 
         return Promise.resolve();

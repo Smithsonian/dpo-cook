@@ -17,63 +17,59 @@
 
 import Job from "../app/Job";
 
-import { IMeshfixToolSettings } from "../tools/MeshfixTool";
+import { IRealityCaptureToolSettings } from "../tools/RealityCaptureTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/** Parameters for [[FixMeshTask]]. */
-export interface IFixMeshTaskParameters extends ITaskParameters
+/** Parameters for [[ReconstructionTask]]. */
+export interface IReconstructionTaskParameters extends ITaskParameters
 {
-    /** Input mesh file name. */
-    inputMeshFile: string;
-    /** Fixed (output) mesh file name. */
-    outputMeshFile: string;
+    inputImageFolderName: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
 
 /**
- * Uses the MeshFix tool to heal a mesh using a number of heuristics.
+ * Uses RealityCapture photogrammetry software to create a 3D model
+ * from a set of 2D images.
  *
- * Tool: [[MeshfixTool]]
- * Parameters: [[IFixMeshTaskParameters]]
+ * Tool: [[RealityCaptureTool]],
+ * Parameters: [[IReconstructionTaskParameters]]
  */
-export default class FixMeshTask extends ToolTask
+export default class ReconstructionTask extends ToolTask
 {
-    static readonly taskName = "FixMesh";
+    static readonly taskName = "Reconstruction";
 
-    static readonly description = "Uses the MeshFix tool to heal a mesh using a number of heuristics.";
+    static readonly description = "Uses RealityCapture photogrammetry software to create a 3D model.";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
-            inputMeshFile: { type: "string", minLength: 1 },
-            outputMeshFile: { type: "string", minLength: 1 },
+            inputImageFolderName: { type: "string", minLength: 1 },
             timeout: { type: "integer", minimum: 0, default: 0 }
         },
         required: [
-            "inputMeshFile",
-            "outputMeshFile"
-        ]
+            "inputImageFolderName"
+        ],
+        additionalProperties: false
     };
 
     static readonly parameterValidator =
-        Task.jsonValidator.compile(FixMeshTask.parameterSchema);
+        Task.jsonValidator.compile(ReconstructionTask.parameterSchema);
 
-    constructor(params: IFixMeshTaskParameters, context: Job)
+    constructor(params: IReconstructionTaskParameters, context: Job)
     {
         super(params, context);
 
-        const settings: IMeshfixToolSettings = {
-            inputMeshFile: params.inputMeshFile,
-            outputMeshFile: params.outputMeshFile,
-            joinComponents: false,
+        const settings: IRealityCaptureToolSettings = {
+            inputImageFolderName: params.inputImageFolderName,
             timeout: params.timeout
         };
 
-        this.addTool("Meshfix", settings);
+        this.addTool("RealityCapture", settings);
     }
 }
+

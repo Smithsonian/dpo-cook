@@ -36,10 +36,16 @@ elif file_extension == '.glb' or file_extension == '.gltf':
 else:
     print("Error: Unsupported file type: " + file_extension)
     sys.exit(1)
-print("Exporting file: " + filename)
+
+try: #check for provided output filename
+    mod_filename, file_extension = os.path.splitext(argv[1])
+except IndexError:
+    mod_filename = filename
+    
+print("Exporting file: " + mod_filename)
 if len(bpy.data.objects) > 0:
     path = bpy.data.filepath
     dir = os.path.dirname(path)
-    save_file = os.path.join(dir, filename + ".usda")
+    save_file = os.path.join(dir, mod_filename + ".usdc")
     print("Saving file: " + save_file)
-    bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_texture_paths=True)
+    bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_paths=True)
