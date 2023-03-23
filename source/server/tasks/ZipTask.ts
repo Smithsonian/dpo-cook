@@ -65,7 +65,7 @@ export default class ZipTask extends ToolTask
             inputFile3: { type: "string", minLength: 1 },
             inputFile4: { type: "string", minLength: 1 },
             inputFile5: { type: "string", minLength: 1 },
-            operation: { type: "string", enum: [ "zip", "unzip" ] },
+            operation: { type: "string", enum: [ "zip", "unzip" ], default: "unzip" },
             outputFile: { type: "string", minLength: 1, default: "CookArchive.zip" },
             compressionLevel: { type: "integer", minimum: 0, default: 5 },
             timeout: { type: "integer", minimum: 0, default: 0 },

@@ -3,7 +3,7 @@
     "name": "generate-usdz",
     "description": "Create usdz web asset",
     "version": "1",
-    "start": "pickup",
+    "start": "log",
 
     "parameterSchema": {
         "type": "object",
@@ -40,12 +40,22 @@
     },
 
     "steps": {
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
             "pre": {
                 "outputMeshFileName": "$baseName($firstTrue(outputMeshFileName, sourceMeshFile))"
             },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputMeshFileName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
