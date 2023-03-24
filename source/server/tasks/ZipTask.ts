@@ -35,7 +35,7 @@ export interface IZipTaskParameters extends ITaskParameters
     inputFile4?: string;
     inputFile5?: string;
     /** The type of zip operation we want to do. */
-    operation?: "zip" | "unzip";
+    operation: "zip" | "unzip";
     /** Name to give generated zip file. */
     outputFile?: string;
     /** Degree of compression */
@@ -65,7 +65,7 @@ export default class ZipTask extends ToolTask
             inputFile3: { type: "string", minLength: 1 },
             inputFile4: { type: "string", minLength: 1 },
             inputFile5: { type: "string", minLength: 1 },
-            operation: { type: "string", enum: [ "zip", "unzip" ], default: "unzip" },
+            operation: { type: "string", enum: [ "zip", "unzip" ] },
             outputFile: { type: "string", minLength: 1, default: "CookArchive.zip" },
             compressionLevel: { type: "integer", minimum: 0, default: 5 },
             timeout: { type: "integer", minimum: 0, default: 0 },

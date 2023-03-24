@@ -1008,7 +1008,8 @@
                 "inputFile1": "reorientedMeshFileMaster",
                 "inputFile2": "sourceDiffuseMapFile",
                 "inputFile3": "mtlFile_master",
-                "outputFile": "deliverables.objZipFull"
+                "outputFile": "deliverables.objZipFull",
+                "operation": "'zip'"
             },
             "success": "'zip-low-gltf'",
             "failure": "$failure"
@@ -1028,7 +1029,8 @@
                 "inputFile3": "scene_diffuseMapHigh",
                 "inputFile4": "scene_occlusionMapHigh",
                 "inputFile5": "scene_normalMapHigh",
-                "outputFile": "deliverables.gltfZipLow"
+                "outputFile": "deliverables.gltfZipLow",
+                "operation": "'zip'"
             },
             "success": "'zip-low-obj'",
             "failure": "$failure"
@@ -1048,7 +1050,8 @@
                 "inputFile3": "scene_diffuseMapHigh",
                 "inputFile4": "scene_occlusionMapHigh",
                 "inputFile5": "scene_normalMapHigh",
-                "outputFile": "deliverables.objZipLow"
+                "outputFile": "deliverables.objZipLow",
+                "operation": "'zip'"
             },
             "success": "'zip-medium-gltf'",
             "failure": "$failure"
@@ -1068,7 +1071,8 @@
                 "inputFile3": "diffuseMap",
                 "inputFile4": "occlusionMap",
                 "inputFile5": "normalMap",
-                "outputFile": "deliverables.gltfZipMed"
+                "outputFile": "deliverables.gltfZipMed",
+                "operation": "'zip'"
             },
             "success": "'zip-medium-obj'",
             "failure": "$failure"
@@ -1088,7 +1092,8 @@
                 "inputFile3": "diffuseMap",
                 "inputFile4": "occlusionMap",
                 "inputFile5": "normalMap",
-                "outputFile": "deliverables.objZipMed"
+                "outputFile": "deliverables.objZipMed",
+                "operation": "'zip'"
             },
             "success": "'delivery'",
             "failure": "$failure"
