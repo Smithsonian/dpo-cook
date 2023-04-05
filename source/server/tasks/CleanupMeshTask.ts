@@ -88,7 +88,7 @@ export default class CleanupMeshTask extends ToolTask
                 {
                     name: "SelectSmallComponents",
                     params: {
-                        "nbfaceratio": 0.9
+                        "nbfaceratio": 0.999
                     }
                 },
                 {
