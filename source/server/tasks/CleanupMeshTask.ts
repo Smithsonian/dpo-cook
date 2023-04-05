@@ -31,6 +31,10 @@ export interface ICleanupMeshTaskParameters extends ITaskParameters
     inputMeshFile: string;
     /** Output mesh file name. */
     outputMeshFile: string;
+    /** Meshlab only: Preserves texture coordinates during decimation. */
+    preserveTexCoords?: boolean;
+    /** Meshlab only: Re-computes vertex normals of the decimated mesh. */
+    computeVertexNormals?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
@@ -57,6 +61,8 @@ export default class CleanupMeshTask extends ToolTask
         properties: {
             inputMeshFile: { type: "string", minLength: 1 },
             outputMeshFile: { type: "string", minLength: 1 },
+            preserveTexCoords: { type: "boolean", default: true },
+            computeVertexNormals: { type: "boolean", default: true },
             timeout: { type: "integer", default: 0 }
         },
         required: [
@@ -76,9 +82,31 @@ export default class CleanupMeshTask extends ToolTask
         const settings: IMeshlabToolSettings = {
             inputMeshFile: params.inputMeshFile,
             outputMeshFile: params.outputMeshFile,
-            filters: [{
-                name: "Cleanup",
-            }],
+            writeTexCoords: params.preserveTexCoords,
+            writeNormals: params.computeVertexNormals,
+            filters: [
+                {
+                    name: "SelectSmallComponents",
+                    params: {
+                        "nbfaceratio": 0.9
+                    }
+                },
+                {
+                    name: "DeleteSelected"
+                },
+                {
+                    name: "RemoveUnreferencedVertices"
+                },
+                {
+                    name: "RemoveZeroAreaFaces"
+                },
+                {
+                    name: "RemoveDuplicateVertices"
+                },
+                {
+                    name: "RemoveDuplicateFaces"
+                }
+            ],
             timeout: params.timeout
         };
 

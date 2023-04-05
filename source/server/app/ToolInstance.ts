@@ -342,7 +342,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             };
 
             // run tool
-            const shellScript = child_process.exec(setup.command);
+            const shellScript = child_process.exec(setup.command, {maxBuffer: 4096*1024});
 
             shellScript.stdout.on("data", dataHandler());
             shellScript.stderr.on("data", dataHandler());

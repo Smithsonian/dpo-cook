@@ -39,9 +39,10 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
     async setupInstance(instance: RealityCaptureInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
-        const name = path.parse(settings.imageInputFolder).name;
+        const inputFolder = path.parse(settings.imageInputFolder).name;
+        const name = path.parse(settings.outputFile).name;
 
-        const inputImageFolder = instance.getFilePath(name);
+        const inputImageFolder = instance.getFilePath(inputFolder);
         if (!inputImageFolder) {
             throw new Error("RealityCaptureTool: missing image folder name");
         }
@@ -70,11 +71,31 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         }
 
         operations += ` -align -selectMaximalComponent -setReconstructionRegionAuto -calculateHighModel -selectMarginalTriangles`;
-        operations += ` -removeSelectedTriangles -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}_rc.obj" -quit`;
+        operations += ` -removeSelectedTriangles -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}.obj" "${outputDirectory}\\_rc_params.xml" -quit`;
 
         const command = `"${this.configuration.executable}" ${operations}`;
 
-        return Promise.resolve({ command });
+        // set export parameters via params.xml file
+        const content = [`<ModelExport exportBinary="1" exportInfoFile="1" exportVertices="1" exportVertexColors="2"`,
+        `exportVertexNormals="0" exportTriangles="1" exportTriangleStrips="0"`,
+        `meshColor="4294967295" tileType="0" exportTextureAlpha="0" exportToOneTexture="0"`,
+        `embedTextures="0" shrinkTextures="0" oneTextureMaxSide="8192" oneTextureUsePow2TexSide="1"`,
+        `exportCoordinateSystemType="0" settingsAnchor="0 0 0" settingsRotation="0 0 0"`,
+        `settingsScalex="1" settingsScaley="1" settingsScalez="1" normalSpace="2"`,
+        `normalRange="0" normalFlip="0 0 0" formatAndVersionUID="obj 000 "`,
+        `exportModelByParts="0" exportRandomPartColor="0" exportCameras="0"`,
+        `exportCamerasAsModelPart="0" exportMaterials="1" numberAsciiFormatting="5"`,
+        `authorComment="" exportedLayerCount="1">`,
+        `<Header magic="5786949" version="5"/>`,
+        `<Layer0 type="1" textureLayerIndex="0" textureWicContainerFormat="{1B7CFAF4-713F-473C-BBCD-6137425FAEAF}"`,
+        `  textureWicPixelFormat="{6FDDC324-4E03-4BFE-B185-3D77768DC90F}" textureExtension="png"/>`,
+        `</ModelExport>`].join("\n");
+
+        const paramFileName = "_rc_params.xml";
+
+        return instance.writeFile(paramFileName, content).then(() => ({
+            command
+        }));
     }
 
     // Converts from Metashape numbering to RC naming style

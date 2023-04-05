@@ -110,6 +110,34 @@
                 "tool": "tool",
                 "timeout": 86400
             },
+            "success": "'rename'",
+            "failure": "$failure"
+        },
+        "rename": {
+            "task": "FileOperation",
+            "description": "Rename Meshroom Model",
+            "skip": "$not(tool = 'Meshroom')",
+            "parameters": {
+                "operation": "'RenameFile'",
+                "name": "'texturedMesh.obj'",
+                "newName": "deliverables.meshFile"
+            },
+            "success": "'cleanup'",
+            "failure": "$failure"
+        },
+        "cleanup": {
+            "task": "CleanupMesh",
+            "description": "Cleanup common issues with mesh.",
+            "pre": {
+                "deliverables": {
+                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "deliverables.meshFile",
+                "outputMeshFile": "deliverables.cleanedMeshFile",
+                "timeout": 1200
+            },
             "success": "'delivery'",
             "failure": "$failure"
         },

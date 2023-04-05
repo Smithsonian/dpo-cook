@@ -23,7 +23,7 @@ import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from
 export interface IMetashapeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
-    outputFile?: string;
+    outputFile: string;
     scalebarFile?: string;
     generatePointCloud?: boolean;
     optimizeMarkers?: boolean;
@@ -75,7 +75,7 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 
         let operation = ` -r `;
 
-        operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}"`;
+        operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
 
         if(settings.scalebarFile) {
             const sbFIlePath = instance.getFilePath(settings.scalebarFile);

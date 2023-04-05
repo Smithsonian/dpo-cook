@@ -15,6 +15,7 @@ argv = sys.argv
 #parse args
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", required=True, help="Input filepath")
+parser.add_argument("-o", "--output", required=True, help="Output filename")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
 parser.add_argument("-bdc", required=False, default="False", help="Build dense cloud")
@@ -162,7 +163,7 @@ chunk.buildModel\
     face_count=modelQuality[0],
     face_count_custom=200000,
     source_data = Metashape.DenseCloudData if denseCloudFlag == True else Metashape.DepthMapsData,
-    vertex_colors=True,
+    vertex_colors=False,
     vertex_confidence=True,
     volumetric_masks=False,
     keep_depth=True,
@@ -194,7 +195,7 @@ chunk.updateTransform()
 
 chunk.exportModel\
 (
-    path=imagePath+"\\..\\"+name+".obj",
+    path=imagePath+"\\..\\"+args.output,
     binary=True,
     precision=6,
     texture_format=Metashape.ImageFormatTIFF,

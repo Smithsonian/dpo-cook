@@ -56,7 +56,9 @@ export default class MeshlabTool extends Tool
         "RemoveIsolatedFoldedFaces": { name: "Remove Isolated Folded Faces by Edge Flip" },
         "RemoveIsolatedPieces": { name: "Remove Isolated pieces (wrt Diameter)" },
         "ComputeFaceNormals": { name: "Re-Compute Face Normals" },
-        "ComputeVertexNormals": { name: "Re-Compute Vertex Normals" }
+        "ComputeVertexNormals": { name: "Re-Compute Vertex Normals" },
+        "SelectSmallComponents": { name: "Select small disconnected component"},
+        "DeleteSelected": { name: "Delete Selected Faces and Vertices"}
         /*"MeshReport": { name: "Generate JSON Report", type: "xml" }*/
     };
 
