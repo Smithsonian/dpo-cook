@@ -3,7 +3,7 @@
     "name": "clean",
     "description": "Clean mesh of common issues",
     "version": "1",
-    "start": "pickup",
+    "start": "log",
 
     "parameterSchema": {
         "type": "object",
@@ -38,6 +38,19 @@
     },
 
     "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
         "pickup": {
             "task": "Pickup",
             "description": "Fetch input files from client",
