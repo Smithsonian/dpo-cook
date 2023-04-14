@@ -138,6 +138,25 @@
                 "outputMeshFile": "deliverables.cleanedMeshFile",
                 "timeout": 1200
             },
+            "success": "'texture'",
+            "failure": "$failure"
+        },
+        "texture": {
+            "task": "PhotogrammetryTex",
+            "description": "Create and map texture from model and image set.",
+            "pre": {
+                "deliverables": {
+                    "finalMeshFile": "baseMeshName & '-' & $lowercase(tool) & '-final.obj'",
+                    "textureFile": "baseMeshName & '-texture-final' & '.png'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "sourceImageFolder",
+                "inputModelFile": "deliverables.cleanedMeshFile",
+                "outputFile": "deliverables.finalMeshFile",
+                "tool": "tool",
+                "timeout": 86400
+            },
             "success": "'delivery'",
             "failure": "$failure"
         },

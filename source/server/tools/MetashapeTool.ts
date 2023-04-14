@@ -24,6 +24,8 @@ export interface IMetashapeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
     outputFile: string;
+    mode: string;
+    inputModelFile?: string;
     scalebarFile?: string;
     generatePointCloud?: boolean;
     optimizeMarkers?: boolean;
@@ -42,7 +44,7 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         const { instance, message } = event;
 
         // keep errors
-        if (message.toLowerCase().includes("error")) {
+        if (message.toLowerCase().includes("error") || message.toLowerCase().includes("exception")) {
             return false;
         }
 
@@ -75,14 +77,24 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 
         let operation = ` -r `;
 
-        operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
+        if(settings.mode === "full") {
+            operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
 
-        if(settings.scalebarFile) {
-            const sbFIlePath = instance.getFilePath(settings.scalebarFile);
-            operation += ` -sb "${sbFIlePath}"`;
+            if(settings.scalebarFile) {
+                const sbFIlePath = instance.getFilePath(settings.scalebarFile);
+                operation += ` -sb "${sbFIlePath}"`;
+            }
+
+            operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} `;
         }
+        else if(settings.mode === "texture") {
+            const inputModelPath = instance.getFilePath(settings.inputModelFile);
+            if (!inputModelPath) {
+                throw new Error("missing input model");
+            } 
 
-        operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} `;
+            operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateTexture.py")}" -i "${inputFolder}" -m "${inputModelPath}" -o "${settings.outputFile}"`;
+        }
 
         //operation += `-platform offscreen `;
 

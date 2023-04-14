@@ -1,6 +1,6 @@
 /**
  * 3D Foundation Project
- * Copyright 2022 Smithsonian Institution
+ * Copyright 2023 Smithsonian Institution
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,19 +27,15 @@ import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/** Parameters for [[PhotogrammetryTask]] */
-export interface IPhotogrammetryTaskParameters extends ITaskParameters
+/** Parameters for [[PhotogrammetryTexTask]] */
+export interface IPhotogrammetryTexTaskParameters extends ITaskParameters
 {
     /** Input image folder. */
     inputImageFolder: string;
+    /** Input model to texture. */
+    inputModelFile: string;
     /** Base name used for output files */
     outputFile: string;
-    /** CSV file with scalebar markers and distances */
-    scalebarFile: string;
-    /** Flag to enable building a dense point cloud */
-    generatePointCloud: boolean;
-    /** Flag to enable discarding high-error markers */
-    optimizeMarkers: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
@@ -47,56 +43,53 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
 }
 
 /**
- * Generates a mesh and texture from an image set
+ * Generates and maps a texture from model and image set
  *
- * Parameters: [[IPhotogrammetryTaskParameters]]
- * Tools: [[MetashapeTool]], [[RealityCaptureTool]]
+ * Parameters: [[IPhotogrammetryTexTaskParameters]]
+ * Tools: [[MetashapeTool]], [[RealityCaptureTool], [[MeshRoomTool]]
  */
-export default class PhotogrammetryTask extends ToolTask
+export default class PhotogrammetryTexTask extends ToolTask
 {
-    static readonly taskName = "Photogrammetry";
+    static readonly taskName = "PhotogrammetryTex";
 
-    static readonly description = "Generates a mesh and texture from an image set using photogrammetry techniques.";
+    static readonly description = "Generates and maps a texture from model and image set using photogrammetry techniques.";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
             inputImageFolder: { type: "string", minLength: 1 },
+            inputModelFile: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1 },
-            scalebarFile: { type: "string", minLength: 1 },
-            generatePointCloud: { type: "boolean", default: false},
-            optimizeMarkers: { type: "boolean", default: false},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
         },
         required: [
             "inputImageFolder",
             "outputFile",
+            "inputModelFile",
         ],
         additionalProperties: false
     };
 
     static readonly parameterValidator =
-        Task.jsonValidator.compile(PhotogrammetryTask.parameterSchema);
+        Task.jsonValidator.compile(PhotogrammetryTexTask.parameterSchema);
 
-    constructor(params: IPhotogrammetryTaskParameters, context: Job)
+    constructor(params: IPhotogrammetryTexTaskParameters, context: Job)
     {
         super(params, context);
 
         if (params.tool === "Metashape") {
             const toolOptions: IMetashapeToolSettings = {
                 imageInputFolder: params.inputImageFolder,
+                inputModelFile: params.inputModelFile,
                 outputFile: params.outputFile,
-                scalebarFile: params.scalebarFile,
-                generatePointCloud: params.generatePointCloud,
-                optimizeMarkers: params.optimizeMarkers,
-                mode: "full",
+                mode: "texture",
                 timeout: params.timeout
             };
 
             this.addTool("Metashape", toolOptions);
         }
-        else if (params.tool === "RealityCapture") {
+        /*else if (params.tool === "RealityCapture") {
             const toolOptions: IRealityCaptureToolSettings = {
                 imageInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
@@ -117,9 +110,9 @@ export default class PhotogrammetryTask extends ToolTask
             };
 
             this.addTool("Meshroom", toolOptions);
-        }
+        }*/
         else {
-            throw new Error("PhotogrammetryTask.constructor - unknown tool: " + params.tool);
+            throw new Error("PhotogrammetryTexTask.constructor - unknown tool: " + params.tool);
         }
     }
 }
