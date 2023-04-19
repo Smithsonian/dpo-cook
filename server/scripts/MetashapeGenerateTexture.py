@@ -62,9 +62,72 @@ chunk.optimizeCameras\
     adaptive_fitting=True
 )
 
+if args.sb != None:
+    ## Detect markers
+    # Detect Circular 12bit coded markers
+    # Coded target options: [CircularTarget12bit, CircularTarget14bit, CircularTarget16bit, CircularTarget20bit]
+    chunk.detectMarkers\
+    (
+        target_type=Metashape.TargetType.CircularTarget12bit,
+        tolerance=25,
+        filter_mask=False,
+        inverted=False,
+        noparity=True,
+        maximum_residual=5,
+        minimum_size=0,
+        minimum_dist=5
+    )
+
+
+    optimizeMarkerFlag = convert(args.optm);
+    if optimizeMarkerFlag == True:
+        """Optimize Marker Error Per Camera"""
+        # print out the current projection count for each marker
+        #for m in chunk.markers:
+        #    print("Marker: " + m.label + " has " + str(len(m.projections)) + " projections")
+        # for each marker in list of markers for active chunk, remove markers from each camera with error greater than 0.5
+        for marker in chunk.markers:
+            # skip marker if it has no position
+            if not marker.position:
+                #print(marker.label + " is not defined in 3D, skipping...")
+                continue
+            # reference the position of the marker
+            position = marker.position
+            # for each camera in the list of cameras for current marker
+            for camera in marker.projections.keys():
+                if not camera.transform:
+                    continue
+
+                proj = marker.projections[camera].coord
+                reproj = camera.project(position)
+                error = (proj - reproj).norm()
+
+                # remove markers with projection error greater than 0.5
+                if error > 0.5:
+                    # set the current marker projection to none for current camera/marker combination
+                    marker.projections[camera] = None
+                    print("**** Removed: " + str(marker) + " with error of : " + str(error) + " ****")
+
+        #for marker in chunk.markers:
+        #    print("marker is " + str(marker.label))
+        
+
+    # Add scalebars
+    with open(args.sb, newline='') as scalebarlist:
+        reader = csv.DictReader(scalebarlist)
+        for row in reader:
+            marker1 = next((marker for marker in chunk.markers if marker.label == "target "+row['marker1']), None)
+            marker2 = next((marker for marker in chunk.markers if marker.label == "target "+row['marker2']), None)
+            ##print(row['marker1'] + " " + row['marker2'])
+            if(marker1 != None and marker2 != None):
+                bar = chunk.addScalebar(marker1, marker2)
+                bar.reference.distance = float(row['distance'])
+                print("Adding Scalebar " + row['marker1'] + " " + row['marker2'])
+
+chunk.updateTransform()
+
 # Load model
 chunk.importModel(modelPath, Metashape.ModelFormatOBJ)
-
 
 # UV unwrap model
 chunk.buildUV\
@@ -105,4 +168,4 @@ chunk.exportModel\
     format=Metashape.ModelFormatOBJ,
 )
 
-doc.save(imagePath+"\\..\\"+name+".psx")
+doc.save(imagePath+"\\..\\"+name+"-final.psx")
