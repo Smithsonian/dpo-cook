@@ -1,5 +1,7 @@
 import Metashape
 import csv
+import sys
+import os
 import argparse
 from os import walk, path
 
