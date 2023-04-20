@@ -35,6 +35,13 @@ for r, d, f in walk(imagePath):
     for i, file in enumerate(f):
         imageFiles.append(os.path.join(r, file))
 
+# set 'Scale Bar Accuracy' to 0.0001
+chunk.scalebar_accuracy = 0.0001
+# set 'Tie Point Accuracy' to 0.1
+chunk.tiepoint_accuracy = 0.1
+# set 'Marker Projection Accuracy' to 0.1
+chunk.marker_projection_accuracy = 0.1
+
 # Add photos
 chunk.addPhotos(imageFiles)
 
