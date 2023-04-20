@@ -154,6 +154,7 @@
                 "inputImageFolder": "sourceImageFolder",
                 "inputModelFile": "deliverables.cleanedMeshFile",
                 "outputFile": "deliverables.finalMeshFile",
+                "scalebarFile": "scalebarCSV",
                 "tool": "tool",
                 "timeout": 86400
             },

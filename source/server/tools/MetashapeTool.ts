@@ -80,11 +80,6 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         if(settings.mode === "full") {
             operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
 
-            if(settings.scalebarFile) {
-                const sbFIlePath = instance.getFilePath(settings.scalebarFile);
-                operation += ` -sb "${sbFIlePath}"`;
-            }
-
             operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} `;
         }
         else if(settings.mode === "texture") {
@@ -94,6 +89,11 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
             } 
 
             operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateTexture.py")}" -i "${inputFolder}" -m "${inputModelPath}" -o "${settings.outputFile}"`;
+        }
+
+        if(settings.scalebarFile) {
+            const sbFIlePath = instance.getFilePath(settings.scalebarFile);
+            operation += ` -sb "${sbFIlePath}"`;
         }
 
         //operation += `-platform offscreen `;
