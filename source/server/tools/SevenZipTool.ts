@@ -28,6 +28,9 @@ export interface ISevenZipToolSettings extends IToolSettings
     inputFile3: string;
     inputFile4: string;
     inputFile5: string;
+    inputFile6: string;
+    inputFile7: string;
+    inputFile8: string;
     compressionLevel: number;
     operation: string;
     outputFile: string;
@@ -52,11 +55,16 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
         if(settings.inputFile3) activeFiles.push(settings.inputFile3);
         if(settings.inputFile4) activeFiles.push(settings.inputFile4);
         if(settings.inputFile5) activeFiles.push(settings.inputFile5);
+        if(settings.inputFile6) activeFiles.push(settings.inputFile6);
+        if(settings.inputFile7) activeFiles.push(settings.inputFile7);
+        if(settings.inputFile8) activeFiles.push(settings.inputFile8);
+
+        const uniqueFiles : string[] = [...new Set(activeFiles)];
 
         if(settings.operation === "zip") {
             operation += `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
 
-            activeFiles.forEach(function(file) {
+            uniqueFiles.forEach(function(file) {
                 const inputFilePath = instance.getFilePath(file);
                 operation += ` "${inputFilePath}"`;
             });
