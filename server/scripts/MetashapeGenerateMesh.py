@@ -224,4 +224,6 @@ chunk.exportModel\
     format=Metashape.ModelFormatOBJ,
 )
 
+chunk.exportCameras(path=imagePath+"\\..\\"+name+"-cameras.xml")
+
 doc.save(imagePath+"\\..\\"+name+".psx")
