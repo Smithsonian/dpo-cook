@@ -36,6 +36,8 @@ export interface IPhotogrammetryTexTaskParameters extends ITaskParameters
     inputModelFile: string;
     /** Base name used for output files */
     outputFile: string;
+    /** Name used for saved camera position file */
+    camerasFile: string;
     /** CSV file with scalebar markers and distances */
     scalebarFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
@@ -62,6 +64,7 @@ export default class PhotogrammetryTexTask extends ToolTask
             inputImageFolder: { type: "string", minLength: 1 },
             inputModelFile: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1 },
+            camerasFile: { type: "string", minLength: 1 },
             scalebarFile: { type: "string", minLength: 1 },
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
@@ -69,6 +72,7 @@ export default class PhotogrammetryTexTask extends ToolTask
         required: [
             "inputImageFolder",
             "outputFile",
+            "camerasFile",
             "inputModelFile",
         ],
         additionalProperties: false
@@ -86,6 +90,7 @@ export default class PhotogrammetryTexTask extends ToolTask
                 imageInputFolder: params.inputImageFolder,
                 inputModelFile: params.inputModelFile,
                 outputFile: params.outputFile,
+                camerasFile: params.camerasFile,
                 scalebarFile: params.scalebarFile,
                 mode: "texture",
                 timeout: params.timeout

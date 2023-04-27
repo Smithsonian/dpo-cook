@@ -26,6 +26,7 @@ export interface IMetashapeToolSettings extends IToolSettings
     outputFile: string;
     mode: string;
     inputModelFile?: string;
+    camerasFile?: string;
     scalebarFile?: string;
     generatePointCloud?: boolean;
     optimizeMarkers?: boolean;
@@ -92,8 +93,13 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         }
 
         if(settings.scalebarFile) {
-            const sbFIlePath = instance.getFilePath(settings.scalebarFile);
-            operation += ` -sb "${sbFIlePath}"`;
+            const sbFilePath = instance.getFilePath(settings.scalebarFile);
+            operation += ` -sb "${sbFilePath}"`;
+        }
+
+        if(settings.camerasFile) {
+            const camFilePath = instance.getFilePath(settings.camerasFile);
+            operation += ` -c "${camFilePath}"`;
         }
 
         //operation += `-platform offscreen `;

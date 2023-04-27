@@ -34,6 +34,8 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     inputImageFolder: string;
     /** Base name used for output files */
     outputFile: string;
+    /** Name used for saved camera position file */
+    camerasFile: string;
     /** CSV file with scalebar markers and distances */
     scalebarFile: string;
     /** Flag to enable building a dense point cloud */
@@ -63,6 +65,7 @@ export default class PhotogrammetryTask extends ToolTask
         properties: {
             inputImageFolder: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1 },
+            camerasFile: { type: "string", minLength: 1 },
             scalebarFile: { type: "string", minLength: 1 },
             generatePointCloud: { type: "boolean", default: false},
             optimizeMarkers: { type: "boolean", default: false},
@@ -87,6 +90,7 @@ export default class PhotogrammetryTask extends ToolTask
             const toolOptions: IMetashapeToolSettings = {
                 imageInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
+                camerasFile: params.camerasFile,
                 scalebarFile: params.scalebarFile,
                 generatePointCloud: params.generatePointCloud,
                 optimizeMarkers: params.optimizeMarkers,

@@ -17,6 +17,7 @@ argv = sys.argv
 #parse args
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", required=True, help="Input filepath")
+parser.add_argument("-c", "--cameras", required=True, help="Cameras filepath")
 parser.add_argument("-o", "--output", required=True, help="Output filename")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
@@ -27,6 +28,7 @@ doc = Metashape.app.document
 chunk = doc.addChunk()
 
 imagePath = args.input
+camerasPath = args.cameras
 name = os.path.basename(os.path.normpath(imagePath))
 
 # Grab images from directory (include subdirectories)
@@ -224,6 +226,6 @@ chunk.exportModel\
     format=Metashape.ModelFormatOBJ,
 )
 
-chunk.exportCameras(path=imagePath+"\\..\\"+name+"-cameras.xml")
+chunk.exportCameras(camerasPath)
 
 doc.save(imagePath+"\\..\\"+name+".psx")
