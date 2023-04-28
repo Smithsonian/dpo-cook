@@ -71,7 +71,8 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         }
 
         operations += ` -align -selectMaximalComponent -setReconstructionRegionAuto -calculateHighModel -selectMarginalTriangles`;
-        operations += ` -removeSelectedTriangles -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}.obj" "${outputDirectory}\\_rc_params.xml" -quit`;
+        operations += ` -removeSelectedTriangles -selectLargestModelComponent -invertTrianglesSelection -removeSelectedTriangles`;
+        operations += ` -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}.obj" "${outputDirectory}\\_rc_params.xml" -quit`;
 
         const command = `"${this.configuration.executable}" ${operations}`;
 

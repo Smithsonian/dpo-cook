@@ -145,6 +145,7 @@
         },
         "texture": {
             "task": "PhotogrammetryTex",
+            "skip": "$not(tool = 'Metashape')",
             "description": "Create and map texture from model and image set.",
             "pre": {
                 "deliverables": {
