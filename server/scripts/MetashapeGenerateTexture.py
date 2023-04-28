@@ -20,6 +20,7 @@ parser.add_argument("-i", "--input", required=True, help="Images filepath")
 parser.add_argument("-c", "--cameras", required=True, help="Cameras filepath")
 parser.add_argument("-m", "--model", required=True, help="Model filepath")
 parser.add_argument("-o", "--output", required=True, help="Output filename")
+parser.add_argument("-sb", required=False, help="Scalebar definition file")
 args = parser.parse_args()
 
 doc = Metashape.app.document
