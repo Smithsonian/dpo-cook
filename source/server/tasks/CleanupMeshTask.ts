@@ -35,6 +35,8 @@ export interface ICleanupMeshTaskParameters extends ITaskParameters
     preserveTexCoords?: boolean;
     /** Meshlab only: Re-computes vertex normals of the decimated mesh. */
     computeVertexNormals?: boolean;
+    /** Meshlab only: Removes everything but the largest connected component. */
+    keepLargestComponent?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
@@ -63,6 +65,7 @@ export default class CleanupMeshTask extends ToolTask
             outputMeshFile: { type: "string", minLength: 1 },
             preserveTexCoords: { type: "boolean", default: true },
             computeVertexNormals: { type: "boolean", default: true },
+            keepLargestComponent: { type: "boolean", default: true },
             timeout: { type: "integer", default: 0 }
         },
         required: [
@@ -88,7 +91,7 @@ export default class CleanupMeshTask extends ToolTask
                 {
                     name: "SelectSmallComponents",
                     params: {
-                        "NbFaceRatio": 0.9999
+                        "NbFaceRatio": params.keepLargestComponent ? 0.9999 : 0.0
                     }
                 },
                 {

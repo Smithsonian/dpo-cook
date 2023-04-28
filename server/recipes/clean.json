@@ -26,6 +26,10 @@
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
+            },
+            "keepLargestComponent": {
+                "type": "boolean",
+                "default": true
             }
         },
         "required": [
@@ -78,6 +82,7 @@
             "parameters": {
                 "inputMeshFile": "sourceMeshFile",
                 "outputMeshFile": "deliverables.cleanedMeshFile",
+                "keepLargestComponent": "keepLargestComponent",
                 "timeout": 1200
             },
             "success": "'delivery'",
