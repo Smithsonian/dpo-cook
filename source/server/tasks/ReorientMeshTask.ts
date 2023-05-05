@@ -85,7 +85,7 @@ export default class ReorientMeshTask extends ToolTask
         const inputVoyagerExt = path.extname(params.inputVoyagerFile).toLowerCase();
         const outputMeshExt = path.extname(params.outputMeshFile);
 
-        if (inputMeshExt != ".obj" && inputMeshExt != ".ply") {
+        if (inputMeshExt != ".obj" && inputMeshExt != ".ply" && inputMeshExt != ".fbx") {
             throw new Error("input file type not supported");
         }
 

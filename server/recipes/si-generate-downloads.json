@@ -120,6 +120,10 @@
                 "type": "boolean",
                 "default": true
             },
+            "isMulti": {
+                "type": "boolean",
+                "default": false
+            },
             "numFacesLow": {
                 "type": "integer",
                 "minimum": 10000,
@@ -224,7 +228,7 @@
                 "baseMeshMapNameLow": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFacesLow, mapSizeLow)",
                 "baseMeshMapNameMedium": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFacesMedium, mapSizeMedium)",
                 "baseMeshMapNameAR": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFacesAR, mapSizeAR)",
-                "bakeDiffuse": "$exists(sourceDiffuseMapFile)"
+                "bakeDiffuse": "$exists(sourceDiffuseMapFile) or isMulti"
             },
             "parameters": {
                 "logToConsole": true,
@@ -263,6 +267,24 @@
                 "inputVoyagerFile": "svxFile",
                 "outputMeshFile": "reorientedMeshFileMaster",
                 "scaleToMeters": "scaleToMeters"
+            },
+            "success": "'merge-multi'",
+            "failure": "$failure"
+        },
+        "merge-multi": {
+            "task": "MergeMesh",
+            "description": "Merge multi-model geometry files into one obj and texture.",
+            "skip": "$not(isMulti)",
+            "pre": {
+                "sourceDiffuseMapFile": "'texture_atlas.png'"
+            },
+            "parameters": {
+                "inputMeshFile": "reorientedMeshFileMaster",
+                "outputMeshFile": "'merged_multi_mesh.obj'",
+                "outputTextureFile": "sourceDiffuseMapFile"
+            },
+            "post": {
+                "reorientedMeshFileMaster": "'merged_multi_mesh.obj'"
             },
             "success": "'sync-mtl-master'",
             "failure": "$failure"
