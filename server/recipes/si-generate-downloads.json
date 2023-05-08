@@ -28,6 +28,11 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "sourceRoughMetalMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
@@ -385,6 +390,35 @@
                 "normalMapUncompressedLow": "(baseMeshMapNameLow & '-normals.png')",
                 "testMapLow": "bakeTest ? (baseMeshMapNameLow & '-test.png') : ''"
             },
+            "success": "'bake-rough-metal-low'",
+            "failure": "$failure"
+        },
+        "bake-rough-metal-low": {
+            "task": "BakeMaps",
+            "description": "Bake roughness/metalness maps using xNormal",
+            "skip": "$not(generateLowAssets) or $not($exists(sourceRoughMetalMapFile))",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameLow & '-roughmetal.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "reorientedMeshFileMaster",
+                "highPolyDiffuseMapFile": "sourceRoughMetalMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeLow",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": "bakeDiffuse",
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": false,
+                "bakeTest": false,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 1200
+            },
+            "post": {
+                "roughMetalMapUncompressedLow": "baseMeshMapNameLow & '-roughmetal-diffuse.png'"
+            },
             "success": "'convert-diffuse-map-low'",
             "failure": "$failure"
         },
@@ -430,6 +464,21 @@
                 "outputImageFile": "scene_normalMapHigh",
                 "quality": "normalMapQualityLowAR"
             },
+            "success": "'convert-roughmetal-map-low'",
+            "failure": "$failure"
+        },
+        "convert-roughmetal-map-low": {
+            "task": "ConvertImage",
+            "description": "Convert Roughness/Metalness Map Low",
+            "skip": "$not(generateLowAssets) or $not($exists(sourceRoughMetalMapFile))",
+            "pre": {
+                "scene_roughMetalMapLow": "baseMeshMapNameLow & '-roughmetal.jpg'"
+            },
+            "parameters": {
+                "inputImageFile": "roughMetalMapUncompressedLow",
+                "outputImageFile": "scene_roughMetalMapLow",
+                "quality": "diffuseMapQualityLowAR"
+            },
             "success": "'web-asset-glb-low'",
             "failure": "$failure"
         },
@@ -448,6 +497,7 @@
                 "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "scene_occlusionMapHigh",
                 "normalMapFile": "scene_normalMapHigh",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapLow : ''",
                 "objectSpaceNormals": false,
                 "useCompression": false,
                 "compressionLevel": 10,
@@ -471,6 +521,7 @@
                 "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "scene_occlusionMapHigh",
                 "normalMapFile": "scene_normalMapHigh",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapLow : ''",
                 "objectSpaceNormals": false,
                 "useCompression": false,
                 "compressionLevel": 10,
@@ -612,6 +663,35 @@
                 "normalMapUncompressedAR": "(baseMeshMapNameAR & '-normals.png')",
                 "testMapAR": "bakeTest ? (baseMeshMapNameAR & '-test.png') : ''"
             },
+            "success": "'bake-roughmetal-ar'",
+            "failure": "$failure"
+        },
+        "bake-roughmetal-ar": {
+            "task": "BakeMaps",
+            "description": "Bake roughness/metalness map using xNormal",
+            "skip": "$not(generateARAssets) or $not($exists(sourceRoughMetalMapFile))",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameAR & '-roughmetal.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "reorientedMeshFileMaster",
+                "highPolyDiffuseMapFile": "sourceRoughMetalMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeAR",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": "bakeDiffuse",
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": false,
+                "bakeTest": false,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 1200
+            },
+            "post": {
+                "roughMetalMapUncompressedAR": "baseMeshMapNameAR & '-roughmetal-diffuse.png'"
+            },
             "success": "'convert-diffuse-map-ar'",
             "failure": "$failure"
         },
@@ -657,6 +737,21 @@
                 "outputImageFile": "scene_normalMapAR",
                 "quality": "normalMapQualityLowAR"
             },
+            "success": "'convert-roughmetal-map-ar'",
+            "failure": "$failure"
+        },
+        "convert-roughmetal-map-ar": {
+            "task": "ConvertImage",
+            "description": "Convert Roughness/Metalness Map AR",
+            "skip": "$not(generateARAssets) or $not($exists(sourceRoughMetalMapFile))",
+            "pre": {
+                "scene_roughMetalMapAR": "baseMeshMapNameAR & '-roughmetal.jpg'"
+            },
+            "parameters": {
+                "inputImageFile": "roughMetalMapUncompressedAR",
+                "outputImageFile": "scene_roughMetalMapAR",
+                "quality": "diffuseMapQualityLowAR"
+            },
             "success": "'sync-mtl-ar'",
             "failure": "$failure"
         },
@@ -690,6 +785,7 @@
                 "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapAR : ''",
                 "occlusionMapFile": "scene_occlusionMapAR",
                 "normalMapFile": "scene_normalMapAR",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapAR : ''",
                 "objectSpaceNormals": false,
                 "useCompression": true,
                 "compressionLevel": 10,
@@ -879,6 +975,35 @@
                 "normalMapUncompressed": "(baseMeshMapNameMedium & '-normals.png')",
                 "testMap": "bakeTest ? (baseMeshMapNameMedium & '-test.png') : ''"
             },
+            "success": "'bake-roughmetal-medium'",
+            "failure": "$failure"
+        },
+        "bake-roughmetal-medium": {
+            "task": "BakeMaps",
+            "description": "Bake roughness/metalness map using xNormal",
+            "skip": "$not(generateMediumAssets) or $not($exists(sourceRoughMetalMapFile))",
+            "pre": {
+                "mapBaseName": "baseMeshMapNameMedium & '-roughmetal.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "reorientedMeshFileMaster",
+                "highPolyDiffuseMapFile": "sourceRoughMetalMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSizeMedium",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": "bakeDiffuse",
+                "bakeOcclusion": false,
+                "bakeNormals": false,
+                "bakeVertexColor": false,
+                "bakeTest": false,
+                "occlusionRays": "occlusionRays",
+                "tangentSpaceNormals": true,
+                "timeout": 3600
+            },
+            "post": {
+                "roughMetalMapUncompressed": "baseMeshMapNameMedium & '-roughmetal-diffuse.png'"
+            },
             "success": "'convert-diffuse-map-medium'",
             "failure": "$failure"
         },
@@ -924,6 +1049,21 @@
                 "outputImageFile": "normalMap",
                 "quality": "normalMapQualityMedium"
             },
+            "success": "'convert-roughmetal-map-medium'",
+            "failure": "$failure"
+        },
+        "convert-roughmetal-map-medium": {
+            "task": "ConvertImage",
+            "description": "Convert Roughness/Metalness Map for Medium obj",
+            "skip": "$not(generateMediumAssets) or $not($exists(sourceRoughMetalMapFile))",
+            "pre": {
+                "roughMetalMap": "baseMeshMapNameMedium & '-roughmetal.jpg'"
+            },
+            "parameters": {
+                "inputImageFile": "roughMetalMapUncompressed",
+                "outputImageFile": "roughMetalMap",
+                "quality": "normalMapQualityMedium"
+            },
             "success": "'web-asset-glb-medium'",
             "failure": "$failure"
         },
@@ -942,6 +1082,7 @@
                 "diffuseMapFile": "diffuseMap",
                 "occlusionMapFile": "occlusionMap",
                 "normalMapFile": "normalMap",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? roughMetalMap : ''",
                 "objectSpaceNormals": false,
                 "zoneMapFile": "zoneMapFile",
                 "alignCenter": false,
@@ -969,6 +1110,7 @@
                 "diffuseMapFile": "diffuseMap",
                 "occlusionMapFile": "occlusionMap",
                 "normalMapFile": "normalMap",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? roughMetalMap : ''",
                 "objectSpaceNormals": false,
                 "zoneMapFile": "zoneMapFile",
                 "alignCenter": false,
@@ -1008,6 +1150,7 @@
                 "inputFile1": "reorientedMeshFileMaster",
                 "inputFile2": "sourceDiffuseMapFile",
                 "inputFile3": "mtlFile_master",
+                "inputFile4": "sourceRoughMetalMapFile",
                 "outputFile": "deliverables.objZipFull",
                 "operation": "'zip'"
             },
@@ -1029,6 +1172,7 @@
                 "inputFile3": "scene_diffuseMapHigh",
                 "inputFile4": "scene_occlusionMapHigh",
                 "inputFile5": "scene_normalMapHigh",
+                "inputFile6": "scene_roughMetalMapLow",
                 "outputFile": "deliverables.gltfZipLow",
                 "operation": "'zip'"
             },
@@ -1050,6 +1194,7 @@
                 "inputFile3": "scene_diffuseMapHigh",
                 "inputFile4": "scene_occlusionMapHigh",
                 "inputFile5": "scene_normalMapHigh",
+                "inputFile6": "scene_roughMetalMapLow",
                 "outputFile": "deliverables.objZipLow",
                 "operation": "'zip'"
             },
@@ -1071,6 +1216,7 @@
                 "inputFile3": "diffuseMap",
                 "inputFile4": "occlusionMap",
                 "inputFile5": "normalMap",
+                "inputFile6": "roughMetalMap",
                 "outputFile": "deliverables.gltfZipMed",
                 "operation": "'zip'"
             },
@@ -1092,6 +1238,7 @@
                 "inputFile3": "diffuseMap",
                 "inputFile4": "occlusionMap",
                 "inputFile5": "normalMap",
+                "inputFile6": "roughMetalMap",
                 "outputFile": "deliverables.objZipMed",
                 "operation": "'zip'"
             },
