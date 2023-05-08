@@ -28,7 +28,11 @@ export interface ISevenZipToolSettings extends IToolSettings
     inputFile3: string;
     inputFile4: string;
     inputFile5: string;
+    inputFile6: string;
+    inputFile7: string;
+    inputFile8: string;
     compressionLevel: number;
+    operation: string;
     outputFile: string;
 }
 
@@ -44,21 +48,34 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
     {
         const settings = instance.settings;
         const activeFiles = [];
+        let operation = ``;
 
         if(settings.inputFile1) activeFiles.push(settings.inputFile1);
         if(settings.inputFile2) activeFiles.push(settings.inputFile2);
         if(settings.inputFile3) activeFiles.push(settings.inputFile3);
         if(settings.inputFile4) activeFiles.push(settings.inputFile4);
         if(settings.inputFile5) activeFiles.push(settings.inputFile5);
+        if(settings.inputFile6) activeFiles.push(settings.inputFile6);
+        if(settings.inputFile7) activeFiles.push(settings.inputFile7);
+        if(settings.inputFile8) activeFiles.push(settings.inputFile8);
 
-        let operation = `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
+        const uniqueFiles : string[] = [...new Set(activeFiles)];
 
-        activeFiles.forEach(function(file) {
-            const inputFilePath = instance.getFilePath(file);
-            operation += ` "${inputFilePath}"`;
-        });
+        if(settings.operation === "zip") {
+            operation += `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
 
-        operation += ` -mx=${settings.compressionLevel}`;
+            uniqueFiles.forEach(function(file) {
+                const inputFilePath = instance.getFilePath(file);
+                operation += ` "${inputFilePath}"`;
+            });
+
+            operation += ` -mx=${settings.compressionLevel}`;
+        }
+        else if(settings.operation === "unzip") {
+            const name = path.parse(settings.inputFile1).name;
+
+            operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}\\${name}\\" -r`;
+        }
 
         //if (!inputFilePath) {
         //    throw new Error("missing input mesh file");

@@ -1,0 +1,180 @@
+{
+    "id": "a0af238a-988f-4f3c-bedc-7db0b8220ed5",
+    "name": "photogrammetry",
+    "description": "Create mesh and texture from image set",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "Metashape",
+                    "RealityCapture",
+                    "Meshroom"
+                ],
+                "default": "Metashape"
+            },
+            "scalebarCSV": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "generatePointCloud": {
+                "type": "boolean",
+                "default": false
+            },
+            "optimizeMarkers": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "required": [
+            "sourceImageFolder"
+        ],
+        "advanced": [
+            
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))",
+                "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "sourceImageFolder": "sourceImageFolder"
+                }
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "pre": {
+                "deliverables": {
+                    "objZipLow": "scaleToMeters ? baseMeshMapNameLow & '-obj_std.zip' : baseMeshMapNameLow & '-obj.zip'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "sourceImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "'photogrammetry'",
+            "failure": "$failure"
+        },
+        "photogrammetry": {
+            "task": "Photogrammetry",
+            "description": "Create mesh and texture from image set.",
+            "pre": {
+                "camerasFile": "baseMeshName & '-cameras.xml'",
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'",
+                    "textureFile": "baseMeshName & '-texture-' & '.png'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "sourceImageFolder",
+                "camerasFile": "camerasFile",
+                "outputFile": "deliverables.meshFile",
+                "scalebarFile": "scalebarCSV",
+                "generatePointCloud": "generatePointCloud",
+                "optimizeMarkers": "optimizeMarkers",
+                "tool": "tool",
+                "timeout": 86400
+            },
+            "success": "'rename'",
+            "failure": "$failure"
+        },
+        "rename": {
+            "task": "FileOperation",
+            "description": "Rename Meshroom Model",
+            "skip": "$not(tool = 'Meshroom')",
+            "parameters": {
+                "operation": "'RenameFile'",
+                "name": "'texturedMesh.obj'",
+                "newName": "deliverables.meshFile"
+            },
+            "success": "'cleanup'",
+            "failure": "$failure"
+        },
+        "cleanup": {
+            "task": "CleanupMesh",
+            "description": "Cleanup common issues with mesh.",
+            "pre": {
+                "deliverables": {
+                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "deliverables.meshFile",
+                "outputMeshFile": "deliverables.cleanedMeshFile",
+                "timeout": 1200
+            },
+            "success": "'texture'",
+            "failure": "$failure"
+        },
+        "texture": {
+            "task": "PhotogrammetryTex",
+            "skip": "$not(tool = 'Metashape')",
+            "description": "Create and map texture from model and image set.",
+            "pre": {
+                "deliverables": {
+                    "finalMeshFile": "baseMeshName & '-' & $lowercase(tool) & '-final.obj'",
+                    "textureFile": "baseMeshName & '-texture-final' & '.png'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "sourceImageFolder",
+                "inputModelFile": "deliverables.cleanedMeshFile",
+                "camerasFile": "camerasFile",
+                "outputFile": "deliverables.finalMeshFile",
+                "scalebarFile": "scalebarCSV",
+                "tool": "tool",
+                "timeout": 86400
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

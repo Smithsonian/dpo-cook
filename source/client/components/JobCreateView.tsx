@@ -314,6 +314,11 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
             return;
         }
 
+        if(file.type == "" && file.size%4096 == 0) {
+            alert("Please zip a folder before uploading");
+            return;
+        }
+
         this.setState(prevState => {
             const jobOrder = prevState.jobOrder;
             jobOrder.parameters[id] = file.name;
