@@ -29,6 +29,7 @@ export interface IBlenderToolSettings extends IToolSettings
     outputFile?: string;
     inputMeshFile2?: string;
     outputFile2?: string;
+    inputBaseName?: string;
     scaleToMeters?: boolean;
 }
 
@@ -87,7 +88,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             if (combineFilePath && (combineFilePath == inputFilePath)) {
                 combineFilePath = "";
             }
-            operation += ` --python "${instance.getFilePath("../../scripts/BlenderCombineMesh.py")}" -- "${inputFilePath}" "${combineFilePath}" "${instance.getFilePath(settings.outputFile)}"`;
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderCombineMesh.py")}" -- "${inputFilePath}" "${combineFilePath}" "${instance.getFilePath(settings.outputFile)}" "${settings.inputBaseName}"`;
         }
         else if(settings.mode === "merge") {
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderMergeTextures.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile2)}" "${instance.getFilePath(settings.outputFile)}"`;

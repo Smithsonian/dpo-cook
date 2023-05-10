@@ -50,7 +50,10 @@ def run():
         
         for object in bpy.data.objects:
                 if object.type == "MESH":
-                        node_match = next((node for node in nodes if node['name'] == object.name), None)
+                        if is_multi:
+                                node_match = next((node for node in nodes if node['name'] == object.name), None)
+                        else
+                                node_match = nodes[0]
 
                         if node_match != None:
                                 model = models[node_match['model']]

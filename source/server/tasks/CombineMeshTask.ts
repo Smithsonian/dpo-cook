@@ -31,6 +31,8 @@ export interface ICombineMeshTaskParameters extends ITaskParameters
     baseMeshFile: string;
     /** Input mesh file name to combine with base. */
     inputMeshFile: string;
+    /** Name used in svx file to identify input mesh */
+    inputMeshBasename: string;
     /** Output mesh file name. */
     outputMeshFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
@@ -54,13 +56,15 @@ export default class CombineMeshTask extends ToolTask
         properties: {
             baseMeshFile: { type: "string", minLength: 1 },
             inputMeshFile: { type: "string", minLength: 1 },
+            inputMeshBasename: { type: "string", minLength: 1 },
             outputMeshFile: { type: "string", minLength: 1 },
             timeout: { type: "integer", default: 0 }
         },
         required: [
             "baseMeshFile",
             "inputMeshFile",
-            "outputMeshFile"
+            "outputMeshFile",
+            "inputMeshBasename"
         ],
         additionalProperties: false
     };
@@ -76,6 +80,7 @@ export default class CombineMeshTask extends ToolTask
             inputMeshFile: params.baseMeshFile,
             inputMeshFile2: params.inputMeshFile,
             outputFile: params.outputMeshFile,
+            inputBaseName: params.inputMeshBasename,
             mode: "combine",
             timeout: params.timeout
         };

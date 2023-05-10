@@ -42,13 +42,12 @@ argv = argv[argv.index("--") + 1:]
 filename, file_extension = os.path.splitext(argv[0])
 file_extension = file_extension.lower()
 importModel(argv[0], file_extension)
-new_name = os.path.basename(filename)
+new_name = argv[3]
 
 if argv[1] != "":
     filename2, file_extension2 = os.path.splitext(argv[1])
     file_extension2 = file_extension2.lower()
     importModel(argv[1], file_extension2)
-    new_name = os.path.basename(filename2)
 
 #rename most recent import
 for obj in bpy.context.selected_objects:
