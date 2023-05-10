@@ -43,6 +43,7 @@ def run():
         #find first model for reference
         models = data['models']
         nodes = data['nodes']
+        model_idx = -1
         is_multi = True if len(models) > 1 else False
 
         if is_multi:
@@ -52,11 +53,13 @@ def run():
                 if object.type == "MESH":
                         if is_multi:
                                 node_match = next((node for node in nodes if node['name'] == object.name), None)
-                        else
-                                node_match = nodes[0]
-
-                        if node_match != None:
-                                model = models[node_match['model']]
+                                if node_match != None:
+                                        model_idx = node_match['model']
+                        else:
+                                model_idx = 0
+                                
+                        if model_idx > -1:                
+                                model = models[model_idx]
 
                                 if 'rotation' in model:
                                         rotation = model['rotation']
