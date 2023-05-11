@@ -86,6 +86,7 @@ def run():
     #bpy.context.preferences.addons['cycles'].preferences.devices[0].use = True
     # Set Cycles to use the GPU
     bpy.context.scene.cycles.device = 'GPU'
+    bpy.context.scene.cycles.use_denoising = False
 
 
     # Set bake options and bake diffuse color
