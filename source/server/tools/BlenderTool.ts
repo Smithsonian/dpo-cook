@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import * as path from "path";
-
 import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +26,18 @@ export interface IBlenderToolSettings extends IToolSettings
     inputVoyagerFile?: string;
     outputFile?: string;
     scaleToMeters?: boolean;
+
+    //** Web asset specific settings */
+    format?: string;
+    metallicFactor?: number;
+    roughnessFactor?: number;
+    diffuseMapFile?: string;
+    occlusionMapFile?: string;
+    emissiveMapFile?: string;
+    metallicRoughnessMapFile?: string;
+    normalMapFile?: string;
+    useCompression?: boolean;
+    compressionLevel?: number;
 }
 
 export type BlenderInstance = ToolInstance<BlenderTool, IBlenderToolSettings>;
@@ -79,6 +89,24 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
         }
         else if(settings.mode === "convert") {
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvertToUSD.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.outputFile)}"`;
+        }
+        else if(settings.mode === "webasset") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderWebAsset.py")}" -- -i "${instance.getFilePath(settings.inputMeshFile)}" -o "${instance.getFilePath(settings.outputFile)}" -f "${settings.format}"`;
+        
+            if(settings.diffuseMapFile) {
+                operation += ` -dm "${instance.getFilePath(settings.diffuseMapFile)}"`;
+            }
+            if(settings.occlusionMapFile) {
+                operation += ` -om "${instance.getFilePath(settings.occlusionMapFile)}"`;
+            }
+            if(settings.metallicRoughnessMapFile) {
+                operation += ` -mrm "${instance.getFilePath(settings.metallicRoughnessMapFile)}"`;
+            }
+            if(settings.normalMapFile) {
+                operation += ` -nm "${instance.getFilePath(settings.normalMapFile)}"`;
+            }
+
+            operation += ` -uc "${settings.useCompression}" -cl ${settings.compressionLevel}`;
         }
 
         const command = `"${this.configuration.executable}" ${operation}`;

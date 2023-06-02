@@ -43,6 +43,14 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "MeshSmith",
+                    "Blender"
+                ],
+                "default": "MeshSmith"
+            },
             "svxFile": {
                 "type": "string",
                 "minLength": 1,
@@ -152,7 +160,8 @@
                 "useCompression": "useCompression",
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "tool": "tool"
             },
             "success": "'web-asset-gltf'",
             "failure": "$failure"
@@ -183,7 +192,8 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": false,
-                "writeBinary": false
+                "writeBinary": false,
+                "tool": "tool"
             },
             "success": "'update-document'",
             "failure": "$failure"
