@@ -20,7 +20,7 @@ file_extension = file_extension.lower()
 
 #import scene
 if file_extension == '.obj':
-    bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
+    bpy.ops.wm.obj_import(filepath=argv[0])
 elif file_extension == '.ply':
     bpy.ops.import_mesh.ply(filepath=argv[0])
 elif file_extension == '.stl':

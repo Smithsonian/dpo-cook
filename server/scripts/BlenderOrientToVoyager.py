@@ -28,7 +28,7 @@ def run():
 
 	#import scene to be reoriented
 	if file_extension == '.obj':
-		bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
+		bpy.ops.wm.obj_import(filepath=argv[0])
 	elif file_extension == '.ply':
 		bpy.ops.import_mesh.ply(filepath=argv[0])
 		
@@ -105,7 +105,7 @@ def run():
 	#save reoriented scene
 	save_file = os.path.join(dir, mod_filename)
 	if file_extension == '.obj':
-		bpy.ops.export_scene.obj(filepath=save_file, check_existing=False, axis_forward='-Z', axis_up='Y', use_materials=True)
+		bpy.ops.wm.obj_export(filepath=save_file, check_existing=False, export_materials=True)
 	elif file_extension == '.ply':
 		bpy.ops.export_mesh.ply(filepath=save_file)
 
