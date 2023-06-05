@@ -99,6 +99,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "saveAlpha": {
+                "type": "boolean",
+                "default": false
+            },
             "maxRayDistance": {
                 "type": "number",
                 "default": 0
@@ -333,7 +337,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMap": "baseMeshNameWebThumb & '-diffuse-webthumb.jpg'"
+                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebThumb & '-diffuse-webthumb.jpg' : baseMeshNameWebThumb & '-diffuse-webthumb.png'"
                 }
             },
             "parameters": {
@@ -565,7 +569,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapHigh": "baseMeshMapNameHigh & '-diffuse.jpg'"
+                    "scene_diffuseMapHigh": "$not(saveAlpha) ? baseMeshMapNameHigh & '-diffuse.jpg' : baseMeshMapNameHigh & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -675,7 +679,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapMedium": "baseMeshMapNameMedium & '-diffuse.jpg'"
+                    "scene_diffuseMapMedium": "$not(saveAlpha) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -783,7 +787,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapLow": "baseMeshMapNameLow & '-diffuse.jpg'"
+                    "scene_diffuseMapLow": "$not(saveAlpha) ? baseMeshMapNameLow & '-diffuse.jpg' : baseMeshMapNameLow & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -1030,7 +1034,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMap": "baseMeshNameWebAR & '-diffuse-web-ar.jpg'"
+                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebAR & '-diffuse-web-ar.jpg' : baseMeshNameWebAR & '-diffuse-web-ar.png'"
                 }
             },
             "parameters": {

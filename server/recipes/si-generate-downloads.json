@@ -161,6 +161,10 @@
                 "maximum": 4096,
                 "default": 2048
             },
+            "saveAlpha": {
+                "type": "boolean",
+                "default": false
+            },
             "inspectMesh": {
                 "type": "boolean",
                 "default": false
@@ -427,7 +431,7 @@
             "description": "Convert Diffuse Map",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generateLowAssets)",
             "pre": {
-                "scene_diffuseMapHigh": "baseMeshMapNameLow & '-diffuse.jpg'"
+                "scene_diffuseMapHigh": "$not(saveAlpha) ? baseMeshMapNameLow & '-diffuse.jpg': baseMeshMapNameLow & '-diffuse.png'"
             },
             "parameters": {
                 "inputImageFile": "bakeVertexColor ? vcolMapUncompressedLow : diffuseMapUncompressedLow",
@@ -700,7 +704,7 @@
             "description": "Convert Diffuse Map",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generateARAssets)",
             "pre": {
-                "scene_diffuseMapAR": "baseMeshMapNameAR & '-diffuse.jpg'"
+                "scene_diffuseMapAR": "$not(saveAlpha) ? baseMeshMapNameAR & '-diffuse.jpg' : baseMeshMapNameAR & '-diffuse.png'"
             },
             "parameters": {
                 "inputImageFile": "bakeVertexColor ? vcolMapUncompressedAR : diffuseMapUncompressedAR",
@@ -1012,7 +1016,7 @@
             "description": "Convert Diffuse Map for Medium obj",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generateMediumAssets)",
             "pre": {
-                "diffuseMap": "baseMeshMapNameMedium & '-diffuse.jpg'"
+                "diffuseMap": "$not(saveAlpha) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
             },
             "parameters": {
                 "inputImageFile": "bakeVertexColor ? vcolMapUncompressed : diffuseMapUncompressed",
