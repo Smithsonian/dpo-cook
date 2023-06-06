@@ -66,6 +66,11 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
             },
+            "assetTool": {
+                "type": "string",
+                "enum": [ "MeshSmith", "Blender" ],
+                "default": "MeshSmith"
+            },
             "preDecimatedUnwrappedLowTargetFile": {
                 "type": "string",
                 "minLength": 1,
@@ -506,7 +511,9 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'web-asset-gltf-low'",
             "failure": "$failure"
@@ -530,7 +537,9 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": false,
-                "writeBinary": false
+                "writeBinary": false,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'sync-mtl-low'",
             "failure": "$failure"
@@ -794,7 +803,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-ar'",
             "failure": "$failure"
@@ -1094,7 +1105,9 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'web-asset-gltf-medium'",
             "failure": "$failure"
@@ -1122,7 +1135,9 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": false,
-                "writeBinary": false
+                "writeBinary": false,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'sync-mtl-medium'",
             "failure": "$failure"

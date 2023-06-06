@@ -34,11 +34,14 @@ parser.add_argument("-mrm", "--metalrough", required=False, help="MetalRough fil
 parser.add_argument("-nm", "--normal", required=False, help="Normal filepath")
 parser.add_argument("-uc", "--use_compression", required=False, default=False, help="Use compression")
 parser.add_argument("-cl", "--compression_level", required=False, default=10, type=int, help="Compression level")
+parser.add_argument("-ab", "--alpha_blend", required=False, default=False, help="Blend alpha channel")
 args = parser.parse_known_args(argv)[0]
 
 #parse arguments to format needed by Blender
 output_format = 'GLB' if args.format == '.glb' else 'GLTF_SEPARATE'
 do_compress = convert(args.use_compression);
+do_blend = convert(args.alpha_blend);
+image_format = 'JPEG' if do_blend is False else 'AUTO'
 textures = []
 if args.diffuse is not None:
     textures.append(('Base Color',args.diffuse))
@@ -101,6 +104,11 @@ if args.metalrough is not None:
     mat.node_tree.links.new(bsdf.inputs['Roughness'], mr_tex_image.outputs['Color'])
 
 bsdf.inputs['IOR'].default_value = 1.5
+mat.blend_method = 'BLEND' if do_blend is True else 'OPAQUE'
+mat.use_backface_culling = True
+
+# Set to smooth shading to share normals
+bpy.ops.object.shade_smooth()
 
 # Get the active object and assign material
 obj = bpy.context.active_object
@@ -118,4 +126,4 @@ if len(bpy.data.objects) > 0:
     save_file = os.path.join(dir, mod_filename + args.format)
     bpy.ops.export_scene.gltf(filepath=save_file, check_existing=False, export_materials="EXPORT", \
         export_format=output_format, export_draco_mesh_compression_enable=do_compress, export_draco_mesh_compression_level=args.compression_level, \
-        export_image_format="JPEG")
+        export_image_format=image_format)

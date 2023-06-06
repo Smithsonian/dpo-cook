@@ -62,6 +62,8 @@ export interface IWebAssetTaskParameters extends ITaskParameters
     embedMaps?: boolean;
     /** True if the asset should be written in binary format (.glb), false for a text .gltf file. */
     writeBinary?: boolean;
+    /** True if the asset should interpret alpha channel data as opacity. */
+    alphaBlend?: boolean;
     /** Tool to use for generating web assets ("MeshSmith" or "Blender", default: "MeshSmith"). */
     tool?: "MeshSmith" | "Blender";
 }
@@ -99,6 +101,7 @@ export default class WebAssetTask extends ToolTask
             compressionLevel: { type: "integer", minimum: 0, maximum: 10, default: 10 },
             embedMaps: { type: "boolean", default: false },
             writeBinary: { type: "boolean", default: false },
+            alphaBlend: { type: "boolean", default: false },
             tool: { type: "string", default: "MeshSmith" }
         },
         required: [
@@ -147,7 +150,7 @@ export default class WebAssetTask extends ToolTask
 
             this.addTool("MeshSmith", settings);
         }
-        if (options.tool === "Blender") {
+        else if (options.tool === "Blender") {
             const settings: IBlenderToolSettings = {
                 mode: "webasset",
                 inputMeshFile: options.meshFile,
@@ -164,13 +167,14 @@ export default class WebAssetTask extends ToolTask
                 //objectSpaceNormals: options.objectSpaceNormals,
                 useCompression: options.useCompression,
                 compressionLevel: options.compressionLevel,
+                alphaBlend: options.alphaBlend
                 //embedMaps: options.embedMaps
             };
 
             this.addTool("Blender", settings);
         }
         else {
-            throw new Error("DecimateMeshTask.constructor - unknown tool: " + options.tool);
+            throw new Error("WebAssetTask.constructor - unknown tool: " + options.tool);
         }
     }
 }

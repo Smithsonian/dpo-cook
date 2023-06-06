@@ -65,6 +65,10 @@
                 "type": "string",
                 "minLength": 1
             },
+            "blendAlpha": {
+                "type": "boolean",
+                "default": false
+            },
             "modelIndex": {
                 "type": "integer",
                 "minimum": 0,
@@ -161,6 +165,7 @@
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true,
+                "alphaBlend": "blendAlpha",
                 "tool": "tool"
             },
             "success": "'web-asset-gltf'",
@@ -193,6 +198,7 @@
                 "compressionLevel": 10,
                 "embedMaps": false,
                 "writeBinary": false,
+                "alphaBlend": "blendAlpha",
                 "tool": "tool"
             },
             "success": "'update-document'",

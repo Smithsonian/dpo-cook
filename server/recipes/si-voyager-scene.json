@@ -91,6 +91,11 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
             },
+            "assetTool": {
+                "type": "string",
+                "enum": [ "MeshSmith", "Blender" ],
+                "default": "MeshSmith"
+            },
             "bakeVertexColor": {
                 "type": "boolean",
                 "default": false
@@ -399,7 +404,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document'",
             "failure": "$failure"
@@ -648,7 +655,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-high'",
             "failure": "$failure"
@@ -762,7 +771,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-medium'",
             "failure": "$failure"
@@ -870,7 +881,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-low'",
             "failure": "$failure"
@@ -1113,7 +1126,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-ar'",
             "failure": "$failure"

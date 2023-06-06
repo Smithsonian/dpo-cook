@@ -38,6 +38,7 @@ export interface IBlenderToolSettings extends IToolSettings
     normalMapFile?: string;
     useCompression?: boolean;
     compressionLevel?: number;
+    alphaBlend?: boolean;
 }
 
 export type BlenderInstance = ToolInstance<BlenderTool, IBlenderToolSettings>;
@@ -106,7 +107,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
                 operation += ` -nm "${instance.getFilePath(settings.normalMapFile)}"`;
             }
 
-            operation += ` -uc "${settings.useCompression}" -cl ${settings.compressionLevel}`;
+            operation += ` -uc "${settings.useCompression}" -cl ${settings.compressionLevel} -ab ${settings.alphaBlend}`;
         }
 
         const command = `"${this.configuration.executable}" ${operation}`;
