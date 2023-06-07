@@ -515,8 +515,29 @@
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
             },
+            "success": "scene_occlusionMapHigh and scene_roughMetalMapLow ? 'merge-omr-map-low' : 'web-asset-gltf-low'",
+            "failure": "$failure"
+        },
+        "merge-omr-map-low": {
+            "task": "MergeImageChannels",
+            "description": "Merge occlusion map with metal/roughness",
+            "skip": "$not(generateGltf) or $not(generateLowAssets)",
+            "pre": {
+                "omrMap": "baseMeshMapNameLow & '-omr.jpg'"
+            },
+            "parameters": {
+                "redChannelMapFile": "scene_occlusionMapHigh",
+                "greenChannelMapFile": "scene_roughMetalMapLow",
+                "blueChannelMapFile": "scene_roughMetalMapLow",
+                "outputMapFile": "omrMap"
+            },
+            "post": {
+                "scene_occlusionMapHigh": "omrMap",
+                "scene_roughMetalMapLow": "omrMap"
+            },
             "success": "'web-asset-gltf-low'",
             "failure": "$failure"
+
         },
         "web-asset-gltf-low": {
             "task": "WebAsset",
@@ -1108,6 +1129,27 @@
                 "writeBinary": true,
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
+            },
+            "success": "occlusionMap and roughMetalMap ? 'merge-omr-map-med' : 'web-asset-gltf-medium'",
+            "failure": "$failure"
+
+        },
+        "merge-omr-map-med": {
+            "task": "MergeImageChannels",
+            "description": "Merge occlusion map with metal/roughness",
+            "skip": "$not(generateMediumAssets)",
+            "pre": {
+                "omrMap": "baseMeshMapNameMedium & '-omr.jpg'"
+            },
+            "parameters": {
+                "redChannelMapFile": "occlusionMap",
+                "greenChannelMapFile": "roughMetalMap",
+                "blueChannelMapFile": "roughMetalMap",
+                "outputMapFile": "omrMap"
+            },
+            "post": {
+                "occlusionMap": "omrMap",
+                "roughMetalMap": "omrMap"
             },
             "success": "'web-asset-gltf-medium'",
             "failure": "$failure"

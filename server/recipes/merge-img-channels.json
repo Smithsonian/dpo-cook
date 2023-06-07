@@ -1,0 +1,90 @@
+{
+    "id": "4deeb2c6-db7a-4d15-a8d8-e58532fbf5fd",
+    "name": "merge-img-channels",
+    "description": "Merges channels of multiple input images into one.",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "redChannelMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "greenChannelMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "blueChannelMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "alphaChannelMapFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            }
+        },
+        "required": [
+            "redChannelMapFile" ,"greenChannelMapFile", "blueChannelMapFile"
+        ],
+        "advanced": [
+            
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$firstTrue(outputFileBaseName, 'combined_map')"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'merge-channels'",
+            "failure": "$failure"
+        },
+        "merge-channels": {
+            "task": "MergeImageChannels",
+            "description": "Merge image channels",
+            "pre": {
+                "deliverables": {
+                    "outputFile": "alphaChannelMapFile ? outputFileBaseName & '.png' : outputFileBaseName & '.jpg'"
+                }
+            },
+            "parameters": {
+                "redChannelMapFile": "redChannelMapFile",
+                "greenChannelMapFile": "greenChannelMapFile",
+                "blueChannelMapFile": "blueChannelMapFile",
+                "alphaChannelMapFile": "alphaChannelMapFile",
+                "outputMapFile": "deliverables.outputFile",
+                "timeout": 600
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

@@ -97,11 +97,16 @@ if args.occlusion is not None:
 
 #handle metal/roughness map
 if args.metalrough is not None:
-    mr_tex_image = mat.node_tree.nodes.new('ShaderNodeTexImage')
-    mr_tex_image.image = bpy.data.images.load(args.metalrough)
-    mr_tex_image.image.colorspace_settings.name = "Non-Color"
-    mat.node_tree.links.new(bsdf.inputs['Metallic'], mr_tex_image.outputs['Color'])
-    mat.node_tree.links.new(bsdf.inputs['Roughness'], mr_tex_image.outputs['Color'])
+    if args.metalrough != args.occlusion:
+        mr_tex_image = mat.node_tree.nodes.new('ShaderNodeTexImage')
+        mr_tex_image.image = bpy.data.images.load(args.metalrough)
+        mr_tex_image.image.colorspace_settings.name = "Non-Color"
+    else:
+        mr_tex_image = occ_tex_image
+    separate_node_bg = mat.node_tree.nodes.new('ShaderNodeSeparateColor')
+    mat.node_tree.links.new(separate_node_bg.inputs[0], mr_tex_image.outputs['Color'])
+    mat.node_tree.links.new(bsdf.inputs['Metallic'], separate_node_bg.outputs['Blue'])
+    mat.node_tree.links.new(bsdf.inputs['Roughness'], separate_node_bg.outputs['Green'])
 
 bsdf.inputs['IOR'].default_value = 1.5
 mat.blend_method = 'BLEND' if do_blend is True else 'OPAQUE'
