@@ -281,7 +281,8 @@
             "parameters": {
                 "inputMeshFile": "reorientedMeshFileMaster",
                 "outputMeshFile": "'merged_multi_mesh.obj'",
-                "outputTextureFile": "sourceDiffuseMapFile"
+                "outputTextureFile": "sourceDiffuseMapFile",
+                "timeout": 7200
             },
             "post": {
                 "reorientedMeshFileMaster": "'merged_multi_mesh.obj'"
