@@ -46,10 +46,10 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
         const activeFiles = [];
 
         if(settings.inputFile1) activeFiles.push(settings.inputFile1);
-        if(settings.inputFile2) activeFiles.push(settings.inputFile2);
-        if(settings.inputFile3) activeFiles.push(settings.inputFile3);
-        if(settings.inputFile4) activeFiles.push(settings.inputFile4);
-        if(settings.inputFile5) activeFiles.push(settings.inputFile5);
+        if(settings.inputFile2 && settings.inputFile2.length) activeFiles.push(settings.inputFile2);
+        if(settings.inputFile3 && settings.inputFile3.length) activeFiles.push(settings.inputFile3);
+        if(settings.inputFile4 && settings.inputFile4.length) activeFiles.push(settings.inputFile4);
+        if(settings.inputFile5 && settings.inputFile5.length) activeFiles.push(settings.inputFile5);
 
         let operation = `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
 

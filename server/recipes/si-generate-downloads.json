@@ -124,6 +124,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "hasTexture": {
+                "type": "boolean",
+                "default": true
+            },
             "numFacesLow": {
                 "type": "integer",
                 "minimum": 10000,
@@ -228,7 +232,7 @@
                 "baseMeshMapNameLow": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFacesLow, mapSizeLow)",
                 "baseMeshMapNameMedium": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFacesMedium, mapSizeMedium)",
                 "baseMeshMapNameAR": "$baseMeshMapName($firstTrue(outputFileBaseName, sourceMeshFile), numFacesAR, mapSizeAR)",
-                "bakeDiffuse": "$exists(sourceDiffuseMapFile) or isMulti"
+                "bakeDiffuse": "$exists(sourceDiffuseMapFile) or (isMulti and hasTexture)"
             },
             "parameters": {
                 "logToConsole": true,
@@ -276,7 +280,7 @@
             "description": "Merge multi-model geometry files into one obj and texture.",
             "skip": "$not(isMulti)",
             "pre": {
-                "sourceDiffuseMapFile": "'texture_atlas.png'"
+                "sourceDiffuseMapFile": "hasTexture ? 'texture_atlas.png' : ''"
             },
             "parameters": {
                 "inputMeshFile": "reorientedMeshFileMaster",

@@ -6,10 +6,10 @@ import sys
 def importModel(file_path, file_extension):
     #import scene
     if file_extension == '.obj':
-        bpy.ops.import_scene.obj(filepath=file_path, axis_forward='-Z', axis_up='Y')
+        bpy.ops.wm.obj_import(filepath=file_path)
         sel = bpy.context.selected_objects
-        for obj in sel:
-            obj.rotation_euler = (0.0,0.0,0.0)
+        #for obj in sel:
+        #    obj.rotation_euler = (0.0,0.0,0.0)
     elif file_extension == '.ply':
         bpy.ops.import_mesh.ply(filepath=file_path)
     elif file_extension == '.stl':

@@ -28,7 +28,7 @@ def run():
 
         #import scene to be reoriented
         if file_extension == '.obj':
-                bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
+                bpy.ops.wm.obj_import(filepath=argv[0])
         elif file_extension == '.ply':
                 bpy.ops.import_mesh.ply(filepath=argv[0])
         elif file_extension == '.fbx':
@@ -121,7 +121,7 @@ def run():
         save_file = os.path.join(dir, mod_filename)
         if file_extension == '.obj':
                 save_file = save_file.replace(".fbx",".obj")
-                bpy.ops.export_scene.obj(filepath=save_file, check_existing=False, axis_forward='-Z', axis_up='Y', use_materials=True, path_mode='COPY')
+                bpy.ops.wm.obj_export(filepath=save_file, check_existing=False, axis_forward='-Z', axis_up='Y', export_materials=True, path_mode='COPY')
         elif file_extension == '.ply':
                 bpy.ops.export_mesh.ply(filepath=save_file)
         elif file_extension == '.fbx':

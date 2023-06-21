@@ -54,7 +54,7 @@ export default class MergeMeshTask extends ToolTask
         properties: {
             inputMeshFile: { type: "string", minLength: 1 },
             outputMeshFile: { type: "string", minLength: 1 },
-            outputTextureFile: { type: "string", minLength: 1 },
+            outputTextureFile: { type: "string" },
             timeout: { type: "integer", default: 0 }
         },
         required: [

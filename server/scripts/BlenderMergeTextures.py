@@ -5,7 +5,7 @@ import os
 def importModel(file_path, file_extension):
     #import scene
     if file_extension == '.obj':
-        bpy.ops.import_scene.obj(filepath=file_path, axis_forward='-Z', axis_up='Y')
+        bpy.ops.wm.obj_import(filepath=file_path)
     elif file_extension == '.ply':
         bpy.ops.import_mesh.ply(filepath=file_path)
     elif file_extension == '.stl':
@@ -40,6 +40,9 @@ def run():
     file_extension = file_extension.lower()
     importModel(argv[0], file_extension)
 
+    path = bpy.data.filepath
+    dir = os.path.dirname(path)
+
     for ob in bpy.context.scene.objects:
         if ob.type == 'MESH':
             ob.select_set(True)
@@ -48,80 +51,95 @@ def run():
             ob.select = False
     bpy.ops.object.join()
 
-    # Enter edit mode and create a new UV map
-    bpy.ops.object.editmode_toggle()
-    bpy.context.scene.tool_settings.use_uv_select_sync = True
-    bpy.ops.mesh.select_all(action='SELECT')
-    uv_atlas = bpy.context.object.data.uv_layers.new(name='UVAtlas')
+    # Check if we have a diffuse texture
+    hasDiffuse = False
+    for mat in bpy.data.materials:
+        nodetree = mat.node_tree
+        if nodetree:
+            for node in nodetree.nodes:
+                if node.type == 'TEX_IMAGE':
+                    for output in node.outputs:
+                        for link in output.links:
+                            if link.to_socket.name == 'Base Color':
+                                hasDiffuse = True
 
     # Get the active object
     obj = bpy.context.active_object
 
-    # set new uv map as active
-    obj.data.uv_layers.active = uv_atlas
+    if hasDiffuse:
+        # Enter edit mode and create a new UV map
+        bpy.ops.object.editmode_toggle()
+        bpy.context.scene.tool_settings.use_uv_select_sync = True
+        bpy.ops.mesh.select_all(action='SELECT')
+        uv_atlas = bpy.context.object.data.uv_layers.new(name='UVAtlas')
 
-    # Pack the UV islands
-    bpy.ops.uv.pack_islands(margin=0.001)
+        # set new uv map as active
+        obj.data.uv_layers.active = uv_atlas
 
-    # Enter object mode
-    bpy.ops.object.editmode_toggle()
+        # Pack the UV islands
+        bpy.ops.uv.pack_islands(margin=0.001)
 
-    # Create a new image texture
-    new_texture = bpy.data.images.new(name='TextureAtlas', width=8192, height=8192, alpha=False, float_buffer=False)
+        # Enter object mode
+        bpy.ops.object.editmode_toggle()
 
-    # Loop through each material slot and add a new image texture node to each one
-    for slot in obj.material_slots:
-        material = slot.material
+        # Create a new image texture
+        new_texture = bpy.data.images.new(name='TextureAtlas', width=8192, height=8192, alpha=False, float_buffer=False)
+
+        # Loop through each material slot and add a new image texture node to each one
+        for slot in obj.material_slots:
+            material = slot.material
+            node_tree = material.node_tree
+            node_texture = node_tree.nodes.new(type='ShaderNodeTexImage')
+            node_texture.image = new_texture
+            node_tree.nodes.active = node_texture
+
+
+        # Get Setup to Bake using Cycles Render Engine
+        # Set render engine to Cycles
+        bpy.context.scene.render.engine = 'CYCLES'
+        # Set the preferences to allow CUDA (I think)
+        bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+        #bpy.context.preferences.addons['cycles'].preferences.devices[0].use = True
+        # Set Cycles to use the GPU
+        bpy.context.scene.cycles.device = 'GPU'
+        bpy.context.scene.cycles.use_denoising = False
+
+
+        # Set bake options and bake diffuse color
+        bpy.context.scene.cycles.bake_type = 'DIFFUSE'
+        bpy.context.scene.render.bake.use_split_materials = False
+        bpy.context.scene.render.bake.use_pass_direct = False
+        bpy.context.scene.render.bake.use_pass_indirect = False
+        bpy.context.scene.render.bake.use_pass_color = True
+
+        # Start the bake process
+        bpy.ops.object.bake(type='DIFFUSE')
+
+        # Save texture
+        texture_path = os.path.join(dir, argv[1])
+        new_texture.filepath_raw = texture_path
+        new_texture.file_format = 'PNG'
+        new_texture.save()
+        print("Saving texture: " + texture_path)
+
+        # Add unified material
+        obj.data.materials.clear()
+        material = bpy.data.materials.new('mergedMat')
+        material.use_nodes = True
         node_tree = material.node_tree
         node_texture = node_tree.nodes.new(type='ShaderNodeTexImage')
         node_texture.image = new_texture
-        node_tree.nodes.active = node_texture
+        links = node_tree.links
+        links.new(node_texture.outputs[0], node_tree.nodes[0].inputs["Base Color"])
+        obj.active_material = material
 
 
-    # Get Setup to Bake using Cycles Render Engine
-    # Set render engine to Cycles
-    bpy.context.scene.render.engine = 'CYCLES'
-    # Set the preferences to allow CUDA (I think)
-    bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
-    #bpy.context.preferences.addons['cycles'].preferences.devices[0].use = True
-    # Set Cycles to use the GPU
-    bpy.context.scene.cycles.device = 'GPU'
-    bpy.context.scene.cycles.use_denoising = False
-
-
-    # Set bake options and bake diffuse color
-    bpy.context.scene.cycles.bake_type = 'DIFFUSE'
-    bpy.context.scene.render.bake.use_split_materials = False
-    bpy.context.scene.render.bake.use_pass_direct = False
-    bpy.context.scene.render.bake.use_pass_indirect = False
-    bpy.context.scene.render.bake.use_pass_color = True
-
-    # Start the bake process
-    bpy.ops.object.bake(type='DIFFUSE')
-
-    # Save texture
-    path = bpy.data.filepath
-    dir = os.path.dirname(path)
-    texture_path = os.path.join(dir, argv[1])
-    new_texture.filepath_raw = texture_path
-    new_texture.file_format = 'PNG'
-    new_texture.save()
-    print("Saving texture: " + texture_path)
-
-    # Add unified material
-    obj.data.materials.clear()
-    material = bpy.data.materials.new('mergedMat')
-    material.use_nodes = True
-    node_tree = material.node_tree
-    node_texture = node_tree.nodes.new(type='ShaderNodeTexImage')
-    node_texture.image = new_texture
-    links = node_tree.links
-    links.new(node_texture.outputs[0], node_tree.nodes[0].inputs["Base Color"])
-    obj.active_material = material
-
-
-    # set the texture atlas uv map as active
-    obj.data.uv_layers["UVAtlas"].active_render = True
+        # set the texture atlas uv map as active
+        obj.data.uv_layers["UVAtlas"].active_render = True
+    else:
+        material = bpy.data.materials.new('mergedMat')
+        material.use_nodes = True
+        obj.active_material = material
 
     #create save file name
     try: #check for provided output filename
@@ -131,7 +149,7 @@ def run():
     save_file = os.path.join(dir, mod_filename)
 
     #save scene
-    bpy.ops.export_scene.obj(filepath=save_file, check_existing=False, axis_forward='-Z', axis_up='Y', use_materials=True)
+    bpy.ops.wm.obj_export(filepath=save_file, check_existing=False, export_materials=True)
 
 try:
     run()
