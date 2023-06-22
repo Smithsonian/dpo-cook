@@ -149,7 +149,7 @@ def run():
     save_file = os.path.join(dir, mod_filename)
 
     #save scene
-    bpy.ops.wm.obj_export(filepath=save_file, check_existing=False, export_materials=True)
+    bpy.ops.wm.obj_export(filepath=save_file, up_axis="Z", forward_axis="Y", check_existing=False, export_materials=True)
 
 try:
     run()
