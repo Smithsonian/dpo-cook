@@ -43,18 +43,19 @@ def run():
         #find first model for reference
         models = data['models']
         nodes = data['nodes']
-        model_idx = -1
         is_multi = True if len(models) > 1 else False
 
         if is_multi:
                 bpy.ops.file.unpack_all(method="WRITE_ORIGINAL")
         
         for object in bpy.data.objects:
+                model_idx = -1
                 if object.type == "MESH":
                         if is_multi:
-                                node_match = next((node for node in nodes if node['name'] == object.name), None)
-                                if node_match != None:
-                                        model_idx = node_match['model']
+                                for idx, node in enumerate(nodes):
+                                        if object.name in node['name']:
+                                                model_idx = node['model']
+                                                break
                         else:
                                 model_idx = 0
                                 
