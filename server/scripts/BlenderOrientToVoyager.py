@@ -122,7 +122,7 @@ def run():
         save_file = os.path.join(dir, mod_filename)
         if file_extension == '.obj':
                 save_file = save_file.replace(".fbx",".obj")
-                bpy.ops.wm.obj_export(filepath=save_file, check_existing=False, axis_forward='-Z', axis_up='Y', export_materials=True, path_mode='COPY')
+                bpy.ops.wm.obj_export(filepath=save_file, check_existing=False, export_materials=True, path_mode='COPY')
         elif file_extension == '.ply':
                 bpy.ops.export_mesh.ply(filepath=save_file)
         elif file_extension == '.fbx':

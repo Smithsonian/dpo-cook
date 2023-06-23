@@ -757,7 +757,7 @@
                 }
             },
             "parameters": {
-                "sourceFile": "scene_unwrappedMesh",
+                "sourceFile": "generateGlb ? deliverables.webAssetGlbARCompressed : scene_unwrappedMesh",
                 "outputFile": "deliverables.usdz"
             },
             "success": "'update-document-usdz'",
