@@ -148,6 +148,11 @@
                 "minimum": 0,
                 "default": 0
             },
+            "multiMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "remeshFaces": {
                 "type": "integer",
                 "default": 0
@@ -188,7 +193,7 @@
         ],
         "advanced": [
             "bakeTest", "quadsOnly", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthWebMulti", "unwrapSegmentationStrengthWebThumb", "remeshFaces",
-            "modelIndex", "cleanupMesh", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
+            "modelIndex", "multiMeshFile", "cleanupMesh", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
             "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance"
         ],
         "additionalProperties": false
@@ -1134,8 +1139,36 @@
                 "numFaces": "numFacesWebAR",
                 "mapSize": "mapSizeWebAR"
             },
+            "success": "multiMeshFile ? 'sync-mtl-master' : 'delivery'",
+            "failure": "$failure"
+        },
+        "sync-mtl-master": {
+            "task": "SyncObjMtl",
+            "description": "Sync mtl references for master asset",
+            "skip": "$not($contains(sourceMeshFile, /obj$/))",
+            "pre": {
+                "mtlFile_master": "outputFileBaseName & '-master.mtl'"
+            },
+            "parameters": {
+                "objFile": "sourceMeshFile",
+                "mtlFile": "mtlFile_master",
+                "textureFile": "sourceDiffuseMapFile"
+            },
+            "success": "'combine-meshes'",
+            "failure": "$failure"
+        },
+        "combine-meshes": {
+            "task": "CombineMesh",
+            "description": "Combine meshes into a single .fbx",
+            "parameters": {
+                "baseMeshFile": "multiMeshFile",
+                "inputMeshFile": "sourceMeshFile",
+                "inputMeshBasename": "outputFileBaseName",
+                "outputMeshFile": "'multi-mesh.fbx'"     
+            },
             "success": "'delivery'",
             "failure": "$failure"
+
         },
         "delivery": {
             "task": "Delivery",

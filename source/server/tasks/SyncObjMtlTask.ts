@@ -38,7 +38,7 @@ export interface ISyncObjMtlTaskParameters extends ITaskParameters
     textureFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Default tool is MeshSmith. Specify another tool if needed. */
+    /** Default tool is Cscript. Specify another tool if needed. */
     tool?: "Cscript";
 }
 
