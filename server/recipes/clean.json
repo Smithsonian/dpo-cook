@@ -1,7 +1,7 @@
 {
-    "id": "a12161bb-265f-4979-80db-65f739dcc156",
-    "name": "generate-usdz",
-    "description": "Create usdz web asset",
+    "id": "08ac51c5-5fef-47a1-b04b-b02577d6418c",
+    "name": "clean",
+    "description": "Clean mesh of common issues",
     "version": "1",
     "start": "log",
 
@@ -13,28 +13,30 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "outputMeshFileName": {
+            "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
             },
-            "tool": {
+            "sourceDiffuseMapFile": {
                 "type": "string",
-                "enum": [
-                    "Blender",
-                    "Unity",
-                    "RapidCompact"
-                ],
-                "default": "Blender"
+                "minLength": 1,
+                "format": "file"
             },
-            "scale": {
-                "type": "number",
-                "minimum": 0.000001,
-                "maximum": 100000,
-                "default": 100
+            "sourceMTLFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "keepLargestComponent": {
+                "type": "boolean",
+                "default": true
             }
         },
         "required": [
             "sourceMeshFile"
+        ],
+        "advanced": [
+            
         ],
         "additionalProperties": false
     },
@@ -44,11 +46,11 @@
             "task": "Log",
             "description": "Enable logging services",
             "pre": {
-                "outputMeshFileName": "$baseName($firstTrue(outputMeshFileName, sourceMeshFile))"
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))"
             },
             "parameters": {
                 "logToConsole": true,
-                "reportFile": "outputMeshFileName & '-report.json'"
+                "reportFile": "outputFileBaseName & '-report.json'"
             },
             "success": "'pickup'",
             "failure": "$failure"
@@ -56,34 +58,35 @@
         "pickup": {
             "task": "Pickup",
             "description": "Fetch input files from client",
+            "pre": {
+                "baseMeshName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))"
+            },
             "parameters": {
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "sourceMeshFile": "sourceMeshFile",
-                    "sourceDiffuseMapFile": "sourceDiffuseMapFile",
-                    "sourceMtlFile": "sourceMtlFile"
+                    "highPolyMeshFile": "sourceMeshFile"
                 }
             },
-            "success": "'web-asset-usdz'",
+            "success": "'clean-mesh'",
             "failure": "$failure"
         },
-        "web-asset-usdz": {
-            "task": "GenerateUsdz",
-            "description": "Create usdz asset",
+        "clean-mesh": {
+            "task": "CleanupMesh",
+            "description": "Clean up mesh",
             "pre": {
                 "deliverables": {
-                    "webAssetUsdz": "outputMeshFileName & '.usdz'"
+                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetUsdz",
-                "sourceFile": "sourceMeshFile",
-                "tool": "tool"
+                "inputMeshFile": "sourceMeshFile",
+                "outputMeshFile": "deliverables.cleanedMeshFile",
+                "keepLargestComponent": "keepLargestComponent",
+                "timeout": 1200
             },
             "success": "'delivery'",
             "failure": "$failure"
-
         },
         "delivery": {
             "task": "Delivery",

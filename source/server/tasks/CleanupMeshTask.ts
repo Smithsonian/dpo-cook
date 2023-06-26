@@ -31,6 +31,12 @@ export interface ICleanupMeshTaskParameters extends ITaskParameters
     inputMeshFile: string;
     /** Output mesh file name. */
     outputMeshFile: string;
+    /** Meshlab only: Preserves texture coordinates during decimation. */
+    preserveTexCoords?: boolean;
+    /** Meshlab only: Re-computes vertex normals of the decimated mesh. */
+    computeVertexNormals?: boolean;
+    /** Meshlab only: Removes everything but the largest connected component. */
+    keepLargestComponent?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
@@ -57,6 +63,9 @@ export default class CleanupMeshTask extends ToolTask
         properties: {
             inputMeshFile: { type: "string", minLength: 1 },
             outputMeshFile: { type: "string", minLength: 1 },
+            preserveTexCoords: { type: "boolean", default: true },
+            computeVertexNormals: { type: "boolean", default: true },
+            keepLargestComponent: { type: "boolean", default: true },
             timeout: { type: "integer", default: 0 }
         },
         required: [
@@ -76,9 +85,31 @@ export default class CleanupMeshTask extends ToolTask
         const settings: IMeshlabToolSettings = {
             inputMeshFile: params.inputMeshFile,
             outputMeshFile: params.outputMeshFile,
-            filters: [{
-                name: "Cleanup",
-            }],
+            writeTexCoords: params.preserveTexCoords,
+            writeNormals: params.computeVertexNormals,
+            filters: [
+                {
+                    name: "SelectSmallComponents",
+                    params: {
+                        "NbFaceRatio": params.keepLargestComponent ? 0.9999 : 0.0
+                    }
+                },
+                {
+                    name: "DeleteSelected"
+                },
+                {
+                    name: "RemoveUnreferencedVertices"
+                },
+                {
+                    name: "RemoveZeroAreaFaces"
+                },
+                {
+                    name: "RemoveDuplicateVertices"
+                },
+                {
+                    name: "RemoveDuplicateFaces"
+                }
+            ],
             timeout: params.timeout
         };
 
