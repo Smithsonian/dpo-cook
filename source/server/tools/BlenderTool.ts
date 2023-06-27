@@ -46,15 +46,17 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
         const { instance, message } = event;
 
         // only handle JSON report data
-        if (!message.startsWith("\nJSON=")) {
+        if (!(message.startsWith("\nJSON=") || message.startsWith("JSON="))) {
             return false;
         }
+
+        const idx = message.indexOf("JSON=") + 5;
 
         const report = instance.report.execution;
         const results = report.results = report.results || {};
 
         try {
-            results["inspection"] = JSON.parse(message.substr(6));
+            results["inspection"] = JSON.parse(message.substr(idx));
         }
         catch(e) {
             const error = "failed to parse mesh inspection report";
