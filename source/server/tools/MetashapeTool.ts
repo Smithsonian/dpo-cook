@@ -50,10 +50,10 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         }
 
         // keep useful messages
-        if (message.endsWith(" seconds") || message.endsWith(" sec") || message.endsWith(" points") || message.endsWith(" targets") ||
+        if (message.endsWith(" seconds") || message.endsWith(" sec") || /*message.endsWith(" points") || message.endsWith(" targets") ||*/
         message.startsWith("Data preload") || message.startsWith("Adding Scalebar") || message.startsWith("Build") || 
-        message.startsWith("Detect") || message.startsWith("Export") || message.startsWith("\nCPU") || message.startsWith("Peak m") ||  
-        message.includes("done by")) {
+        message.startsWith("Detect") || message.startsWith("Export") || message.startsWith("\nCPU") || message.startsWith("Peak m") /*||  
+        message.includes("done by")*/) {
             if(message.startsWith("optimize") || message.startsWith("loaded ") || message.startsWith("overlap")
             || message.startsWith("calculating") || message.startsWith("setting ") || message.includes("tracks ")
             || message.includes("matches")) {
