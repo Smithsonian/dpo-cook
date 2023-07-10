@@ -189,7 +189,7 @@ chunk.buildUV\
 (
     mapping_mode=Metashape.GenericMapping,
     page_count=1,
-    adaptive_resolution=False
+    #adaptive_resolution=False
 )
 
 chunk.buildTexture\
