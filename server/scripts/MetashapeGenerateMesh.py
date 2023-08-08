@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", required=True, help="Input filepath")
 parser.add_argument("-c", "--cameras", required=True, help="Cameras filepath")
 parser.add_argument("-o", "--output", required=True, help="Output filename")
+parser.add_argument("-al", "--align_limit", required=False, help="Alignment threshold (%)")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
 parser.add_argument("-bdc", required=False, default="False", help="Build dense cloud")
@@ -29,7 +30,8 @@ chunk = doc.addChunk()
 
 imagePath = args.input
 camerasPath = args.cameras
-name = os.path.basename(os.path.normpath(imagePath))
+name = os.path.basename(os.path.normpath(args.output))
+name = os.path.splitext(name)[0];
 
 # Grab images from directory (include subdirectories)
 imageFiles=[]
@@ -64,6 +66,17 @@ chunk.matchPhotos\
 
 # align the matched image pairs
 chunk.alignCameras()
+
+# save post-alignment
+doc.save(imagePath+"\\..\\"+name+"-align.psx")
+
+aligned = [camera for camera in chunk.cameras if camera.transform and camera.type==Metashape.Camera.Type.Regular]
+success_ratio = len(aligned) / len(chunk.cameras) * 100
+print("ALIGNMENT SUCCESS: "+str(success_ratio))
+
+# exit out if alignment is less than requirement
+if success_ratio < int(args.align_limit):
+    sys.exit("Error: Image alignment does not meet minimum threshold")
 
 # optimize cameras
 chunk.optimizeCameras\
@@ -227,5 +240,6 @@ chunk.exportModel\
 )
 
 chunk.exportCameras(camerasPath)
+chunk.exportReport(imagePath+"\\..\\"+name+"-report.pdf")
 
-doc.save(imagePath+"\\..\\"+name+".psx")
+doc.save(imagePath+"\\..\\"+name+"-mesh.psx")

@@ -42,6 +42,8 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     generatePointCloud: boolean;
     /** Flag to enable discarding high-error markers */
     optimizeMarkers: boolean;
+    /** Percent success required to pass alignment stage */
+    alignmentLimit?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
@@ -69,6 +71,7 @@ export default class PhotogrammetryTask extends ToolTask
             scalebarFile: { type: "string", minLength: 1 },
             generatePointCloud: { type: "boolean", default: false},
             optimizeMarkers: { type: "boolean", default: false},
+            alignmentLimit: { type: "number", default: 50},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
         },
@@ -94,6 +97,7 @@ export default class PhotogrammetryTask extends ToolTask
                 scalebarFile: params.scalebarFile,
                 generatePointCloud: params.generatePointCloud,
                 optimizeMarkers: params.optimizeMarkers,
+                alignmentLimit: params.alignmentLimit,
                 mode: "full",
                 timeout: params.timeout
             };

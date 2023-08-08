@@ -38,13 +38,19 @@
             "optimizeMarkers": {
                 "type": "boolean",
                 "default": false
+            },
+            "alignmentLimit": {
+                "type": "number",
+                "default": 50,
+                "minimum": 0,
+                "maximum": 100
             }
         },
         "required": [
             "sourceImageFolder"
         ],
         "advanced": [
-            
+            "alignmentLimit"
         ],
         "additionalProperties": false
     },
@@ -109,6 +115,7 @@
                 "scalebarFile": "scalebarCSV",
                 "generatePointCloud": "generatePointCloud",
                 "optimizeMarkers": "optimizeMarkers",
+                "alignmentLimit": "alignmentLimit",
                 "tool": "tool",
                 "timeout": 86400
             },

@@ -29,7 +29,8 @@ chunk = doc.addChunk()
 imagePath = args.input
 modelPath = args.model
 camerasPath = args.cameras
-name = os.path.basename(os.path.normpath(imagePath))
+name = os.path.basename(os.path.normpath(args.output))
+name = os.path.splitext(name)[0];
 
 # Grab images from directory (include subdirectories)
 imageFiles=[]
@@ -92,4 +93,4 @@ chunk.exportModel\
     format=Metashape.ModelFormatOBJ,
 )
 
-doc.save(imagePath+"\\..\\"+name+"-final.psx")
+doc.save(imagePath+"\\..\\"+name+".psx")

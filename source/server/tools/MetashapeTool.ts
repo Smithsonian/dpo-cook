@@ -30,6 +30,7 @@ export interface IMetashapeToolSettings extends IToolSettings
     scalebarFile?: string;
     generatePointCloud?: boolean;
     optimizeMarkers?: boolean;
+    alignmentLimit?: number;
 }
 
 export type MetashapeInstance = ToolInstance<MetashapeTool, IMetashapeToolSettings>;
@@ -82,6 +83,10 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
             operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
 
             operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} `;
+
+            if(settings.alignmentLimit) {
+                operation += ` -al ${settings.alignmentLimit} `;
+            }
         }
         else if(settings.mode === "texture") {
             const inputModelPath = instance.getFilePath(settings.inputModelFile);
