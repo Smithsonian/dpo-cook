@@ -30,7 +30,7 @@ export interface IImageMagickToolSettings extends IToolSettings
     /** Name of the image file for the blue channel (optional, only required if combining individual channels). */
     blueChannelInputFile?: string;
     /** Name of the output image file. */
-    outputImageFile: string;
+    outputImageFile?: string;
     /** The compression quality for JPEG images (0 - 100). */
     quality?: number;
     /** Automatic stretching of the final image. */
@@ -45,6 +45,12 @@ export interface IImageMagickToolSettings extends IToolSettings
     channelNormalize?: boolean;
     /** Gamma correction of the individual channels (1.0 = unchanged). */
     channelGamma?: number[];
+    /** Name of the RGB input image folder (for batch conversion). */
+    inputImageFolder?: string;
+    /** Name of the output image folder. (for batch conversion) */
+    outputImageFolder?: string;
+    /** Filetype to batch convert folders of images to. */
+    batchConvertType?: string;
 }
 
 export type ImageMagickInstance = ToolInstance<ImageMagickTool, IImageMagickToolSettings>;
@@ -59,63 +65,87 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
     async setupInstance(instance: ImageMagickInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
+        let operation = "";
 
-        const outputImagePath = instance.getFilePath(settings.outputImageFile);
-        if (!outputImagePath) {
-            throw new Error("ImageMagickTool: missing output map file");
-        }
-
-        let operation = "convert";
-
-        if (settings.channelCombine) {
-            const redImagePath = instance.getFilePath(settings.redChannelInputFile);
-            const greenImagePath = instance.getFilePath(settings.greenChannelInputFile);
-            const blueImagePath = instance.getFilePath(settings.blueChannelInputFile);
-
-            if (!redImagePath || !greenImagePath || !blueImagePath) {
-                throw new Error("ImageMagickTool.run - missing input map file");
+        if(settings.inputImageFolder) { // batch conversion
+            const outputImagePath = instance.getFilePath(settings.outputImageFolder);
+            if (!outputImagePath) {
+                throw new Error("ImageMagickTool: missing output map folder");
             }
 
-            let channelGamma = [ 1.0, 1.0, 1.0 ];
-            if (Array.isArray(settings.channelGamma) && settings.channelGamma.length === 3) {
-                channelGamma = settings.channelGamma;
+            const inputImagePath = instance.getFilePath(settings.inputImageFolder);
+            if (!inputImagePath) {
+                throw new Error("ImageMagickTool: missing input map folder");
             }
 
-            const channelAutoLevel = settings.channelNormalize ? "-auto-level" : "";
+            if (!settings.batchConvertType) {
+                throw new Error("ImageMagickTool: missing filetype to convert to");
+            }
 
-            operation += [
-                ` ( "${redImagePath}" ${channelAutoLevel} -gamma ${channelGamma[0]} )`,
-                ` ( "${greenImagePath}" ${channelAutoLevel} -gamma ${channelGamma[1]} )`,
-                ` ( "${blueImagePath}" ${channelAutoLevel} -gamma ${channelGamma[2]} ) -combine`,
-            ].join("");
-        }
-        else {
-            const inputImagePath = instance.getFilePath(settings.inputImageFile);
-            operation += ` "${inputImagePath}"`;
-        }
+            operation = "mogrify";
 
-        let resize = settings.resize || 1.0;
-        if (resize <= 2.0 && resize !== 1.0) {
-            operation += ` -resize ${Math.round(resize * 100)}%`;
-        }
-        else if (resize !== 1.0) {
-            operation += ` -resize ${Math.round(resize)}`;
-        }
+            let quality = settings.quality || 70;
 
-        if (settings.normalize === true) {
-            operation += " -auto-level";
+            operation += ` -path "${outputImagePath}" -quality ${quality} -format ${settings.batchConvertType} "${inputImagePath}\\*.*"`;
         }
+        else { // single image conversion
+            const outputImagePath = instance.getFilePath(settings.outputImageFile);
+            if (!outputImagePath) {
+                throw new Error("ImageMagickTool: missing output map file");
+            }
 
-        const gamma = settings.gamma || 1.0;
-        if (gamma !== 1.0) {
-            operation += ` -gamma ${gamma}`;
-        }
+            operation = "convert";
 
-        let quality = settings.quality || 70;
-        if (outputImagePath.toLowerCase().endsWith("png")) {
-            quality = 100;
+            if (settings.channelCombine) {
+                const redImagePath = instance.getFilePath(settings.redChannelInputFile);
+                const greenImagePath = instance.getFilePath(settings.greenChannelInputFile);
+                const blueImagePath = instance.getFilePath(settings.blueChannelInputFile);
+
+                if (!redImagePath || !greenImagePath || !blueImagePath) {
+                    throw new Error("ImageMagickTool.run - missing input map file");
+                }
+
+                let channelGamma = [ 1.0, 1.0, 1.0 ];
+                if (Array.isArray(settings.channelGamma) && settings.channelGamma.length === 3) {
+                    channelGamma = settings.channelGamma;
+                }
+
+                const channelAutoLevel = settings.channelNormalize ? "-auto-level" : "";
+
+                operation += [
+                    ` ( "${redImagePath}" ${channelAutoLevel} -gamma ${channelGamma[0]} )`,
+                    ` ( "${greenImagePath}" ${channelAutoLevel} -gamma ${channelGamma[1]} )`,
+                    ` ( "${blueImagePath}" ${channelAutoLevel} -gamma ${channelGamma[2]} ) -combine`,
+                ].join("");
+            }
+            else {
+                const inputImagePath = instance.getFilePath(settings.inputImageFile);
+                operation += ` "${inputImagePath}"`;
+            }
+
+            let resize = settings.resize || 1.0;
+            if (resize <= 2.0 && resize !== 1.0) {
+                operation += ` -resize ${Math.round(resize * 100)}%`;
+            }
+            else if (resize !== 1.0) {
+                operation += ` -resize ${Math.round(resize)}`;
+            }
+
+            if (settings.normalize === true) {
+                operation += " -auto-level";
+            }
+
+            const gamma = settings.gamma || 1.0;
+            if (gamma !== 1.0) {
+                operation += ` -gamma ${gamma}`;
+            }
+
+            let quality = settings.quality || 70;
+            if (outputImagePath.toLowerCase().endsWith("png")) {
+                quality = 100;
+            }
+            operation += ` -quality ${quality} "${outputImagePath}"`;
         }
-        operation += ` -quality ${quality} "${outputImagePath}"`;
 
         const command = `"${this.configuration.executable}" ${operation}`;
 

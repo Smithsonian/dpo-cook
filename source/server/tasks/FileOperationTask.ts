@@ -55,7 +55,7 @@ export default class FileOperationTask extends Task
         properties: {
             operation: { type: "string", enum: [ "DeleteFile", "RenameFile", "CreateFolder", "DeleteFolder" ]},
             name: { type: "string", minLength: 1 },
-            newName: { type: "string", minLength: 1, default: "" }
+            newName: { type: "string", minLength: 1 }
         },
         required: [
             "operation",

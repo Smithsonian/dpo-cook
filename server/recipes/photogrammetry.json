@@ -44,13 +44,17 @@
                 "default": 50,
                 "minimum": 0,
                 "maximum": 100
+            },
+            "convertToJpg": {
+                "type": "boolean",
+                "default": false
             }
         },
         "required": [
             "sourceImageFolder"
         ],
         "advanced": [
-            "alignmentLimit"
+            "alignmentLimit", "convertToJpg"
         ],
         "additionalProperties": false
     },
@@ -61,7 +65,8 @@
             "description": "Enable logging services",
             "pre": {
                 "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))",
-                "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)"
+                "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)",
+                "sourceFolderBaseName": "$baseName(sourceImageFolder)"
             },
             "parameters": {
                 "logToConsole": true,
@@ -95,6 +100,33 @@
                 "inputFile1": "sourceImageFolder",
                 "operation": "'unzip'"
             },
+            "success": "'make-convert-folder'",
+            "failure": "$failure"
+        },
+        "make-convert-folder": {
+            "task": "FileOperation",
+            "skip": "$not(convertToJpg)",
+            "description": "Create folder for converted images",
+            "pre": {
+                "sourceFolderConverted": "sourceFolderBaseName & '_converted'"
+            },
+            "parameters": {
+                "operation": "'CreateFolder'",
+                "name": "sourceFolderConverted"
+            },
+            "success": "'convert-to-jpg'",
+            "failure": "$failure"
+        },
+        "convert-to-jpg": {
+            "task": "BatchConvertImage",
+            "skip": "$not(convertToJpg)",
+            "description": "Convert images to .jpg",
+            "parameters": {
+                "inputImageFolder": "sourceFolderBaseName",
+                "outputImageFolder": "sourceFolderConverted",
+                "filetype": "jpg",
+                "quality": "85"
+            },
             "success": "'photogrammetry'",
             "failure": "$failure"
         },
@@ -109,7 +141,7 @@
                 }
             },
             "parameters": {
-                "inputImageFolder": "sourceImageFolder",
+                "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.meshFile",
                 "scalebarFile": "scalebarCSV",
@@ -161,7 +193,7 @@
                 }
             },
             "parameters": {
-                "inputImageFolder": "sourceImageFolder",
+                "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
                 "inputModelFile": "deliverables.cleanedMeshFile",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.finalMeshFile",
