@@ -23,6 +23,8 @@ parser.add_argument("-al", "--align_limit", required=False, help="Alignment thre
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
 parser.add_argument("-bdc", required=False, default="False", help="Build dense cloud")
+parser.add_argument("-tp", required=False, default=4000, help="Tiepoint limit")
+parser.add_argument("-kp", required=False, default=40000, help="Keypoint limit")
 args = parser.parse_args()
 
 doc = Metashape.app.document
@@ -57,8 +59,8 @@ chunk.matchPhotos\
     #reference_preselection_mode=Metashape.ReferencePreselectionSource,
     filter_mask=False,
     mask_tiepoints=False,
-    keypoint_limit=40000,
-    tiepoint_limit=4000,
+    keypoint_limit=args.kp,
+    tiepoint_limit=args.tp,
     keep_keypoints=False,
     guided_matching=False,
     reset_matches=False
@@ -69,6 +71,7 @@ chunk.alignCameras()
 
 # save post-alignment
 doc.save(imagePath+"\\..\\"+name+"-align.psx")
+chunk = doc.chunks[0]
 
 aligned = [camera for camera in chunk.cameras if camera.transform and camera.type==Metashape.Camera.Type.Regular]
 success_ratio = len(aligned) / len(chunk.cameras) * 100
@@ -242,4 +245,4 @@ chunk.exportModel\
 chunk.exportCameras(camerasPath)
 chunk.exportReport(imagePath+"\\..\\"+name+"-report.pdf")
 
-doc.save(imagePath+"\\..\\"+name+"-mesh.psx")
+doc.save(imagePath+"\\..\\"+name+"-mesh.psx", [chunk])

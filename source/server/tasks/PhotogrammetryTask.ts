@@ -44,6 +44,10 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     optimizeMarkers: boolean;
     /** Percent success required to pass alignment stage */
     alignmentLimit?: number;
+    /** Max number of tiepoints */
+    tiepointLimit?: number;
+    /** Max number of keypoints */
+    keypointLimit?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
@@ -72,6 +76,8 @@ export default class PhotogrammetryTask extends ToolTask
             generatePointCloud: { type: "boolean", default: false},
             optimizeMarkers: { type: "boolean", default: false},
             alignmentLimit: { type: "number", default: 50},
+            tiepointLimit: { type: "integer", default: 4000},
+            keypointLimit: { type: "integer", default: 40000},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
         },
@@ -98,6 +104,8 @@ export default class PhotogrammetryTask extends ToolTask
                 generatePointCloud: params.generatePointCloud,
                 optimizeMarkers: params.optimizeMarkers,
                 alignmentLimit: params.alignmentLimit,
+                tiepointLimit: params.tiepointLimit,
+                keypointLimit: params.keypointLimit,
                 mode: "full",
                 timeout: params.timeout
             };

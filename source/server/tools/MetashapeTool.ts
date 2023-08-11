@@ -31,6 +31,8 @@ export interface IMetashapeToolSettings extends IToolSettings
     generatePointCloud?: boolean;
     optimizeMarkers?: boolean;
     alignmentLimit?: number;
+    tiepointLimit?: number;
+    keypointLimit?: number;
 }
 
 export type MetashapeInstance = ToolInstance<MetashapeTool, IMetashapeToolSettings>;
@@ -82,7 +84,7 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         if(settings.mode === "full") {
             operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
 
-            operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} `;
+            operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} -tp ${settings.tiepointLimit} -kp ${settings.keypointLimit} `;
 
             if(settings.alignmentLimit) {
                 operation += ` -al ${settings.alignmentLimit} `;

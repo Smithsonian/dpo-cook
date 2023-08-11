@@ -48,13 +48,25 @@
             "convertToJpg": {
                 "type": "boolean",
                 "default": false
+            },
+            "tiepointLimit": {
+                "type": "number",
+                "default": 4000,
+                "minimum": 1000,
+                "maximum": 50000
+            },
+            "keypointLimit": {
+                "type": "number",
+                "default": 40000,
+                "minimum": 1000,
+                "maximum": 120000
             }
         },
         "required": [
             "sourceImageFolder"
         ],
         "advanced": [
-            "alignmentLimit", "convertToJpg"
+            "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit"
         ],
         "additionalProperties": false
     },
@@ -148,6 +160,8 @@
                 "generatePointCloud": "generatePointCloud",
                 "optimizeMarkers": "optimizeMarkers",
                 "alignmentLimit": "alignmentLimit",
+                "tiepointLimit": "tiepointLimit",
+                "keypointLimit": "keypointLimit",
                 "tool": "tool",
                 "timeout": 86400
             },
