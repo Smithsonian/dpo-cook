@@ -74,13 +74,29 @@
                 "default": 16,
                 "minimum": 4,
                 "maximum": 256
+            },
+            "meshQuality": {
+                "type": "string",
+                "enum": [
+                    "Low",
+                    "Medium",
+                    "High",
+                    "Highest",
+                    "Custom"
+                ],
+                "default": "High"
+            },
+            "customFaceCount": {
+                "type": "number",
+                "default": 3000000
             }
         },
         "required": [
             "sourceImageFolder"
         ],
         "advanced": [
-            "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors"
+            "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
+            "meshQuality", "customFaceCount"
         ],
         "additionalProperties": false
     },
@@ -179,6 +195,8 @@
                 "turntableGroups": "turntableGroups",
                 "genericPreselection": "genericPreselection",
                 "depthMaxNeighbors": "depthMaxNeighbors",
+                "meshQuality": "meshQuality",
+                "customFaceCount": "customFaceCount",
                 "tool": "tool",
                 "timeout": 86400
             },

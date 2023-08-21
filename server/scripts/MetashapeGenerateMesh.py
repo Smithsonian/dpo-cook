@@ -66,6 +66,8 @@ parser.add_argument("-kp", required=False, default=75000, help="Keypoint limit")
 parser.add_argument("-gp", required=False, default="True", help="Generic preselection")
 parser.add_argument("-dmn", required=False, default=16, help="Depth map max neighbors")
 parser.add_argument("-ttg", required=False, default="False", help="Process turntable groups")
+parser.add_argument("-mq", required=False, default=2, help="Model resolution quality")
+parser.add_argument("-cfc", required=False, default=3000000, help="Custom model face count")
 args = parser.parse_args()
 
 doc = Metashape.app.document
@@ -139,6 +141,7 @@ if processGroups == True:
 
     findLowProjectionCameras(chunk, chunk.cameras, 100)
 
+    # Sort cameras and reset bad ones
     good_cameras = []
     bad_cameras = []
     for camera in chunk.cameras:
@@ -316,7 +319,7 @@ chunk.buildDepthMaps\
     downscale=1,
     filter_mode=Metashape.MildFiltering,
     reuse_depth=False,
-    max_neighbors=16,
+    max_neighbors=args.dmn,
     subdivide_task=True,
     workitem_size_cameras=20,
     max_workgroup_size=100
@@ -339,14 +342,14 @@ if denseCloudFlag == True:
         max_workgroup_size=100
     )
 
-modelQuality = [Metashape.FaceCount.HighFaceCount]
+modelQuality = [Metashape.FaceCount.LowFaceCount, Metashape.FaceCount.MediumFaceCount, Metashape.FaceCount.HighFaceCount, Metashape.FaceCount.CustomFaceCount]
 
 chunk.buildModel\
 (
     surface_type=Metashape.Arbitrary,
     interpolation=Metashape.DisabledInterpolation,
-    face_count=modelQuality[0],
-    face_count_custom=200000,
+    face_count = modelQuality[3] if int(args.mq) < 0 else modelQuality[int(args.mq)],
+    face_count_custom = 0 if int(args.mq) < 0 else args.cfc,
     source_data = Metashape.DenseCloudData if denseCloudFlag == True else Metashape.DepthMapsData,
     vertex_colors=False,
     vertex_confidence=True,

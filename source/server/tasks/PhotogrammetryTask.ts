@@ -49,11 +49,15 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     /** Max number of keypoints */
     keypointLimit?: number;
     /** Flag to process images as SI-formatted turntable groups */
-    turntableGroups: boolean;
+    turntableGroups?: boolean;
     /** Max neighbors value to use for depth map generation in Metashape */
     depthMaxNeighbors?: number;
     /** Flag = true to use generic preselection in Metashape */
     genericPreselection?: boolean;
+    /** Preset for mesh quality ("Low", "Medium", "High", "Highest", "Custom") */
+    meshQuality?: string;
+    /** If meshQuality is custom, this defines the goal face count */
+    customFaceCount?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
@@ -87,6 +91,8 @@ export default class PhotogrammetryTask extends ToolTask
             turntableGroups: { type: "boolean", default: false},
             depthMaxNeighbors: { type: "integer", default: 16},
             genericPreselection: { type: "boolean", default: true},
+            meshQuality: { type: "string", enum: [ "Low", "Medium", "High", "Highest", "Custom" ], default: "High"},
+            customFaceCount: { type: "integer", default: 3000000},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
         },
@@ -118,6 +124,8 @@ export default class PhotogrammetryTask extends ToolTask
                 turntableGroups: params.turntableGroups,
                 depthMaxNeighbors: params.depthMaxNeighbors,
                 genericPreselection: params.genericPreselection,
+                meshQuality: params.meshQuality,
+                customFaceCount: params.customFaceCount,
                 mode: "full",
                 timeout: params.timeout
             };

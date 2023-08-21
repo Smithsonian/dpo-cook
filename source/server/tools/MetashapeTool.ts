@@ -36,6 +36,8 @@ export interface IMetashapeToolSettings extends IToolSettings
     turntableGroups?: boolean;
     depthMaxNeighbors?: number;
     genericPreselection?: boolean;
+    meshQuality?: string;
+    customFaceCount?: number;
 }
 
 export type MetashapeInstance = ToolInstance<MetashapeTool, IMetashapeToolSettings>;
@@ -89,17 +91,26 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 
             operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} -tp ${settings.tiepointLimit} -kp ${settings.keypointLimit} `;
 
-            if(settings.alignmentLimit) {
+            if(settings.alignmentLimit != null) {
                 operation += ` -al ${settings.alignmentLimit} `;
             }
-            if(settings.turntableGroups) {
+            if(settings.turntableGroups != null) {
                 operation += ` -ttg ${settings.turntableGroups} `;
             }
-            if(settings.depthMaxNeighbors) {
+            if(settings.depthMaxNeighbors != null) {
                 operation += ` -dmn ${settings.depthMaxNeighbors} `;
             }
-            if(settings.genericPreselection) {
+            if(settings.genericPreselection != null) {
                 operation += ` -gp ${settings.genericPreselection} `;
+            }
+            if(settings.meshQuality) {
+                const opts = [ "Low", "Medium", "High", "Custom" ];
+                const qualityIdx = opts.findIndex((e) => e == settings.meshQuality);
+                operation += ` -mq ${qualityIdx} `;
+
+                if(qualityIdx == 3) {
+                    operation += ` -cfc ${settings.customFaceCount} `;
+                }
             }
         }
         else if(settings.mode === "texture") {
