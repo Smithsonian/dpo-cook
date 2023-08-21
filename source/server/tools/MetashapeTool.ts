@@ -33,6 +33,9 @@ export interface IMetashapeToolSettings extends IToolSettings
     alignmentLimit?: number;
     tiepointLimit?: number;
     keypointLimit?: number;
+    turntableGroups?: boolean;
+    depthMaxNeighbors?: number;
+    genericPreselection?: boolean;
 }
 
 export type MetashapeInstance = ToolInstance<MetashapeTool, IMetashapeToolSettings>;
@@ -88,6 +91,15 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 
             if(settings.alignmentLimit) {
                 operation += ` -al ${settings.alignmentLimit} `;
+            }
+            if(settings.turntableGroups) {
+                operation += ` -ttg ${settings.turntableGroups} `;
+            }
+            if(settings.depthMaxNeighbors) {
+                operation += ` -dmn ${settings.depthMaxNeighbors} `;
+            }
+            if(settings.genericPreselection) {
+                operation += ` -gp ${settings.genericPreselection} `;
             }
         }
         else if(settings.mode === "texture") {

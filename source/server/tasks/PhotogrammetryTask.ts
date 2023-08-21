@@ -48,6 +48,12 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     tiepointLimit?: number;
     /** Max number of keypoints */
     keypointLimit?: number;
+    /** Flag to process images as SI-formatted turntable groups */
+    turntableGroups: boolean;
+    /** Max neighbors value to use for depth map generation in Metashape */
+    depthMaxNeighbors?: number;
+    /** Flag = true to use generic preselection in Metashape */
+    genericPreselection?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
@@ -76,8 +82,11 @@ export default class PhotogrammetryTask extends ToolTask
             generatePointCloud: { type: "boolean", default: false},
             optimizeMarkers: { type: "boolean", default: false},
             alignmentLimit: { type: "number", default: 50},
-            tiepointLimit: { type: "integer", default: 4000},
-            keypointLimit: { type: "integer", default: 40000},
+            tiepointLimit: { type: "integer", default: 25000},
+            keypointLimit: { type: "integer", default: 75000},
+            turntableGroups: { type: "boolean", default: false},
+            depthMaxNeighbors: { type: "integer", default: 16},
+            genericPreselection: { type: "boolean", default: true},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
         },
@@ -106,6 +115,9 @@ export default class PhotogrammetryTask extends ToolTask
                 alignmentLimit: params.alignmentLimit,
                 tiepointLimit: params.tiepointLimit,
                 keypointLimit: params.keypointLimit,
+                turntableGroups: params.turntableGroups,
+                depthMaxNeighbors: params.depthMaxNeighbors,
+                genericPreselection: params.genericPreselection,
                 mode: "full",
                 timeout: params.timeout
             };

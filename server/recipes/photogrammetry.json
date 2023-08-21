@@ -51,22 +51,36 @@
             },
             "tiepointLimit": {
                 "type": "number",
-                "default": 4000,
+                "default": 25000,
                 "minimum": 1000,
                 "maximum": 50000
             },
             "keypointLimit": {
                 "type": "number",
-                "default": 40000,
+                "default": 75000,
                 "minimum": 1000,
                 "maximum": 120000
+            },
+            "turntableGroups": {
+                "type": "boolean",
+                "default": false
+            },
+            "genericPreselection": {
+                "type": "boolean",
+                "default": true
+            },
+            "depthMaxNeighbors": {
+                "type": "number",
+                "default": 16,
+                "minimum": 4,
+                "maximum": 256
             }
         },
         "required": [
             "sourceImageFolder"
         ],
         "advanced": [
-            "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit"
+            "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors"
         ],
         "additionalProperties": false
     },
@@ -162,6 +176,9 @@
                 "alignmentLimit": "alignmentLimit",
                 "tiepointLimit": "tiepointLimit",
                 "keypointLimit": "keypointLimit",
+                "turntableGroups": "turntableGroups",
+                "genericPreselection": "genericPreselection",
+                "depthMaxNeighbors": "depthMaxNeighbors",
                 "tool": "tool",
                 "timeout": 86400
             },

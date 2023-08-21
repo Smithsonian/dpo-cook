@@ -2,14 +2,52 @@ import Metashape
 import csv
 import sys
 import os
+import math
 import argparse
 from os import walk, path
+from statistics import mean, pstdev, variance
 
 def convert(s):
     if s.lower() == "true":
         return True
     else:
         return False
+
+def mag(x): 
+    return math.sqrt(sum(i**2 for i in x))
+
+def findLowProjectionCameras(chunk, cameras, limit):
+    point_cloud = chunk.point_cloud
+    projections = point_cloud.projections
+    points = point_cloud.points
+    npoints = len(points)
+    tracks = point_cloud.tracks
+    point_ids = [-1] * len(point_cloud.tracks)
+
+    for point_id in range(0, npoints):
+        point_ids[points[point_id].track_id] = point_id
+
+    for camera in cameras:
+        nprojections = 0
+
+        if not camera.transform:
+            camera.enabled = False
+            print(camera, "NO ALIGNMENT")
+            continue
+
+        for proj in projections[camera]:
+            track_id = proj.track_id
+            point_id = point_ids[track_id]
+            if point_id < 0:
+                continue
+            if not points[point_id].valid:
+                continue
+
+            nprojections += 1
+
+        if nprojections <= limit:
+            camera.enabled = False
+            print(camera, nprojections, len(projections[camera]))
 
 #get args
 argv = sys.argv
@@ -23,8 +61,11 @@ parser.add_argument("-al", "--align_limit", required=False, help="Alignment thre
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
 parser.add_argument("-bdc", required=False, default="False", help="Build dense cloud")
-parser.add_argument("-tp", required=False, default=4000, help="Tiepoint limit")
-parser.add_argument("-kp", required=False, default=40000, help="Keypoint limit")
+parser.add_argument("-tp", required=False, default=25000, help="Tiepoint limit")
+parser.add_argument("-kp", required=False, default=75000, help="Keypoint limit")
+parser.add_argument("-gp", required=False, default="True", help="Generic preselection")
+parser.add_argument("-dmn", required=False, default=16, help="Depth map max neighbors")
+parser.add_argument("-ttg", required=False, default="False", help="Process turntable groups")
 args = parser.parse_args()
 
 doc = Metashape.app.document
@@ -32,6 +73,8 @@ chunk = doc.addChunk()
 
 imagePath = args.input
 camerasPath = args.cameras
+processGroups = convert(args.ttg)
+genericPreselection = convert(args.gp)
 name = os.path.basename(os.path.normpath(args.output))
 name = os.path.splitext(name)[0];
 
@@ -51,10 +94,32 @@ chunk.marker_projection_accuracy = 0.1
 # Add photos
 chunk.addPhotos(imageFiles)
 
+# Sort into camera groups (if needed)
+camera_groups = {}
+camera_refs = dict()
+if processGroups == True:
+    for photo in chunk.cameras:
+        name = str(photo.label)
+        # Remove the sequence number from the base name (CaptureOne Pro formatting)
+        base_name_without_sequence_number = name[0:name.rfind("_")]
+        #print(name + " --> " + base_name_without_sequence_number)
+
+        # If this naming pattern doesn't have a camera group yet, create one
+        if base_name_without_sequence_number not in camera_groups:
+            camera_group = chunk.addCameraGroup()
+            camera_group.label = base_name_without_sequence_number
+            camera_groups[base_name_without_sequence_number] = camera_group
+            camera_refs[base_name_without_sequence_number] = []
+
+        # Add the camera to the appropriate camera group
+        photo.group = camera_groups[base_name_without_sequence_number]
+
+        camera_refs[base_name_without_sequence_number].append(photo)
+
 chunk.matchPhotos\
 (
     downscale=1,
-    generic_preselection=True,
+    generic_preselection=genericPreselection,
     reference_preselection=False,
     #reference_preselection_mode=Metashape.ReferencePreselectionSource,
     filter_mask=False,
@@ -69,6 +134,102 @@ chunk.matchPhotos\
 # align the matched image pairs
 chunk.alignCameras()
 
+# evaluate alignment based on groups
+if processGroups == True:
+
+    findLowProjectionCameras(chunk, chunk.cameras, 100)
+
+    good_cameras = []
+    bad_cameras = []
+    for camera in chunk.cameras:
+        if camera.enabled == False:
+            bad_cameras.append(camera)
+        else:
+            good_cameras.append(camera)
+    print(len(bad_cameras))
+    for camera in bad_cameras:
+        camera.transform = None
+
+    chunk.optimizeCameras( adaptive_fitting=True )
+
+    # Try to realign flagged cameras
+    for camera in bad_cameras:
+        camera.enabled = True
+        chunk.alignCameras([camera])  
+
+    findLowProjectionCameras(chunk, bad_cameras, 100)
+
+    # Try to realign again for good measure
+    for camera in bad_cameras:
+        if camera.enabled == False:
+            camera.transform = None
+            camera.enabled = True
+            chunk.alignCameras([camera])
+
+    findLowProjectionCameras(chunk, bad_cameras, 20)
+
+    bad_cameras = []
+    for camera in chunk.cameras:
+        if camera.enabled == False:
+            bad_cameras.append(camera)
+            camera.transform = None
+    print(len(bad_cameras))
+
+    # compute overall mean deviation
+    tot_avg = [0,0,0]
+    tot_dev = []
+    tot_count = 0
+    for camera in chunk.cameras:
+        if camera.center != None:
+            tot_count += 1
+            for i, bi in enumerate(camera.center): tot_avg[i] += bi
+        else:
+            camera.enabled = False
+    tot_avg[0] /= tot_count
+    tot_avg[1] /= tot_count
+    tot_avg[2] /= tot_count
+    for camera in chunk.cameras:
+        if camera.center != None:
+            camera_err = [0,0,0]
+            camera_err[0] = camera.center[0] - tot_avg[0]
+            camera_err[1] = camera.center[1] - tot_avg[1]
+            camera_err[2] = camera.center[2] - tot_avg[2]
+            tot_dev.append(mag(camera_err))
+    avg_dev = mean(tot_dev)
+    #print("AVG DEV: "+str(avg_dev))
+
+    # Identify cameras that are too tightly clustered within a group
+    for group in camera_refs.keys():
+        camera_count = 0
+
+        pos_avg = [0,0,0]
+        for camera in camera_refs[group]:
+            if camera.center != None:
+                camera_count += 1
+                for i, bi in enumerate(camera.center): pos_avg[i] += bi
+        pos_avg[0] /= camera_count
+        pos_avg[1] /= camera_count
+        pos_avg[2] /= camera_count
+
+        loc_dev_arr = []
+        for camera in camera_refs[group]:
+            if camera.center != None:
+                camera_err = [0,0,0]
+                camera_err[0] = camera.center[0] - pos_avg[0]
+                camera_err[1] = camera.center[1] - pos_avg[1]
+                camera_err[2] = camera.center[2] - pos_avg[2]
+                loc_dev_arr.append(mag(camera_err))
+                if mag(camera_err) < avg_dev * 0.5:
+                    if camera.enabled != False:
+                        camera.enabled = False
+                        bad_cameras.append(camera)
+        #grp_variance = variance(loc_dev_arr)
+        #std_dev = pstdev(loc_dev_arr)
+        #print(group, grp_variance, std_dev)
+
+    #chunk.remove(bad_cameras)
+
+
 # save post-alignment
 doc.save(imagePath+"\\..\\"+name+"-align.psx")
 chunk = doc.chunks[0]
@@ -82,10 +243,7 @@ if success_ratio < int(args.align_limit):
     sys.exit("Error: Image alignment does not meet minimum threshold")
 
 # optimize cameras
-chunk.optimizeCameras\
-(
-    adaptive_fitting=True
-)
+chunk.optimizeCameras( adaptive_fitting=True )
 
 if args.sb != None:
     ## Detect markers
