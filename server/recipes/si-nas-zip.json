@@ -12,6 +12,10 @@
                 "type": "string",
                 "minLength": 1
             },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
             "filetype": {
                 "type": "string",
                 "minLength": 1
@@ -47,13 +51,14 @@
             "description": "Zip files direct from storage",
             "pre": {
                 "deliverables": {
-                    "fileZip": "zippedFiles.zip"
+                    "fileZip": "$firstTrue(outputFileBaseName, 'zippedFiles.zip')"
                 }
             },
             "parameters": {
                 "inputFile1": "sourceFolderPath",
                 "fileFilter": "filetype",
                 "recursive": "recursive",
+                "outputFile": "deliverables.fileZip",
                 "operation": "'nas-zip'"
             },
             "success": "'delivery'",
