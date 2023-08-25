@@ -30,6 +30,10 @@
             "keepLargestComponent": {
                 "type": "boolean",
                 "default": true
+            },
+            "isTurntable": {
+                "type": "boolean",
+                "default": false
             }
         },
         "required": [
@@ -68,6 +72,25 @@
                     "highPolyMeshFile": "sourceMeshFile"
                 }
             },
+            "success": "'inspect'",
+            "failure": "$failure"
+        },
+        "inspect": {
+            "task": "InspectMesh",
+            "description": "Validate mesh and inspect topology",
+            "pre": {
+                "deliverables": {
+                    "inspectionReport": "outputFileBaseName & '-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshFile": "sourceMeshFile",
+                "reportFile": "deliverables.inspectionReport",
+                "tool": "'Blender'"
+            },
+            "post": {
+                "sceneSize": "$result.inspection.scene.geometry.size"
+            },
             "success": "'clean-mesh'",
             "failure": "$failure"
         },
@@ -83,6 +106,8 @@
                 "inputMeshFile": "sourceMeshFile",
                 "outputMeshFile": "deliverables.cleanedMeshFile",
                 "keepLargestComponent": "keepLargestComponent",
+                "isTurntable": "isTurntable",
+                "sceneSize": "sceneSize",
                 "timeout": 1200
             },
             "success": "'delivery'",

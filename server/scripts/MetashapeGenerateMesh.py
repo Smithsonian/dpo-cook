@@ -49,6 +49,58 @@ def findLowProjectionCameras(chunk, cameras, limit):
             camera.enabled = False
             print(camera, nprojections, len(projections[camera]))
 
+def matrixFromAxisAngle(axis, angle):
+
+    c = math.cos(angle)
+    s = math.sin(angle)
+    t = 1.0 - c
+
+    m00 = c + axis[0]*axis[0]*t
+    m11 = c + axis[1]*axis[1]*t
+    m22 = c + axis[2]*axis[2]*t
+
+    tmp1 = axis[0]*axis[1]*t
+    tmp2 = axis[2]*s
+    m10 = tmp1 + tmp2
+    m01 = tmp1 - tmp2
+    tmp1 = axis[0]*axis[2]*t
+    tmp2 = axis[1]*s
+    m20 = tmp1 - tmp2
+    m02 = tmp1 + tmp2
+    tmp1 = axis[1]*axis[2]*t
+    tmp2 = axis[0]*s
+    m21 = tmp1 + tmp2
+    m12 = tmp1 - tmp2
+
+    return Metashape.Matrix([[m00, m01, m02],[m10, m11, m12],[m20, m21, m22]])
+
+def model_to_origin(chunk):
+	model = chunk.model
+	if not model:
+		print("No model in chunk, script aborted")
+		return 0
+	vertices = model.vertices
+	T = chunk.transform.matrix
+
+	minx = vertices[0].coord[0]
+	maxx = vertices[0].coord[0]
+	miny = vertices[0].coord[1]
+	maxy = vertices[0].coord[1]
+	minz = vertices[0].coord[2]
+	maxz = vertices[0].coord[2]
+	for i in range(0, len(vertices)):
+		minx = min(minx,vertices[i].coord[0])
+		maxx = max(maxx,vertices[i].coord[0])
+		miny = min(miny,vertices[i].coord[1])
+		maxy = max(maxy,vertices[i].coord[1])
+		minz = min(minz,vertices[i].coord[2])
+		maxz = max(maxz,vertices[i].coord[2])
+	print(minx,maxx,miny,maxy,minz,maxz)
+	avg = Metashape.Vector([(minx+maxx)/2.0,(miny+maxy)/2.0,(minz+maxz)/2.0])
+	#chunk.region.center = avg
+	chunk.transform.translation = chunk.transform.translation - T.mulp(avg)
+
+
 #get args
 argv = sys.argv
 
@@ -202,6 +254,7 @@ if processGroups == True:
     #print("AVG DEV: "+str(avg_dev))
 
     # Identify cameras that are too tightly clustered within a group
+    local_centers = []
     for group in camera_refs.keys():
         camera_count = 0
 
@@ -213,6 +266,7 @@ if processGroups == True:
         pos_avg[0] /= camera_count
         pos_avg[1] /= camera_count
         pos_avg[2] /= camera_count
+        local_centers.append(pos_avg)
 
         loc_dev_arr = []
         for camera in camera_refs[group]:
@@ -222,7 +276,7 @@ if processGroups == True:
                 camera_err[1] = camera.center[1] - pos_avg[1]
                 camera_err[2] = camera.center[2] - pos_avg[2]
                 loc_dev_arr.append(mag(camera_err))
-                if mag(camera_err) < avg_dev * 0.5:
+                if mag(camera_err) < avg_dev * 0.1:
                     if camera.enabled != False:
                         camera.enabled = False
                         bad_cameras.append(camera)
@@ -233,6 +287,37 @@ if processGroups == True:
     #chunk.remove(bad_cameras)
 
 
+    # calculate center points
+    chunk_ctr = chunk.region.center
+    max_dist = 0
+    max_idx = -1
+    for i, pos in enumerate(local_centers):
+        dist = mag([chunk_ctr[0] - pos[0], chunk_ctr[1] - pos[1], chunk_ctr[2] - pos[2]])
+        print(dist, max_idx)
+        if dist > max_dist:
+            max_dist = dist
+            max_idx = i
+    
+    # add line shape for up axis
+    #chunk.shapes = Metashape.Shapes()
+    #chunk.shapes.crs = chunk.crs
+    #new_shape = chunk.shapes.addShape()
+    #new_shape.geometry.type = Metashape.Geometry.Type.LineStringType
+    #new_shape.geometry = Metashape.Geometry.LineString([Metashape.Vector(chunk_ctr), Metashape.Vector(local_centers[max_idx])])
+
+    curr_dir = Metashape.Vector(local_centers[max_idx]) - Metashape.Vector(chunk_ctr)
+    curr_dir = curr_dir.normalized()
+    angle = math.acos(sum( [curr_dir[i]*[0,0,1][i] for i in range(len([0,0,1]))] ))
+    axis = Metashape.Vector.cross(curr_dir,[0,0,1]).normalized()
+
+    rot_offset = matrixFromAxisAngle(axis, angle)
+
+    R = chunk.region.rot*(rot_offset*chunk.region.rot.inv())		#Bounding box rotation matrix
+    C = chunk.region.center		#Bounding box center vector
+    T = Metashape.Matrix( [[R[0,0], R[0,1], R[0,2], C[0]], [R[1,0], R[1,1], R[1,2], C[1]], [R[2,0], R[2,1], R[2,2], C[2]], [0, 0, 0, 1]])
+    
+    chunk.transform.matrix = Metashape.Matrix.Rotation(rot_offset)*Metashape.Matrix.Translation(C).inv() #T.inv()
+
 # save post-alignment
 doc.save(imagePath+"\\..\\"+name+"-align.psx")
 chunk = doc.chunks[0]
@@ -240,7 +325,7 @@ chunk = doc.chunks[0]
 aligned = [camera for camera in chunk.cameras if camera.transform and camera.type==Metashape.Camera.Type.Regular]
 success_ratio = len(aligned) / len(chunk.cameras) * 100
 print("ALIGNMENT SUCCESS: "+str(success_ratio))
-
+#sys.exit(1)
 # exit out if alignment is less than requirement
 if success_ratio < int(args.align_limit):
     sys.exit("Error: Image alignment does not meet minimum threshold")
@@ -380,6 +465,9 @@ chunk.buildTexture\
 )
 
 chunk.updateTransform()
+
+# Move model to center
+model_to_origin(chunk)
 
 chunk.exportModel\
 (

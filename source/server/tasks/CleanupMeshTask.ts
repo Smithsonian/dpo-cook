@@ -37,6 +37,10 @@ export interface ICleanupMeshTaskParameters extends ITaskParameters
     computeVertexNormals?: boolean;
     /** Meshlab only: Removes everything but the largest connected component. */
     keepLargestComponent?: boolean;
+    /** Flag to enable optimizations for turntable captures. */
+    isTurntable?: boolean;
+    /** String containing scene dimensions */
+    sceneSize?: number[];
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
@@ -66,7 +70,9 @@ export default class CleanupMeshTask extends ToolTask
             preserveTexCoords: { type: "boolean", default: true },
             computeVertexNormals: { type: "boolean", default: true },
             keepLargestComponent: { type: "boolean", default: true },
-            timeout: { type: "integer", default: 0 }
+            isTurntable: { type: "boolean", default: false },
+            timeout: { type: "integer", default: 0 },
+            sceneSize: { type: "array" }
         },
         required: [
             "inputMeshFile",
@@ -112,6 +118,36 @@ export default class CleanupMeshTask extends ToolTask
             ],
             timeout: params.timeout
         };
+
+        if(params.isTurntable) {
+            settings.filters.unshift(
+                /*{
+                    name: "CenterScene",
+                    params: {
+                        "traslMethod": 'Center on Scene BBox'
+                    }
+                },*/
+                {
+                    name: "ConditionalFaceSelect",
+                    params: {
+                        "condSelect": 'abs(x0)&lt;'+params.sceneSize[0]*0.02+' &amp;&amp; abs(y0)&lt;'+params.sceneSize[1]*0.02 //+' &amp;&amp; abs(z0)&lt;'+params.sceneSize[2]*0.1
+                    }
+                },
+                {
+                    name: "SelectConnectedFaces"
+                },
+                {
+                    name: "InvertSelection",
+                    params: {
+                        "InvFaces": true,
+                        "InvVerts": false
+                    }
+                },
+                {
+                    name: "DeleteSelected"
+                }
+            );
+        }
 
         this.addTool("Meshlab", settings);
     }

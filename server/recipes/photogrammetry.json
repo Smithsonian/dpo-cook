@@ -65,6 +65,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "isTurntable": {
+                "type": "boolean",
+                "default": false
+            },
             "genericPreselection": {
                 "type": "boolean",
                 "default": true
@@ -212,6 +216,25 @@
                 "name": "'texturedMesh.obj'",
                 "newName": "deliverables.meshFile"
             },
+            "success": "'inspect'",
+            "failure": "$failure"
+        },
+        "inspect": {
+            "task": "InspectMesh",
+            "description": "Validate mesh and inspect topology",
+            "pre": {
+                "deliverables": {
+                    "inspectionReport": "outputFileBaseName & '-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshFile": "deliverables.meshFile",
+                "reportFile": "deliverables.inspectionReport",
+                "tool": "'Blender'"
+            },
+            "post": {
+                "sceneSize": "$result.inspection.scene.geometry.size"
+            },
             "success": "'cleanup'",
             "failure": "$failure"
         },
@@ -226,6 +249,8 @@
             "parameters": {
                 "inputMeshFile": "deliverables.meshFile",
                 "outputMeshFile": "deliverables.cleanedMeshFile",
+                "isTurntable": "isTurntable",
+                "sceneSize": "sceneSize",
                 "timeout": 1200
             },
             "success": "'texture'",
