@@ -17,7 +17,7 @@ def mag(x):
     return math.sqrt(sum(i**2 for i in x))
 
 def findLowProjectionCameras(chunk, cameras, limit):
-    point_cloud = chunk.point_cloud
+    point_cloud = chunk.tie_points
     projections = point_cloud.projections
     points = point_cloud.points
     npoints = len(points)
