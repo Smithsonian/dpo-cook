@@ -466,8 +466,9 @@ chunk.buildTexture\
 
 chunk.updateTransform()
 
-# Move model to center
-model_to_origin(chunk)
+if processGroups == True:
+    # Move model to center
+    model_to_origin(chunk)
 
 chunk.exportModel\
 (

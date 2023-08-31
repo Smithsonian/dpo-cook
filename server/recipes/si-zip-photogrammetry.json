@@ -1,0 +1,296 @@
+{
+    "id": "7310026c-68cb-4470-9841-f026e3bd9069",
+    "name": "si-zip-photogrammetry",
+    "description": "Zip an image folder and process through photogrammetry pipeline",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceFolderPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "filetype": {
+                "type": "string",
+                "minLength": 1
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "Metashape",
+                    "RealityCapture",
+                    "Meshroom"
+                ],
+                "default": "Metashape"
+            },
+            "scalebarCSV": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "generatePointCloud": {
+                "type": "boolean",
+                "default": false
+            },
+            "optimizeMarkers": {
+                "type": "boolean",
+                "default": false
+            },
+            "alignmentLimit": {
+                "type": "number",
+                "default": 50,
+                "minimum": 0,
+                "maximum": 100
+            },
+            "convertToJpg": {
+                "type": "boolean",
+                "default": false
+            },
+            "tiepointLimit": {
+                "type": "number",
+                "default": 25000,
+                "minimum": 1000,
+                "maximum": 50000
+            },
+            "keypointLimit": {
+                "type": "number",
+                "default": 75000,
+                "minimum": 1000,
+                "maximum": 120000
+            },
+            "turntableGroups": {
+                "type": "boolean",
+                "default": false
+            },
+            "isTurntable": {
+                "type": "boolean",
+                "default": false
+            },
+            "genericPreselection": {
+                "type": "boolean",
+                "default": true
+            },
+            "depthMaxNeighbors": {
+                "type": "number",
+                "default": 16,
+                "minimum": 4,
+                "maximum": 256
+            },
+            "meshQuality": {
+                "type": "string",
+                "enum": [
+                    "Low",
+                    "Medium",
+                    "High",
+                    "Highest",
+                    "Custom"
+                ],
+                "default": "High"
+            },
+            "customFaceCount": {
+                "type": "number",
+                "default": 3000000
+            }
+        },
+        "required": [
+            "sourceFolderPath"
+        ],
+        "advanced": [
+            "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
+            "meshQuality", "customFaceCount"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceFolderPath))",
+                "baseMeshName": "$firstTrue(outputFileBaseName, sourceFolderPath)",
+                "sourceFolderBaseName": "$baseName(sourceFolderPath)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'zip-files'",
+            "failure": "$failure"
+        },
+        "zip-files": {
+            "task": "Zip",
+            "description": "Zip files direct from storage",
+            "pre": {
+                "deliverables": {
+                    "fileZip": "sourceFolderBaseName & '.zip'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "sourceFolderPath",
+                "fileFilter": "filetype",
+                "recursive": false,
+                "outputFile": "deliverables.fileZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "parameters": {
+                "inputFile1": "deliverables.fileZip",
+                "operation": "'unzip'"
+            },
+            "success": "'make-convert-folder'",
+            "failure": "$failure"
+        },
+        "make-convert-folder": {
+            "task": "FileOperation",
+            "skip": "$not(convertToJpg)",
+            "description": "Create folder for converted images",
+            "pre": {
+                "sourceFolderConverted": "sourceFolderBaseName & '_converted'"
+            },
+            "parameters": {
+                "operation": "'CreateFolder'",
+                "name": "sourceFolderConverted"
+            },
+            "success": "'convert-to-jpg'",
+            "failure": "$failure"
+        },
+        "convert-to-jpg": {
+            "task": "BatchConvertImage",
+            "skip": "$not(convertToJpg)",
+            "description": "Convert images to .jpg",
+            "parameters": {
+                "inputImageFolder": "sourceFolderBaseName",
+                "outputImageFolder": "sourceFolderConverted",
+                "filetype": "jpg",
+                "quality": "85"
+            },
+            "success": "'photogrammetry'",
+            "failure": "$failure"
+        },
+        "photogrammetry": {
+            "task": "Photogrammetry",
+            "description": "Create mesh and texture from image set.",
+            "pre": {
+                "camerasFile": "baseMeshName & '-cameras.xml'",
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'",
+                    "textureFile": "baseMeshName & '-texture-' & '.png'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
+                "camerasFile": "camerasFile",
+                "outputFile": "deliverables.meshFile",
+                "scalebarFile": "scalebarCSV",
+                "generatePointCloud": "generatePointCloud",
+                "optimizeMarkers": "optimizeMarkers",
+                "alignmentLimit": "alignmentLimit",
+                "tiepointLimit": "tiepointLimit",
+                "keypointLimit": "keypointLimit",
+                "turntableGroups": "turntableGroups",
+                "genericPreselection": "genericPreselection",
+                "depthMaxNeighbors": "depthMaxNeighbors",
+                "meshQuality": "meshQuality",
+                "customFaceCount": "customFaceCount",
+                "tool": "tool",
+                "timeout": 86400
+            },
+            "success": "'rename'",
+            "failure": "$failure"
+        },
+        "rename": {
+            "task": "FileOperation",
+            "description": "Rename Meshroom Model",
+            "skip": "$not(tool = 'Meshroom')",
+            "parameters": {
+                "operation": "'RenameFile'",
+                "name": "'texturedMesh.obj'",
+                "newName": "deliverables.meshFile"
+            },
+            "success": "'inspect'",
+            "failure": "$failure"
+        },
+        "inspect": {
+            "task": "InspectMesh",
+            "description": "Validate mesh and inspect topology",
+            "pre": {
+                "deliverables": {
+                    "inspectionReport": "outputFileBaseName & '-inspection.json'"
+                }
+            },
+            "parameters": {
+                "meshFile": "deliverables.meshFile",
+                "reportFile": "deliverables.inspectionReport",
+                "tool": "'Blender'"
+            },
+            "post": {
+                "sceneSize": "$result.inspection.scene.geometry.size"
+            },
+            "success": "'cleanup'",
+            "failure": "$failure"
+        },
+        "cleanup": {
+            "task": "CleanupMesh",
+            "description": "Cleanup common issues with mesh.",
+            "pre": {
+                "deliverables": {
+                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "deliverables.meshFile",
+                "outputMeshFile": "deliverables.cleanedMeshFile",
+                "isTurntable": "isTurntable",
+                "sceneSize": "sceneSize",
+                "timeout": 1200
+            },
+            "success": "'texture'",
+            "failure": "$failure"
+        },
+        "texture": {
+            "task": "PhotogrammetryTex",
+            "skip": "$not(tool = 'Metashape')",
+            "description": "Create and map texture from model and image set.",
+            "pre": {
+                "deliverables": {
+                    "finalMeshFile": "baseMeshName & '-' & $lowercase(tool) & '-final.obj'",
+                    "textureFile": "baseMeshName & '-texture-final' & '.png'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
+                "inputModelFile": "deliverables.cleanedMeshFile",
+                "camerasFile": "camerasFile",
+                "outputFile": "deliverables.finalMeshFile",
+                "scalebarFile": "scalebarCSV",
+                "tool": "tool",
+                "timeout": 86400
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
