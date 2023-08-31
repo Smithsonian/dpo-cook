@@ -78,7 +78,7 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
 
             operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}\\${name}\\" -r`;
         }
-        else if(settings.operation === "nas-zip") {
+        else if(settings.operation === "path-zip") {
             operation += `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
             operation += ` "${settings.inputFile1}\\*.${settings.fileFilter ? settings.fileFilter : "*"}"`;
 

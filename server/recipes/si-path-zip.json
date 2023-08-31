@@ -1,7 +1,7 @@
 {
     "id": "e965d8a9-6003-461a-bc92-c01aa67f9e94",
     "name": "si-nas-zip",
-    "description": "Zips files directly from storage folder",
+    "description": "Zips files directly from filesystem path",
     "version": "1",
     "start": "log",
 
@@ -59,7 +59,7 @@
                 "fileFilter": "filetype",
                 "recursive": "recursive",
                 "outputFile": "deliverables.fileZip",
-                "operation": "'nas-zip'"
+                "operation": "'path-zip'"
             },
             "success": "'delivery'",
             "failure": "$failure"
