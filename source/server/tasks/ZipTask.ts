@@ -38,7 +38,7 @@ export interface IZipTaskParameters extends ITaskParameters
     inputFile7?: string;
     inputFile8?: string;
     /** The type of zip operation we want to do. */
-    operation: "zip" | "unzip";
+    operation: "zip" | "unzip" | "path-zip";
     /** Name to give generated zip file. */
     outputFile?: string;
     /** Degree of compression */
