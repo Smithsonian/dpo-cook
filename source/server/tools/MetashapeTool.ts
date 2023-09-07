@@ -23,6 +23,7 @@ import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from
 export interface IMetashapeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
+    alignImageFolder?: string;
     outputFile: string;
     mode: string;
     inputModelFile?: string;
@@ -93,6 +94,10 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 
             if(settings.alignmentLimit != null) {
                 operation += ` -al ${settings.alignmentLimit} `;
+            }
+            if(settings.alignImageFolder != null) {
+                const alignFolder = instance.getFilePath(path.parse(settings.alignImageFolder).name);
+                operation += ` -ai "${alignFolder}" `;
             }
             if(settings.turntableGroups != null) {
                 operation += ` -ttg ${settings.turntableGroups} `;

@@ -31,6 +31,11 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "alignImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "generatePointCloud": {
                 "type": "boolean",
                 "default": false
@@ -65,7 +70,7 @@
                 "type": "boolean",
                 "default": false
             },
-            "isTurntable": {
+            "findTurntableCenter": {
                 "type": "boolean",
                 "default": false
             },
@@ -128,7 +133,8 @@
                 "method": "transportMethod",
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
-                    "sourceImageFolder": "sourceImageFolder"
+                    "sourceImageFolder": "sourceImageFolder",
+                    "alignImageFolder": "alignImageFolder"
                 }
             },
             "success": "'unzip'",
@@ -137,13 +143,21 @@
         "unzip": {
             "task": "Zip",
             "description": "Unzip image folder",
-            "pre": {
-                "deliverables": {
-                    "objZipLow": "scaleToMeters ? baseMeshMapNameLow & '-obj_std.zip' : baseMeshMapNameLow & '-obj.zip'"
-                }
-            },
             "parameters": {
                 "inputFile1": "sourceImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "alignImageFolder ? 'unzip-align' : 'make-convert-folder'",
+            "failure": "$failure"
+        },
+        "unzip-align": {
+            "task": "Zip",
+            "description": "Unzip alignment image folder",
+            "pre": {
+                "alignFolderBaseName": "$baseName(alignImageFolder)"
+            },
+            "parameters": {
+                "inputFile1": "alignImageFolder",
                 "operation": "'unzip'"
             },
             "success": "'make-convert-folder'",
@@ -188,6 +202,7 @@
             },
             "parameters": {
                 "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
+                "alignImageFolder": "alignFolderBaseName",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.meshFile",
                 "scalebarFile": "scalebarCSV",
@@ -249,7 +264,7 @@
             "parameters": {
                 "inputMeshFile": "deliverables.meshFile",
                 "outputMeshFile": "deliverables.cleanedMeshFile",
-                "isTurntable": "isTurntable",
+                "isTurntable": "findTurntableCenter",
                 "sceneSize": "sceneSize",
                 "timeout": 1200
             },

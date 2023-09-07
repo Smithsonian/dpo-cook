@@ -32,6 +32,8 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
 {
     /** Input image folder. */
     inputImageFolder: string;
+    /** Alignment image folder. */
+    alignImageFolder?: string;
     /** Base name used for output files */
     outputFile: string;
     /** Name used for saved camera position file */
@@ -80,6 +82,7 @@ export default class PhotogrammetryTask extends ToolTask
         type: "object",
         properties: {
             inputImageFolder: { type: "string", minLength: 1 },
+            alignImageFolder: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1 },
             camerasFile: { type: "string", minLength: 1 },
             scalebarFile: { type: "string", minLength: 1 },
@@ -113,6 +116,7 @@ export default class PhotogrammetryTask extends ToolTask
         if (params.tool === "Metashape") {
             const toolOptions: IMetashapeToolSettings = {
                 imageInputFolder: params.inputImageFolder,
+                alignImageFolder: params.alignImageFolder,
                 outputFile: params.outputFile,
                 camerasFile: params.camerasFile,
                 scalebarFile: params.scalebarFile,

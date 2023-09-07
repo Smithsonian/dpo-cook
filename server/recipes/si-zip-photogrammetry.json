@@ -20,6 +20,10 @@
                 "type": "string",
                 "minLength": 1
             },
+            "alignFolderPath": {
+                "type": "string",
+                "minLength": 1
+            },
             "tool": {
                 "type": "string",
                 "enum": [
@@ -149,6 +153,35 @@
                 "inputFile1": "deliverables.fileZip",
                 "operation": "'unzip'"
             },
+            "success": "alignFolderPath ? 'zip-align' : 'make-convert-folder'",
+            "failure": "$failure"
+        },
+        "zip-align": {
+            "task": "Zip",
+            "description": "Zip alignment files direct from storage",
+            "pre": {
+                "alignFolderBaseName": "$baseName(alignFolderPath)",
+                "deliverables": {
+                    "alignFileZip": "alignFolderBaseName & '.zip'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "alignFolderPath",
+                "fileFilter": "filetype",
+                "recursive": false,
+                "outputFile": "deliverables.alignFileZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'unzip-align'",
+            "failure": "$failure"
+        },
+        "unzip-align": {
+            "task": "Zip",
+            "description": "Unzip alignment image folder",
+            "parameters": {
+                "inputFile1": "deliverables.alignFileZip",
+                "operation": "'unzip'"
+            },
             "success": "'make-convert-folder'",
             "failure": "$failure"
         },
@@ -191,6 +224,7 @@
             },
             "parameters": {
                 "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
+                "alignImageFolder": "alignFolderBaseName",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.meshFile",
                 "scalebarFile": "scalebarCSV",

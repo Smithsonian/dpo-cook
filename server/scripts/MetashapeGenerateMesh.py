@@ -109,6 +109,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", required=True, help="Input filepath")
 parser.add_argument("-c", "--cameras", required=True, help="Cameras filepath")
 parser.add_argument("-o", "--output", required=True, help="Output filename")
+parser.add_argument("-ai", "--align_input", required=False, help="Alignment input filepath")
 parser.add_argument("-al", "--align_limit", required=False, help="Alignment threshold (%)")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
@@ -129,8 +130,8 @@ imagePath = args.input
 camerasPath = args.cameras
 processGroups = convert(args.ttg)
 genericPreselection = convert(args.gp)
-name = os.path.basename(os.path.normpath(args.output))
-name = os.path.splitext(name)[0];
+basename = os.path.basename(os.path.normpath(args.output))
+basename = os.path.splitext(basename)[0];
 
 # Grab images from directory (include subdirectories)
 imageFiles=[]
@@ -145,30 +146,48 @@ chunk.tiepoint_accuracy = 0.1
 # set 'Marker Projection Accuracy' to 0.1
 chunk.marker_projection_accuracy = 0.1
 
+# Add optional alignment images
+camera_groups = {}
+alignImages=[]
+alignCameras=[]
+if args.align_input != None:
+    alignPath = args.align_input
+    camera_group = chunk.addCameraGroup()
+    camera_group.label = "alignment_images"
+    camera_groups["alignment_images"] = camera_group
+    for r, d, f in walk(alignPath):
+        for i, file in enumerate(f):
+            alignImages.append(os.path.join(r, file))
+    chunk.addPhotos(alignImages)
+    for photo in chunk.cameras:
+        if photo.group == None:
+            photo.group = camera_group
+            alignCameras.append(photo)
+
 # Add photos
 chunk.addPhotos(imageFiles)
 
 # Sort into camera groups (if needed)
-camera_groups = {}
 camera_refs = dict()
 if processGroups == True:
     for photo in chunk.cameras:
-        name = str(photo.label)
-        # Remove the sequence number from the base name (CaptureOne Pro formatting)
-        base_name_without_sequence_number = name[0:name.rfind("_")]
-        #print(name + " --> " + base_name_without_sequence_number)
+        if photo.group == None:
+            name = str(photo.label)
+            # Remove the sequence number from the base name (CaptureOne Pro formatting)
+            base_name_without_sequence_number = name[0:name.rfind("_")]
+            #print(name + " --> " + base_name_without_sequence_number)
 
-        # If this naming pattern doesn't have a camera group yet, create one
-        if base_name_without_sequence_number not in camera_groups:
-            camera_group = chunk.addCameraGroup()
-            camera_group.label = base_name_without_sequence_number
-            camera_groups[base_name_without_sequence_number] = camera_group
-            camera_refs[base_name_without_sequence_number] = []
+            # If this naming pattern doesn't have a camera group yet, create one
+            if base_name_without_sequence_number not in camera_groups:
+                camera_group = chunk.addCameraGroup()
+                camera_group.label = base_name_without_sequence_number
+                camera_groups[base_name_without_sequence_number] = camera_group
+                camera_refs[base_name_without_sequence_number] = []
 
-        # Add the camera to the appropriate camera group
-        photo.group = camera_groups[base_name_without_sequence_number]
+            # Add the camera to the appropriate camera group
+            photo.group = camera_groups[base_name_without_sequence_number]
 
-        camera_refs[base_name_without_sequence_number].append(photo)
+            camera_refs[base_name_without_sequence_number].append(photo)
 
 chunk.matchPhotos\
 (
@@ -228,7 +247,7 @@ if processGroups == True:
         if camera.enabled == False:
             bad_cameras.append(camera)
             camera.transform = None
-    print(len(bad_cameras))
+    print("FLAGGED BAD CAMERAS: ", len(bad_cameras))
 
     # compute overall mean deviation
     tot_avg = [0,0,0]
@@ -253,7 +272,7 @@ if processGroups == True:
     avg_dev = mean(tot_dev)
     #print("AVG DEV: "+str(avg_dev))
 
-    # Identify cameras that are too tightly clustered within a group
+    # Identify cameras that are too tightly clustered within a group (currently disabled)
     local_centers = []
     for group in camera_refs.keys():
         camera_count = 0
@@ -276,13 +295,10 @@ if processGroups == True:
                 camera_err[1] = camera.center[1] - pos_avg[1]
                 camera_err[2] = camera.center[2] - pos_avg[2]
                 loc_dev_arr.append(mag(camera_err))
-                if mag(camera_err) < avg_dev * 0.1:
-                    if camera.enabled != False:
-                        camera.enabled = False
-                        bad_cameras.append(camera)
-        #grp_variance = variance(loc_dev_arr)
-        #std_dev = pstdev(loc_dev_arr)
-        #print(group, grp_variance, std_dev)
+                # if mag(camera_err) < avg_dev * 0.1:
+                #     if camera.enabled != False:
+                #         camera.enabled = False
+                #         bad_cameras.append(camera)
 
     #chunk.remove(bad_cameras)
 
@@ -297,14 +313,8 @@ if processGroups == True:
         if dist > max_dist:
             max_dist = dist
             max_idx = i
-    
-    # add line shape for up axis
-    #chunk.shapes = Metashape.Shapes()
-    #chunk.shapes.crs = chunk.crs
-    #new_shape = chunk.shapes.addShape()
-    #new_shape.geometry.type = Metashape.Geometry.Type.LineStringType
-    #new_shape.geometry = Metashape.Geometry.LineString([Metashape.Vector(chunk_ctr), Metashape.Vector(local_centers[max_idx])])
 
+    # calculate rotation offset to up vector
     curr_dir = Metashape.Vector(local_centers[max_idx]) - Metashape.Vector(chunk_ctr)
     curr_dir = curr_dir.normalized()
     angle = math.acos(sum( [curr_dir[i]*[0,0,1][i] for i in range(len([0,0,1]))] ))
@@ -313,23 +323,29 @@ if processGroups == True:
     rot_offset = matrixFromAxisAngle(axis, angle)
 
     R = chunk.region.rot*(rot_offset*chunk.region.rot.inv())		#Bounding box rotation matrix
-    C = chunk.region.center		#Bounding box center vector
+    C = chunk.region.center		                                    #Bounding box center vector
     T = Metashape.Matrix( [[R[0,0], R[0,1], R[0,2], C[0]], [R[1,0], R[1,1], R[1,2], C[1]], [R[2,0], R[2,1], R[2,2], C[2]], [0, 0, 0, 1]])
     
     chunk.transform.matrix = Metashape.Matrix.Rotation(rot_offset)*Metashape.Matrix.Translation(C).inv() #T.inv()
 
+# disable alignment-only cameras
+if args.align_input != None:
+    for camera in alignCameras:
+        camera.enabled = False
+
 # save post-alignment
-doc.save(imagePath+"\\..\\"+name+"-align.psx")
+doc.save(imagePath+"\\..\\"+basename+"-align.psx")
 chunk = doc.chunks[0]
 
 aligned = [camera for camera in chunk.cameras if camera.transform and camera.type==Metashape.Camera.Type.Regular]
 success_ratio = len(aligned) / len(chunk.cameras) * 100
 print("ALIGNMENT SUCCESS: "+str(success_ratio))
-#sys.exit(1)
+
 # exit out if alignment is less than requirement
 if success_ratio < int(args.align_limit):
     sys.exit("Error: Image alignment does not meet minimum threshold")
 
+#sys.exit(1)
 # optimize cameras
 chunk.optimizeCameras( adaptive_fitting=True )
 
@@ -493,6 +509,6 @@ chunk.exportModel\
 )
 
 chunk.exportCameras(camerasPath)
-chunk.exportReport(imagePath+"\\..\\"+name+"-report.pdf")
+chunk.exportReport(imagePath+"\\..\\"+basename+"-report.pdf")
 
-doc.save(imagePath+"\\..\\"+name+"-mesh.psx", [chunk])
+doc.save(imagePath+"\\..\\"+basename+"-mesh.psx", [chunk])
