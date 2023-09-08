@@ -74,7 +74,7 @@ def matrixFromAxisAngle(axis, angle):
 
     return Metashape.Matrix([[m00, m01, m02],[m10, m11, m12],[m20, m21, m22]])
 
-def model_to_origin(chunk):
+def center_of_geometry_to_origin(chunk):
 	model = chunk.model
 	if not model:
 		print("No model in chunk, script aborted")
@@ -99,6 +99,29 @@ def model_to_origin(chunk):
 	avg = Metashape.Vector([(minx+maxx)/2.0,(miny+maxy)/2.0,(minz+maxz)/2.0])
 	#chunk.region.center = avg
 	chunk.transform.translation = chunk.transform.translation - T.mulp(avg)
+
+def model_to_origin(chunk, camera_refs):
+	model = chunk.model
+	if not model:
+		print("No model in chunk, script aborted")
+		return 0
+	T = chunk.transform.matrix
+
+	local_centers = []
+	for group in camera_refs.keys():
+		camera_count = 0
+
+		pos_avg = [0,0,0]
+		for camera in camera_refs[group]:
+			if camera.center != None:
+				camera_count += 1
+				for i, bi in enumerate(camera.center): pos_avg[i] += bi
+		pos_avg[0] /= camera_count
+		pos_avg[1] /= camera_count
+		pos_avg[2] /= camera_count
+		local_centers.append(pos_avg)
+
+	chunk.transform.translation = chunk.transform.translation - T.mulp(Metashape.Vector(local_centers[0]))
 
 
 #get args
@@ -302,31 +325,38 @@ if processGroups == True:
 
     #chunk.remove(bad_cameras)
 
-
-    # calculate center points
-    chunk_ctr = chunk.region.center
-    max_dist = 0
-    max_idx = -1
-    for i, pos in enumerate(local_centers):
-        dist = mag([chunk_ctr[0] - pos[0], chunk_ctr[1] - pos[1], chunk_ctr[2] - pos[2]])
-        print(dist, max_idx)
-        if dist > max_dist:
-            max_dist = dist
-            max_idx = i
+    # calculate near and far ring centers
+    if len(local_centers) > 1:
+        chunk_ctr = chunk.region.center
+        near_center = local_centers[0]
+        far_center = local_centers[1]
+        dist_near = mag([chunk_ctr[0] - near_center[0], chunk_ctr[1] - near_center[1], chunk_ctr[2] - near_center[2]])
+        dist_far = mag([chunk_ctr[0] - far_center[0], chunk_ctr[1] - far_center[1], chunk_ctr[2] - far_center[2]])
+        if dist_near > dist_far:
+            near_center = local_centers[1]
+            far_center = local_centers[0]
+        print("Info: Using first two rings for axis alignment")
+    else:
+        near_center = chunk.region.center
+        far_center = local_centers[0]
+        print("Info: Using chunk center for axis alignment")
 
     # calculate rotation offset to up vector
-    curr_dir = Metashape.Vector(local_centers[max_idx]) - Metashape.Vector(chunk_ctr)
+    curr_dir = Metashape.Vector(far_center) - Metashape.Vector(near_center)
     curr_dir = curr_dir.normalized()
     angle = math.acos(sum( [curr_dir[i]*[0,0,1][i] for i in range(len([0,0,1]))] ))
     axis = Metashape.Vector.cross(curr_dir,[0,0,1]).normalized()
 
     rot_offset = matrixFromAxisAngle(axis, angle)
 
-    R = chunk.region.rot*(rot_offset*chunk.region.rot.inv())		#Bounding box rotation matrix
-    C = chunk.region.center		                                    #Bounding box center vector
+    R = chunk.region.rot*(rot_offset*chunk.region.rot.inv())		# Bounding box rotation matrix
+    C = chunk.region.center		                                    # Bounding box center vector
     T = Metashape.Matrix( [[R[0,0], R[0,1], R[0,2], C[0]], [R[1,0], R[1,1], R[1,2], C[1]], [R[2,0], R[2,1], R[2,2], C[2]], [0, 0, 0, 1]])
     
     chunk.transform.matrix = Metashape.Matrix.Rotation(rot_offset)*Metashape.Matrix.Translation(C).inv() #T.inv()
+
+    camera_ctr = chunk.transform.matrix.mulp(Metashape.Vector(near_center))
+    chunk.transform.matrix = chunk.transform.matrix*Metashape.Matrix.Translation(Metashape.Vector([camera_ctr[0], camera_ctr[1], 0])).inv()
 
 # disable alignment-only cameras
 if args.align_input != None:
@@ -484,7 +514,7 @@ chunk.updateTransform()
 
 if processGroups == True:
     # Move model to center
-    model_to_origin(chunk)
+    model_to_origin(chunk, camera_refs)
 
 chunk.exportModel\
 (
