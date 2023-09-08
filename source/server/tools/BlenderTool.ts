@@ -95,6 +95,9 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
         else if(settings.mode === "merge") {
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderMergeTextures.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile2)}" "${instance.getFilePath(settings.outputFile)}"`;
         }
+        else if(settings.mode === "screenshot") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderScreenshot.py")}" -- "${inputFilePath}"`;
+        }
 
         const command = `"${this.configuration.executable}" ${operation}`;
 

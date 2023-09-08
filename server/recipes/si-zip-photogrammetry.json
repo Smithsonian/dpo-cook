@@ -72,7 +72,7 @@
                 "type": "boolean",
                 "default": false
             },
-            "isTurntable": {
+            "findTurntableCenter": {
                 "type": "boolean",
                 "default": false
             },
@@ -286,7 +286,7 @@
             "parameters": {
                 "inputMeshFile": "deliverables.meshFile",
                 "outputMeshFile": "deliverables.cleanedMeshFile",
-                "isTurntable": "isTurntable",
+                "isTurntable": "findTurntableCenter",
                 "sceneSize": "sceneSize",
                 "timeout": 1200
             },
@@ -311,6 +311,16 @@
                 "scalebarFile": "scalebarCSV",
                 "tool": "tool",
                 "timeout": 86400
+            },
+            "success": "'screenshot'",
+            "failure": "$failure"
+        },
+        "screenshot": {
+            "task": "Screenshot",
+            "description": "Generate screenshot of result geometry.",
+            "parameters": {
+                "inputMeshFile": "deliverables.finalMeshFile",
+                "timeout": 1200
             },
             "success": "'delivery'",
             "failure": "$failure"

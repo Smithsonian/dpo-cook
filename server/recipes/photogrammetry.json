@@ -290,6 +290,16 @@
                 "tool": "tool",
                 "timeout": 86400
             },
+            "success": "'screenshot'",
+            "failure": "$failure"
+        },
+        "screenshot": {
+            "task": "Screenshot",
+            "description": "Generate screenshot of result geometry.",
+            "parameters": {
+                "inputMeshFile": "deliverables.finalMeshFile",
+                "timeout": 1200
+            },
             "success": "'delivery'",
             "failure": "$failure"
         },
