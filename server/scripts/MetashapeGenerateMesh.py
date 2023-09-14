@@ -197,7 +197,7 @@ if processGroups == True:
         if photo.group == None:
             name = str(photo.label)
             # Remove the sequence number from the base name (CaptureOne Pro formatting)
-            base_name_without_sequence_number = name[0:name.rfind("_")]
+            base_name_without_sequence_number = name[0:name.rfind("-")]
             #print(name + " --> " + base_name_without_sequence_number)
 
             # If this naming pattern doesn't have a camera group yet, create one
@@ -305,9 +305,12 @@ if processGroups == True:
             if camera.center != None:
                 camera_count += 1
                 for i, bi in enumerate(camera.center): pos_avg[i] += bi
-        pos_avg[0] /= camera_count
-        pos_avg[1] /= camera_count
-        pos_avg[2] /= camera_count
+		if camera_count > 0:
+        	pos_avg[0] /= camera_count
+        	pos_avg[1] /= camera_count
+        	pos_avg[2] /= camera_count
+		else:
+			print("ERROR - no cameras aligned!!!")
         local_centers.append(pos_avg)
 
         loc_dev_arr = []
