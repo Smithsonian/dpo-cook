@@ -306,12 +306,12 @@ if processGroups == True:
             if camera.center != None:
                 camera_count += 1
                 for i, bi in enumerate(camera.center): pos_avg[i] += bi
-		if camera_count > 0:
-			pos_avg[0] /= camera_count
-			pos_avg[1] /= camera_count
-			pos_avg[2] /= camera_count
-		else:
-			print("ERROR - no cameras aligned!!!")
+        if camera_count > 0:
+            pos_avg[0] /= camera_count
+            pos_avg[1] /= camera_count
+            pos_avg[2] /= camera_count
+        else:
+            print("ERROR - no cameras aligned!!!")
         local_centers.append(pos_avg)
 
         loc_dev_arr = []
