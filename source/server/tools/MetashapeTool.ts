@@ -24,6 +24,7 @@ export interface IMetashapeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
     alignImageFolder?: string;
+	maskImageFolder?: string;
     outputFile: string;
     mode: string;
     inputModelFile?: string;
@@ -98,6 +99,10 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
             if(settings.alignImageFolder != null) {
                 const alignFolder = instance.getFilePath(path.parse(settings.alignImageFolder).name);
                 operation += ` -ai "${alignFolder}" `;
+            }
+			if(settings.maskImageFolder != null) {
+                const maskFolder = instance.getFilePath(path.parse(settings.maskImageFolder).name);
+                operation += ` -mi "${maskFolder}" `;
             }
             if(settings.turntableGroups != null) {
                 operation += ` -ttg ${settings.turntableGroups} `;

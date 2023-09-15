@@ -101,27 +101,28 @@ def center_of_geometry_to_origin(chunk):
 	chunk.transform.translation = chunk.transform.translation - T.mulp(avg)
 
 def model_to_origin(chunk, camera_refs):
-	model = chunk.model
-	if not model:
-		print("No model in chunk, script aborted")
-		return 0
-	T = chunk.transform.matrix
+    model = chunk.model
+    if not model:
+        print("No model in chunk, script aborted")
+        return 0
+    T = chunk.transform.matrix
 
-	local_centers = []
-	for group in camera_refs.keys():
-		camera_count = 0
+    local_centers = []
+    for group in camera_refs.keys():
+        camera_count = 0
 
-		pos_avg = [0,0,0]
-		for camera in camera_refs[group]:
-			if camera.center != None:
-				camera_count += 1
-				for i, bi in enumerate(camera.center): pos_avg[i] += bi
-		pos_avg[0] /= camera_count
-		pos_avg[1] /= camera_count
-		pos_avg[2] /= camera_count
-		local_centers.append(pos_avg)
+        pos_avg = [0,0,0]
+        for camera in camera_refs[group]:
+            if camera.center != None:
+                camera_count += 1
+                for i, bi in enumerate(camera.center): pos_avg[i] += bi
+        if camera_count > 0:
+            pos_avg[0] /= camera_count
+            pos_avg[1] /= camera_count
+            pos_avg[2] /= camera_count
+            local_centers.append(pos_avg)
 
-	chunk.transform.translation = chunk.transform.translation - T.mulp(Metashape.Vector(local_centers[0]))
+    chunk.transform.translation = chunk.transform.translation - T.mulp(Metashape.Vector(local_centers[0]))
 
 
 #get args
@@ -153,6 +154,7 @@ chunk = doc.addChunk()
 imagePath = args.input
 camerasPath = args.cameras
 processGroups = convert(args.ttg)
+filterMask = args.mask_input != None
 genericPreselection = convert(args.gp)
 basename = os.path.basename(os.path.normpath(args.output))
 basename = os.path.splitext(basename)[0];
@@ -162,6 +164,9 @@ imageFiles=[]
 for r, d, f in walk(imagePath):
     for i, file in enumerate(f):
         imageFiles.append(os.path.join(r, file))
+
+# get image extension
+imageExt = os.path.splitext(imageFiles[0])[1]
 
 # set 'Scale Bar Accuracy' to 0.0001
 chunk.scalebar_accuracy = 0.0001
@@ -213,13 +218,19 @@ if processGroups == True:
 
             camera_refs[base_name_without_sequence_number].append(photo)
 
+if args.mask_input != None:
+    try:
+        chunk.generateMasks(path=args.mask_input+"\\{filename}"+imageExt, masking_mode=Metashape.MaskingMode.MaskingModeFile)
+    except:
+        print("Warning: Missing mask images!")
+
 chunk.matchPhotos\
 (
     downscale=1,
     generic_preselection=genericPreselection,
     reference_preselection=False,
     #reference_preselection_mode=Metashape.ReferencePreselectionSource,
-    filter_mask=False,
+    filter_mask=filterMask,
     mask_tiepoints=False,
     keypoint_limit=args.kp,
     tiepoint_limit=args.tp,
@@ -310,9 +321,9 @@ if processGroups == True:
             pos_avg[0] /= camera_count
             pos_avg[1] /= camera_count
             pos_avg[2] /= camera_count
+            local_centers.append(pos_avg)
         else:
             print("ERROR - no cameras aligned!!!")
-        local_centers.append(pos_avg)
 
         loc_dev_arr = []
         for camera in camera_refs[group]:

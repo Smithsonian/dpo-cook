@@ -36,6 +36,11 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "maskImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "generatePointCloud": {
                 "type": "boolean",
                 "default": false
@@ -117,7 +122,9 @@
             "pre": {
                 "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))",
                 "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)",
-                "sourceFolderBaseName": "$baseName(sourceImageFolder)"
+                "sourceFolderBaseName": "$baseName(sourceImageFolder)",
+				"doAlign": "$exists(alignImageFolder)",
+				"doMask": "$exists(maskImageFolder)"
             },
             "parameters": {
                 "logToConsole": true,
@@ -134,7 +141,8 @@
                 "path": "$firstTrue(pickupPath, $currentDir)",
                 "files": {
                     "sourceImageFolder": "sourceImageFolder",
-                    "alignImageFolder": "alignImageFolder"
+                    "alignImageFolder": "alignImageFolder",
+					"maskImageFolder": "maskImageFolder"
                 }
             },
             "success": "'unzip'",
@@ -147,17 +155,32 @@
                 "inputFile1": "sourceImageFolder",
                 "operation": "'unzip'"
             },
-            "success": "alignImageFolder ? 'unzip-align' : 'make-convert-folder'",
+            "success": "'unzip-align'",
             "failure": "$failure"
         },
         "unzip-align": {
             "task": "Zip",
+			"skip": "$not(doAlign)",
             "description": "Unzip alignment image folder",
             "pre": {
                 "alignFolderBaseName": "$baseName(alignImageFolder)"
             },
             "parameters": {
                 "inputFile1": "alignImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "'unzip-mask'",
+            "failure": "$failure"
+        },
+        "unzip-mask": {
+            "task": "Zip",
+			"skip": "$not(doMask)",
+            "description": "Unzip mask image folder",
+            "pre": {
+                "maskFolderBaseName": "$baseName(maskImageFolder)"
+            },
+            "parameters": {
+                "inputFile1": "maskImageFolder",
                 "operation": "'unzip'"
             },
             "success": "'make-convert-folder'",
@@ -203,6 +226,7 @@
             "parameters": {
                 "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
                 "alignImageFolder": "alignFolderBaseName",
+				"maskImageFolder": "maskFolderBaseName",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.meshFile",
                 "scalebarFile": "scalebarCSV",
