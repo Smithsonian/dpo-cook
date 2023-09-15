@@ -133,6 +133,7 @@ parser.add_argument("-i", "--input", required=True, help="Input filepath")
 parser.add_argument("-c", "--cameras", required=True, help="Cameras filepath")
 parser.add_argument("-o", "--output", required=True, help="Output filename")
 parser.add_argument("-ai", "--align_input", required=False, help="Alignment input filepath")
+parser.add_argument("-mi", "--mask_input", required=False, help="Mask input filepath")
 parser.add_argument("-al", "--align_limit", required=False, help="Alignment threshold (%)")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
@@ -306,9 +307,9 @@ if processGroups == True:
                 camera_count += 1
                 for i, bi in enumerate(camera.center): pos_avg[i] += bi
 		if camera_count > 0:
-        	pos_avg[0] /= camera_count
-        	pos_avg[1] /= camera_count
-        	pos_avg[2] /= camera_count
+			pos_avg[0] /= camera_count
+			pos_avg[1] /= camera_count
+			pos_avg[2] /= camera_count
 		else:
 			print("ERROR - no cameras aligned!!!")
         local_centers.append(pos_avg)
