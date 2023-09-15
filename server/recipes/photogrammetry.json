@@ -79,6 +79,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "saveScreenshot": {
+                "type": "boolean",
+                "default": false
+            },
             "genericPreselection": {
                 "type": "boolean",
                 "default": true
@@ -110,7 +114,7 @@
         ],
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
-            "meshQuality", "customFaceCount"
+            "meshQuality", "customFaceCount", "saveScreenshot"
         ],
         "additionalProperties": false
     },
@@ -319,6 +323,7 @@
         },
         "screenshot": {
             "task": "Screenshot",
+            "skip": "$not(saveScreenshot)",
             "description": "Generate screenshot of result geometry.",
             "parameters": {
                 "inputMeshFile": "deliverables.finalMeshFile",
