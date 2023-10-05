@@ -100,7 +100,7 @@ def center_of_geometry_to_origin(chunk):
 	#chunk.region.center = avg
 	chunk.transform.translation = chunk.transform.translation - T.mulp(avg)
 
-def model_to_origin(chunk, camera_refs):
+def model_to_origin(chunk, camera_refs, name):
     model = chunk.model
     if not model:
         print("No model in chunk, script aborted")
@@ -109,21 +109,30 @@ def model_to_origin(chunk, camera_refs):
 
     local_centers = []
     for group in camera_refs.keys():
-        camera_count = 0
+        if group == name:
+            camera_count = 0
 
-        pos_avg = [0,0,0]
-        for camera in camera_refs[group]:
-            if camera.center != None:
-                camera_count += 1
-                for i, bi in enumerate(camera.center): pos_avg[i] += bi
-        if camera_count > 0:
-            pos_avg[0] /= camera_count
-            pos_avg[1] /= camera_count
-            pos_avg[2] /= camera_count
-            local_centers.append(pos_avg)
+            pos_avg = [0,0,0]
+            for camera in camera_refs[group]:
+                if camera.center != None:
+                    camera_count += 1
+                    for i, bi in enumerate(camera.center): pos_avg[i] += bi
+            if camera_count > 0:
+                pos_avg[0] /= camera_count
+                pos_avg[1] /= camera_count
+                pos_avg[2] /= camera_count
+                local_centers.append(pos_avg)
 
     chunk.transform.translation = chunk.transform.translation - T.mulp(Metashape.Vector(local_centers[0]))
 
+def get_background_masks(mask_path):
+    masks = []
+    for r, d, f in walk(mask_path):
+        for file in f:
+            filename = os.path.splitext(file)[0]
+            delimeter = filename[filename.rfind("-"):]
+            masks.append({"key":delimeter,"name":file})
+    return masks
 
 #get args
 argv = sys.argv
@@ -183,7 +192,7 @@ if args.align_input != None:
     alignPath = args.align_input
     camera_group = chunk.addCameraGroup()
     camera_group.label = "alignment_images"
-    camera_groups["alignment_images"] = camera_group
+    #camera_groups["alignment_images"] = camera_group
     for r, d, f in walk(alignPath):
         for i, file in enumerate(f):
             alignImages.append(os.path.join(r, file))
@@ -219,10 +228,29 @@ if processGroups == True:
             camera_refs[base_name_without_sequence_number].append(photo)
 
 if args.mask_input != None:
+    mask_count = len([name for name in os.listdir(args.mask_input+"\\") if os.path.isfile(args.mask_input+"\\"+name)])
+    print("Number of masks", mask_count)
     try:
-        chunk.generateMasks(path=args.mask_input+"\\{filename}"+imageExt, masking_mode=Metashape.MaskingMode.MaskingModeFile)
+        if mask_count > 10:  # assumes per-image mask
+            chunk.generateMasks(path=args.mask_input+"\\{filename}"+imageExt, masking_mode=Metashape.MaskingMode.MaskingModeFile)
+        else:  # otherwise generate device specific masks
+            masks = get_background_masks(args.mask_input)
+            for mask in masks:
+                key = mask["key"]
+                camera_filter = list(filter(lambda x: key in x.label, chunk.cameras))
+                chunk.generateMasks \
+                    (
+                        path=args.mask_input+"\\"+mask["name"],
+                        masking_mode=Metashape.MaskingModeBackground,
+                        mask_operation=Metashape.MaskOperationReplacement,
+                        tolerance=30,
+                        cameras=camera_filter,
+                        mask_defocus=False,
+                        fix_coverage=True,
+                    )
+
     except:
-        print("Warning: Missing mask images!")
+        print("Warning: Mask generation error!")
 
 chunk.matchPhotos\
 (
@@ -321,7 +349,7 @@ if processGroups == True:
             pos_avg[0] /= camera_count
             pos_avg[1] /= camera_count
             pos_avg[2] /= camera_count
-            local_centers.append(pos_avg)
+            local_centers.append({"name": group, "ctr": pos_avg})
         else:
             print("ERROR - no cameras aligned!!!")
 
@@ -343,17 +371,41 @@ if processGroups == True:
     # calculate near and far ring centers
     if len(local_centers) > 1:
         chunk_ctr = chunk.region.center
-        near_center = local_centers[0]
-        far_center = local_centers[1]
-        dist_near = mag([chunk_ctr[0] - near_center[0], chunk_ctr[1] - near_center[1], chunk_ctr[2] - near_center[2]])
-        dist_far = mag([chunk_ctr[0] - far_center[0], chunk_ctr[1] - far_center[1], chunk_ctr[2] - far_center[2]])
-        if dist_near > dist_far:
-            near_center = local_centers[1]
-            far_center = local_centers[0]
-        print("Info: Using first two rings for axis alignment")
+        ring_sort_arr = []
+        filtered_ctrs = list(filter(lambda x: "-s01" in x["name"], local_centers))
+        for center in filtered_ctrs:
+            aligned = [camera for camera in camera_refs[center["name"]] if camera.transform and camera.type==Metashape.Camera.Type.Regular]
+            success_ratio = len(aligned) / len(camera_refs[center["name"]]) * 100     
+            if success_ratio > 75:
+                dist = mag([chunk_ctr[0] - center["ctr"][0], chunk_ctr[1] - center["ctr"][1], chunk_ctr[2] - center["ctr"][2]])       
+                ring_sort_arr.append({"name": center["name"], "distance": dist})
+
+        # find far idx
+        direction = 0
+        for idx in range(len(ring_sort_arr)-1):
+            if ring_sort_arr[idx+1]["distance"] > ring_sort_arr[idx]["distance"]:
+                direction += 1
+            else:
+                direction -= 1
+
+        if direction > 0:
+            far_idx = len(ring_sort_arr)-1
+        elif direction < 0:
+            far_idx = 0
+        else:
+            far_idx = 0
+            print("Warning: Could not find approriate capture ring for alignment. Using first encountered.")
+     
+        far_center = next(x for x in local_centers if x["name"] == ring_sort_arr[far_idx]["name"])["ctr"]
+        if far_idx > 0:
+            near_center = next(x for x in local_centers if x["name"] == ring_sort_arr[far_idx-1]["name"])["ctr"]
+        else:
+            near_center = next(x for x in local_centers if x["name"] == ring_sort_arr[far_idx+1]["name"])["ctr"]
+        align_ring_name = ring_sort_arr[far_idx]["name"]
+        print("Info: Using " + align_ring_name + " for axis alignment")
     else:
         near_center = chunk.region.center
-        far_center = local_centers[0]
+        far_center = local_centers[0]["ctr"]
         print("Info: Using chunk center for axis alignment")
 
     # calculate rotation offset to up vector
@@ -529,7 +581,7 @@ chunk.updateTransform()
 
 if processGroups == True:
     # Move model to center
-    model_to_origin(chunk, camera_refs)
+    model_to_origin(chunk, camera_refs, align_ring_name)
 
 chunk.exportModel\
 (
