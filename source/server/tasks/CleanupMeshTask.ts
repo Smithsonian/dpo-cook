@@ -130,7 +130,7 @@ export default class CleanupMeshTask extends ToolTask
                 {
                     name: "ConditionalFaceSelect",
                     params: {
-                        "condSelect": 'abs(x0)&lt;'+params.sceneSize[0]*0.02+' &amp;&amp; abs(y0)&lt;'+params.sceneSize[1]*0.02 //+' &amp;&amp; abs(z0)&lt;'+params.sceneSize[2]*0.1
+                        "condSelect": 'abs(x0)&lt;'+params.sceneSize[0]*0.015+' &amp;&amp; abs(y0)&lt;'+params.sceneSize[1]*0.015 //+' &amp;&amp; abs(z0)&lt;'+params.sceneSize[2]*0.1
                     }
                 },
                 {

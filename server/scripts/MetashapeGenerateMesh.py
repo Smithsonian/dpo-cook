@@ -155,6 +155,7 @@ parser.add_argument("-dmn", required=False, default=16, help="Depth map max neig
 parser.add_argument("-ttg", required=False, default="False", help="Process turntable groups")
 parser.add_argument("-mq", required=False, default=2, help="Model resolution quality")
 parser.add_argument("-cfc", required=False, default=3000000, help="Custom model face count")
+parser.add_argument("-dmq", required=False, default=0, help="Depth map quality")
 args = parser.parse_args()
 
 doc = Metashape.app.document
@@ -514,7 +515,7 @@ if args.sb != None:
 # Ultrahigh setting loads the image data at full resolution, High downsamples x2, medium downsamples x4, low x8
 chunk.buildDepthMaps\
 (
-    downscale=1,
+    downscale=pow(2,int(args.dmq)),
     filter_mode=Metashape.MildFiltering,
     reuse_depth=False,
     max_neighbors=args.dmn,

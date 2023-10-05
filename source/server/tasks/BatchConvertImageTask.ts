@@ -35,6 +35,8 @@ export interface IBatchConvertImageTaskParameters extends ITaskParameters
     quality?: number;
     /** Filetype to convert images to. */
     filetype?: string;
+    /** Clips image to black (value < 128) or white (value > 128) */
+    level?: number;
 }
 
 /**
@@ -55,7 +57,8 @@ export default class BatchConvertImageTask extends ToolTask
             inputImageFolder: { type: "string", minLength: 1 },
             outputImageFolder: { type: "string", minLength: 1 },
             quality: { type: "integer", minimum: 0, maximum: 100, default: 70 },
-            filetype: { type: "string", default: "jpg" }
+            filetype: { type: "string", default: "jpg" },
+            level: { type: "integer", minimum: 0, maximum: 255}
         },
         required: [
             "inputImageFolder",
@@ -76,7 +79,8 @@ export default class BatchConvertImageTask extends ToolTask
             inputImageFolder: params.inputImageFolder,
             outputImageFolder: params.outputImageFolder,
             quality: params.quality,
-            batchConvertType: params.filetype
+            batchConvertType: params.filetype,
+            level: params.level
         };
 
         this.addTool("ImageMagick", settings);

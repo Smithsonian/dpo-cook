@@ -39,6 +39,7 @@ export interface IMetashapeToolSettings extends IToolSettings
     depthMaxNeighbors?: number;
     genericPreselection?: boolean;
     meshQuality?: string;
+    depthMapQuality?: string;
     customFaceCount?: number;
 }
 
@@ -121,6 +122,11 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
                 if(qualityIdx == 3) {
                     operation += ` -cfc ${settings.customFaceCount} `;
                 }
+            }
+            if(settings.depthMapQuality) {
+                const opts = [ "Highest", "High", "Medium", "Low" ];
+                const qualityIdx = opts.findIndex((e) => e == settings.depthMapQuality);
+                operation += ` -dmq ${qualityIdx} `;
             }
         }
         else if(settings.mode === "texture") {

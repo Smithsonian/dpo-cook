@@ -107,6 +107,24 @@
             "customFaceCount": {
                 "type": "number",
                 "default": 3000000
+            },
+            "depthMapQuality": {
+                "type": "string",
+                "enum": [
+                    "Low",
+                    "Medium",
+                    "High",
+                    "Highest"
+                ],
+                "default": "Highest"
+            },
+            "levelClipAlign": {
+                "type": "boolean",
+                "default": false
+            },
+            "clipLevel": {
+                "type": "number",
+                "default": 150
             }
         },
         "required": [
@@ -114,7 +132,7 @@
         ],
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
-            "meshQuality", "customFaceCount", "saveScreenshot"
+            "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel"
         ],
         "additionalProperties": false
     },
@@ -172,6 +190,37 @@
             "parameters": {
                 "inputFile1": "alignImageFolder",
                 "operation": "'unzip'"
+            },
+            "success": "'make-level-clip-folder'",
+            "failure": "$failure"
+        },
+        "make-level-clip-folder": {
+            "task": "FileOperation",
+            "skip": "$not(levelClipAlign)",
+            "description": "Create folder for converted images",
+            "pre": {
+                "sourceFolderConverted": "'clipped_alignment'"
+            },
+            "parameters": {
+                "operation": "'CreateFolder'",
+                "name": "sourceFolderConverted"
+            },
+            "success": "'level-align'",
+            "failure": "$failure"
+        },
+        "level-align": {
+            "task": "BatchConvertImage",
+			"skip": "$not(levelClipAlign)",
+            "description": "Generate level-clipped alignment images",
+            "parameters": {
+                "inputImageFolder": "sourceFolderBaseName",
+                "outputImageFolder": "sourceFolderConverted",
+                "filetype": "jpg",
+                "quality": "85",
+                "level": "clipLevel"
+            },
+            "post": {
+                "alignFolderBaseName": "$baseName(sourceFolderConverted)"
             },
             "success": "'unzip-mask'",
             "failure": "$failure"
@@ -244,6 +293,7 @@
                 "depthMaxNeighbors": "depthMaxNeighbors",
                 "meshQuality": "meshQuality",
                 "customFaceCount": "customFaceCount",
+                "depthMapQuality": "depthMapQuality",
                 "tool": "tool",
                 "timeout": 86400
             },
