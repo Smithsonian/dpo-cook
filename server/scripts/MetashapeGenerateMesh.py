@@ -450,7 +450,7 @@ print("ALIGNMENT SUCCESS: "+str(success_ratio))
 if success_ratio < int(args.align_limit):
     sys.exit("Error: Image alignment does not meet minimum threshold")
 
-sys.exit(1)
+#sys.exit(1)
 # optimize cameras
 chunk.optimizeCameras( adaptive_fitting=True )
 
