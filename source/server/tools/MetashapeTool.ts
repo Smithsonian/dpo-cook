@@ -41,6 +41,7 @@ export interface IMetashapeToolSettings extends IToolSettings
     meshQuality?: string;
     depthMapQuality?: string;
     customFaceCount?: number;
+    maskMode?: string;
 }
 
 export type MetashapeInstance = ToolInstance<MetashapeTool, IMetashapeToolSettings>;
@@ -104,6 +105,9 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 			if(settings.maskImageFolder != null) {
                 const maskFolder = instance.getFilePath(path.parse(settings.maskImageFolder).name);
                 operation += ` -mi "${maskFolder}" `;
+            }
+            if(settings.maskMode != null) {
+                operation += ` -mm ${settings.maskMode} `;
             }
             if(settings.turntableGroups != null) {
                 operation += ` -ttg ${settings.turntableGroups} `;

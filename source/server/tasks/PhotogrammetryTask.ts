@@ -64,6 +64,8 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     customFaceCount?: number;
     /** Preset for depth map quality ("Low", "Medium", "High", "Highest") */
     depthMapQuality?: string;
+    /** Desired masking operation */
+    maskMode?: "File" | "Background";
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
@@ -102,6 +104,7 @@ export default class PhotogrammetryTask extends ToolTask
             meshQuality: { type: "string", enum: [ "Low", "Medium", "High", "Highest", "Custom" ], default: "High"},
             customFaceCount: { type: "integer", default: 3000000},
             depthMapQuality: { type: "string", enum: [ "Low", "Medium", "High", "Highest" ], default: "Highest"},
+            maskMode: { type: "string", enum: [ "File", "Background" ], default: "File"},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
         },
@@ -138,6 +141,7 @@ export default class PhotogrammetryTask extends ToolTask
                 meshQuality: params.meshQuality,
                 customFaceCount: params.customFaceCount,
                 depthMapQuality: params.depthMapQuality,
+                maskMode: params.maskMode,
                 mode: "full",
                 timeout: params.timeout
             };

@@ -125,6 +125,14 @@
             "clipLevel": {
                 "type": "number",
                 "default": 150
+            },
+            "maskMode": {
+                "type": "string",
+                "enum": [
+                    "File",
+                    "Background"
+                ],
+                "default": "File"
             }
         },
         "required": [
@@ -132,7 +140,7 @@
         ],
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
-            "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel"
+            "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel", "maskMode"
         ],
         "additionalProperties": false
     },
@@ -294,6 +302,7 @@
                 "meshQuality": "meshQuality",
                 "customFaceCount": "customFaceCount",
                 "depthMapQuality": "depthMapQuality",
+                "maskMode": "maskMode",
                 "tool": "tool",
                 "timeout": 86400
             },

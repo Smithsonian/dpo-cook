@@ -144,6 +144,7 @@ parser.add_argument("-c", "--cameras", required=True, help="Cameras filepath")
 parser.add_argument("-o", "--output", required=True, help="Output filename")
 parser.add_argument("-ai", "--align_input", required=False, help="Alignment input filepath")
 parser.add_argument("-mi", "--mask_input", required=False, help="Mask input filepath")
+parser.add_argument("-mm", "--mask_mode", required=False, help="Masking mode")
 parser.add_argument("-al", "--align_limit", required=False, help="Alignment threshold (%)")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
@@ -228,12 +229,18 @@ if processGroups == True:
 
             camera_refs[base_name_without_sequence_number].append(photo)
 
+# Add/generate masks
 if args.mask_input != None:
     mask_count = len([name for name in os.listdir(args.mask_input+"\\") if os.path.isfile(args.mask_input+"\\"+name)])
+    # determine mask mode
+    if args.mask_mode == "Background":
+        mask_mode = Metashape.MaskingMode.MaskingModeBackground
+    else:
+        mask_mode = Metashape.MaskingMode.MaskingModeFile
     print("Number of masks", mask_count)
     try:
         if mask_count > 10:  # assumes per-image mask
-            chunk.generateMasks(path=args.mask_input+"\\{filename}"+imageExt, masking_mode=Metashape.MaskingMode.MaskingModeFile)
+            chunk.generateMasks(path=args.mask_input+"\\{filename}"+imageExt, masking_mode=mask_mode)
         else:  # otherwise generate device specific masks
             masks = get_background_masks(args.mask_input)
             for mask in masks:
@@ -242,7 +249,7 @@ if args.mask_input != None:
                 chunk.generateMasks \
                     (
                         path=args.mask_input+"\\"+mask["name"],
-                        masking_mode=Metashape.MaskingModeBackground,
+                        masking_mode=mask_mode,
                         mask_operation=Metashape.MaskOperationReplacement,
                         tolerance=30,
                         cameras=camera_filter,
@@ -443,7 +450,7 @@ print("ALIGNMENT SUCCESS: "+str(success_ratio))
 if success_ratio < int(args.align_limit):
     sys.exit("Error: Image alignment does not meet minimum threshold")
 
-#sys.exit(1)
+sys.exit(1)
 # optimize cameras
 chunk.optimizeCameras( adaptive_fitting=True )
 
