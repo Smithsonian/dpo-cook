@@ -122,7 +122,8 @@ def model_to_origin(chunk, camera_refs, name):
                 pos_avg[1] /= camera_count
                 pos_avg[2] /= camera_count
                 local_centers.append(pos_avg)
-
+    print("MESH ALIGN: ", T.mulp(Metashape.Vector(local_centers[0])))
+    print(chunk.transform.translation, Metashape.Vector(local_centers[0]))
     chunk.transform.translation = chunk.transform.translation - T.mulp(Metashape.Vector(local_centers[0]))
 
 def get_background_masks(mask_path):
