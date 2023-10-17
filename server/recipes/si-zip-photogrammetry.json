@@ -134,6 +134,18 @@
                     "Background"
                 ],
                 "default": "File"
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
             }
         },
         "required": [
@@ -319,7 +331,8 @@
                 "camerasFile": "baseMeshName & '-cameras.xml'",
                 "deliverables": {
                     "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'",
-                    "textureFile": "baseMeshName & '-texture-' & '.png'"
+                    "textureFile": "baseMeshName & '-' & $lowercase(tool) & '.tif'",
+                    "mtlFile": "baseMeshName & '-' & $lowercase(tool) & '.mtl'"
                 }
             },
             "parameters": {
@@ -383,7 +396,8 @@
             "description": "Cleanup common issues with mesh.",
             "pre": {
                 "deliverables": {
-                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'"
+                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'",
+                    "cleanedMtlFile": "baseMeshName & '-cleaned' & '.obj.mtl'"
                 }
             },
             "parameters": {
@@ -403,7 +417,8 @@
             "pre": {
                 "deliverables": {
                     "finalMeshFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.obj'",
-                    "textureFile": "baseMeshName & '-raw_clean' & '.png'"
+                    "finalTextureFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.tif'",
+                    "finalMtlFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.mtl'"
                 }
             },
             "parameters": {
@@ -425,6 +440,64 @@
             "parameters": {
                 "inputMeshFile": "deliverables.finalMeshFile",
                 "timeout": 1200
+            },
+            "success": "'zip-proj-align'",
+            "failure": "$failure"
+        },
+        "zip-proj-align": {
+            "task": "Zip",
+            "description": "Zip photogrammetry project files for align stage",
+            "pre": {
+                "deliverables": {
+                    "alignProjZip": "baseMeshName & '-' & $lowercase(tool) & '-align.files.zip'",
+                    "alignProjFile": "baseMeshName & '-' & $lowercase(tool) & '-align.psx'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-align.files'",
+                "fileFilter": "filetype",
+                "recursive": true,
+                "outputFile": "deliverables.alignProjZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'zip-proj-mesh'",
+            "failure": "$failure"
+        },
+        "zip-proj-mesh": {
+            "task": "Zip",
+            "description": "Zip photogrammetry project files for mesh stage",
+            "pre": {
+                "deliverables": {
+                    "meshProjZip": "baseMeshName & '-' & $lowercase(tool) & '-mesh.files.zip'",
+                    "meshProjFile": "baseMeshName & '-' & $lowercase(tool) & '-mesh.psx'",
+                    "meshProjReport": "baseMeshName & '-' & $lowercase(tool) & '-report.pdf'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-mesh.files'",
+                "fileFilter": "filetype",
+                "recursive": true,
+                "outputFile": "deliverables.meshProjZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'zip-proj-final'",
+            "failure": "$failure"
+        },
+        "zip-proj-final": {
+            "task": "Zip",
+            "description": "Zip photogrammetry project files for final stage",
+            "pre": {
+                "deliverables": {
+                    "finalProjZip": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.files.zip'",
+                    "finalProjFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.psx'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-raw_clean.files'",
+                "fileFilter": "filetype",
+                "recursive": true,
+                "outputFile": "deliverables.finalProjZip",
+                "operation": "'path-zip'"
             },
             "success": "'delivery'",
             "failure": "$failure"
