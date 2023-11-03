@@ -195,7 +195,7 @@ if args.align_input != None:
     alignPath = args.align_input
     camera_group = chunk.addCameraGroup()
     camera_group.label = "alignment_images"
-    #camera_groups["alignment_images"] = camera_group
+    camera_groups["alignment_images"] = camera_group
     for r, d, f in walk(alignPath):
         for i, file in enumerate(f):
             alignImages.append(os.path.join(r, file))
@@ -613,6 +613,12 @@ chunk.exportModel\
     save_comment=True,
     format=Metashape.ModelFormatOBJ,
 )
+
+# remove alignment-only cameras
+if args.align_input != None:
+    for camera in chunk.cameras:
+        if camera.group != None and camera.group.label == "alignment_images":
+            chunk.remove(camera)
 
 chunk.exportCameras(camerasPath)
 chunk.exportReport(imagePath+"\\..\\"+basename+"-report.pdf")
