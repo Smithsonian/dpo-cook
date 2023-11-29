@@ -601,7 +601,7 @@ chunk.exportModel\
     save_texture=True,
     save_uv=True,
     save_normals=True,
-    save_colors=True,
+    save_colors=False,
     save_cameras=True,
     save_markers=True,
     save_udim=False,
