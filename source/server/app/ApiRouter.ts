@@ -161,6 +161,7 @@ export default class ApiRouter
         this.router.get("/machine", (req, res) => {
             const state = jobManager.getState();
             res.set('Access-Control-Allow-Origin', '*');
+            res.set('Access-Control-Allow-Private-Network', 'true');
             return res.json(state);
         })
     }
