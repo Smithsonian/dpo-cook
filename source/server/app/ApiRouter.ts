@@ -160,6 +160,7 @@ export default class ApiRouter
         // machine state
         this.router.get("/machine", (req, res) => {
             const state = jobManager.getState();
+            res.set('Access-Control-Allow-Origin', '*');
             return res.json(state);
         })
     }
