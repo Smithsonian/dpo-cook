@@ -25,7 +25,7 @@ ms = pymeshlab.MeshSet()
 ms.load_new_mesh(args.input)
 
 # make sure mesh is pure triangles
-ms.apply_filter("turn_into_a_pure_triangular_mesh")
+ms.apply_filter("meshing_poly_to_tri")
 
 # load the filter script and execute
 ms.load_filter_script(args.script)
