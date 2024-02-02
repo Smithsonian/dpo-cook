@@ -23,7 +23,6 @@ export interface IRealityCaptureToolSettings extends IToolSettings
     imageInputFolder: string;
     outputFile?: string;
     scalebarFile?: string;
-    generatePointCloud?: boolean;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

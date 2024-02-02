@@ -34,7 +34,7 @@ export interface IScreenshotTaskParameters extends ITaskParameters
 }
 
 /**
- * Merges a multi-mesh model file into one .obj and texture
+ * Generates a screenshot of the provided geometry
  *
  * Parameters: [[IScreenshotTaskParameters]].
  * Tool: [[BlenderTool]].

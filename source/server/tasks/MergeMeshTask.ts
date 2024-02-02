@@ -59,7 +59,8 @@ export default class MergeMeshTask extends ToolTask
         },
         required: [
             "inputMeshFile",
-            "outputMeshFile"
+            "outputMeshFile",
+            "outputTextureFile"
         ],
         additionalProperties: false
     };

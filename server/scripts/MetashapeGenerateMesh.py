@@ -149,7 +149,6 @@ parser.add_argument("-mm", "--mask_mode", required=False, help="Masking mode")
 parser.add_argument("-al", "--align_limit", required=False, help="Alignment threshold (%)")
 parser.add_argument("-sb", required=False, help="Scalebar definition file")
 parser.add_argument("-optm", required=False, default="False", help="Optimize markers")
-parser.add_argument("-bdc", required=False, default="False", help="Build dense cloud")
 parser.add_argument("-tp", required=False, default=25000, help="Tiepoint limit")
 parser.add_argument("-kp", required=False, default=75000, help="Keypoint limit")
 parser.add_argument("-gp", required=False, default="True", help="Generic preselection")
@@ -532,23 +531,6 @@ chunk.buildDepthMaps\
     max_workgroup_size=100
 )
 
-denseCloudFlag = convert(args.bdc);
-if denseCloudFlag == True:
-    # build dense cloud
-    # the quality of the dense cloud is determined by the quality of the depth maps
-    # "max_neighbors" value of '-1' will evaluate ALL IMAGES in parallel. 200-300 is good when there is a lot of image overlap.
-    # setting this value will fix an issue where there is excessive 'fuzz' in the dense cloud. the default value is 100.
-    chunk.buildDenseCloud\
-    (
-        point_colors=True,
-        point_confidence=True,
-        keep_depth=True,
-        max_neighbors=300,
-        subdivide_task=True,
-        workitem_size_cameras=20,
-        max_workgroup_size=100
-    )
-
 modelQuality = [Metashape.FaceCount.LowFaceCount, Metashape.FaceCount.MediumFaceCount, Metashape.FaceCount.HighFaceCount, Metashape.FaceCount.CustomFaceCount]
 
 chunk.buildModel\
@@ -557,7 +539,7 @@ chunk.buildModel\
     interpolation=Metashape.DisabledInterpolation,
     face_count = modelQuality[3] if int(args.mq) < 0 else modelQuality[int(args.mq)],
     face_count_custom = 0 if int(args.mq) < 0 else args.cfc,
-    source_data = Metashape.DenseCloudData if denseCloudFlag == True else Metashape.DepthMapsData,
+    source_data = Metashape.DepthMapsData,
     vertex_colors=False,
     vertex_confidence=True,
     volumetric_masks=False,

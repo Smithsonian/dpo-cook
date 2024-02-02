@@ -30,7 +30,6 @@ export interface IMetashapeToolSettings extends IToolSettings
     inputModelFile?: string;
     camerasFile?: string;
     scalebarFile?: string;
-    generatePointCloud?: boolean;
     optimizeMarkers?: boolean;
     alignmentLimit?: number;
     tiepointLimit?: number;
@@ -93,7 +92,7 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         if(settings.mode === "full") {
             operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
 
-            operation += ` -bdc ${settings.generatePointCloud} -optm ${settings.optimizeMarkers} -tp ${settings.tiepointLimit} -kp ${settings.keypointLimit} `;
+            operation += ` -optm ${settings.optimizeMarkers} -tp ${settings.tiepointLimit} -kp ${settings.keypointLimit} `;
 
             if(settings.alignmentLimit != null) {
                 operation += ` -al ${settings.alignmentLimit} `;

@@ -23,7 +23,6 @@ export interface IMeshroomToolSettings extends IToolSettings
     imageInputFolder: string;
     outputFile?: string;
     scalebarFile?: string;
-    generatePointCloud?: boolean;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

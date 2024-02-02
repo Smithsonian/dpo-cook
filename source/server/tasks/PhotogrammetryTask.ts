@@ -42,8 +42,6 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     camerasFile: string;
     /** CSV file with scalebar markers and distances */
     scalebarFile: string;
-    /** Flag to enable building a dense point cloud */
-    generatePointCloud: boolean;
     /** Flag to enable discarding high-error markers */
     optimizeMarkers: boolean;
     /** Percent success required to pass alignment stage */
@@ -93,7 +91,6 @@ export default class PhotogrammetryTask extends ToolTask
             outputFile: { type: "string", minLength: 1 },
             camerasFile: { type: "string", minLength: 1 },
             scalebarFile: { type: "string", minLength: 1 },
-            generatePointCloud: { type: "boolean", default: false},
             optimizeMarkers: { type: "boolean", default: false},
             alignmentLimit: { type: "number", default: 50},
             tiepointLimit: { type: "integer", default: 25000},
@@ -130,7 +127,6 @@ export default class PhotogrammetryTask extends ToolTask
                 outputFile: params.outputFile,
                 camerasFile: params.camerasFile,
                 scalebarFile: params.scalebarFile,
-                generatePointCloud: params.generatePointCloud,
                 optimizeMarkers: params.optimizeMarkers,
                 alignmentLimit: params.alignmentLimit,
                 tiepointLimit: params.tiepointLimit,
@@ -153,7 +149,6 @@ export default class PhotogrammetryTask extends ToolTask
                 imageInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
                 scalebarFile: params.scalebarFile,
-                generatePointCloud: params.generatePointCloud,
                 timeout: params.timeout
             };
 
@@ -164,7 +159,6 @@ export default class PhotogrammetryTask extends ToolTask
                 imageInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
                 scalebarFile: params.scalebarFile,
-                generatePointCloud: params.generatePointCloud,
                 timeout: params.timeout
             };
 

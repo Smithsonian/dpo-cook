@@ -41,10 +41,6 @@
                 "minLength": 1,
                 "format": "file"
             },
-            "generatePointCloud": {
-                "type": "boolean",
-                "default": false
-            },
             "optimizeMarkers": {
                 "type": "boolean",
                 "default": false
@@ -291,7 +287,6 @@
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.meshFile",
                 "scalebarFile": "scalebarCSV",
-                "generatePointCloud": "generatePointCloud",
                 "optimizeMarkers": "optimizeMarkers",
                 "alignmentLimit": "alignmentLimit",
                 "tiepointLimit": "tiepointLimit",
