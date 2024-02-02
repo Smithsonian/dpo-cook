@@ -32,6 +32,8 @@ export interface ISevenZipToolSettings extends IToolSettings
     inputFile7: string;
     inputFile8: string;
     compressionLevel: number;
+    fileFilter: string;
+    recursive: boolean;
     operation: string;
     outputFile: string;
 }
@@ -75,6 +77,14 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
             const name = path.parse(settings.inputFile1).name;
 
             operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}\\${name}\\" -r`;
+        }
+        else if(settings.operation === "path-zip") {
+            operation += `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
+            operation += ` "${settings.inputFile1}\\*.${settings.fileFilter ? settings.fileFilter : "*"}"`;
+
+            if(settings.recursive === true) {
+                operation += ` -r`;
+            }
         }
 
         //if (!inputFilePath) {

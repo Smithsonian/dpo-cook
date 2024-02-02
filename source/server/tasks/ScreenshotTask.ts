@@ -24,59 +24,49 @@ import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/** Parameters for [[MergeMeshTask]]. */
-export interface IMergeMeshTaskParameters extends ITaskParameters
+/** Parameters for [[ScreenshotTask]]. */
+export interface IScreenshotTaskParameters extends ITaskParameters
 {
     /** Input mesh file name. */
     inputMeshFile: string;
-    /** Output mesh file name. */
-    outputMeshFile: string;
-    /** Output texture file name. */
-    outputTextureFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
 
 /**
- * Merges a multi-mesh model file into one .obj and texture
+ * Generates a screenshot of the provided geometry
  *
- * Parameters: [[IMergeMeshTaskParameters]].
+ * Parameters: [[IScreenshotTaskParameters]].
  * Tool: [[BlenderTool]].
  */
-export default class MergeMeshTask extends ToolTask
+export default class ScreenshotTask extends ToolTask
 {
-    static readonly taskName = "MergeMesh";
+    static readonly taskName = "Screenshot";
 
-    static readonly description = "Merges a multi-mesh model file into one .obj and texture";
+    static readonly description = "Generates a screenshot of the provided geometry";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
             inputMeshFile: { type: "string", minLength: 1 },
-            outputMeshFile: { type: "string", minLength: 1 },
-            outputTextureFile: { type: "string" },
             timeout: { type: "integer", default: 0 }
         },
         required: [
-            "inputMeshFile",
-            "outputMeshFile",
-            "outputTextureFile"
+            "inputMeshFile"
         ],
         additionalProperties: false
     };
 
     static readonly parameterValidator =
-        Task.jsonValidator.compile(MergeMeshTask.parameterSchema);
+        Task.jsonValidator.compile(ScreenshotTask.parameterSchema);
 
-    constructor(params: IMergeMeshTaskParameters, context: Job)
+    constructor(params: IScreenshotTaskParameters, context: Job)
     {
         super(params, context);
 
         const settings: IBlenderToolSettings = {
             inputMeshFile: params.inputMeshFile,
-            outputFile: params.outputMeshFile,
-            outputFile2: params.outputTextureFile,
-            mode: "merge",
+            mode: "screenshot",
             timeout: params.timeout
         };
 

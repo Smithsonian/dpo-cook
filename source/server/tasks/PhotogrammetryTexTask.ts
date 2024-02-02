@@ -103,7 +103,6 @@ export default class PhotogrammetryTexTask extends ToolTask
                 imageInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
                 scalebarFile: params.scalebarFile,
-                generatePointCloud: params.generatePointCloud,
                 timeout: params.timeout
             };
 
@@ -114,7 +113,6 @@ export default class PhotogrammetryTexTask extends ToolTask
                 imageInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
                 scalebarFile: params.scalebarFile,
-                generatePointCloud: params.generatePointCloud,
                 timeout: params.timeout
             };
 

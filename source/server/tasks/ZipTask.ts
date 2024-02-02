@@ -38,11 +38,15 @@ export interface IZipTaskParameters extends ITaskParameters
     inputFile7?: string;
     inputFile8?: string;
     /** The type of zip operation we want to do. */
-    operation: "zip" | "unzip";
+    operation: "zip" | "unzip" | "path-zip";
     /** Name to give generated zip file. */
     outputFile?: string;
     /** Degree of compression */
     compressionLevel?,
+    /** Flag to recurse sub-directories */
+    recursive?,
+    /** Filetype to filter for */
+    fileFilter?,
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Default tool is 7Zip. Specify another tool if needed. */
@@ -71,9 +75,11 @@ export default class ZipTask extends ToolTask
             inputFile6: { type: "string" },
             inputFile7: { type: "string" },
             inputFile8: { type: "string" },
-            operation: { type: "string", enum: [ "zip", "unzip" ] },
+            operation: { type: "string", enum: [ "zip", "unzip", "path-zip" ] },
             outputFile: { type: "string", minLength: 1, default: "CookArchive.zip" },
             compressionLevel: { type: "integer", minimum: 0, default: 5 },
+            fileFilter: { type: "string" },
+            recursive: { type: "boolean", default: false },
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "SevenZip" ], default: "SevenZip" }
         },
@@ -101,6 +107,8 @@ export default class ZipTask extends ToolTask
                 inputFile7: params.inputFile7,
                 inputFile8: params.inputFile8,
                 compressionLevel: params.compressionLevel,
+                recursive: params.recursive,
+                fileFilter: params.fileFilter,
                 operation: params.operation,
                 outputFile: params.outputFile,
                 timeout: params.timeout

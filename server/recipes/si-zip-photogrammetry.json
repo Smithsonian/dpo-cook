@@ -1,19 +1,30 @@
 {
-    "id": "a0af238a-988f-4f3c-bedc-7db0b8220ed5",
-    "name": "photogrammetry",
-    "description": "Create mesh and texture from image set",
+    "id": "7310026c-68cb-4470-9841-f026e3bd9069",
+    "name": "si-zip-photogrammetry",
+    "description": "Zip an image folder and process through photogrammetry pipeline",
     "version": "1",
     "start": "log",
 
     "parameterSchema": {
         "type": "object",
         "properties": {
-            "sourceImageFolder": {
+            "sourceFolderPath": {
                 "type": "string",
-                "minLength": 1,
-                "format": "file"
+                "minLength": 1
+            },
+            "filetype": {
+                "type": "string",
+                "minLength": 1
             },
             "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "alignFolderPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "maskFolderPath": {
                 "type": "string",
                 "minLength": 1
             },
@@ -27,16 +38,6 @@
                 "default": "Metashape"
             },
             "scalebarCSV": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "alignImageFolder": {
-                "type": "string",
-                "minLength": 1,
-                "format": "file"
-            },
-            "maskImageFolder": {
                 "type": "string",
                 "minLength": 1,
                 "format": "file"
@@ -129,10 +130,22 @@
                     "Background"
                 ],
                 "default": "File"
+            },
+            "transportMethod": {
+                "type": "string",
+                "enum": [
+                    "none",
+                    "local"
+                ],
+                "default": "none"
+            },
+            "deliveryPath": {
+                "type": "string",
+                "minLength": 1
             }
         },
         "required": [
-            "sourceImageFolder"
+            "sourceFolderPath"
         ],
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
@@ -146,30 +159,33 @@
             "task": "Log",
             "description": "Enable logging services",
             "pre": {
-                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))",
-                "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)",
-                "sourceFolderBaseName": "$baseName(sourceImageFolder)",
-				"doAlign": "$exists(alignImageFolder)",
-				"doMask": "$exists(maskImageFolder)"
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceFolderPath))",
+                "baseMeshName": "$firstTrue(outputFileBaseName, sourceFolderPath)",
+                "sourceFolderBaseName": "$baseName(sourceFolderPath)",
+                "doAlign": "$exists(alignFolderPath)",
+				"doMask": "$exists(maskFolderPath)"
             },
             "parameters": {
                 "logToConsole": true,
                 "reportFile": "outputFileBaseName & '-report.json'"
             },
-            "success": "'pickup'",
+            "success": "'zip-files'",
             "failure": "$failure"
         },
-        "pickup": {
-            "task": "Pickup",
-            "description": "Fetch input files from client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(pickupPath, $currentDir)",
-                "files": {
-                    "sourceImageFolder": "sourceImageFolder",
-                    "alignImageFolder": "alignImageFolder",
-					"maskImageFolder": "maskImageFolder"
+        "zip-files": {
+            "task": "Zip",
+            "description": "Zip files direct from storage",
+            "pre": {
+                "deliverables": {
+                    "fileZip": "sourceFolderBaseName & '.zip'"
                 }
+            },
+            "parameters": {
+                "inputFile1": "sourceFolderPath",
+                "fileFilter": "filetype",
+                "recursive": false,
+                "outputFile": "deliverables.fileZip",
+                "operation": "'path-zip'"
             },
             "success": "'unzip'",
             "failure": "$failure"
@@ -178,21 +194,38 @@
             "task": "Zip",
             "description": "Unzip image folder",
             "parameters": {
-                "inputFile1": "sourceImageFolder",
+                "inputFile1": "deliverables.fileZip",
                 "operation": "'unzip'"
+            },
+            "success": "'zip-align'",
+            "failure": "$failure"
+        },
+        "zip-align": {
+            "task": "Zip",
+            "skip": "$not(doAlign)",
+            "description": "Zip alignment files direct from storage",
+            "pre": {
+                "alignFolderBaseName": "$baseName(alignFolderPath)",
+                "deliverables": {
+                    "alignFileZip": "alignFolderBaseName & '.zip'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "alignFolderPath",
+                "fileFilter": "filetype",
+                "recursive": false,
+                "outputFile": "deliverables.alignFileZip",
+                "operation": "'path-zip'"
             },
             "success": "'unzip-align'",
             "failure": "$failure"
         },
         "unzip-align": {
             "task": "Zip",
-			"skip": "$not(doAlign)",
+            "skip": "$not(doAlign)",
             "description": "Unzip alignment image folder",
-            "pre": {
-                "alignFolderBaseName": "$baseName(alignImageFolder)"
-            },
             "parameters": {
-                "inputFile1": "alignImageFolder",
+                "inputFile1": "deliverables.alignFileZip",
                 "operation": "'unzip'"
             },
             "success": "'make-level-clip-folder'",
@@ -226,18 +259,35 @@
             "post": {
                 "alignFolderBaseName": "$baseName(sourceFolderConverted)"
             },
+            "success": "'zip-mask'",
+            "failure": "$failure"
+        },
+        "zip-mask": {
+            "task": "Zip",
+            "skip": "$not(doMask)",
+            "description": "Zip mask files direct from storage",
+            "pre": {
+                "maskFolderBaseName": "$baseName(maskFolderPath)",
+                "deliverables": {
+                    "maskFileZip": "maskFolderBaseName & '.zip'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "maskFolderPath",
+                "fileFilter": "filetype",
+                "recursive": false,
+                "outputFile": "deliverables.maskFileZip",
+                "operation": "'path-zip'"
+            },
             "success": "'unzip-mask'",
             "failure": "$failure"
         },
         "unzip-mask": {
             "task": "Zip",
-			"skip": "$not(doMask)",
+            "skip": "$not(doMask)",
             "description": "Unzip mask image folder",
-            "pre": {
-                "maskFolderBaseName": "$baseName(maskImageFolder)"
-            },
             "parameters": {
-                "inputFile1": "maskImageFolder",
+                "inputFile1": "deliverables.maskFileZip",
                 "operation": "'unzip'"
             },
             "success": "'make-convert-folder'",
@@ -277,13 +327,14 @@
                 "camerasFile": "baseMeshName & '-cameras.xml'",
                 "deliverables": {
                     "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'",
-                    "textureFile": "baseMeshName & '-texture-' & '.png'"
+                    "textureFile": "baseMeshName & '-' & $lowercase(tool) & '.tif'",
+                    "mtlFile": "baseMeshName & '-' & $lowercase(tool) & '.mtl'"
                 }
             },
             "parameters": {
                 "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
                 "alignImageFolder": "alignFolderBaseName",
-				"maskImageFolder": "maskFolderBaseName",
+                "maskImageFolder": "maskFolderBaseName",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.meshFile",
                 "scalebarFile": "scalebarCSV",
@@ -340,7 +391,8 @@
             "description": "Cleanup common issues with mesh.",
             "pre": {
                 "deliverables": {
-                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'"
+                    "cleanedMeshFile": "baseMeshName & '-cleaned' & '.obj'",
+                    "cleanedMtlFile": "baseMeshName & '-cleaned' & '.obj.mtl'"
                 }
             },
             "parameters": {
@@ -359,8 +411,9 @@
             "description": "Create and map texture from model and image set.",
             "pre": {
                 "deliverables": {
-                    "finalMeshFile": "baseMeshName & '-' & $lowercase(tool) & '-final.obj'",
-                    "textureFile": "baseMeshName & '-texture-final' & '.png'"
+                    "finalMeshFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.obj'",
+                    "finalTextureFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.tif'",
+                    "finalMtlFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.mtl'"
                 }
             },
             "parameters": {
@@ -382,6 +435,64 @@
             "parameters": {
                 "inputMeshFile": "deliverables.finalMeshFile",
                 "timeout": 1200
+            },
+            "success": "'zip-proj-align'",
+            "failure": "$failure"
+        },
+        "zip-proj-align": {
+            "task": "Zip",
+            "description": "Zip photogrammetry project files for align stage",
+            "pre": {
+                "deliverables": {
+                    "alignProjZip": "baseMeshName & '-' & $lowercase(tool) & '-align.files.zip'",
+                    "alignProjFile": "baseMeshName & '-' & $lowercase(tool) & '-align.psx'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-align.files'",
+                "fileFilter": "filetype",
+                "recursive": true,
+                "outputFile": "deliverables.alignProjZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'zip-proj-mesh'",
+            "failure": "$failure"
+        },
+        "zip-proj-mesh": {
+            "task": "Zip",
+            "description": "Zip photogrammetry project files for mesh stage",
+            "pre": {
+                "deliverables": {
+                    "meshProjZip": "baseMeshName & '-' & $lowercase(tool) & '-mesh.files.zip'",
+                    "meshProjFile": "baseMeshName & '-' & $lowercase(tool) & '-mesh.psx'",
+                    "meshProjReport": "baseMeshName & '-' & $lowercase(tool) & '-report.pdf'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-mesh.files'",
+                "fileFilter": "filetype",
+                "recursive": true,
+                "outputFile": "deliverables.meshProjZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'zip-proj-final'",
+            "failure": "$failure"
+        },
+        "zip-proj-final": {
+            "task": "Zip",
+            "description": "Zip photogrammetry project files for final stage",
+            "pre": {
+                "deliverables": {
+                    "finalProjZip": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.files.zip'",
+                    "finalProjFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.psx'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-raw_clean.files'",
+                "fileFilter": "filetype",
+                "recursive": true,
+                "outputFile": "deliverables.finalProjZip",
+                "operation": "'path-zip'"
             },
             "success": "'delivery'",
             "failure": "$failure"

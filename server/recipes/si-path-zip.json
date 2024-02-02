@@ -1,0 +1,79 @@
+{
+    "id": "e965d8a9-6003-461a-bc92-c01aa67f9e94",
+    "name": "si-nas-zip",
+    "description": "Zips files directly from filesystem path",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceFolderPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "filetype": {
+                "type": "string",
+                "minLength": 1
+            },
+            "recursive": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "required": [
+            "sourceFolderPath"
+        ],
+        "advanced": [
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "'zip-report.json'"
+            },
+            "success": "'zip-files'",
+            "failure": "$failure"
+        },
+        "zip-files": {
+            "task": "Zip",
+            "description": "Zip files direct from storage",
+            "pre": {
+                "deliverables": {
+                    "fileZip": "$firstTrue(outputFileBaseName, 'zippedFiles.zip')"
+                }
+            },
+            "parameters": {
+                "inputFile1": "sourceFolderPath",
+                "fileFilter": "filetype",
+                "recursive": "recursive",
+                "outputFile": "deliverables.fileZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
