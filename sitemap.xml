@@ -16,6 +16,8 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/bake/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/clean/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/decimate/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/decimate-unwrap/</loc>
@@ -25,6 +27,8 @@
     <loc>https://smithsonian.github.io/dpo-cook/recipes/generate-web-gltf/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/inspect-mesh/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/photogrammetry/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/unwrap/</loc>
   </url><url>
@@ -40,6 +44,8 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-scene/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/si-zip-photogrammetry/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/web-api/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/docs/web-ui/</loc>
@@ -49,11 +55,17 @@
     <loc>https://smithsonian.github.io/dpo-cook/</loc>
     <lastmod>2022-04-19T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/metashape/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/bake-maps/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/batch-convert-image/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/categories/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/cleanup-mesh/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/combine-mesh/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/combine-occlusion/</loc>
   </url><url>
@@ -79,13 +91,21 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/merge-mesh/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshfix/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshlab/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/meshroom/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshsmith/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/photogrammetry/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/photogrammetry-tex/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</loc>
   </url><url>
@@ -100,6 +120,8 @@
     <loc>https://smithsonian.github.io/dpo-cook/tasks/reorient-mesh/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/rizom-uv/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/screenshot/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/sync-obj-mtl/</loc>
   </url><url>

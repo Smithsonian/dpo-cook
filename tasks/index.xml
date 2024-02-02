@@ -52,12 +52,30 @@
     </item>
     
     <item>
+      <title>BatchConvertImage</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/batch-convert-image/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/batch-convert-image/</guid>
+      <description>Converts folders of image files between different formats.</description>
+    </item>
+    
+    <item>
       <title>CleanupMesh</title>
       <link>https://smithsonian.github.io/dpo-cook/tasks/cleanup-mesh/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/tasks/cleanup-mesh/</guid>
       <description>Uses a combination of Meshlab filters to clean a mesh.</description>
+    </item>
+    
+    <item>
+      <title>CombineMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/combine-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/combine-mesh/</guid>
+      <description>Combines two meshes into a single self contained .fbx</description>
     </item>
     
     <item>
@@ -142,12 +160,39 @@
     </item>
     
     <item>
+      <title>MergeMesh</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/merge-mesh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/merge-mesh/</guid>
+      <description>Merges a multi-mesh model file into one .obj and texture</description>
+    </item>
+    
+    <item>
       <title>MergeReports</title>
       <link>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</guid>
       <description>Merge two mesh inspection reports</description>
+    </item>
+    
+    <item>
+      <title>Photogrammetry</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/photogrammetry/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/photogrammetry/</guid>
+      <description>Generates a mesh and texture from zipped image sets using photogrammetry techniques.</description>
+    </item>
+    
+    <item>
+      <title>PhotogrammetryTex</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/photogrammetry-tex/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/photogrammetry-tex/</guid>
+      <description>Uses photogrammetry capture images to project a texture onto existing geometry.</description>
     </item>
     
     <item>
@@ -175,6 +220,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/tasks/reorient-mesh/</guid>
       <description>Standardize mesh scale and orientation</description>
+    </item>
+    
+    <item>
+      <title>Screenshot</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/screenshot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/screenshot/</guid>
+      <description>Generates a screenshot of the provided geometry</description>
     </item>
     
     <item>

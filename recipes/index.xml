@@ -16,6 +16,15 @@
     </item>
     
     <item>
+      <title>Recipe: clean</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/clean/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/clean/</guid>
+      <description>Cleans a mesh of common issues</description>
+    </item>
+    
+    <item>
       <title>Recipe: decimate</title>
       <link>https://smithsonian.github.io/dpo-cook/recipes/decimate/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -58,6 +67,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/recipes/inspect-mesh/</guid>
       <description>Generates statistics on a mesh/scene</description>
+    </item>
+    
+    <item>
+      <title>Recipe: photogrammetry</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/photogrammetry/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/photogrammetry/</guid>
+      <description>Creates a mesh and texture from capture image set folders</description>
     </item>
     
     <item>
@@ -112,6 +130,15 @@
       
       <guid>https://smithsonian.github.io/dpo-cook/recipes/si-voyager-scene/</guid>
       <description>Generates low, medium, high, and AR assets for full Voyager package</description>
+    </item>
+    
+    <item>
+      <title>Recipe: si-zip-photogrammetry</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/si-zip-photogrammetry/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/si-zip-photogrammetry/</guid>
+      <description>Creates a mesh and texture from zipped capture image sets</description>
     </item>
     
   </channel>
