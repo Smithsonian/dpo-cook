@@ -34,12 +34,19 @@ export interface IZipTaskParameters extends ITaskParameters
     inputFile3?: string;
     inputFile4?: string;
     inputFile5?: string;
+    inputFile6?: string;
+    inputFile7?: string;
+    inputFile8?: string;
     /** The type of zip operation we want to do. */
-    operation?: "zip" | "unzip";
+    operation: "zip" | "unzip" | "path-zip";
     /** Name to give generated zip file. */
     outputFile?: string;
     /** Degree of compression */
     compressionLevel?,
+    /** Flag to recurse sub-directories */
+    recursive?,
+    /** Filetype to filter for */
+    fileFilter?,
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Default tool is 7Zip. Specify another tool if needed. */
@@ -47,7 +54,7 @@ export interface IZipTaskParameters extends ITaskParameters
 }
 
 /**
- * Executes zip operation on a set of up to 5 files.
+ * Executes zip operation on a set of up to 8 files.
  *
  * Parameters: [[IZipTaskParameters]].
  */
@@ -55,19 +62,24 @@ export default class ZipTask extends ToolTask
 {
     static readonly taskName = "Zip";
 
-    static readonly description = "Executes zip operations on a set of up to 5 files.";
+    static readonly description = "Executes zip operations on a set of up to 8 files.";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
             inputFile1: { type: "string", minLength: 1 },
-            inputFile2: { type: "string", minLength: 1 },
-            inputFile3: { type: "string", minLength: 1 },
-            inputFile4: { type: "string", minLength: 1 },
-            inputFile5: { type: "string", minLength: 1 },
-            operation: { type: "string", enum: [ "zip", "unzip" ] },
+            inputFile2: { type: "string" },
+            inputFile3: { type: "string" },
+            inputFile4: { type: "string" },
+            inputFile5: { type: "string" },
+            inputFile6: { type: "string" },
+            inputFile7: { type: "string" },
+            inputFile8: { type: "string" },
+            operation: { type: "string", enum: [ "zip", "unzip", "path-zip" ] },
             outputFile: { type: "string", minLength: 1, default: "CookArchive.zip" },
             compressionLevel: { type: "integer", minimum: 0, default: 5 },
+            fileFilter: { type: "string" },
+            recursive: { type: "boolean", default: false },
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "SevenZip" ], default: "SevenZip" }
         },
@@ -91,7 +103,12 @@ export default class ZipTask extends ToolTask
                 inputFile3: params.inputFile3,
                 inputFile4: params.inputFile4,
                 inputFile5: params.inputFile5,
+                inputFile6: params.inputFile6,
+                inputFile7: params.inputFile7,
+                inputFile8: params.inputFile8,
                 compressionLevel: params.compressionLevel,
+                recursive: params.recursive,
+                fileFilter: params.fileFilter,
                 operation: params.operation,
                 outputFile: params.outputFile,
                 timeout: params.timeout

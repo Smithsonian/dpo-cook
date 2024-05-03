@@ -216,6 +216,16 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
     }
 
     /**
+     * Helper method, reads a file from the instance's work directory.
+     * @param fileName
+     */
+     async readFile(fileName: string): Promise<unknown>
+     {
+         const filePath = this.getFilePath(fileName);
+         return fs.readFile(filePath, "utf8");
+     }
+
+    /**
      * Helper method, renames a file in the instance's work directory.
      * @param oldFileName
      * @param newFileName
@@ -318,7 +328,9 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
                 return data => {
                     chunk += data.toString();
                     while(true) {
-                        const eol = Math.max(chunk.indexOf(os.EOL),chunk.indexOf("\n"));
+                        //const eol = Math.max(chunk.indexOf(os.EOL),chunk.indexOf("\n"));
+                        const eolIdx = chunk.indexOf(os.EOL);
+                        const eol = eolIdx >= 0 ? eolIdx : chunk.indexOf("\n");
                         if (eol >= 0) {
                             const line = chunk.substring(0, eol);
                             chunk = chunk.substring(eol + os.EOL.length - 1);
@@ -332,7 +344,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
             };
 
             // run tool
-            const shellScript = child_process.exec(setup.command);
+            const shellScript = child_process.exec(setup.command, {maxBuffer: 8192*1024});
 
             shellScript.stdout.on("data", dataHandler());
             shellScript.stderr.on("data", dataHandler());

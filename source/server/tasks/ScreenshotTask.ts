@@ -17,59 +17,59 @@
 
 import Job from "../app/Job";
 
-import { IRealityCaptureToolSettings } from "../tools/RealityCaptureTool";
+import { IBlenderToolSettings } from "../tools/BlenderTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask from "../app/ToolTask";
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/** Parameters for [[ReconstructionTask]]. */
-export interface IReconstructionTaskParameters extends ITaskParameters
+/** Parameters for [[ScreenshotTask]]. */
+export interface IScreenshotTaskParameters extends ITaskParameters
 {
-    inputImageFolderName: string;
+    /** Input mesh file name. */
+    inputMeshFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
 
 /**
- * Uses RealityCapture photogrammetry software to create a 3D model
- * from a set of 2D images.
+ * Generates a screenshot of the provided geometry
  *
- * Tool: [[RealityCaptureTool]],
- * Parameters: [[IReconstructionTaskParameters]]
+ * Parameters: [[IScreenshotTaskParameters]].
+ * Tool: [[BlenderTool]].
  */
-export default class ReconstructionTask extends ToolTask
+export default class ScreenshotTask extends ToolTask
 {
-    static readonly taskName = "Reconstruction";
+    static readonly taskName = "Screenshot";
 
-    static readonly description = "Uses RealityCapture photogrammetry software to create a 3D model.";
+    static readonly description = "Generates a screenshot of the provided geometry";
 
     static readonly parameterSchema = {
         type: "object",
         properties: {
-            inputImageFolderName: { type: "string", minLength: 1 },
-            timeout: { type: "integer", minimum: 0, default: 0 }
+            inputMeshFile: { type: "string", minLength: 1 },
+            timeout: { type: "integer", default: 0 }
         },
         required: [
-            "inputImageFolderName"
+            "inputMeshFile"
         ],
         additionalProperties: false
     };
 
     static readonly parameterValidator =
-        Task.jsonValidator.compile(ReconstructionTask.parameterSchema);
+        Task.jsonValidator.compile(ScreenshotTask.parameterSchema);
 
-    constructor(params: IReconstructionTaskParameters, context: Job)
+    constructor(params: IScreenshotTaskParameters, context: Job)
     {
         super(params, context);
 
-        const settings: IRealityCaptureToolSettings = {
-            inputImageFolderName: params.inputImageFolderName,
+        const settings: IBlenderToolSettings = {
+            inputMeshFile: params.inputMeshFile,
+            mode: "screenshot",
             timeout: params.timeout
         };
 
-        this.addTool("RealityCapture", settings);
+        this.addTool("Blender", settings);
     }
 }
-

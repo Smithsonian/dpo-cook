@@ -74,12 +74,12 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
             throw new Error("XNormalTool.writeTaskScript - missing mapSize option");
         }
 
-        const highPolyMeshPath = instance.getFilePath(settings.highPolyMeshFile);
+        const highPolyMeshPath = this.sanitize(instance.getFilePath(settings.highPolyMeshFile));
         if (!highPolyMeshPath) {
             throw new Error("XNormalTool.writeTaskScript - missing highres mesh file");
         }
 
-        const lowPolyMeshPath = instance.getFilePath(settings.lowPolyUnwrappedMeshFile);
+        const lowPolyMeshPath = this.sanitize(instance.getFilePath(settings.lowPolyUnwrappedMeshFile));
         if (!lowPolyMeshPath) {
             throw new Error("XNormalTool.writeTaskScript - missing lowres mesh file");
         }
@@ -113,7 +113,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
         const aoLimitRayDistance = false; // default false
         const aoBias = 0.005;
 
-        const highpolyDiffuseMapPath = instance.getFilePath(settings.highPolyDiffuseMapFile);
+        const highpolyDiffuseMapPath = this.sanitize(instance.getFilePath(settings.highPolyDiffuseMapFile));
         const bakeDiffuse = !!settings.bakeDiffuse && !!highpolyDiffuseMapPath;
         const bakeVertexColor = !!settings.bakeVertexColor;
         const isNormalMap = settings.isNormalMap;
@@ -122,7 +122,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
             throw new Error("XNormalTool.writeTaskScript - missing output base map path");
         }
 
-        const mapBaseFilePath = instance.getFilePath(settings.mapBaseName);
+        const mapBaseFilePath = this.sanitize(instance.getFilePath(settings.mapBaseName));
 
         const script = {
             fileName: "_xnormal_" + uniqueId() + ".xml",
@@ -238,5 +238,14 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
         }
 
         return Promise.all(fileTasks);
+    }
+
+    protected sanitize(str: string) 
+    {
+        if (!str) {
+            return str;
+        }
+        
+        return str.replace('&','&amp;').replace('<','&lt;').replace('>','&gt;');
     }
 }

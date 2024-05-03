@@ -3,10 +3,6 @@ title: Reality Capture
 summary: Photogrammetry tool
 ---
 
-### Note
-
-_Reality Capture support is planned for a future release of Cook._
-
 ### Information
 
 - Developer: Capturing Reality s.r.o.
@@ -24,7 +20,7 @@ Example configuration for Reality Capture in the `tools.json` configuration file
 ```json
 "RealityCapture": {
     "executable": "C:\\Program Files\\Capturing Reality\\RealityCapture\\RealityCapture.exe",
-    "version": "1.0.3.4658",
+    "version": "1.2.0.17385",
     "maxInstances": 1,
     "timeout": 0
 }

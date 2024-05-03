@@ -136,6 +136,7 @@ export default class GenerateUsdzTask extends ToolTask
                     inputFile1: newUsdFilePath,
                     outputFile: filename + ".usdz",
                     compressionLevel: 0,
+                    operation: "zip",
                     tool: "SevenZip"
                 };
 

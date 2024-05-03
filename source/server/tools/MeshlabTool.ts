@@ -56,7 +56,13 @@ export default class MeshlabTool extends Tool
         "RemoveIsolatedFoldedFaces": { name: "Remove Isolated Folded Faces by Edge Flip" },
         "RemoveIsolatedPieces": { name: "Remove Isolated pieces (wrt Diameter)" },
         "ComputeFaceNormals": { name: "Re-Compute Face Normals" },
-        "ComputeVertexNormals": { name: "Re-Compute Vertex Normals" }
+        "ComputeVertexNormals": { name: "Re-Compute Vertex Normals" },
+        "SelectSmallComponents": { name: "Select small disconnected component"},
+        "DeleteSelected": { name: "Delete Selected Faces and Vertices"},
+        "CenterScene": { name: "Transform: Translate, Center, set Origin"},
+        "ConditionalFaceSelect": { name: "Conditional Face Selection"},
+        "SelectConnectedFaces": { name: "Select Connected Faces" },
+        "InvertSelection": { name: "Invert Selection" }
         /*"MeshReport": { name: "Generate JSON Report", type: "xml" }*/
     };
 
@@ -156,6 +162,19 @@ export default class MeshlabTool extends Tool
             filterSteps.forEach(filterDef => {
                 const filterType = filterDef.type === "xml" ? "xmlfilter" : "filter";
 
+                if(filterDef.name === "Transform: Translate, Center, set Origin") {
+                    scriptLines.push(`<filter name="Transform: Translate, Center, set Origin">`);
+                    scriptLines.push(`<Param enum_val1="Center on Scene BBox" enum_val2="Center on Layer BBox" value="1" type="RichEnum" enum_val0="XYZ translation" description="Transformation:" enum_cardinality="4" name="traslMethod"/>`);
+                    scriptLines.push(`<Param value="0" type="RichDynamicFloat" description="X Axis" name="axisX"/>`);
+                    scriptLines.push(`<Param value="0" type="RichDynamicFloat" description="Y Axis" name="axisY"/>`);
+                    scriptLines.push(`<Param value="0" type="RichDynamicFloat" description="Z Axis" name="axisZ"/>`);
+                    scriptLines.push(`<Param y="0" z="0" type="RichPosition" description="New Origin:" x="0" name="newOrigin"/>`);
+                    scriptLines.push(`<Param value="true" type="RichBool" description="Freeze Matrix" name="Freeze"/>`);
+                    scriptLines.push(`<Param value="false" type="RichBool" description="Apply to all visible Layers" name="allLayers"/>`);
+                    scriptLines.push(`</filter>`);
+                    return;
+                }
+
                 if (filter.params) {
                     scriptLines.push(`<${filterType} name="${filterDef.name}">`);
                     for (const paramName in filter.params) {
@@ -186,10 +205,14 @@ export default class MeshlabTool extends Tool
     private getParameter(name: string, value: string | number | boolean, type?: string)
     {
         if (typeof value === "string") {
-            const parsedValue = parseFloat(value) || 0;
+            const parsedValue = parseFloat(value) || null;
 
             if (value.indexOf("%") > -1) {
                 return `<Param value="${parsedValue}" min="0" max="100" type="RichAbsPerc" name="${name}"/>`;
+            }
+
+            if (parsedValue == null) {
+                return `<Param value="${value}" type="RichString" name="${name}"/>`;
             }
 
             value = parsedValue;

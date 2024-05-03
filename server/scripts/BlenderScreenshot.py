@@ -3,8 +3,12 @@ import json
 import os
 import sys
 
-# get rid of default objects
-bpy.ops.object.select_all(action='SELECT')
+# get rid of default mesh objects
+for ob in bpy.context.scene.objects:
+    if ob.type == 'MESH':
+        ob.select_set(True)
+
+#bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 bpy.ops.outliner.orphans_purge()
 bpy.ops.outliner.orphans_purge()
@@ -37,15 +41,12 @@ else:
     print("Error: Unsupported file type: " + file_extension)
     sys.exit(1)
 
-try: #check for provided output filename
-    mod_filename, file_extension = os.path.splitext(argv[1])
-except IndexError:
-    mod_filename = filename
-    
-print("Exporting file: " + mod_filename)
 if len(bpy.data.objects) > 0:
-    path = bpy.data.filepath
-    dir = os.path.dirname(path)
-    save_file = os.path.join(dir, mod_filename + ".usdc")
-    print("Saving file: " + save_file)
-    bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_paths=True)
+    bpy.context.scene.camera = bpy.context.scene.objects.get('Camera')
+    dir = os.path.dirname(filename)
+    save_file = os.path.join(dir, "preview.png")
+    print("Writing preview image: " + save_file)
+    bpy.ops.view3d.camera_to_view_selected()
+
+bpy.context.scene.render.filepath = save_file
+bpy.ops.render.render(write_still = True)

@@ -23,9 +23,24 @@ import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from
 export interface IMetashapeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
-    outputFile?: string;
+    alignImageFolder?: string;
+	maskImageFolder?: string;
+    outputFile: string;
+    mode: string;
+    inputModelFile?: string;
+    camerasFile?: string;
     scalebarFile?: string;
-    generatePointCloud?: boolean;
+    optimizeMarkers?: boolean;
+    alignmentLimit?: number;
+    tiepointLimit?: number;
+    keypointLimit?: number;
+    turntableGroups?: boolean;
+    depthMaxNeighbors?: number;
+    genericPreselection?: boolean;
+    meshQuality?: string;
+    depthMapQuality?: string;
+    customFaceCount?: number;
+    maskMode?: string;
 }
 
 export type MetashapeInstance = ToolInstance<MetashapeTool, IMetashapeToolSettings>;
@@ -41,15 +56,15 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         const { instance, message } = event;
 
         // keep errors
-        if (message.toLowerCase().includes("error")) {
+        if (message.toLowerCase().includes("error") || message.toLowerCase().includes("exception")) {
             return false;
         }
 
         // keep useful messages
-        if (message.endsWith(" seconds") || message.endsWith(" sec") || message.endsWith(" points") || message.endsWith(" targets") ||
+        if (message.endsWith(" seconds") || message.endsWith(" sec") || /*message.endsWith(" points") || message.endsWith(" targets") ||*/
         message.startsWith("Data preload") || message.startsWith("Adding Scalebar") || message.startsWith("Build") || 
-        message.startsWith("Detect") || message.startsWith("Export") || message.startsWith("CPU") || message.startsWith("Peak m") ||  
-        message.includes("done by")) {
+        message.startsWith("Detect") || message.startsWith("Export") || message.startsWith("\nCPU") || message.startsWith("Peak m") /*||  
+        message.includes("done by")*/) {
             if(message.startsWith("optimize") || message.startsWith("loaded ") || message.startsWith("overlap")
             || message.startsWith("calculating") || message.startsWith("setting ") || message.includes("tracks ")
             || message.includes("matches")) {
@@ -74,14 +89,70 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
 
         let operation = ` -r `;
 
-        operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}"`;
+        if(settings.mode === "full") {
+            operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateMesh.py")}" -i "${inputFolder}" -o "${settings.outputFile}"`;
 
-        if(settings.scalebarFile) {
-            const sbFIlePath = instance.getFilePath(settings.scalebarFile);
-            operation += ` -sb "${sbFIlePath}"`;
+            operation += ` -optm ${settings.optimizeMarkers} -tp ${settings.tiepointLimit} -kp ${settings.keypointLimit} `;
+
+            if(settings.alignmentLimit != null) {
+                operation += ` -al ${settings.alignmentLimit} `;
+            }
+            if(settings.alignImageFolder != null) {
+                const alignFolder = instance.getFilePath(path.parse(settings.alignImageFolder).name);
+                operation += ` -ai "${alignFolder}" `;
+            }
+			if(settings.maskImageFolder != null) {
+                const maskFolder = instance.getFilePath(path.parse(settings.maskImageFolder).name);
+                operation += ` -mi "${maskFolder}" `;
+            }
+            if(settings.maskMode != null) {
+                operation += ` -mm ${settings.maskMode} `;
+            }
+            if(settings.turntableGroups != null) {
+                operation += ` -ttg ${settings.turntableGroups} `;
+            }
+            if(settings.depthMaxNeighbors != null) {
+                operation += ` -dmn ${settings.depthMaxNeighbors} `;
+            }
+            if(settings.genericPreselection != null) {
+                operation += ` -gp ${settings.genericPreselection} `;
+            }
+            if(settings.meshQuality) {
+                const opts = [ "Low", "Medium", "High", "Custom" ];
+                const qualityIdx = opts.findIndex((e) => e == settings.meshQuality);
+                operation += ` -mq ${qualityIdx} `;
+
+                if(qualityIdx == 3) {
+                    operation += ` -cfc ${settings.customFaceCount} `;
+                }
+            }
+            if(settings.depthMapQuality) {
+                const opts = [ "Highest", "High", "Medium", "Low" ];
+                const qualityIdx = opts.findIndex((e) => e == settings.depthMapQuality);
+                operation += ` -dmq ${qualityIdx} `;
+            }
+        }
+        else if(settings.mode === "texture") {
+            const inputModelPath = instance.getFilePath(settings.inputModelFile);
+            if (!inputModelPath) {
+                throw new Error("missing input model");
+            } 
+
+            operation += `"${instance.getFilePath("../../scripts/MetashapeGenerateTexture.py")}" -i "${inputFolder}" -m "${inputModelPath}" -o "${settings.outputFile}"`;
         }
 
-        operation += ` -bdc ${settings.generatePointCloud}`;
+        if(settings.scalebarFile) {
+            const sbFilePath = instance.getFilePath(settings.scalebarFile);
+            operation += ` -sb "${sbFilePath}"`;
+        }
+
+        if(settings.camerasFile) {
+            const camFilePath = instance.getFilePath(settings.camerasFile);
+            operation += ` -c "${camFilePath}"`;
+        }
+
+        const logfile = "_metashape_log_" + settings.mode + ".txt";
+        operation += ` > "${instance.getFilePath(logfile)}" 2>&1`;
 
         //operation += `-platform offscreen `;
 

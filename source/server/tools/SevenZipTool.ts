@@ -28,7 +28,12 @@ export interface ISevenZipToolSettings extends IToolSettings
     inputFile3: string;
     inputFile4: string;
     inputFile5: string;
+    inputFile6: string;
+    inputFile7: string;
+    inputFile8: string;
     compressionLevel: number;
+    fileFilter: string;
+    recursive: boolean;
     operation: string;
     outputFile: string;
 }
@@ -48,15 +53,20 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
         let operation = ``;
 
         if(settings.inputFile1) activeFiles.push(settings.inputFile1);
-        if(settings.inputFile2) activeFiles.push(settings.inputFile2);
-        if(settings.inputFile3) activeFiles.push(settings.inputFile3);
-        if(settings.inputFile4) activeFiles.push(settings.inputFile4);
-        if(settings.inputFile5) activeFiles.push(settings.inputFile5);
+        if(settings.inputFile2 && settings.inputFile2.length) activeFiles.push(settings.inputFile2);
+        if(settings.inputFile3 && settings.inputFile3.length) activeFiles.push(settings.inputFile3);
+        if(settings.inputFile4 && settings.inputFile4.length) activeFiles.push(settings.inputFile4);
+        if(settings.inputFile5 && settings.inputFile5.length) activeFiles.push(settings.inputFile5);
+        if(settings.inputFile6 && settings.inputFile6.length) activeFiles.push(settings.inputFile6);
+        if(settings.inputFile7 && settings.inputFile7.length) activeFiles.push(settings.inputFile7);
+        if(settings.inputFile8 && settings.inputFile8.length) activeFiles.push(settings.inputFile8);
+
+        const uniqueFiles : string[] = [...new Set(activeFiles)];
 
         if(settings.operation === "zip") {
             operation += `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
 
-            activeFiles.forEach(function(file) {
+            uniqueFiles.forEach(function(file) {
                 const inputFilePath = instance.getFilePath(file);
                 operation += ` "${inputFilePath}"`;
             });
@@ -64,7 +74,17 @@ export default class SevenZipTool extends Tool<SevenZipTool, ISevenZipToolSettin
             operation += ` -mx=${settings.compressionLevel}`;
         }
         else if(settings.operation === "unzip") {
-            operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}" -r`;
+            const name = path.parse(settings.inputFile1).name;
+
+            operation += `x "${instance.getFilePath(settings.inputFile1)}" -o"${instance.workDir}\\${name}\\" -r`;
+        }
+        else if(settings.operation === "path-zip") {
+            operation += `a -tzip "${instance.getFilePath(settings.outputFile)}"`;
+            operation += ` "${settings.inputFile1}\\*.${settings.fileFilter ? settings.fileFilter : "*"}"`;
+
+            if(settings.recursive === true) {
+                operation += ` -r`;
+            }
         }
 
         //if (!inputFilePath) {

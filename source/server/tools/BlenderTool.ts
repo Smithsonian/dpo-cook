@@ -27,6 +27,9 @@ export interface IBlenderToolSettings extends IToolSettings
     mode: string;
     inputVoyagerFile?: string;
     outputFile?: string;
+    inputMeshFile2?: string;
+    outputFile2?: string;
+    inputBaseName?: string;
     scaleToMeters?: boolean;
 }
 
@@ -43,15 +46,17 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
         const { instance, message } = event;
 
         // only handle JSON report data
-        if (!message.startsWith("\nJSON=")) {
+        if (!(message.startsWith("\nJSON=") || message.startsWith("JSON="))) {
             return false;
         }
+
+        const idx = message.indexOf("JSON=") + 5;
 
         const report = instance.report.execution;
         const results = report.results = report.results || {};
 
         try {
-            results["inspection"] = JSON.parse(message.substr(6));
+            results["inspection"] = JSON.parse(message.substr(idx));
         }
         catch(e) {
             const error = "failed to parse mesh inspection report";
@@ -70,15 +75,28 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             throw new Error("missing input mesh file");
         } 
 
-        let operation = `--background`;
+        let operation = ` --background`;
         if(settings.mode === "standardize") {
-            operation += ` --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputFile)}" "${settings.scaleToMeters}"`;
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderOrientToVoyager.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.inputVoyagerFile)}" "${instance.getFilePath(settings.outputFile)}" "${settings.scaleToMeters}"`;
         }
         else if(settings.mode === "inspect") {
-            operation += ` --python "${instance.getFilePath("../../scripts/BlenderInspectMesh.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}"`;
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderInspectMesh.py")}" -- "${inputFilePath}"`;
         }
         else if(settings.mode === "convert") {
-            operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvertToUSD.py")}" -- "${instance.getFilePath(settings.inputMeshFile)}" "${instance.getFilePath(settings.outputFile)}"`;
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvertToUSD.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile)}"`;
+        }
+        else if(settings.mode === "combine") {
+            let combineFilePath = instance.getFilePath(settings.inputMeshFile2);
+            if (combineFilePath && (combineFilePath == inputFilePath)) {
+                combineFilePath = "";
+            }
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderCombineMesh.py")}" -- "${inputFilePath}" "${combineFilePath}" "${instance.getFilePath(settings.outputFile)}" "${settings.inputBaseName}"`;
+        }
+        else if(settings.mode === "merge") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderMergeTextures.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile2)}" "${instance.getFilePath(settings.outputFile)}"`;
+        }
+        else if(settings.mode === "screenshot") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderScreenshot.py")}" -- "${inputFilePath}"`;
         }
 
         const command = `"${this.configuration.executable}" ${operation}`;
