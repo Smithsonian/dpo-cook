@@ -17,6 +17,28 @@
                 "type": "string",
                 "minLength": 1
             },
+            "wbTint": {
+                "type": "number",
+                "default": 1.035,
+                "minimum": 0,
+                "maximum": 10.0
+            },
+            "wbTemperature": {
+                "type": "integer",
+                "default": 5564,
+                "minimum": 0,
+                "maximum": 10000
+            },
+            "exposureComp": {
+                "type": "number",
+                "default": 0,
+                "minimum": -5,
+                "maximum": 12
+            },
+            "sharpeningEnabled": {
+                "type": "boolean",
+                "default": false
+            },
             "tool": {
                 "type": "string",
                 "enum": [
@@ -84,27 +106,14 @@
         "process-raw": {
             "task": "ProcessRaw",
             "description": "Convert raw images to jpg and process for photogrammetry pipeline.",
-            "pre": {
-                "deliverables": {
-                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'"
-                }
-            },
             "parameters": {
                 "inputImageFolder": "sourceImageFolder",
-                
-                "tool": "tool",
+                "wbTemperature": "wbTemperature",
+                "wbTint": "wbTint",
+                "exposureComp": "exposureComp",
+                "sharpeningEnabled": "sharpeningEnabled",
+                "tool": "RawTherapee",
                 "timeout": 4300
-            },
-            "success": "'delivery'",
-            "failure": "$failure"
-        },
-        "delivery": {
-            "task": "Delivery",
-            "description": "Send result files back to client",
-            "parameters": {
-                "method": "transportMethod",
-                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
-                "files": "deliverables"
             },
             "success": "$success",
             "failure": "$failure"

@@ -24,9 +24,11 @@ import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from
 export interface IRawTherapeeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
-    outputFile?: string;
-    wbTint?: number;
-    wbTemperature?: number;
+    imageOutputFolder?: string;
+    wbTint: number;
+    wbTemperature: number;
+    exposureComp: number;
+    sharpeningEnabled: boolean;
 }
 
 export type RawTherapeeInstance = ToolInstance<RawTherapeeTool, IRawTherapeeToolSettings>;
@@ -40,6 +42,7 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
     onInstanceMessage(event: IToolMessageEvent): boolean
     {
         const { instance, message } = event;
+        return false;
 /*
         // keep errors
         if (message.toLowerCase().includes("error")) {
@@ -72,7 +75,7 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
         if (!inputFolder) {
             throw new Error("missing input image set");
         }
-        const outputFolder = inputFolder + "_processed";
+        const outputFolder = settings.imageOutputFolder ? instance.getFilePath(path.parse(settings.imageOutputFolder).name) : inputFolder + "_processed";
 
         // Create profile
         const profileName = "_rawtherapee_" + uniqueId() + ".pp3";
@@ -80,7 +83,7 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `[Exposure]`,
             `Auto=false`,
             `Clip=0.02`,
-            `Compensation=0`,
+            `Compensation=${settings.exposureComp}`,
             `Brightness=0`,
             `Contrast=0`,
             `Saturation=0`,
@@ -90,8 +93,8 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `ShadowCompr=50`,
             `HistogramMatching=false`,
             `CurveFromHistogramMatching=false`,
-            `ClampOOG=true`,
-            `CurveMode=FilmLike`,
+            `ClampOOG=false`,
+            `CurveMode=Standard`,
             `CurveMode2=Standard`,
             `Curve=0;`,
             `Curve2=0;`,
@@ -119,7 +122,7 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             
             `[White Balance]`,
             `Enabled=true`,
-            `Setting=Camera`,
+            `Setting=Custom`,
             `Temperature=${settings.wbTemperature}`,
             `Green=${settings.wbTint}`,
             `Equal=1`,
@@ -160,11 +163,11 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `Amount=0`,
             
             `[LensProfile]`,
-            `LcMode=lfauto`,
+            `LcMode=lfmanual`,
             `LCPFile=`,
-            `UseDistortion=true`,
+            `UseDistortion=false`,
             `UseVignette=true`,
-            `UseCA=false`,
+            `UseCA=true`,
             `LFCameraMake=`,
             `LFCameraModel=`,
             `LFLens=`,
@@ -193,11 +196,11 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `Enabled=false`,
             
             `[PostDemosaicSharpening]`,
-            `Enabled=true`,
-            `Contrast=11`,
+            `Enabled=${settings.sharpeningEnabled}`,
+            `Contrast=10`,
             `AutoContrast=true`,
             `AutoRadius=true`,
-            `DeconvRadius=0.40000000000000002`,
+            `DeconvRadius=0.75`,
             `DeconvRadiusOffset=0`,
             `DeconvIterCheck=true`,
             `DeconvIterations=20`,
@@ -208,7 +211,7 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `[Color Management]`,
             `InputProfile=(camera)`,
             `ToneCurve=false`,
-            `ApplyLookTable=true`,
+            `ApplyLookTable=false`,
             `ApplyBaselineExposureOffset=true`,
             `ApplyHueSatMap=true`,
             `DCPIlluminant=0`,
@@ -216,7 +219,8 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `WorkingTRC=none`,
             `WorkingTRCGamma=2.3999999999999999`,
             `WorkingTRCSlope=12.92`,
-            `OutputProfile=RTv4_sRGB`,
+            `OutputProfile=No ICM: sRGB output`,
+            `aIntent=Relative`,
             `OutputProfileIntent=Relative`,
             `OutputBPC=true`,
             
@@ -236,15 +240,16 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `Enabled=false`,
             
             `[RAW]`,
-            `DarkFrame=/szeva`,
+            `DarkFrame=\\szeva`,
             `DarkFrameAuto=false`,
-            `FlatFieldFile=/szeva`,
+            `FlatFieldFile=\\szeva`,
             `FlatFieldAutoSelect=false`,
+            `FlatFieldFromMetaData=false`,
             `FlatFieldBlurRadius=32`,
             `FlatFieldBlurType=Area Flatfield`,
             `FlatFieldAutoClipControl=false`,
             `FlatFieldClipControl=0`,
-            `CA=true`,
+            `CA=false`,
             `CAAvoidColourshift=true`,
             `CAAutoIterations=2`,
             `CARed=0`,
@@ -278,6 +283,7 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `PixelShiftShowMotion=false`,
             `PixelShiftShowMotionMaskOnly=false`,
             `pixelShiftHoleFill=true`,
+            `pixelShiftAverage=false`,
             `pixelShiftMedian=false`,
             `pixelShiftGreen=true`,
             `pixelShiftBlur=true`,
@@ -300,6 +306,7 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             
             `[MetaData]`,
             `Mode=0`,
+            `ExifKeys=Exif.Image.Artist;Exif.Image.Copyright;Exif.Image.ImageDescription;Exif.Image.Make;Exif.Image.Model;Exif.Image.XResolution;Exif.Image.YResolution;Exif.Photo.DateTimeOriginal;Exif.Photo.ExposureBiasValue;Exif.Photo.ExposureTime;Exif.Photo.FNumber;Exif.Photo.Flash;Exif.Photo.FocalLength;Exif.Photo.ISOSpeedRatings;Exif.Photo.LensModel;Exif.Photo.UserComment;`,
             
             `[Film Negative]`,
             `Enabled=false`

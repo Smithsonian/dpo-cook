@@ -32,12 +32,16 @@ export interface IProcessRawTaskParameters extends ITaskParameters
 {
     /** Input image folder. */
     inputImageFolder: string;
-    /** Base name used for output files */
-    outputFile: string;
+    /** Location for output files */
+    outputImageFolder: string;
     /** Tint value used for white balancing */
     wbTint?: number;
     /** Temperature value used for white balancing */
     wbTemperature?: number;
+    /** Value used for exposure compensation (-5 to 12) */
+    exposureComp?: number;
+    /** Flag to enable/disable sharpening */
+    sharpeningEnabled?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for ProcessRaw pre-processing ("RawTherapee", default: "RawTherapee"). */
@@ -60,9 +64,11 @@ export default class ProcessRawTask extends ToolTask
         type: "object",
         properties: {
             inputImageFolder: { type: "string", minLength: 1 },
-            outputFile: { type: "string", minLength: 1 },
+            outputImageFolder: { type: "string", minLength: 1 },
             wbTemperature: { type: "integer", default: 5564},
             wbTint: { type: "number", default: 1.035},
+            exposureComp: { type: "number", minimum: -5, maximum: 12, default: 0},
+            sharpeningEnabled: { type: "boolean", default: false},
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "RawTherapee" ], default: "RawTherapee" }
         },
@@ -82,9 +88,11 @@ export default class ProcessRawTask extends ToolTask
         if (params.tool === "RawTherapee") {
             const toolOptions: IRawTherapeeToolSettings = {
                 imageInputFolder: params.inputImageFolder,
+                imageOutputFolder: params.outputImageFolder,
                 wbTint: params.wbTint,
                 wbTemperature: params.wbTemperature,
-                //mode: "create",
+                exposureComp: params.exposureComp,
+                sharpeningEnabled: params.sharpeningEnabled,
                 timeout: params.timeout
             };
 
