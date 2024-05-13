@@ -82,6 +82,11 @@
                 "type": "boolean",
                 "default": false
             },
+            "lensProfile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "tiepointLimit": {
                 "type": "number",
                 "default": 25000,
@@ -176,7 +181,7 @@
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
             "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel", "maskMode", "wbTint", "wbTemperature",
-            "exposureComp", "cameraMake", "cameraModel", "lens", "sharpeningEnabled"
+            "exposureComp", "cameraMake", "cameraModel", "lens", "sharpeningEnabled", "lensProfile"
         ],
         "additionalProperties": false
     },
@@ -345,6 +350,7 @@
                 "wbTint": "wbTint",
                 "exposureComp": "exposureComp",
                 "sharpeningEnabled": "sharpeningEnabled",
+                "lensProfile": "lensProfile",
                 "tool": "RawTherapee",
                 "timeout": 4300
             },

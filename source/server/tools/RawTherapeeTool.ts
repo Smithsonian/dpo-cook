@@ -25,10 +25,11 @@ export interface IRawTherapeeToolSettings extends IToolSettings
 {
     imageInputFolder: string;
     imageOutputFolder?: string;
-    wbTint: number;
-    wbTemperature: number;
-    exposureComp: number;
-    sharpeningEnabled: boolean;
+    wbTint?: number;
+    wbTemperature?: number;
+    exposureComp?: number;
+    sharpeningEnabled?: boolean;
+    lensProfile?: string;
 }
 
 export type RawTherapeeInstance = ToolInstance<RawTherapeeTool, IRawTherapeeToolSettings>;
@@ -163,8 +164,8 @@ export default class RawTherapeeTool extends Tool<RawTherapeeTool, IRawTherapeeT
             `Amount=0`,
             
             `[LensProfile]`,
-            `LcMode=lfmanual`,
-            `LCPFile=`,
+            `LcMode=${settings.lensProfile ? "lcp" : "lfauto"}`,
+            `LCPFile=${settings.lensProfile ? instance.getFilePath(settings.lensProfile).replace(new RegExp("\\\\", 'g'),"\\\\") : ""}`,
             `UseDistortion=false`,
             `UseVignette=true`,
             `UseCA=true`,

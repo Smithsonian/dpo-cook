@@ -39,6 +39,11 @@
                 "type": "boolean",
                 "default": false
             },
+            "lensProfile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "tool": {
                 "type": "string",
                 "enum": [
@@ -112,6 +117,7 @@
                 "wbTint": "wbTint",
                 "exposureComp": "exposureComp",
                 "sharpeningEnabled": "sharpeningEnabled",
+                "lensProfile": "lensProfile",
                 "tool": "RawTherapee",
                 "timeout": 4300
             },

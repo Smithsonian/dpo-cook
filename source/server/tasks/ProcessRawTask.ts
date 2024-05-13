@@ -42,6 +42,8 @@ export interface IProcessRawTaskParameters extends ITaskParameters
     exposureComp?: number;
     /** Flag to enable/disable sharpening */
     sharpeningEnabled?: boolean;
+    /** Independent lens correction profile file (LCP) */
+    lensProfile?: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for ProcessRaw pre-processing ("RawTherapee", default: "RawTherapee"). */
@@ -69,6 +71,7 @@ export default class ProcessRawTask extends ToolTask
             wbTint: { type: "number", default: 1.035},
             exposureComp: { type: "number", minimum: -5, maximum: 12, default: 0},
             sharpeningEnabled: { type: "boolean", default: false},
+            lensProfile: { type: "string" },
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "RawTherapee" ], default: "RawTherapee" }
         },
@@ -93,6 +96,7 @@ export default class ProcessRawTask extends ToolTask
                 wbTemperature: params.wbTemperature,
                 exposureComp: params.exposureComp,
                 sharpeningEnabled: params.sharpeningEnabled,
+                lensProfile: params.lensProfile,
                 timeout: params.timeout
             };
 
