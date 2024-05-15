@@ -81,6 +81,11 @@
                 "type": "boolean",
                 "default": false
             },
+            "lensProfile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "tiepointLimit": {
                 "type": "number",
                 "default": 25000,
@@ -274,7 +279,7 @@
             "skip": "$not(convertToJpg) and $not(preprocess)",
             "description": "Create folder for converted images",
             "pre": {
-                "sourceFolderConverted": "sourceFolderBaseName & '_converted'"
+                "sourceFolderConverted": "outputFileBaseName & '_converted'"
             },
             "parameters": {
                 "operation": "'CreateFolder'",
@@ -294,6 +299,7 @@
                 "wbTint": "wbTint",
                 "exposureComp": "exposureComp",
                 "sharpeningEnabled": "sharpeningEnabled",
+                "lensProfile": "lensProfile",
                 "tool": "RawTherapee",
                 "timeout": 4300
             },

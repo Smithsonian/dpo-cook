@@ -330,7 +330,7 @@
             "skip": "$not(convertToJpg) and $not(preprocess)",
             "description": "Create folder for converted images",
             "pre": {
-                "sourceFolderConverted": "sourceFolderBaseName & '_converted'"
+                "sourceFolderConverted": "outputFileBaseName & '_converted'"
             },
             "parameters": {
                 "operation": "'CreateFolder'",

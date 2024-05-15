@@ -101,8 +101,11 @@
         "make-dir": {
             "task": "FileOperation",
             "description": "Make output folder",
+            "pre": {
+                "sourceFolderConverted": "outputFileBaseName & '_processed'"
+            },
             "parameters": {
-                "name": "outputFileBaseName & '_processed'",
+                "name": "sourceFolderConverted",
                 "operation": "'CreateFolder'"
             },
             "success": "'process-raw'",
@@ -113,6 +116,7 @@
             "description": "Convert raw images to jpg and process for photogrammetry pipeline.",
             "parameters": {
                 "inputImageFolder": "sourceImageFolder",
+                "outputImageFolder": "sourceFolderConverted",
                 "wbTemperature": "wbTemperature",
                 "wbTint": "wbTint",
                 "exposureComp": "exposureComp",
