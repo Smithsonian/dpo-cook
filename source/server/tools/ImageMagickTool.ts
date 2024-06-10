@@ -39,6 +39,10 @@ export interface IImageMagickToolSettings extends IToolSettings
     gamma?: number;
     /** Clips image to black (value < 128) or white (value > 128) */
     level?: number;
+    /** Horizontal dimension for a combined montage image. */
+    layoutX?: number;
+    /** Vertical dimension for a combined montage image. */
+    layoutY?: number;
     /** Resizes the image. values <= 2 represent relative scale, otherwise absolute size in pixels. */
     resize?: number;
     /** If true, expects three input images which are copied to the red, green, and blue channels. */
@@ -70,21 +74,11 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
         let operation = "";
 
         if(settings.inputImageFolder) { // batch conversion
-            const outputImagePath = instance.getFilePath(settings.outputImageFolder);
-            if (!outputImagePath) {
-                throw new Error("ImageMagickTool: missing output map folder");
-            }
 
             const inputImagePath = instance.getFilePath(settings.inputImageFolder);
             if (!inputImagePath) {
                 throw new Error("ImageMagickTool: missing input map folder");
             }
-
-            if (!settings.batchConvertType) {
-                throw new Error("ImageMagickTool: missing filetype to convert to");
-            }
-
-            operation = "mogrify";
 
             let quality = settings.quality || 70;
 
@@ -94,7 +88,27 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
                 operation += ` -level ${lvl <= 128 ? pct+"%" : "0,"+pct+"%"}`;
             }
 
-            operation += ` -path "${outputImagePath}" -quality ${quality} -format ${settings.batchConvertType} "${inputImagePath}\\*.*"`;
+            if(settings.batchConvertType) {
+                const outputImagePath = instance.getFilePath(settings.outputImageFolder);
+                if (!outputImagePath) {
+                    throw new Error("ImageMagickTool: missing output map folder");
+                }
+
+                operation = "mogrify";
+
+                operation += ` -path "${outputImagePath}" -quality ${quality} -format ${settings.batchConvertType} "${inputImagePath}\\*.*"`;
+            }
+            else if(settings.layoutX || settings.layoutY) {
+                const outputImagePath = instance.getFilePath(settings.outputImageFile);
+                if (!outputImagePath) {
+                    throw new Error("ImageMagickTool: missing output map file");
+                }
+
+                operation += ` montage "${inputImagePath}\\*.*" -tile ${settings.layoutX}x${settings.layoutY} -geometry ${settings.resize} ${outputImagePath}`;
+            }
+            else {
+                throw new Error("ImageMagickTool: unsupported batch file operation");
+            }
         }
         else { // single image conversion
             const outputImagePath = instance.getFilePath(settings.outputImageFile);

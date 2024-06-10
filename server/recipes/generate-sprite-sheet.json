@@ -1,0 +1,110 @@
+{
+    "id": "e4f7d37c-40a1-401a-8d9f-46d6ba733c1c",
+    "name": "generate-sprite-sheet",
+    "description": "Create sprite sheet from folder of files",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceFolderPath": {
+                "type": "string",
+                "minLength": 1
+            },
+            "filetype": {
+                "type": "string",
+                "minLength": 1
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "layoutX": {
+                "type": "integer"
+            },
+            "layoutY": {
+                "type": "integer"
+            }
+        },
+        "required": [
+            "sourceFolderPath"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceFolderPath))",
+                "sourceFolderBaseName": "$baseName(sourceFolderPath)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'zip-files'",
+            "failure": "$failure"
+        },
+        "zip-files": {
+            "task": "Zip",
+            "description": "Zip files direct from storage",
+            "pre": {
+                "deliverables": {
+                    "fileZip": "sourceFolderBaseName & '.zip'"
+                }
+            },
+            "parameters": {
+                "inputFile1": "sourceFolderPath",
+                "fileFilter": "filetype",
+                "recursive": false,
+                "outputFile": "deliverables.fileZip",
+                "operation": "'path-zip'"
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "parameters": {
+                "inputFile1": "deliverables.fileZip",
+                "operation": "'unzip'"
+            },
+            "success": "'create-sprite-map'",
+            "failure": "$failure"
+        },
+        "create-sprite-map": {
+            "task": "GenerateSpriteMap",
+            "description": "Convert images to sprite sheet",
+            "pre": {
+                "deliverables": {
+                    "spritesheet": "outputFileBaseName & '.jpg'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "sourceFolderBaseName",
+                "outputImageFile": "deliverables.spritesheet",
+                "quality": "85",
+                "resize": "300",
+                "dimensionX": "layoutX",
+                "dimensionY": "layoutY"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
