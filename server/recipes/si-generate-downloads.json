@@ -304,7 +304,7 @@
             "description": "Sync mtl references for master asset",
             "skip": "$not(bakeDiffuse)",
             "pre": {
-                "mtlFile_master": "$firstTrue(sourceMTLFile, outputFileBaseName & '-master.mtl')"
+                "mtlFile_master": "$exists(sourceMTLFile) ? $baseName(reorientedMeshFileMaster) & '.mtl' : outputFileBaseName & '-master.mtl'"
             },
             "parameters": {
                 "objFile": "reorientedMeshFileMaster",
