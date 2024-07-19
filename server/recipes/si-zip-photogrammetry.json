@@ -28,6 +28,10 @@
                 "type": "string",
                 "minLength": 1
             },
+            "maskFiletype": {
+                "type": "string",
+                "minLength": 1
+            },
             "tool": {
                 "type": "string",
                 "enum": [
@@ -181,7 +185,7 @@
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
             "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel", "maskMode", "wbTint", "wbTemperature",
-            "exposureComp", "cameraMake", "cameraModel", "lens", "sharpeningEnabled", "lensProfile"
+            "exposureComp", "sharpeningEnabled", "lensProfile"
         ],
         "additionalProperties": false
     },
@@ -306,7 +310,7 @@
             },
             "parameters": {
                 "inputFile1": "maskFolderPath",
-                "fileFilter": "filetype",
+                "fileFilter": "maskFiletype",
                 "recursive": false,
                 "outputFile": "deliverables.maskFileZip",
                 "operation": "'path-zip'"
