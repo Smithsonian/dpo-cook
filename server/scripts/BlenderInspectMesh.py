@@ -125,6 +125,7 @@ edge_count = 0
 meshes=[]
 materials=[]
 textures=[]
+embedded_textures=[]
 scene={}
 
 isAscii = True
@@ -146,7 +147,7 @@ file_extension = file_extension.lower()
 
 #import scene
 if file_extension == '.obj':
-    bpy.ops.import_scene.obj(filepath=argv[0], axis_forward='-Z', axis_up='Y')
+    bpy.ops.wm.obj_import(filepath=argv[0])
 elif file_extension == '.ply':
     bpy.ops.import_mesh.ply(filepath=argv[0])
     isAscii = is_ply_ascii(argv[0])
@@ -319,7 +320,9 @@ for key in materials:
         else:
             val1 = str(inp.default_value)
             compare = inp.default_value == bsdf_defaults[idx]
-                
+        #print(inp.name)
+        #print(bsdf_defaults[idx])
+        #print(val1)
         if(not compare):
             if inp.name in channel_types:
                 channel = {
@@ -343,6 +346,11 @@ for key in materials:
             image_name = node.image.name
             if node.image.packed_file != None:
                 image_name = "embedded*"+node.image.name
+                if node.image.name not in embedded_textures:
+                    embedded_textures.append(node.image.name)
+            else:
+                if node.image.name not in textures:
+                    textures.append(node.image.name)  
             find_channel(node, out_channels)
             if len(out_channels) == 0:
                 channel = {
@@ -362,9 +370,7 @@ for key in materials:
                         channels.append(channel)
                     else:
                         channel["uri"] = image_name
-            if node.image.name not in textures:
-                textures.append(node.image.name)     
-    
+
     mat = {
         "name" : key,
         "channels" : channels
@@ -380,7 +386,8 @@ scene_statistics =  {
     "numLights": len(bpy.data.lights),
     "numMaterials": len(materials),
     "numMeshes": mesh_count,
-    "numTextures": len(textures),
+    "numLinkedTextures": len(textures),
+    "numEmbeddedTextures": len(embedded_textures),
     "numVertices": vertex_count,
     "numEdges": edge_count,
     "fileEncoding": "ASCII" if isAscii else "BINARY",
