@@ -294,7 +294,7 @@ export default class JobCreateView extends React.Component<IJobCreateViewProps, 
                     value = parseInt(text) || 0;
                 }
                 else if (prop.type === "number") {
-                    value = parseInt(text) || 0;
+                    value = parseFloat(text) || 0;
                 }
                 else if (prop.type === "boolean") {
                     value = text.toLowerCase() === "true";

@@ -1,0 +1,132 @@
+{
+    "id": "466c3283-0b15-4312-901b-6e307fd6be44",
+    "name": "process-raw",
+    "description": "Process raw images for photogrammetry workflow",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "wbTint": {
+                "type": "number",
+                "default": 1.035,
+                "minimum": 0,
+                "maximum": 10.0
+            },
+            "wbTemperature": {
+                "type": "integer",
+                "default": 5564,
+                "minimum": 0,
+                "maximum": 60000
+            },
+            "exposureComp": {
+                "type": "number",
+                "default": 0,
+                "minimum": -5,
+                "maximum": 12
+            },
+            "sharpeningEnabled": {
+                "type": "boolean",
+                "default": false
+            },
+            "lensProfile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "RawTherapee"
+                ],
+                "default": "RawTherapee"
+            }
+        },
+        "required": [
+            "sourceImageFolder"
+        ],
+        "advanced": [
+            
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "sourceImageFolder": "sourceImageFolder"
+                }
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "parameters": {
+                "inputFile1": "sourceImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "'make-dir'",
+            "failure": "$failure"
+        },
+        "make-dir": {
+            "task": "FileOperation",
+            "description": "Make output folder",
+            "pre": {
+                "sourceFolderConverted": "outputFileBaseName & '_processed'"
+            },
+            "parameters": {
+                "name": "sourceFolderConverted",
+                "operation": "'CreateFolder'"
+            },
+            "success": "'process-raw'",
+            "failure": "$failure"
+        },
+        "process-raw": {
+            "task": "ProcessRaw",
+            "description": "Convert raw images to jpg and process for photogrammetry pipeline.",
+            "parameters": {
+                "inputImageFolder": "sourceImageFolder",
+                "outputImageFolder": "sourceFolderConverted",
+                "wbTemperature": "wbTemperature",
+                "wbTint": "wbTint",
+                "exposureComp": "exposureComp",
+                "sharpeningEnabled": "sharpeningEnabled",
+                "lensProfile": "lensProfile",
+                "tool": "RawTherapee",
+                "timeout": 4300
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}

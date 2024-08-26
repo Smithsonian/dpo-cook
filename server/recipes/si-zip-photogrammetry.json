@@ -28,6 +28,10 @@
                 "type": "string",
                 "minLength": 1
             },
+            "maskFiletype": {
+                "type": "string",
+                "minLength": 1
+            },
             "tool": {
                 "type": "string",
                 "enum": [
@@ -55,6 +59,37 @@
             "convertToJpg": {
                 "type": "boolean",
                 "default": false
+            },
+            "preprocess": {
+                "type": "boolean",
+                "default": false
+            },
+            "wbTint": {
+                "type": "number",
+                "default": 1.035,
+                "minimum": 0,
+                "maximum": 10.0
+            },
+            "wbTemperature": {
+                "type": "integer",
+                "default": 5564,
+                "minimum": 0,
+                "maximum": 60000
+            },
+            "exposureComp": {
+                "type": "number",
+                "default": 0,
+                "minimum": -5,
+                "maximum": 12
+            },
+            "sharpeningEnabled": {
+                "type": "boolean",
+                "default": false
+            },
+            "lensProfile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
             },
             "tiepointLimit": {
                 "type": "number",
@@ -149,7 +184,8 @@
         ],
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
-            "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel", "maskMode"
+            "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel", "maskMode", "wbTint", "wbTemperature",
+            "exposureComp", "sharpeningEnabled", "lensProfile"
         ],
         "additionalProperties": false
     },
@@ -274,7 +310,7 @@
             },
             "parameters": {
                 "inputFile1": "maskFolderPath",
-                "fileFilter": "filetype",
+                "fileFilter": "maskFiletype",
                 "recursive": false,
                 "outputFile": "deliverables.maskFileZip",
                 "operation": "'path-zip'"
@@ -295,16 +331,34 @@
         },
         "make-convert-folder": {
             "task": "FileOperation",
-            "skip": "$not(convertToJpg)",
+            "skip": "$not(convertToJpg) and $not(preprocess)",
             "description": "Create folder for converted images",
             "pre": {
-                "sourceFolderConverted": "sourceFolderBaseName & '_converted'"
+                "sourceFolderConverted": "outputFileBaseName & '_converted'"
             },
             "parameters": {
                 "operation": "'CreateFolder'",
                 "name": "sourceFolderConverted"
             },
-            "success": "'convert-to-jpg'",
+            "success": "convertToJpg ? 'convert-to-jpg' : 'process-raw'",
+            "failure": "$failure"
+        },
+        "process-raw": {
+            "task": "ProcessRaw",
+            "skip": "$not(preprocess)",
+            "description": "Convert raw images to jpg and process for photogrammetry pipeline.",
+            "parameters": {
+                "inputImageFolder": "sourceFolderBaseName",
+                "outputImageFolder": "sourceFolderConverted",
+                "wbTemperature": "wbTemperature",
+                "wbTint": "wbTint",
+                "exposureComp": "exposureComp",
+                "sharpeningEnabled": "sharpeningEnabled",
+                "lensProfile": "lensProfile",
+                "tool": "RawTherapee",
+                "timeout": 4300
+            },
+            "success": "'photogrammetry'",
             "failure": "$failure"
         },
         "convert-to-jpg": {
@@ -332,7 +386,7 @@
                 }
             },
             "parameters": {
-                "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
+                "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
                 "alignImageFolder": "alignFolderBaseName",
                 "maskImageFolder": "maskFolderBaseName",
                 "camerasFile": "camerasFile",
@@ -417,7 +471,7 @@
                 }
             },
             "parameters": {
-                "inputImageFolder": "convertToJpg ? sourceFolderConverted : sourceFolderBaseName",
+                "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
                 "inputModelFile": "deliverables.cleanedMeshFile",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.finalMeshFile",
