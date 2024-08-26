@@ -414,6 +414,7 @@ if processGroups == True:
     else:
         near_center = chunk.region.center
         far_center = local_centers[0]["ctr"]
+        align_ring_name = local_centers[0]["name"]
         print("Info: Using chunk center for axis alignment")
 
     # calculate rotation offset to up vector
