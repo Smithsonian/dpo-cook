@@ -212,6 +212,16 @@
                 "inputFile1": "sourceImageFolder",
                 "operation": "'unzip'"
             },
+            "success": "'delete-standard'",
+            "failure": "$failure"
+        },
+        "delete-standard": {
+            "task": "FileOperation",
+            "description": "Delete zipped images",
+            "parameters": {
+                "operation": "'DeleteFile'",
+                "name": "sourceImageFolder"
+            },
             "success": "'unzip-align'",
             "failure": "$failure"
         },
@@ -225,6 +235,17 @@
             "parameters": {
                 "inputFile1": "alignImageFolder",
                 "operation": "'unzip'"
+            },
+            "success": "'delete-align'",
+            "failure": "$failure"
+        },
+        "delete-align": {
+            "task": "FileOperation",
+            "skip": "$not(doAlign)",
+            "description": "Delete zipped alignment images",
+            "parameters": {
+                "operation": "'DeleteFile'",
+                "name": "alignImageFolder"
             },
             "success": "'make-level-clip-folder'",
             "failure": "$failure"
@@ -270,6 +291,17 @@
             "parameters": {
                 "inputFile1": "maskImageFolder",
                 "operation": "'unzip'"
+            },
+            "success": "'delete-mask'",
+            "failure": "$failure"
+        },
+        "delete-mask": {
+            "task": "FileOperation",
+            "skip": "$not(doMask)",
+            "description": "Delete zipped mask images",
+            "parameters": {
+                "operation": "'DeleteFile'",
+                "name": "maskImageFolder"
             },
             "success": "'make-convert-folder'",
             "failure": "$failure"
