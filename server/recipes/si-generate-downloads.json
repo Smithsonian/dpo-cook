@@ -412,7 +412,7 @@
             },
             "post": {
                 "diffuseMapUncompressedLow": "bakeDiffuse ? (baseMeshMapNameLow & '-diffuse.png') : ''",
-                "vcolMapUncompressedLow": "bakeVertexColor ? (baseMeshNameLow & '_vcols.png') : ''",
+                "vcolMapUncompressedLow": "bakeVertexColor ? (baseMeshMapNameLow & '_vcols.png') : ''",
                 "occlusionMapUncompressedLow": "(baseMeshMapNameLow & '-occlusion.png')",
                 "normalMapUncompressedLow": "(baseMeshMapNameLow & '-normals.png')",
                 "testMapLow": "bakeTest ? (baseMeshMapNameLow & '-test.png') : ''"
@@ -521,7 +521,7 @@
             "parameters": {
                 "outputFile": "deliverables.webAssetGlbLowUncompressed",
                 "meshFile": "scene_unwrappedMeshLow",
-                "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "scene_occlusionMapHigh",
                 "normalMapFile": "scene_normalMapHigh",
                 "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapLow : ''",
@@ -545,7 +545,7 @@
             "parameters": {
                 "outputFile": "scene_webAssetHighGltf",
                 "meshFile": "scene_unwrappedMeshLow",
-                "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapHigh : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapHigh : ''",
                 "occlusionMapFile": "scene_occlusionMapHigh",
                 "normalMapFile": "scene_normalMapHigh",
                 "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapLow : ''",
@@ -809,7 +809,7 @@
             "parameters": {
                 "outputFile": "deliverables.webAssetGlbARCompressed",
                 "meshFile": "scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse ? scene_diffuseMapAR : ''",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapAR : ''",
                 "occlusionMapFile": "scene_occlusionMapAR",
                 "normalMapFile": "scene_normalMapAR",
                 "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapAR : ''",
