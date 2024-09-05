@@ -86,6 +86,10 @@
                 "maximum": 4096,
                 "default": 2048
             },
+            "compressTextures": {
+                "type": "boolean",
+                "default": true
+            },
             "decimationTool": {
                 "type": "string",
                 "enum": [ "Meshlab", "RapidCompact" ],
@@ -214,7 +218,8 @@
                 "mapSizeHigh": "mapSizeWebMulti",
                 "mapSizeMedium": "mapSizeWebMulti * 0.5",
                 "mapSizeLow": "mapSizeWebMulti * 0.25",
-                "bakeDiffuse": "$exists(sourceDiffuseMapFile)"
+                "bakeDiffuse": "$exists(sourceDiffuseMapFile)",
+                "imageType": "compressTextures ? 'png' : 'jpg'"
             },
             "parameters": {
                 "logToConsole": true,
@@ -570,13 +575,33 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapHigh": "baseMeshMapNameHigh & '-diffuse.jpg'"
+                    "scene_diffuseMapHigh": "baseMeshMapNameHigh & '-diffuse.' & imageType"
                 }
             },
             "parameters": {
                 "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebmulti : deliverables.diffuseMapUncompressedwebmulti",
                 "outputImageFile": "deliverables.scene_diffuseMapHigh",
                 "quality": "diffuseMapQualityWebMulti"
+            },
+            "success": "compressTextures ? 'compress-diffuse-map-high' : 'convert-occlusion-map-high'",
+            "failure": "$failure"
+        },
+        "compress-diffuse-map-high": {
+            "task": "CompressImage",
+            "description": "Compress Diffuse Map",
+            "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
+            "pre": {
+                "scene_diffuseCompressedHigh": "baseMeshMapNameHigh & '-diffuse.ktx2'"
+            },
+            "parameters": {
+                "inputImageFile": "deliverables.scene_diffuseMapHigh",
+                "outputImageFile": "scene_diffuseCompressedHigh",
+                "quality": "diffuseMapQualityWebMulti"
+            },
+            "post": {
+                "deliverables": {
+                    "scene_diffuseMapHigh": "scene_diffuseCompressedHigh"
+                }
             },
             "success": "'convert-occlusion-map-high'",
             "failure": "$failure"
