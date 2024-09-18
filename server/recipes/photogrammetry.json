@@ -303,7 +303,7 @@
                 "tool": "RawTherapee",
                 "timeout": 4300
             },
-            "success": "'photogrammetry'",
+            "success": "'make-align-convert-folder'",
             "failure": "$failure"
         },
         "convert-to-jpg": {
@@ -315,6 +315,38 @@
                 "outputImageFolder": "sourceFolderConverted",
                 "filetype": "jpg",
                 "quality": "85"
+            },
+            "success": "'make-align-convert-folder'",
+            "failure": "$failure"
+        },
+        "make-align-convert-folder": {
+            "task": "FileOperation",
+            "skip": "$not(doAlign) or $not(preprocess)",
+            "description": "Create folder for converted images",
+            "pre": {
+                "alignFolderConverted": "alignFolderBaseName & '_converted'"
+            },
+            "parameters": {
+                "operation": "'CreateFolder'",
+                "name": "alignFolderConverted"
+            },
+            "success": "'process-align-raw'",
+            "failure": "$failure"
+        },
+        "process-align-raw": {
+            "task": "ProcessRaw",
+            "skip": "$not(doAlign) or $not(preprocess)",
+            "description": "Convert raw images to jpg and process for photogrammetry pipeline.",
+            "parameters": {
+                "inputImageFolder": "alignFolderBaseName",
+                "outputImageFolder": "alignFolderConverted",
+                "wbTemperature": "wbTemperature",
+                "wbTint": "wbTint",
+                "exposureComp": "exposureComp",
+                "sharpeningEnabled": "sharpeningEnabled",
+                "lensProfile": "lensProfile",
+                "tool": "RawTherapee",
+                "timeout": 4300
             },
             "success": "'photogrammetry'",
             "failure": "$failure"
@@ -331,7 +363,7 @@
             },
             "parameters": {
                 "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
-                "alignImageFolder": "alignFolderBaseName",
+                "alignImageFolder": "preprocess ? alignFolderConverted : alignFolderBaseName",
 				"maskImageFolder": "maskFolderBaseName",
                 "camerasFile": "camerasFile",
                 "outputFile": "deliverables.meshFile",
