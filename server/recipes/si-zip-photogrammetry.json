@@ -212,15 +212,13 @@
             "task": "Zip",
             "description": "Zip files direct from storage",
             "pre": {
-                "deliverables": {
-                    "fileZip": "sourceFolderBaseName & '.zip'"
-                }
+                "fileZip": "sourceFolderBaseName & '.zip'"
             },
             "parameters": {
                 "inputFile1": "sourceFolderPath",
                 "fileFilter": "filetype",
                 "recursive": false,
-                "outputFile": "deliverables.fileZip",
+                "outputFile": "fileZip",
                 "operation": "'path-zip'"
             },
             "success": "'unzip'",
@@ -230,8 +228,18 @@
             "task": "Zip",
             "description": "Unzip image folder",
             "parameters": {
-                "inputFile1": "deliverables.fileZip",
+                "inputFile1": "fileZip",
                 "operation": "'unzip'"
+            },
+            "success": "'delete-standard'",
+            "failure": "$failure"
+        },
+        "delete-standard": {
+            "task": "FileOperation",
+            "description": "Delete zipped images",
+            "parameters": {
+                "operation": "'DeleteFile'",
+                "name": "fileZip"
             },
             "success": "'zip-align'",
             "failure": "$failure"
@@ -242,15 +250,13 @@
             "description": "Zip alignment files direct from storage",
             "pre": {
                 "alignFolderBaseName": "$baseName(alignFolderPath)",
-                "deliverables": {
-                    "alignFileZip": "alignFolderBaseName & '.zip'"
-                }
+                "alignFileZip": "alignFolderBaseName & '.zip'"
             },
             "parameters": {
                 "inputFile1": "alignFolderPath",
                 "fileFilter": "filetype",
                 "recursive": false,
-                "outputFile": "deliverables.alignFileZip",
+                "outputFile": "alignFileZip",
                 "operation": "'path-zip'"
             },
             "success": "'unzip-align'",
@@ -261,8 +267,19 @@
             "skip": "$not(doAlign)",
             "description": "Unzip alignment image folder",
             "parameters": {
-                "inputFile1": "deliverables.alignFileZip",
+                "inputFile1": "alignFileZip",
                 "operation": "'unzip'"
+            },
+            "success": "'delete-align'",
+            "failure": "$failure"
+        },
+        "delete-align": {
+            "task": "FileOperation",
+            "skip": "$not(doAlign)",
+            "description": "Delete zipped alignment images",
+            "parameters": {
+                "operation": "'DeleteFile'",
+                "name": "alignFileZip"
             },
             "success": "'make-level-clip-folder'",
             "failure": "$failure"
@@ -304,15 +321,13 @@
             "description": "Zip mask files direct from storage",
             "pre": {
                 "maskFolderBaseName": "$baseName(maskFolderPath)",
-                "deliverables": {
-                    "maskFileZip": "maskFolderBaseName & '.zip'"
-                }
+                "maskFileZip": "maskFolderBaseName & '.zip'"
             },
             "parameters": {
                 "inputFile1": "maskFolderPath",
                 "fileFilter": "maskFiletype",
                 "recursive": false,
-                "outputFile": "deliverables.maskFileZip",
+                "outputFile": "maskFileZip",
                 "operation": "'path-zip'"
             },
             "success": "'unzip-mask'",
@@ -323,8 +338,19 @@
             "skip": "$not(doMask)",
             "description": "Unzip mask image folder",
             "parameters": {
-                "inputFile1": "deliverables.maskFileZip",
+                "inputFile1": "maskFileZip",
                 "operation": "'unzip'"
+            },
+            "success": "'delete-mask'",
+            "failure": "$failure"
+        },
+        "delete-mask": {
+            "task": "FileOperation",
+            "skip": "$not(doMask)",
+            "description": "Delete zipped mask images",
+            "parameters": {
+                "operation": "'DeleteFile'",
+                "name": "maskFileZip"
             },
             "success": "'make-convert-folder'",
             "failure": "$failure"
