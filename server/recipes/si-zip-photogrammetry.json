@@ -562,7 +562,6 @@
             },
             "parameters": {
                 "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-align.files'",
-                "fileFilter": "filetype",
                 "recursive": true,
                 "outputFile": "deliverables.alignProjZip",
                 "operation": "'path-zip'"
@@ -582,7 +581,6 @@
             },
             "parameters": {
                 "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-mesh.files'",
-                "fileFilter": "filetype",
                 "recursive": true,
                 "outputFile": "deliverables.meshProjZip",
                 "operation": "'path-zip'"
@@ -601,7 +599,6 @@
             },
             "parameters": {
                 "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-raw_clean.files'",
-                "fileFilter": "filetype",
                 "recursive": true,
                 "outputFile": "deliverables.finalProjZip",
                 "operation": "'path-zip'"
