@@ -104,7 +104,7 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
                     throw new Error("ImageMagickTool: missing output map file");
                 }
 
-                operation += ` montage "${inputImagePath}\\*.*" -tile ${settings.layoutX}x${settings.layoutY} -geometry ${settings.resize} ${outputImagePath}`;
+                operation += ` montage "${inputImagePath}\\*.*" -tile ${settings.layoutX}x${settings.layoutY} -geometry ${settings.resize} -gamma 2.2 ${outputImagePath}`;
             }
             else {
                 throw new Error("ImageMagickTool: unsupported batch file operation");
