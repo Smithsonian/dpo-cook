@@ -332,8 +332,7 @@
                 "exposureComp": "exposureComp",
                 "sharpeningEnabled": "sharpeningEnabled",
                 "lensProfile": "lensProfile",
-                "tool": "RawTherapee",
-                "timeout": 4300
+                "tool": "RawTherapee"
             },
             "success": "'make-align-convert-folder'",
             "failure": "$failure"
@@ -377,8 +376,7 @@
                 "exposureComp": "exposureComp",
                 "sharpeningEnabled": "sharpeningEnabled",
                 "lensProfile": "lensProfile",
-                "tool": "RawTherapee",
-                "timeout": 4300
+                "tool": "RawTherapee"
             },
             "success": "'photogrammetry'",
             "failure": "$failure"
