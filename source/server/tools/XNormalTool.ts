@@ -40,6 +40,7 @@ export interface IXNormalToolSettings extends IToolSettings
     occlusionAttConstant?: number;
     occlusionAttLinear?: number;
     occlusionAttQuadratic?: number;
+    scale?: number;
     bakeNormals?: boolean;
     tangentSpaceNormals?: boolean;
     normalsFlipX?: boolean;
@@ -63,7 +64,8 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
         occlusionConeAngle: 170,
         occlusionAttConstant: 1,
         occlusionAttLinear: 0,
-        occlusionAttQuadratic: 0
+        occlusionAttQuadratic: 0,
+        scale: 1.0
     };
 
     async setupInstance(instance: XNormalInstance): Promise<IToolSetup>
@@ -95,7 +97,7 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
             settings.highPolyDiffuseMapFile = newFilename;
         }
 
-        const maxRayDistance = settings.maxRayDistance;
+        const maxRayDistance = settings.maxRayDistance * settings.scale;
         const edgePadding = (settings.mapSize / 512) * 4; // (1k = 2, 2k = 4, 4k = 8) x 4
 
         const tangentSpace = settings.tangentSpaceNormals;
@@ -112,6 +114,8 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
         const aoDistribution = "Cosine"; // Uniform or Cosine
         const aoLimitRayDistance = false; // default false
         const aoBias = 0.005;
+
+        const scale = settings.scale;
 
         const highpolyDiffuseMapPath = this.sanitize(instance.getFilePath(settings.highPolyDiffuseMapFile));
         const bakeDiffuse = !!settings.bakeDiffuse && !!highpolyDiffuseMapPath;
@@ -130,11 +134,11 @@ export default class XNormalTool extends Tool<XNormalTool, IXNormalToolSettings>
                 `<?xml version="1.0" encoding="UTF-8"?>`,
                 `<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="3.19.3">`,
                 `  <HighPolyModel DefaultMeshScale="1.000000">`,
-                `    <Mesh Visible="true" File="${highPolyMeshPath}" Scale="1.000000" IgnorePerVertexColor="${!bakeVertexColor}" AverageNormals="AverageNormals" BaseTexIsTSNM="${isNormalMap}" PositionOffset="0.0000;0.0000;0.0000" ${bakeDiffuse ? `BaseTex="${highpolyDiffuseMapPath}"` : ""} />`,
+                `    <Mesh Visible="true" File="${highPolyMeshPath}" Scale="${scale}" IgnorePerVertexColor="${!bakeVertexColor}" AverageNormals="AverageNormals" BaseTexIsTSNM="${isNormalMap}" PositionOffset="0.0000;0.0000;0.0000" ${bakeDiffuse ? `BaseTex="${highpolyDiffuseMapPath}"` : ""} />`,
                 `  </HighPolyModel>`,
 
                 `  <LowPolyModel DefaultMeshScale="1.000000">`,
-                `    <Mesh Visible="true" File="${lowPolyMeshPath}" Scale="1.000000" AverageNormals="AverageNormals" MaxRayDistanceFront="${maxRayDistance}" MaxRayDistanceBack="${maxRayDistance}" UseCage="false" NormapMapType="Tangent-space" UsePerVertexColors="true" UseFresnel="false" FresnelRefractiveIndex="1.330000" ReflectHDRMult="1.000000" VectorDisplacementTS="false" VDMSwizzleX="X+" VDMSwizzleY="Y+" VDMSwizzleZ="Z+" BatchProtect="false" CastShadows="true" ReceiveShadows="true" BackfaceCull="true" NMSwizzleX="X+" NMSwizzleY="Y+" NMSwizzleZ="Z+" HighpolyNormalsOverrideTangentSpace="true" TransparencyMode="None" AlphaTestValue="127" Matte="false" MatchUVs="false" UOffset="0.000000" VOffset="0.000000" PositionOffset="0.0000;0.0000;0.0000"/>`,
+                `    <Mesh Visible="true" File="${lowPolyMeshPath}" Scale="${scale}" AverageNormals="AverageNormals" MaxRayDistanceFront="${maxRayDistance}" MaxRayDistanceBack="${maxRayDistance}" UseCage="false" NormapMapType="Tangent-space" UsePerVertexColors="true" UseFresnel="false" FresnelRefractiveIndex="1.330000" ReflectHDRMult="1.000000" VectorDisplacementTS="false" VDMSwizzleX="X+" VDMSwizzleY="Y+" VDMSwizzleZ="Z+" BatchProtect="false" CastShadows="true" ReceiveShadows="true" BackfaceCull="true" NMSwizzleX="X+" NMSwizzleY="Y+" NMSwizzleZ="Z+" HighpolyNormalsOverrideTangentSpace="true" TransparencyMode="None" AlphaTestValue="127" Matte="false" MatchUVs="false" UOffset="0.000000" VOffset="0.000000" PositionOffset="0.0000;0.0000;0.0000"/>`,
                 `  </LowPolyModel>`,
 
                 `  <GenerateMaps `,

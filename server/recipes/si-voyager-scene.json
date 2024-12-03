@@ -293,7 +293,8 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
+                "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01",
+                "bakeScale": "$max($result.inspection.scene.geometry.size) > 2.0 ? 1.0 : 2.5 / $max($result.inspection.scene.geometry.size)"
             },
             "success": "'bake-webthumb'",
             "failure": "$failure"
@@ -316,6 +317,7 @@
                 "bakeVertexColor": "bakeVertexColor",
                 "bakeNormals": "bakeNormalsWebThumb",
                 "bakeTest": "bakeTest",
+                "scale": "bakeScale",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": true,
                 "timeout": 900
@@ -494,7 +496,8 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01",
+                "bakeScale": "$max($result.inspection.scene.geometry.size) > 2.0 ? 1.0 : 2.5 / $max($result.inspection.scene.geometry.size)"
             },
             "success": "'bake-webmulti'",
             "failure": "$failure"
@@ -517,6 +520,7 @@
                 "bakeNormals": true,
                 "bakeVertexColor": "bakeVertexColor",
                 "bakeTest": "bakeTest",
+                "scale": "bakeScale",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": true,
                 "timeout": 1200
@@ -552,6 +556,7 @@
                 "bakeNormals": false,
                 "bakeVertexColor": false,
                 "bakeTest": false,
+                "scale": "bakeScale",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": true,
                 "timeout": 1200
@@ -959,7 +964,8 @@
                 "tool": "'MeshSmith'"
             },
             "post": {
-                "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
+                "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01",
+                "bakeScale": "$max($result.inspection.scene.geometry.size) > 2.0 ? 1.0 : 2.5 / $max($result.inspection.scene.geometry.size)"
             },
             "success": "'bake-web-ar'",
             "failure": "$failure"
@@ -982,6 +988,7 @@
                 "bakeVertexColor": "bakeVertexColor",
                 "bakeNormals": true,
                 "bakeTest": "bakeTest",
+                "scale": "bakeScale",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": true,
                 "timeout": 900
@@ -1017,6 +1024,7 @@
                 "bakeVertexColor": false,
                 "bakeNormals": false,
                 "bakeTest": false,
+                "scale": "bakeScale",
                 "occlusionRays": "occlusionRays",
                 "tangentSpaceNormals": true,
                 "timeout": 900

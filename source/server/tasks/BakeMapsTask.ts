@@ -40,6 +40,8 @@ export interface IBakeMapsTaskParameters extends ITaskParameters
     mapSize: number;
     /** Maximum search distance when projecting details onto low poly mesh (default: 0.001). */
     maxRayDistance?: number;
+    /** If object size is less than 2 units, scales models up for baking to get better results (per xNormal) */
+    scale?: number;
     /** Bakes a diffuse map if true and highPolyDiffuseMapFile is not empty (default: true). */
     bakeDiffuse?: boolean;
     /** Bakes an ambient occlusion map if true (default: true). */
@@ -104,6 +106,7 @@ export default class BakeMapsTask extends ToolTask
             occlusionAttConstant: { type: "number", minimum: 0, maximum: 1, default: 1 },
             occlusionAttLinear: { type: "number", minimum: 0, maximum: 1, default: 0 },
             occlusionAttQuadratic: { type: "number", minimum: 0, maximum: 1, default: 0 },
+            scale: { type: "number", minimum: 1.0, default: 1.0 },
             tangentSpaceNormals: { type: "boolean", default: false },
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "XNormal", "RapidCompact" ], default: "XNormal" }
@@ -151,6 +154,7 @@ export default class BakeMapsTask extends ToolTask
             occlusionAttConstant: parameters.occlusionAttConstant,
             occlusionAttLinear: parameters.occlusionAttLinear,
             occlusionAttQuadratic: parameters.occlusionAttQuadratic,
+            scale: parameters.scale,
             tangentSpaceNormals: parameters.tangentSpaceNormals,
             timeout: parameters.timeout
         };
