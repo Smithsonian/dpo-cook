@@ -102,6 +102,9 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
             operation += ` -c "${camFilePath}"`;
         }
 
+        const logfile = "_metashape_log_" + settings.mode + ".txt";
+        operation += ` > "${instance.getFilePath(logfile)}" 2>&1`;
+
         //operation += `-platform offscreen `;
 
         const command = `"${this.configuration.executable}" ${operation}`;
