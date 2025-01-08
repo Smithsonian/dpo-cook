@@ -69,7 +69,7 @@
             "assetTool": {
                 "type": "string",
                 "enum": [ "MeshSmith", "Blender" ],
-                "default": "MeshSmith"
+                "default": "Blender"
             },
             "preDecimatedUnwrappedLowTargetFile": {
                 "type": "string",

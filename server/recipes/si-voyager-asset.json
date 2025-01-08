@@ -49,7 +49,7 @@
                     "MeshSmith",
                     "Blender"
                 ],
-                "default": "MeshSmith"
+                "default": "Blender"
             },
             "svxFile": {
                 "type": "string",

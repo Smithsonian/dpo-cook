@@ -95,7 +95,7 @@
             "assetTool": {
                 "type": "string",
                 "enum": [ "MeshSmith", "Blender" ],
-                "default": "MeshSmith"
+                "default": "Blender"
             },
             "bakeOcclusion": {
                 "type": "boolean",
