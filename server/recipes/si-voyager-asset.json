@@ -43,6 +43,14 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "MeshSmith",
+                    "Blender"
+                ],
+                "default": "Blender"
+            },
             "svxFile": {
                 "type": "string",
                 "minLength": 1,
@@ -56,6 +64,10 @@
             "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
+            },
+            "blendAlpha": {
+                "type": "boolean",
+                "default": false
             },
             "modelIndex": {
                 "type": "integer",
@@ -152,7 +164,9 @@
                 "useCompression": "useCompression",
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "blendAlpha",
+                "tool": "tool"
             },
             "success": "'web-asset-gltf'",
             "failure": "$failure"
@@ -183,7 +197,9 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": false,
-                "writeBinary": false
+                "writeBinary": false,
+                "alphaBlend": "blendAlpha",
+                "tool": "tool"
             },
             "success": "'update-document'",
             "failure": "$failure"

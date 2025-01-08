@@ -29,6 +29,8 @@ export interface IImageMagickToolSettings extends IToolSettings
     greenChannelInputFile?: string;
     /** Name of the image file for the blue channel (optional, only required if combining individual channels). */
     blueChannelInputFile?: string;
+    /** Name of the image file for the blue channel (optional). */
+    alphaChannelInputFile?: string;
     /** Name of the output image file. */
     outputImageFile?: string;
     /** The compression quality for JPEG images (0 - 100). */
@@ -123,8 +125,15 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
                 operation += [
                     ` ( "${redImagePath}" ${channelAutoLevel} -gamma ${channelGamma[0]} )`,
                     ` ( "${greenImagePath}" ${channelAutoLevel} -gamma ${channelGamma[1]} )`,
-                    ` ( "${blueImagePath}" ${channelAutoLevel} -gamma ${channelGamma[2]} ) -combine`,
+                    ` ( "${blueImagePath}" ${channelAutoLevel} -gamma ${channelGamma[2]} )`,
                 ].join("");
+    
+                if(settings.alphaChannelInputFile) {
+                    const alphaImagePath = instance.getFilePath(settings.alphaChannelInputFile);
+                    operation += ` ( "${alphaImagePath}" ${channelAutoLevel} ) -channel RGBA`;
+                }
+    
+                operation += ` -combine`;
             }
             else {
                 const inputImagePath = instance.getFilePath(settings.inputImageFile);

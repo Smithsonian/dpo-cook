@@ -91,11 +91,20 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
             },
+            "assetTool": {
+                "type": "string",
+                "enum": [ "MeshSmith", "Blender" ],
+                "default": "Blender"
+            },
             "bakeVertexColor": {
                 "type": "boolean",
                 "default": false
             },
             "bakeNormalsWebThumb": {
+                "type": "boolean",
+                "default": false
+            },
+            "saveAlpha": {
                 "type": "boolean",
                 "default": false
             },
@@ -340,7 +349,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMap": "baseMeshNameWebThumb & '-diffuse-webthumb.jpg'"
+                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebThumb & '-diffuse-webthumb.jpg' : baseMeshNameWebThumb & '-diffuse-webthumb.png'"
                 }
             },
             "parameters": {
@@ -402,7 +411,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document'",
             "failure": "$failure"
@@ -575,7 +586,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapHigh": "baseMeshMapNameHigh & '-diffuse.jpg'"
+                    "scene_diffuseMapHigh": "$not(saveAlpha) ? baseMeshMapNameHigh & '-diffuse.jpg' : baseMeshMapNameHigh & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -654,7 +665,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-high'",
             "failure": "$failure"
@@ -685,7 +698,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapMedium": "baseMeshMapNameMedium & '-diffuse.jpg'"
+                    "scene_diffuseMapMedium": "$not(saveAlpha) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -768,7 +781,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-medium'",
             "failure": "$failure"
@@ -793,7 +808,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapLow": "baseMeshMapNameLow & '-diffuse.jpg'"
+                    "scene_diffuseMapLow": "$not(saveAlpha) ? baseMeshMapNameLow & '-diffuse.jpg' : baseMeshMapNameLow & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -876,7 +891,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-low'",
             "failure": "$failure"
@@ -1043,7 +1060,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMap": "baseMeshNameWebAR & '-diffuse-web-ar.jpg'"
+                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebAR & '-diffuse-web-ar.jpg' : baseMeshNameWebAR & '-diffuse-web-ar.png'"
                 }
             },
             "parameters": {
@@ -1122,7 +1139,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-ar'",
             "failure": "$failure"
