@@ -48,7 +48,8 @@ def run():
             ob.select_set(True)
             bpy.context.view_layer.objects.active = ob
         else:
-            ob.select = False
+            if ob.type != 'EMPTY':
+                ob.select = False
     bpy.ops.object.join()
 
     # Check if we have a diffuse texture
