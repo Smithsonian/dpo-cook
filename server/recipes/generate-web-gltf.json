@@ -282,7 +282,7 @@
             "skip": "maxRayDistance > 0",
             "parameters": {
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"

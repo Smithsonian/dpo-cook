@@ -272,6 +272,24 @@
                 "computeVertexNormals": true
             },
             "success": "'unwrap-rizom-webthumb'",
+            "failure": "decimate-rapid-webthumb"
+        },
+        "decimate-rapid-webthumb": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using RapidCompact",
+            "pre": {
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-webthumb.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFacesWebThumb",
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "tool": "'RapidCompact'"
+            },
+            "success": "'unwrap-rizom-webthumb'",
             "failure": "$failure"
         },
         "unwrap-rizom-webthumb": {
@@ -301,7 +319,7 @@
             "skip": "maxRayDistance > 0",
             "parameters": {
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01",
@@ -506,7 +524,7 @@
             "description": "Calculate mesh size and max. ray distance for bake",
             "parameters": {
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01",
@@ -980,7 +998,7 @@
             "skip": "maxRayDistance > 0",
             "parameters": {
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01",

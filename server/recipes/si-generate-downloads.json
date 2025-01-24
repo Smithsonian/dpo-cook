@@ -388,7 +388,7 @@
             "skip": "$not(generateLowAssets)",
             "parameters": {
                 "meshFile": "scene_unwrappedMeshLow",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
@@ -686,7 +686,7 @@
             "skip": "$not(generateARAssets)",
             "parameters": {
                 "meshFile": "scene_unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
@@ -1000,7 +1000,7 @@
             "skip": "$not(generateMediumAssets)",
             "parameters": {
                 "meshFile": "unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
