@@ -252,8 +252,26 @@
             "post": {
                 "remeshedFile": "deliverables.remeshedMeshFile"
             },
-            "success": "'decimate-meshlab-webthumb'",
+            "success": "'decimate-rapid-webthumb'",
             "failure": "$failure"
+        },
+        "decimate-rapid-webthumb": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh using RapidCompact",
+            "pre": {
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-webthumb.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFacesWebThumb",
+                "cleanup": "cleanupMesh",
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "tool": "'RapidCompact'"
+            },
+            "success": "'unwrap-rizom-webthumb'",
+            "failure": "'decimate-meshlab-webthumb'"
         },
         "decimate-meshlab-webthumb": {
             "task": "DecimateMesh",
@@ -270,24 +288,6 @@
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
                 "computeVertexNormals": true
-            },
-            "success": "'unwrap-rizom-webthumb'",
-            "failure": "decimate-rapid-webthumb"
-        },
-        "decimate-rapid-webthumb": {
-            "task": "DecimateMesh",
-            "description": "Decimate mesh using RapidCompact",
-            "pre": {
-                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-webthumb.obj'"
-            },
-            "parameters": {
-                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
-                "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFacesWebThumb",
-                "cleanup": "cleanupMesh",
-                "preserveTopology": true,
-                "preserveBoundaries": true,
-                "tool": "'RapidCompact'"
             },
             "success": "'unwrap-rizom-webthumb'",
             "failure": "$failure"
