@@ -38,6 +38,8 @@ export interface IDocumentTaskParameters extends ITaskParameters
     documentFile?: string;
     /** File name with meta data to be embedded in the document file. */
     metaDataFile?: string;
+    /** JSON string of meta data to be embedded in the document file. */
+    metaDataString?: string;
     /** Index of the model to be modified. */
     modelIndex?: number;
     /** Name of the document model. */
@@ -81,6 +83,7 @@ export default class DocumentTask extends Task
         properties: {
             documentFile: { type: "string", minLength: 1 },
             metaDataFile: { type: "string" },
+            metaDataString: { type: "string" },
             modelIndex: { type: "integer", minimum: 0 },
             modelName: { type: "string" },
             units: { type: "string", enum: [ "mm", "cm", "m", "in", "ft", "yd" ] },
@@ -282,6 +285,25 @@ export default class DocumentTask extends Task
                     keys.forEach(key => meta.collection[key] = metaData[key]);
                 }
             }));
+        }
+        else if(params.metaDataString) {
+            const metaData = JSON.parse(params.metaDataString);
+            const keys = Object.keys(metaData);
+            if (keys.length > 0) {
+                let meta;
+                if (isFinite(scene.meta)) {
+                    meta = document.metas[scene.meta];
+                }
+                else {
+                    meta = {};
+                    document.metas = document.metas || [];
+                    scene.meta = document.metas.length;
+                    document.metas.push(meta);
+                }
+
+                meta.collection = meta.collection || {};
+                keys.forEach(key => meta.collection[key] = metaData[key]);
+            }
         }
 
         return Promise.all(mods).then(() => document);
