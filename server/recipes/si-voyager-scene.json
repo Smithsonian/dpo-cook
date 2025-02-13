@@ -197,6 +197,14 @@
             "bakeTest": {
                 "type": "boolean",
                 "default": true
+            },
+            "compressTextures": {
+                "type": "boolean",
+                "default": false
+            },
+            "compressTexturesFormat": {
+                "type": "string",
+                "default": "etc1s"
             }
         },
         "required": [
@@ -205,7 +213,7 @@
         "advanced": [
             "bakeTest", "quadsOnly", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthWebMulti", "unwrapSegmentationStrengthWebThumb", "remeshFaces",
             "modelIndex", "multiMeshFile", "cleanupMesh", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
-            "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance"
+            "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance", "compressTextures", "compressTexturesFormat"
         ],
         "additionalProperties": false
     },
@@ -606,7 +614,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapHigh": "$not(saveAlpha) ? baseMeshMapNameHigh & '-diffuse.jpg' : baseMeshMapNameHigh & '-diffuse.png'"
+                    "scene_diffuseMapHigh": "$not(saveAlpha) and $not(compressTextures) ? baseMeshMapNameHigh & '-diffuse.jpg' : baseMeshMapNameHigh & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -682,12 +690,23 @@
                 "normalMapFile": "deliverables.scene_normalMapHigh",
                 "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapHigh : ''",
                 "objectSpaceNormals": false,
-                "useCompression": true,
+                "useCompression": "compressTextures ? false : true",
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true,
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
+            },
+            "success": "'tex-compress-high'",
+            "failure": "$failure"
+        },
+        "tex-compress-high": {
+            "task": "CompressTextures",
+            "description": "Compress diffuse texture to ktx2",
+            "skip": "$not(compressTextures)",
+            "parameters": {
+                "inputMeshFile": "deliverables.scene_webAssetHighGlb",
+                "format": "compressTexturesFormat"
             },
             "success": "'update-document-high'",
             "failure": "$failure"
@@ -718,7 +737,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapMedium": "$not(saveAlpha) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
+                    "scene_diffuseMapMedium": "$not(saveAlpha) and $not(compressTextures) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -798,12 +817,23 @@
                 "normalMapFile": "deliverables.scene_normalMapMedium",
                 "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapMedium : ''",
                 "objectSpaceNormals": false,
-                "useCompression": true,
+                "useCompression": "compressTextures ? false : true",
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true,
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
+            },
+            "success": "'tex-compress-medium'",
+            "failure": "$failure"
+        },
+        "tex-compress-medium": {
+            "task": "CompressTextures",
+            "description": "Compress diffuse texture to ktx2",
+            "skip": "$not(compressTextures)",
+            "parameters": {
+                "inputMeshFile": "deliverables.scene_webAssetMediumGlb",
+                "format": "compressTexturesFormat"
             },
             "success": "'update-document-medium'",
             "failure": "$failure"
@@ -828,7 +858,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMapLow": "$not(saveAlpha) ? baseMeshMapNameLow & '-diffuse.jpg' : baseMeshMapNameLow & '-diffuse.png'"
+                    "scene_diffuseMapLow": "$not(saveAlpha) and $not(compressTextures) ? baseMeshMapNameLow & '-diffuse.jpg' : baseMeshMapNameLow & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -908,12 +938,23 @@
                 "normalMapFile": "deliverables.scene_normalMapLow",
                 "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapLow : ''",
                 "objectSpaceNormals": false,
-                "useCompression": true,
+                "useCompression": "compressTextures ? false : true",
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true,
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
+            },
+            "success": "'tex-compress-low'",
+            "failure": "$failure"
+        },
+        "tex-compress-low": {
+            "task": "CompressTextures",
+            "description": "Compress diffuse texture to ktx2",
+            "skip": "$not(compressTextures)",
+            "parameters": {
+                "inputMeshFile": "deliverables.scene_webAssetLowGlb",
+                "format": "compressTexturesFormat"
             },
             "success": "'update-document-low'",
             "failure": "$failure"
@@ -1080,7 +1121,7 @@
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebAR & '-diffuse-web-ar.jpg' : baseMeshNameWebAR & '-diffuse-web-ar.png'"
+                    "scene_diffuseMap": "$not(saveAlpha) and $not(compressTextures) ? baseMeshNameWebAR & '-diffuse-web-ar.jpg' : baseMeshNameWebAR & '-diffuse-web-ar.png'"
                 }
             },
             "parameters": {
@@ -1156,16 +1197,27 @@
                 "normalMapFile": "deliverables.scene_normalMap",
                 "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapAR : ''",
                 "objectSpaceNormals": false,
-                "useCompression": true,
+                "useCompression": "compressTextures ? false : true",
                 "compressionLevel": 10,
                 "embedMaps": true,
                 "writeBinary": true,
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
             },
-            "success": "'update-document-ar'",
+            "success": "'tex-compress-ar'",
             "failure": "$failure"
 
+        },
+        "tex-compress-ar": {
+            "task": "CompressTextures",
+            "description": "Compress diffuse texture to ktx2",
+            "skip": "$not(compressTextures)",
+            "parameters": {
+                "inputMeshFile": "deliverables.webAssetGlb",
+                "format": "compressTexturesFormat"
+            },
+            "success": "'update-document-ar'",
+            "failure": "$failure"
         },
         "update-document-ar": {
             "task": "Document",

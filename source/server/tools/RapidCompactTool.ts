@@ -24,7 +24,7 @@ import Tool, { IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 ////////////////////////////////////////////////////////////////////////////////
 
 export type TRapidCompactMode =
-    "decimate" | "unwrap" | "decimate-unwrap" | "bake" | "convert";
+    "decimate" | "unwrap" | "decimate-unwrap" | "bake" | "convert" | "tex-compress";
 export type TRapidCompactUnwrapMethod =
     "conformal" | "fastConformal" | "isometric" | "forwardBijective" | "fixedBoundary";
 
@@ -36,7 +36,7 @@ export interface IRapidCompactToolSettings extends IToolSettings
     lowPolyMeshFile?: string;
     /** Name of the input mesh file (decimate and unwrap modes). */
     inputMeshFile?: string;
-    /** Name of the output mesh file (decimate and unwrap modes). */
+    /** Name of the output mesh file (decimate, tex-compress, and unwrap modes). */
     outputMeshFile?: string;
     /** Defines the task to be executed by RapidCompact. */
     mode: TRapidCompactMode;
@@ -70,6 +70,8 @@ export interface IRapidCompactToolSettings extends IToolSettings
     removeDuplicateVertices?: boolean;
     /** Uniform scale to apply to a mesh. Default is 1*/
     scale?: number;
+    /** Texture compression format (etc1s | uastc, tex-compress mode only). */
+    texCompressionFormat?: string;
 }
 
 export type RapidCompactInstance = ToolInstance<RapidCompactTool, IRapidCompactToolSettings>;
@@ -91,7 +93,8 @@ export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompa
         preserveBoundaries: true,
         collapseUnconnectedVertices: true,
         removeDuplicateVertices: false,
-        scale: 1
+        scale: 1,
+        texCompressionFormat: "etc1s"
     };
 
     async setupInstance(instance: RapidCompactInstance): Promise<IToolSetup>
@@ -107,6 +110,11 @@ export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompa
                 const lowPolyMesh = instance.getFilePath(settings.lowPolyMeshFile);
 
                 command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${config.options} -e _rpd_dummy.obj`;
+            }
+            else if (settings.mode === "tex-compress") {
+                const inputFilePath = instance.getFilePath(settings.inputMeshFile);
+
+                command += ` -i "${inputFilePath}" ${config.options} -e "${inputFilePath}"`;
             }
             else {
                 const inputFilePath = instance.getFilePath(settings.inputMeshFile);
@@ -205,6 +213,10 @@ export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompa
         }
         if (settings.mode === "convert") {
             options.push("--scale " + settings.scale);
+        }
+        if (settings.mode === "tex-compress") {
+            config["export:baseColorMapFormat"] = settings.texCompressionFormat === "uastc" ? "ktx-basis-uastc" : "ktx-basis-etc1s";
+            config["export:geometryCompression"] = "draco";
         }
 
         // write RapidCompact config file
