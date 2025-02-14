@@ -56,6 +56,18 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
     {
         const { instance, message } = event;
 
+        // catch unlinked material and log to instance
+        if(message.includes("cannot read from MTL file")) {
+            instance.report.execution.log.push({"time":event.time.toString(), "level":event.level, "message":"Unlinked material"});
+        }
+
+        if (message.toLowerCase().includes("error") || message.toLowerCase().includes("warning") || message.toLowerCase().includes("invalid")
+        || message.toLowerCase().includes("cannot") || message.toLowerCase().includes("fail") || message.toLowerCase().includes("missing")
+        || message.toLowerCase().includes("can't") || message.toLowerCase().includes("unsupported")) {
+            event.message = "[ISSUE] " + message;
+            return false;
+        }
+
         // only handle JSON report data
         if (!(message.startsWith("\nJSON=") || message.startsWith("JSON="))) {
             return false;
@@ -68,6 +80,16 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
 
         try {
             results["inspection"] = JSON.parse(message.substr(idx));
+
+            // catch unlinked materials and modify report accordingly
+            const badMaterial = instance.report.execution.log.some((elem) => {return elem.message.includes("Unlinked material");});
+            if(badMaterial) {
+                for(var key in results.inspection.scene.materials) {
+                    var name = results.inspection.scene.materials[key]["name"];
+                    results.inspection.scene.materials[key] = {"name":name, "error":"not found"};
+                }
+            }
+            
         }
         catch(e) {
             const error = "failed to parse mesh inspection report";
