@@ -61,11 +61,14 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             instance.report.execution.log.push({"time":event.time.toString(), "level":event.level, "message":"Unlinked material"});
         }
 
+        // filter potential issue messages
         if (message.toLowerCase().includes("error") || message.toLowerCase().includes("warning") || message.toLowerCase().includes("invalid")
         || message.toLowerCase().includes("cannot") || message.toLowerCase().includes("fail") || message.toLowerCase().includes("missing")
         || message.toLowerCase().includes("can't") || message.toLowerCase().includes("unsupported")) {
-            event.message = "[ISSUE] " + message;
-            return false;
+            if(!(message.startsWith("\nJSON=") || message.startsWith("JSON="))) {
+                event.message = "[ISSUE] " + message;
+                return false;
+            }
         }
 
         // only handle JSON report data
