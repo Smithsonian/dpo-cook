@@ -39,9 +39,11 @@ export interface IBlenderToolSettings extends IToolSettings
     emissiveMapFile?: string;
     metallicRoughnessMapFile?: string;
     normalMapFile?: string;
+    objectSpaceNormals?: boolean;
     useCompression?: boolean;
     compressionLevel?: number;
     alphaBlend?: boolean;
+    embedMaps?: boolean;
 }
 
 export type BlenderInstance = ToolInstance<BlenderTool, IBlenderToolSettings>;
@@ -150,7 +152,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
                 operation += ` -nm "${instance.getFilePath(settings.normalMapFile)}"`;
             }
 
-            operation += ` -uc "${settings.useCompression}" -cl ${settings.compressionLevel} -ab ${settings.alphaBlend}`;
+            operation += ` -uc "${settings.useCompression}" -mb "${settings.embedMaps}" -cl ${settings.compressionLevel} -ab ${settings.alphaBlend} -os ${settings.objectSpaceNormals}`;
         }
 
         const command = `"${this.configuration.executable}" ${operation}`;

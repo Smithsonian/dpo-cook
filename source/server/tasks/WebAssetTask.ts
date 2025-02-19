@@ -64,7 +64,7 @@ export interface IWebAssetTaskParameters extends ITaskParameters
     writeBinary?: boolean;
     /** True if the asset should interpret alpha channel data as opacity. */
     alphaBlend?: boolean;
-    /** Tool to use for generating web assets ("MeshSmith" or "Blender", default: "MeshSmith"). */
+    /** Tool to use for generating web assets ("MeshSmith" or "Blender", default: "Blender"). */
     tool?: "MeshSmith" | "Blender";
 }
 
@@ -102,7 +102,7 @@ export default class WebAssetTask extends ToolTask
             embedMaps: { type: "boolean", default: false },
             writeBinary: { type: "boolean", default: false },
             alphaBlend: { type: "boolean", default: false },
-            tool: { type: "string", default: "MeshSmith" }
+            tool: { type: "string", default: "Blender" }
         },
         required: [
             "outputFile",
@@ -164,11 +164,11 @@ export default class WebAssetTask extends ToolTask
                 metallicRoughnessMapFile: options.metallicRoughnessMapFile,
                 normalMapFile: options.normalMapFile,
                 //zoneMapFile: options.zoneMapFile,
-                //objectSpaceNormals: options.objectSpaceNormals,
+                objectSpaceNormals: options.objectSpaceNormals,
                 useCompression: options.useCompression,
                 compressionLevel: options.compressionLevel,
-                alphaBlend: options.alphaBlend
-                //embedMaps: options.embedMaps
+                alphaBlend: options.alphaBlend,
+                embedMaps: options.embedMaps
             };
 
             this.addTool("Blender", settings);

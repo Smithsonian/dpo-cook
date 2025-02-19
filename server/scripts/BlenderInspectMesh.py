@@ -11,6 +11,12 @@ from mathutils import Vector, Euler, bvhtree
 channel_types = ['Base Color', 'Metallic', 'Specular', 'Roughness', 'Transmission', 'Emission', 'Alpha', 'Normal', 'Occlusion']
 channel_names = ['diffuse', 'metalness', 'specular', 'roughness', 'opacity', 'emissive', 'opacity', 'normal', 'occlusion']
 
+def round_small(value):
+    if abs(value) < 0.00000001:
+        return 0
+    else:
+        return value
+
 def find_channel(node, channels):
     for output in node.outputs:
         for link in output.links:
@@ -240,12 +246,12 @@ def run():
             minz = maxz = bbox_corners[0].z
             
             for vec in bbox_corners:
-                minx = min(minx, vec.x)
-                maxx = max(maxx, vec.x)
-                miny = min(miny, vec.y)
-                maxy = max(maxy, vec.y)
-                minz = min(minz, vec.z)
-                maxz = max(maxz, vec.z)
+                minx = round_small(min(minx, vec.x))
+                maxx = round_small(max(maxx, vec.x))
+                miny = round_small(min(miny, vec.y))
+                maxy = round_small(max(maxy, vec.y))
+                minz = round_small(min(minz, vec.z))
+                maxz = round_small(max(maxz, vec.z))
 
             bb_min = [minx, miny, minz]
             bb_max = [maxx, maxy, maxz]
@@ -255,12 +261,12 @@ def run():
                 "max" : bb_max
             }
             
-            g_minx = min(g_minx, minx)
-            g_maxx = max(g_maxx, maxx)
-            g_miny = min(g_miny, miny)
-            g_maxy = max(g_maxy, maxy)
-            g_minz = min(g_minz, minz)
-            g_maxz = max(g_maxz, maxz)
+            g_minx = round_small(min(g_minx, minx))
+            g_maxx = round_small(max(g_maxx, maxx))
+            g_miny = round_small(min(g_miny, miny))
+            g_maxy = round_small(max(g_maxy, maxy))
+            g_minz = round_small(min(g_minz, minz))
+            g_maxz = round_small(max(g_maxz, maxz))
             
             geometry={}
             geometry["boundingBox"] = bounds
