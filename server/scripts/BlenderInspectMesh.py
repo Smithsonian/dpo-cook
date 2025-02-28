@@ -12,10 +12,7 @@ channel_types = ['Base Color', 'Metallic', 'Specular', 'Roughness', 'Transmissio
 channel_names = ['diffuse', 'metalness', 'specular', 'roughness', 'opacity', 'emissive', 'opacity', 'normal', 'occlusion']
 
 def round_small(value):
-    if abs(value) < 0.00000001:
-        return 0
-    else:
-        return value
+    return round(value,5)
 
 def find_channel(node, channels):
     for output in node.outputs:
