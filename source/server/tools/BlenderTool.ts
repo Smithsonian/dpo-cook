@@ -121,7 +121,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderInspectMesh.py")}" -- "${inputFilePath}"`;
         }
         else if(settings.mode === "convert") {
-            operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvertToUSD.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile)}"`;
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvert.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile)}"`;
         }
         else if(settings.mode === "combine") {
             let combineFilePath = instance.getFilePath(settings.inputMeshFile2);
