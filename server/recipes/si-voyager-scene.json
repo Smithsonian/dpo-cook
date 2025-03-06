@@ -450,6 +450,7 @@
             "parameters": {
                 "documentFile": "deliverables.scene_document",
                 "metaDataFile": "metaDataFile",
+                "metaDataString": "'{\"edanRecordId\": \"\"}'",
                 "modelIndex": "modelIndex",
                 "modelName": "outputFileBaseName",
                 "units": "units",
@@ -703,6 +704,7 @@
             "parameters": {
                 "documentFile": "deliverables.scene_document",
                 "metaDataFile": "metaDataFile",
+                "metaDataString": "'{\"edanRecordId\": \"\"}'",
                 "modelIndex": "modelIndex",
                 "derivativeQuality": "'High'",
                 "modelFile": "$firstTrue(deliverables.scene_webAssetHighGlb, deliverables.scene_webAssetHighGltf)",
@@ -1178,6 +1180,7 @@
             "parameters": {
                 "documentFile": "deliverables.scene_document",
                 "metaDataFile": "metaDataFile",
+                "metaDataString": "'{\"edanRecordId\": \"\"}'",
                 "modelIndex": "modelIndex",
                 "modelName": "outputFileBaseName",
                 "units": "units",
