@@ -43,12 +43,18 @@ def run():
     path = bpy.data.filepath
     dir = os.path.dirname(path)
 
+    # apply any empty transforms and remove
+    bpy.ops.object.select_by_type(type='EMPTY')
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.ops.object.delete(use_global=False)
+
     for ob in bpy.context.scene.objects:
         if ob.type == 'MESH':
             ob.select_set(True)
             bpy.context.view_layer.objects.active = ob
         else:
-            ob.select = False
+            if ob.type != 'EMPTY':
+                ob.select = False
     bpy.ops.object.join()
 
     # Check if we have a diffuse texture

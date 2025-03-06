@@ -18,6 +18,7 @@
 import Job from "../app/Job";
 
 import { IMeshSmithToolSettings } from "../tools/MeshSmithTool";
+import { IBlenderToolSettings } from "../tools/BlenderTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask from "../app/ToolTask";
@@ -61,6 +62,10 @@ export interface IWebAssetTaskParameters extends ITaskParameters
     embedMaps?: boolean;
     /** True if the asset should be written in binary format (.glb), false for a text .gltf file. */
     writeBinary?: boolean;
+    /** True if the asset should interpret alpha channel data as opacity. */
+    alphaBlend?: boolean;
+    /** Tool to use for generating web assets ("MeshSmith" or "Blender", default: "Blender"). */
+    tool?: "MeshSmith" | "Blender";
 }
 
 /**
@@ -87,15 +92,17 @@ export default class WebAssetTask extends ToolTask
             metallicRoughnessMapFile: { type: "string", default: "" },
             normalMapFile: { type: "string", default: "" },
             zoneMapFile: { type: "string", default: "" },
-            metallicFactor: { type: "number", default: 0.1 },
-            roughnessFactor: { type: "number", default: 0.8 },
+            metallicFactor: { type: "number", default: 0.0 },
+            roughnessFactor: { type: "number", default: 0.6 },
             alignCenter: { type: "boolean", default: false },
             alignFloor: { type: "boolean", default: false },
             objectSpaceNormals: { type: "boolean", default: false },
             useCompression: { type: "boolean", default: false },
             compressionLevel: { type: "integer", minimum: 0, maximum: 10, default: 10 },
             embedMaps: { type: "boolean", default: false },
-            writeBinary: { type: "boolean", default: false }
+            writeBinary: { type: "boolean", default: false },
+            alphaBlend: { type: "boolean", default: false },
+            tool: { type: "string", default: "Blender" }
         },
         required: [
             "outputFile",
@@ -111,35 +118,63 @@ export default class WebAssetTask extends ToolTask
     {
         super(options, context);
 
-        const settings: IMeshSmithToolSettings = {
-            inputFile: options.meshFile,
-            outputFile: options.outputFile,
-            format: options.writeBinary ? "glbx" : "gltfx",
-            metallicFactor: options.metallicFactor,
-            roughnessFactor: options.roughnessFactor,
-            diffuseMapFile: options.diffuseMapFile,
-            occlusionMapFile: options.occlusionMapFile,
-            emissiveMapFile: options.emissiveMapFile,
-            metallicRoughnessMapFile: options.metallicRoughnessMapFile,
-            normalMapFile: options.normalMapFile,
-            zoneMapFile: options.zoneMapFile,
-            objectSpaceNormals: options.objectSpaceNormals,
-            useCompression: options.useCompression,
-            compressionLevel: options.compressionLevel,
-            embedMaps: options.embedMaps
-        };
+        if (options.tool === "MeshSmith") {
+            const settings: IMeshSmithToolSettings = {
+                inputFile: options.meshFile,
+                outputFile: options.outputFile,
+                format: options.writeBinary ? "glbx" : "gltfx",
+                metallicFactor: options.metallicFactor,
+                roughnessFactor: options.roughnessFactor,
+                diffuseMapFile: options.diffuseMapFile,
+                occlusionMapFile: options.occlusionMapFile,
+                emissiveMapFile: options.emissiveMapFile,
+                metallicRoughnessMapFile: options.metallicRoughnessMapFile,
+                normalMapFile: options.normalMapFile,
+                zoneMapFile: options.zoneMapFile,
+                objectSpaceNormals: options.objectSpaceNormals,
+                useCompression: options.useCompression,
+                compressionLevel: options.compressionLevel,
+                embedMaps: options.embedMaps
+            };
 
-        if (options.alignCenter) {
-            settings.alignX = "center";
-            settings.alignY = "center";
-            settings.alignZ = "center";
-        }
-        if (options.alignFloor) {
-            settings.alignX = "center";
-            settings.alignY = "start";
-            settings.alignZ = "center";
-        }
+            if (options.alignCenter) {
+                settings.alignX = "center";
+                settings.alignY = "center";
+                settings.alignZ = "center";
+            }
+            if (options.alignFloor) {
+                settings.alignX = "center";
+                settings.alignY = "start";
+                settings.alignZ = "center";
+            }
 
-        this.addTool("MeshSmith", settings);
+            this.addTool("MeshSmith", settings);
+        }
+        else if (options.tool === "Blender") {
+            const settings: IBlenderToolSettings = {
+                mode: "webasset",
+                inputMeshFile: options.meshFile,
+                outputFile: options.outputFile,
+                format: options.writeBinary ? ".glb" : ".gltf",
+                metallicFactor: options.metallicFactor,
+                roughnessFactor: options.roughnessFactor,
+                diffuseMapFile: options.diffuseMapFile,
+                occlusionMapFile: options.occlusionMapFile,
+                emissiveMapFile: options.emissiveMapFile,
+                metallicRoughnessMapFile: options.metallicRoughnessMapFile,
+                normalMapFile: options.normalMapFile,
+                //zoneMapFile: options.zoneMapFile,
+                objectSpaceNormals: options.objectSpaceNormals,
+                useCompression: options.useCompression,
+                compressionLevel: options.compressionLevel,
+                alphaBlend: options.alphaBlend,
+                embedMaps: options.embedMaps
+            };
+
+            this.addTool("Blender", settings);
+        }
+        else {
+            throw new Error("WebAssetTask.constructor - unknown tool: " + options.tool);
+        }
     }
 }

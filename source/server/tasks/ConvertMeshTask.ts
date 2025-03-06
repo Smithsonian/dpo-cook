@@ -25,6 +25,7 @@ import { IFBX2glTFToolSettings, TFBX2glTFComputeNormals } from "../tools/FBX2glT
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask from "../app/ToolTask";
+import { IBlenderToolSettings } from "../tools/BlenderTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -63,17 +64,17 @@ export interface IConvertMeshTaskParameters extends ITaskParameters
     scale?: number;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Default tool is MeshSmith. Specify another tool if needed. */
-    tool?: "MeshSmith" | "FBX2glTF" | "Meshlab";
+    /** Default tool is Blender. Specify another tool if needed. */
+    tool?: "Blender" | "MeshSmith" | "FBX2glTF" | "Meshlab";
 }
 
 /**
- * Converts geometric mesh data between various file formats. The task is usually executed by the MeshSmith tool,
+ * Converts geometric mesh data between various file formats. The task is usually executed by the Blender tool,
  * Meshlab and FBX2glTF can also be used if specified explicitly, but these understand less input and output formats.
- * FBX2glTF can only be used if the input format is FBX and the output is either glTF or GLB.
+ * FBX2glTF can only be used if the input format is FBX and the output is either glTF or GLB. MeshSmith is deprecated and not recommended.
  *
  * Parameters: [[IConvertMeshTaskParameters]].
- * Tools: [[MeshSmithTool]], [[FBX2glTFTool]], [[MeshlabTool]].
+ * Tools: [[Blender], [MeshSmithTool]], [[FBX2glTFTool]], [[MeshlabTool]].
  */
 export default class ConvertMeshTask extends ToolTask
 {
@@ -100,7 +101,7 @@ export default class ConvertMeshTask extends ToolTask
             translateZ: { type: "number" },
             scale: { type: "number", minimum: 0, default: undefined },
             timeout: { type: "integer", minimum: 0, default: 0 },
-            tool: { type: "string", enum: [ "MeshSmith", "FBX2glTF", "Meshlab" ], default: "MeshSmith" }
+            tool: { type: "string", enum: [ "Blender", "MeshSmith", "FBX2glTF", "Meshlab" ], default: "Blender" }
         },
         required: [
             "inputMeshFile",
@@ -148,7 +149,7 @@ export default class ConvertMeshTask extends ToolTask
             this.addTool("FBX2glTF", settings);
         }
         // for all other purposes, use MeshSmith
-        else {
+        else if (params.tool === "MeshSmith") {
             const settings: IMeshSmithToolSettings = {
                 inputFile: params.inputMeshFile,
                 outputFile: params.outputMeshFile,
@@ -168,6 +169,16 @@ export default class ConvertMeshTask extends ToolTask
             };
 
             this.addTool("MeshSmith", settings);
+        }
+        else {
+            const settings: IBlenderToolSettings = {
+                inputMeshFile: params.inputMeshFile,
+                outputFile: params.outputMeshFile,
+                mode: "convert",
+                timeout: params.timeout
+            };
+
+            this.addTool("Blender", settings);
         }
     }
 }

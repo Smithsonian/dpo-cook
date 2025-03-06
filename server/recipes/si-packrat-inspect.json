@@ -52,37 +52,6 @@
                 "reportFile": "deliverables.meshInspectionReport",
                 "tool": "'Blender'"
             },
-            "success": "'inspect-material'",
-            "failure": "$failure"
-        },
-        "inspect-material": {
-            "task": "InspectMesh",
-            "description": "Inspect scene materials",
-            "pre": {
-                "deliverables": {
-                    "materialInspectionReport": "baseName & '-material-inspection.json'"
-                }
-            },
-            "parameters": {
-                "meshFile": "sourceMeshFile",
-                "reportFile": "deliverables.materialInspectionReport",
-                "tool": "'MeshSmith'"
-            },
-            "success": "'merge-reports'",
-            "failure": "$failure"
-        },
-        "merge-reports": {
-            "task": "MergeReports",
-            "description": "Merge inspection reports",
-            "pre": {
-                "deliverables": {
-                    "finalInspectionReport": "baseName & '-merged-inspection.json'"
-                }
-            },
-            "parameters": {
-                "meshReportFile": "deliverables.meshInspectionReport",
-                "materialReportFile": "deliverables.materialInspectionReport"
-            },
             "success": "'delivery'",
             "failure": "$failure"
         },

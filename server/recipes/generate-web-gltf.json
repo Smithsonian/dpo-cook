@@ -57,6 +57,10 @@
                 "type": "boolean",
                 "default": true
             },
+            "saveAlpha": {
+                "type": "boolean",
+                "default": false
+            },
             "modelIndex": {
                 "type": "integer",
                 "minimum": 0,
@@ -87,6 +91,11 @@
                 "type": "string",
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
+            },
+            "assetTool": {
+                "type": "string",
+                "enum": [ "MeshSmith", "Blender" ],
+                "default": "Blender"
             },
             "bakeOcclusion": {
                 "type": "boolean",
@@ -273,7 +282,7 @@
             "skip": "maxRayDistance > 0",
             "parameters": {
                 "meshFile": "deliverables.scene_unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "maxRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
@@ -319,7 +328,7 @@
             "skip": "$not(bakeDiffuse)",
             "pre": {
                 "deliverables": {
-                    "scene_diffuseMap": "baseMeshMapName & '-diffuse.jpg'"
+                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshMapName & '-diffuse.jpg' :baseMeshMapName & '-diffuse.png'"
                 }
             },
             "parameters": {
@@ -384,7 +393,9 @@
                 "useCompression": "useCompression",
                 "compressionLevel": 10,
                 "embedMaps": "generateGlb",
-                "writeBinary": "generateGlb"
+                "writeBinary": "generateGlb",
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document'",
             "failure": "$failure"

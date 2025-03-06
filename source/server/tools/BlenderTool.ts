@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import * as path from "path";
-
 import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,6 +29,21 @@ export interface IBlenderToolSettings extends IToolSettings
     outputFile2?: string;
     inputBaseName?: string;
     scaleToMeters?: boolean;
+
+    //** Web asset specific settings */
+    format?: string;
+    metallicFactor?: number;
+    roughnessFactor?: number;
+    diffuseMapFile?: string;
+    occlusionMapFile?: string;
+    emissiveMapFile?: string;
+    metallicRoughnessMapFile?: string;
+    normalMapFile?: string;
+    objectSpaceNormals?: boolean;
+    useCompression?: boolean;
+    compressionLevel?: number;
+    alphaBlend?: boolean;
+    embedMaps?: boolean;
 }
 
 export type BlenderInstance = ToolInstance<BlenderTool, IBlenderToolSettings>;
@@ -45,6 +58,21 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
     {
         const { instance, message } = event;
 
+        // catch unlinked material and log to instance
+        if(message.includes("cannot read from MTL file")) {
+            instance.report.execution.log.push({"time":event.time.toString(), "level":event.level, "message":"Unlinked material"});
+        }
+
+        // filter potential issue messages
+        if (message.toLowerCase().includes("error") || message.toLowerCase().includes("warning") || message.toLowerCase().includes("invalid")
+        || message.toLowerCase().includes("cannot") || message.toLowerCase().includes("fail") || message.toLowerCase().includes("missing")
+        || message.toLowerCase().includes("can't") || message.toLowerCase().includes("unsupported")) {
+            if(!(message.startsWith("\nJSON=") || message.startsWith("JSON="))) {
+                event.message = "[ISSUE] " + message;
+                return false;
+            }
+        }
+
         // only handle JSON report data
         if (!(message.startsWith("\nJSON=") || message.startsWith("JSON="))) {
             return false;
@@ -57,6 +85,16 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
 
         try {
             results["inspection"] = JSON.parse(message.substr(idx));
+
+            // catch unlinked materials and modify report accordingly
+            const badMaterial = instance.report.execution.log.some((elem) => {return elem.message.includes("Unlinked material");});
+            if(badMaterial) {
+                for(var key in results.inspection.scene.materials) {
+                    var name = results.inspection.scene.materials[key]["name"];
+                    results.inspection.scene.materials[key] = {"name":name, "error":"not found"};
+                }
+            }
+            
         }
         catch(e) {
             const error = "failed to parse mesh inspection report";
@@ -83,7 +121,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderInspectMesh.py")}" -- "${inputFilePath}"`;
         }
         else if(settings.mode === "convert") {
-            operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvertToUSD.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile)}"`;
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderConvert.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile)}"`;
         }
         else if(settings.mode === "combine") {
             let combineFilePath = instance.getFilePath(settings.inputMeshFile2);
@@ -97,6 +135,24 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
         }
         else if(settings.mode === "screenshot") {
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderScreenshot.py")}" -- "${inputFilePath}"`;
+        }
+        else if(settings.mode === "webasset") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderWebAsset.py")}" -- -i "${instance.getFilePath(settings.inputMeshFile)}" -o "${instance.getFilePath(settings.outputFile)}" -f "${settings.format}"`;
+        
+            if(settings.diffuseMapFile) {
+                operation += ` -dm "${instance.getFilePath(settings.diffuseMapFile)}"`;
+            }
+            if(settings.occlusionMapFile) {
+                operation += ` -om "${instance.getFilePath(settings.occlusionMapFile)}"`;
+            }
+            if(settings.metallicRoughnessMapFile) {
+                operation += ` -mrm "${instance.getFilePath(settings.metallicRoughnessMapFile)}"`;
+            }
+            if(settings.normalMapFile) {
+                operation += ` -nm "${instance.getFilePath(settings.normalMapFile)}"`;
+            }
+
+            operation += ` -uc "${settings.useCompression}" -mb "${settings.embedMaps}" -mf "${settings.metallicFactor}" -rf "${settings.roughnessFactor}" -cl ${settings.compressionLevel} -ab ${settings.alphaBlend} -os ${settings.objectSpaceNormals}`;
         }
 
         const command = `"${this.configuration.executable}" ${operation}`;

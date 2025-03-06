@@ -39,13 +39,32 @@ else:
 
 try: #check for provided output filename
     mod_filename, file_extension = os.path.splitext(argv[1])
+    file_extension = file_extension.lower()
 except IndexError:
     mod_filename = filename
+
+# saving usdz as usdc for now and zipping later
+if file_extension == '.usdz':
+    file_extension = '.usdc'
     
 print("Exporting file: " + mod_filename)
 if len(bpy.data.objects) > 0:
     path = bpy.data.filepath
     dir = os.path.dirname(path)
-    save_file = os.path.join(dir, mod_filename + ".usdc")
+    save_file = os.path.join(dir, mod_filename + file_extension)
     print("Saving file: " + save_file)
-    bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_paths=True)
+
+    #export scene
+    if file_extension == '.obj':
+        bpy.ops.wm.obj_export(filepath=save_file, check_existing=False, export_materials=True, path_mode='COPY')
+    elif file_extension == '.ply':
+        bpy.ops.export_mesh.ply(filepath=save_file)
+    elif file_extension == '.stl':
+        bpy.ops.export_mesh.stl(filepath=save_file)
+    elif file_extension == '.usdc':
+        bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_paths=True)
+    elif file_extension == '.fbx':
+        bpy.ops.export_scene.fbx(filepath=save_file, check_existing=False, path_mode="COPY", embed_textures=True)
+    else:
+        print("Error: Unsupported export file type: " + file_extension)
+        sys.exit(1)

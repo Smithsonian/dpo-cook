@@ -36,6 +36,8 @@ export interface ISyncObjMtlTaskParameters extends ITaskParameters
     mtlFile: string;
     /** Name of the texture file to be referenced in the mtl. */
     textureFile: string;
+    /** Force a mtl file reference in the obj even if none exists. */
+    doForce?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Default tool is Cscript. Specify another tool if needed. */
@@ -60,6 +62,7 @@ export default class SyncObjMtlTask extends ToolTask
             objFile: { type: "string", minLength: 1 },
             mtlFile: { type: "string", minLength: 1 },
             textureFile: { type: "string", minLength: 0, default: "" },
+            doForce: { type: "boolean", default: false} ,
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "Cscript" ], default: "Cscript" }
         },
@@ -108,7 +111,7 @@ export default class SyncObjMtlTask extends ToolTask
             if(generatedMtl) {  
                 const scriptPath = path.resolve(this.context.jobDir, "../../scripts/InjectMTL2.vbs");
 
-                script = `"${scriptPath}" "${objFilePath}" "${params.mtlFile}"`;             
+                script = `"${scriptPath}" "${objFilePath}" "${params.mtlFile}" "${params.doForce}"`;             
             }
 
             const settings: ICscriptToolSettings = {

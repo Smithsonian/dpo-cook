@@ -19,7 +19,7 @@
                     "MeshSmith",
                     "Blender"
                 ],
-                "default": "MeshSmith"
+                "default": "Blender"
             }
         },
         "required": [

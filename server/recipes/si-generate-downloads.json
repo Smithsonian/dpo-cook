@@ -66,6 +66,11 @@
                 "enum": [ "Meshlab", "RapidCompact" ],
                 "default": "Meshlab"
             },
+            "assetTool": {
+                "type": "string",
+                "enum": [ "MeshSmith", "Blender" ],
+                "default": "Blender"
+            },
             "preDecimatedUnwrappedLowTargetFile": {
                 "type": "string",
                 "minLength": 1,
@@ -168,6 +173,10 @@
                 "minimum": 128,
                 "maximum": 4096,
                 "default": 2048
+            },
+            "saveAlpha": {
+                "type": "boolean",
+                "default": false
             },
             "inspectMesh": {
                 "type": "boolean",
@@ -379,7 +388,7 @@
             "skip": "$not(generateLowAssets)",
             "parameters": {
                 "meshFile": "scene_unwrappedMeshLow",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
@@ -454,7 +463,7 @@
             "description": "Convert Diffuse Map",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generateLowAssets)",
             "pre": {
-                "scene_diffuseMapHigh": "baseMeshMapNameLow & '-diffuse.jpg'"
+                "scene_diffuseMapHigh": "$not(saveAlpha) ? baseMeshMapNameLow & '-diffuse.jpg': baseMeshMapNameLow & '-diffuse.png'"
             },
             "parameters": {
                 "inputImageFile": "bakeVertexColor ? vcolMapUncompressedLow : diffuseMapUncompressedLow",
@@ -529,10 +538,33 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
+            },
+            "success": "scene_occlusionMapHigh and scene_roughMetalMapLow ? 'merge-omr-map-low' : 'web-asset-gltf-low'",
+            "failure": "$failure"
+        },
+        "merge-omr-map-low": {
+            "task": "MergeImageChannels",
+            "description": "Merge occlusion map with metal/roughness",
+            "skip": "$not(generateGltf) or $not(generateLowAssets)",
+            "pre": {
+                "omrMap": "baseMeshMapNameLow & '-omr.jpg'"
+            },
+            "parameters": {
+                "redChannelMapFile": "scene_occlusionMapHigh",
+                "greenChannelMapFile": "scene_roughMetalMapLow",
+                "blueChannelMapFile": "scene_roughMetalMapLow",
+                "outputMapFile": "omrMap"
+            },
+            "post": {
+                "scene_occlusionMapHigh": "omrMap",
+                "scene_roughMetalMapLow": "omrMap"
             },
             "success": "'web-asset-gltf-low'",
             "failure": "$failure"
+
         },
         "web-asset-gltf-low": {
             "task": "WebAsset",
@@ -553,7 +585,9 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": false,
-                "writeBinary": false
+                "writeBinary": false,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'sync-mtl-low'",
             "failure": "$failure"
@@ -652,7 +686,7 @@
             "skip": "$not(generateARAssets)",
             "parameters": {
                 "meshFile": "scene_unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
@@ -727,7 +761,7 @@
             "description": "Convert Diffuse Map",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generateARAssets)",
             "pre": {
-                "scene_diffuseMapAR": "baseMeshMapNameAR & '-diffuse.jpg'"
+                "scene_diffuseMapAR": "$not(saveAlpha) ? baseMeshMapNameAR & '-diffuse.jpg' : baseMeshMapNameAR & '-diffuse.png'"
             },
             "parameters": {
                 "inputImageFile": "bakeVertexColor ? vcolMapUncompressedAR : diffuseMapUncompressedAR",
@@ -817,7 +851,9 @@
                 "useCompression": true,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'update-document-ar'",
             "failure": "$failure"
@@ -964,7 +1000,7 @@
             "skip": "$not(generateMediumAssets)",
             "parameters": {
                 "meshFile": "unwrappedMesh",
-                "tool": "'MeshSmith'"
+                "tool": "'Blender'"
             },
             "post": {
                 "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01"
@@ -1039,7 +1075,7 @@
             "description": "Convert Diffuse Map for Medium obj",
             "skip": "($not(bakeDiffuse)  and $not(bakeVertexColor)) or $not(generateMediumAssets)",
             "pre": {
-                "diffuseMap": "baseMeshMapNameMedium & '-diffuse.jpg'"
+                "diffuseMap": "$not(saveAlpha) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
             },
             "parameters": {
                 "inputImageFile": "bakeVertexColor ? vcolMapUncompressed : diffuseMapUncompressed",
@@ -1117,7 +1153,30 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": true,
-                "writeBinary": true
+                "writeBinary": true,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
+            },
+            "success": "occlusionMap and roughMetalMap ? 'merge-omr-map-med' : 'web-asset-gltf-medium'",
+            "failure": "$failure"
+
+        },
+        "merge-omr-map-med": {
+            "task": "MergeImageChannels",
+            "description": "Merge occlusion map with metal/roughness",
+            "skip": "$not(generateMediumAssets)",
+            "pre": {
+                "omrMap": "baseMeshMapNameMedium & '-omr.jpg'"
+            },
+            "parameters": {
+                "redChannelMapFile": "occlusionMap",
+                "greenChannelMapFile": "roughMetalMap",
+                "blueChannelMapFile": "roughMetalMap",
+                "outputMapFile": "omrMap"
+            },
+            "post": {
+                "occlusionMap": "omrMap",
+                "roughMetalMap": "omrMap"
             },
             "success": "'web-asset-gltf-medium'",
             "failure": "$failure"
@@ -1145,7 +1204,9 @@
                 "useCompression": false,
                 "compressionLevel": 10,
                 "embedMaps": false,
-                "writeBinary": false
+                "writeBinary": false,
+                "alphaBlend": "saveAlpha",
+                "tool": "assetTool"
             },
             "success": "'sync-mtl-medium'",
             "failure": "$failure"
