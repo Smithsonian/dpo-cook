@@ -1,4 +1,10 @@
 {
+  "Blender": {
+    "executable": "C:\\Program Files\\Blender Foundation\\Blender 3.6\\Blender.exe",
+    "version": "3.6.0",
+    "maxInstances": 1,
+    "timeout": 3600 // 1 hour
+  },
   "FBX2glTF": {
     "executable": "C:\\Tools\\FBX2glTF.exe",
     "version": "2.0",
@@ -37,11 +43,23 @@
     "maxInstances": 3,
     "timeout": 1800 // 30 minutes
   },
+  "Metashape": {
+    "executable": "C:\\Program Files\\Agisoft\\Metashape Pro\\metashape.exe",
+    "version": "v1.8.3, build 14331",
+    "maxInstances": 1,
+    "timeout": 7200 // 2 hours
+  },
   "RapidCompact": {
     "executable": "C:\\Program Files\\RapidCompact CLI 1.6.0\\rpdx.exe",
     "version": "1.6",
     "maxInstances": 3,
     "timeout": 900 // 15 minutes
+  },
+  "RawTherapee": {
+    "executable": "C:\\Program Files\\RawTherapee\\5.10\\rawtherapee-cli.exe",
+    "version": "5.10",
+    "maxInstances": 3,
+    "timeout": 7200 // 2 hours
   },
   "RealityCapture": {
     "executable": "C:\\Program Files\\Capturing Reality\\RealityCapture\\RealityCapture.exe",
