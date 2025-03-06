@@ -69,12 +69,12 @@ export interface IConvertMeshTaskParameters extends ITaskParameters
 }
 
 /**
- * Converts geometric mesh data between various file formats. The task is usually executed by the MeshSmith tool,
+ * Converts geometric mesh data between various file formats. The task is usually executed by the Blender tool,
  * Meshlab and FBX2glTF can also be used if specified explicitly, but these understand less input and output formats.
- * FBX2glTF can only be used if the input format is FBX and the output is either glTF or GLB.
+ * FBX2glTF can only be used if the input format is FBX and the output is either glTF or GLB. MeshSmith is deprecated and not recommended.
  *
  * Parameters: [[IConvertMeshTaskParameters]].
- * Tools: [[MeshSmithTool]], [[FBX2glTFTool]], [[MeshlabTool]].
+ * Tools: [[Blender], [MeshSmithTool]], [[FBX2glTFTool]], [[MeshlabTool]].
  */
 export default class ConvertMeshTask extends ToolTask
 {
