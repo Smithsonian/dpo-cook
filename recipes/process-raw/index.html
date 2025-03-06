@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>GenerateUSDZ - Cook Documentation</title>
+  <title>Recipe: process-raw - Cook Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <link rel="icon" href="https://smithsonian.github.io/dpo-cook/favicon.ico">
@@ -120,9 +120,9 @@
       
     
       
-    
-      
         
+      
+    
       
     
       
@@ -198,7 +198,7 @@
       <a href="/dpo-cook/recipes/photogrammetry/">Recipe: photogrammetry</a>
     </li>
     
-    <li class="">
+    <li class="active ">
       <a href="/dpo-cook/recipes/process-raw/">Recipe: process-raw</a>
     </li>
     
@@ -297,7 +297,7 @@
       <a href="/dpo-cook/tasks/fix-mesh/">FixMesh</a>
     </li>
     
-    <li class="active ">
+    <li class="">
       <a href="/dpo-cook/tasks/generate-usdz/">GenerateUSDZ</a>
     </li>
     
@@ -428,60 +428,9 @@
         </div>
         <div class="col-12 col-md-9">
           
-<h1 class="title">GenerateUSDZ</h1>
+<h1 class="title">Recipe: process-raw</h1>
 <div class="content">
-  <h3 id="description">Description</h3>
-<p>USDZ is still an emerging format so we currently have a special task to generate it from a self-contained glb package.</p>
-<p><strong>Note:</strong> If using Blender for this task, you must also have the <a href="../zip">Zip task</a> functional to turn USD to USDZ.</p>
-<h3 id="options">Options</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>sourceFile</td>
-<td>string</td>
-<td>yes</td>
-<td></td>
-<td>Name of input file.</td>
-</tr>
-<tr>
-<td>outputFile</td>
-<td>string</td>
-<td>yes</td>
-<td></td>
-<td>Name of output file.</td>
-</tr>
-<tr>
-<td>scale</td>
-<td>number</td>
-<td>no</td>
-<td>100</td>
-<td>Uniform scale to apply during conversion.</td>
-</tr>
-<tr>
-<td>timeout</td>
-<td>number</td>
-<td>no</td>
-<td>0</td>
-<td>Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup).</td>
-</tr>
-<tr>
-<td>tool</td>
-<td>string</td>
-<td>no</td>
-<td>&ldquo;Blender&rdquo;</td>
-<td>Tool to use for USDZ conversion.</td>
-</tr>
-</tbody>
-</table>
+  <p>The <code>photogrammetry</code> recipe takes zip files of raw image sets (.raw, .cr2, or any format understood by the tool in use) and converts them to jpg and white balances/color corrects based on provided parameters. This is useful in conjunction with photogrammetry work to increase the color accuracy of your resulting texture.</p>
 
 </div>
 

@@ -32,6 +32,8 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/photogrammetry/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/process-raw/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/unwrap/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/delivery/</loc>
@@ -109,7 +111,11 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tasks/photogrammetry-tex/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/process-raw/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</loc>
+  </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/tools/rawtherapee/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/reality-capture/</loc>
   </url><url>

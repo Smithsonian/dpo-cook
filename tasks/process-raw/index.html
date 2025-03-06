@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>GenerateUSDZ - Cook Documentation</title>
+  <title>ProcessRaw - Cook Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <link rel="icon" href="https://smithsonian.github.io/dpo-cook/favicon.ico">
@@ -297,7 +297,7 @@
       <a href="/dpo-cook/tasks/fix-mesh/">FixMesh</a>
     </li>
     
-    <li class="active ">
+    <li class="">
       <a href="/dpo-cook/tasks/generate-usdz/">GenerateUSDZ</a>
     </li>
     
@@ -321,7 +321,7 @@
       <a href="/dpo-cook/tasks/photogrammetry-tex/">PhotogrammetryTex</a>
     </li>
     
-    <li class="">
+    <li class="active ">
       <a href="/dpo-cook/tasks/process-raw/">ProcessRaw</a>
     </li>
     
@@ -428,11 +428,11 @@
         </div>
         <div class="col-12 col-md-9">
           
-<h1 class="title">GenerateUSDZ</h1>
+<h1 class="title">ProcessRaw</h1>
 <div class="content">
   <h3 id="description">Description</h3>
-<p>USDZ is still an emerging format so we currently have a special task to generate it from a self-contained glb package.</p>
-<p><strong>Note:</strong> If using Blender for this task, you must also have the <a href="../zip">Zip task</a> functional to turn USD to USDZ.</p>
+<p>Converts raw images to jpg and white balances/color corrects based on provided parameters.</p>
+<p>Tools: <a href="../../tools/rawtherapee">RawTherapee</a></p>
 <h3 id="options">Options</h3>
 <table>
 <thead>
@@ -446,25 +446,53 @@
 </thead>
 <tbody>
 <tr>
-<td>sourceFile</td>
+<td>inputImageFolder</td>
 <td>string</td>
 <td>yes</td>
 <td></td>
-<td>Name of input file.</td>
+<td>Input image folder zip file.</td>
 </tr>
 <tr>
-<td>outputFile</td>
+<td>outputImageFolder</td>
 <td>string</td>
-<td>yes</td>
+<td>no</td>
 <td></td>
-<td>Name of output file.</td>
+<td>Location for output files</td>
 </tr>
 <tr>
-<td>scale</td>
+<td>wbTemperature</td>
+<td>integer</td>
+<td>no</td>
+<td></td>
+<td>Temperature value used for white balancing</td>
+</tr>
+<tr>
+<td>wbTint</td>
 <td>number</td>
 <td>no</td>
-<td>100</td>
-<td>Uniform scale to apply during conversion.</td>
+<td></td>
+<td>Tint value used for white balancing</td>
+</tr>
+<tr>
+<td>exposureComp</td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>Value used for exposure compensation (-5 to 12)</td>
+</tr>
+<tr>
+<td>sharpeningEnabled</td>
+<td>boolean</td>
+<td>no</td>
+<td></td>
+<td>Flag to enable/disable sharpening</td>
+</tr>
+<tr>
+<td>lensProfile</td>
+<td>string</td>
+<td>no</td>
+<td>false</td>
+<td>Path to independent lens correction profile file (LCP)</td>
 </tr>
 <tr>
 <td>timeout</td>
@@ -477,8 +505,8 @@
 <td>tool</td>
 <td>string</td>
 <td>no</td>
-<td>&ldquo;Blender&rdquo;</td>
-<td>Tool to use for USDZ conversion.</td>
+<td>&ldquo;RawTherapee&rdquo;</td>
+<td>Tool to use for processing raw images: &ldquo;RawTherapee&rdquo;.</td>
 </tr>
 </tbody>
 </table>

@@ -143,6 +143,15 @@
     </item>
     
     <item>
+      <title>Recipe: process-raw</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/process-raw/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/process-raw/</guid>
+      <description>Creates a mesh and texture from capture image set folders</description>
+    </item>
+    
+    <item>
       <title>Recipe: unwrap</title>
       <link>https://smithsonian.github.io/dpo-cook/recipes/unwrap/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -458,12 +467,30 @@
     </item>
     
     <item>
+      <title>ProcessRaw</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/process-raw/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/process-raw/</guid>
+      <description>Converts raw images to jpg and pre-processes for photogrammetry pipeline</description>
+    </item>
+    
+    <item>
       <title>RapidCompact</title>
       <link>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/tools/rapid-compact/</guid>
       <description>All-in-one mesh simplification, UV unwrapping, and map baking tool.</description>
+    </item>
+    
+    <item>
+      <title>RawTherapee</title>
+      <link>https://smithsonian.github.io/dpo-cook/tools/rawtherapee/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tools/rawtherapee/</guid>
+      <description>Image Processing tool</description>
     </item>
     
     <item>

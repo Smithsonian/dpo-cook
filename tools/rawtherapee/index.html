@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>GenerateUSDZ - Cook Documentation</title>
+  <title>RawTherapee - Cook Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <link rel="icon" href="https://smithsonian.github.io/dpo-cook/favicon.ico">
@@ -122,9 +122,9 @@
       
     
       
-        
-      
     
+      
+        
       
     
 
@@ -297,7 +297,7 @@
       <a href="/dpo-cook/tasks/fix-mesh/">FixMesh</a>
     </li>
     
-    <li class="active ">
+    <li class="">
       <a href="/dpo-cook/tasks/generate-usdz/">GenerateUSDZ</a>
     </li>
     
@@ -404,7 +404,7 @@
       <a href="/dpo-cook/tools/rapid-compact/">RapidCompact</a>
     </li>
     
-    <li class="">
+    <li class="active ">
       <a href="/dpo-cook/tools/rawtherapee/">RawTherapee</a>
     </li>
     
@@ -428,61 +428,28 @@
         </div>
         <div class="col-12 col-md-9">
           
-<h1 class="title">GenerateUSDZ</h1>
+<h1 class="title">RawTherapee</h1>
 <div class="content">
-  <h3 id="description">Description</h3>
-<p>USDZ is still an emerging format so we currently have a special task to generate it from a self-contained glb package.</p>
-<p><strong>Note:</strong> If using Blender for this task, you must also have the <a href="../zip">Zip task</a> functional to turn USD to USDZ.</p>
-<h3 id="options">Options</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>sourceFile</td>
-<td>string</td>
-<td>yes</td>
-<td></td>
-<td>Name of input file.</td>
-</tr>
-<tr>
-<td>outputFile</td>
-<td>string</td>
-<td>yes</td>
-<td></td>
-<td>Name of output file.</td>
-</tr>
-<tr>
-<td>scale</td>
-<td>number</td>
-<td>no</td>
-<td>100</td>
-<td>Uniform scale to apply during conversion.</td>
-</tr>
-<tr>
-<td>timeout</td>
-<td>number</td>
-<td>no</td>
-<td>0</td>
-<td>Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup).</td>
-</tr>
-<tr>
-<td>tool</td>
-<td>string</td>
-<td>no</td>
-<td>&ldquo;Blender&rdquo;</td>
-<td>Tool to use for USDZ conversion.</td>
-</tr>
-</tbody>
-</table>
-
+  <h3 id="information">Information</h3>
+<ul>
+<li>Developer: RawTherapee</li>
+<li>Website: <a href="https://www.rawtherapee.com/">https://www.rawtherapee.com/</a></li>
+<li>License: <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a></li>
+</ul>
+<h3 id="installation">Installation</h3>
+<ul>
+<li>Recommended version with Cook: <em>5.10</em></li>
+<li>Windows installer: <a href="https://rawtherapee.com/shared/builds/windows/RawTherapee_5.10_win64.zip">https://rawtherapee.com/shared/builds/windows/RawTherapee_5.10_win64.zip</a></li>
+</ul>
+<h3 id="configuration">Configuration</h3>
+<p>Example configuration for RawTherapee in the <code>tools.json</code> configuration file:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;RawTherapee&#34;</span><span class="err">:</span> <span class="p">{</span>
+    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\RawTherapee\\5.10\\rawtherapee-cli.exe&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;5.10&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">7200</span>
+<span class="p">}</span>
+</code></pre></div>
 </div>
 
         </div>
