@@ -27,7 +27,7 @@ def run():
     parser.add_argument("-o", "--output", required=False, help="Output filepath")
     parser.add_argument("-f", "--format", required=False, default=".glb", help="Output format")
     parser.add_argument("-mb", "--embed", required=False, default=False, help="Embed gltf content")
-    parser.add_argument("-mf", "--metal_factor", required=False, default=0.1, type=float, help="Metallic Factor")
+    parser.add_argument("-mf", "--metal_factor", required=False, default=0.0, type=float, help="Metallic Factor")
     parser.add_argument("-rf", "--rough_factor", required=False, default=0.6, type=float, help="Roughness Factor")
     parser.add_argument("-dm", "--diffuse", required=False, help="Diffuse filepath")
     parser.add_argument("-om", "--occlusion", required=False, help="Occlusion filepath")
@@ -130,7 +130,8 @@ def run():
         mat.node_tree.links.new(bsdf.inputs['Roughness'], separate_node_bg.outputs['Green'])
     else:
         #shift default roughness to 0.6 for better results
-        bsdf.inputs['Roughness'].default_value = 0.6
+        bsdf.inputs['Roughness'].default_value = args.rough_factor
+        bsdf.inputs['Metallic'].default_value = args.metal_factor
 
     bsdf.inputs['IOR'].default_value = 1.5
     mat.blend_method = 'BLEND' if do_blend is True else 'OPAQUE'

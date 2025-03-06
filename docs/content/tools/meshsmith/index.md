@@ -3,6 +3,8 @@ title: MeshSmith
 summary: Mesh conversion tool based on the Assimp library.
 ---
 
+__NOTE: This tool is no longer being updated and as such is considered deprecated and not recommended for use. Cook tasks relying on this tool have at least one open source alternative like [Blender](../blender)__
+
 ### Information
 
 - Developer: [Ralph Wiedemeier, Frame Factory GmbH](https://github.com/framefactory) for Smithsonian DPO

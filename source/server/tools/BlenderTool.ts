@@ -152,7 +152,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
                 operation += ` -nm "${instance.getFilePath(settings.normalMapFile)}"`;
             }
 
-            operation += ` -uc "${settings.useCompression}" -mb "${settings.embedMaps}" -cl ${settings.compressionLevel} -ab ${settings.alphaBlend} -os ${settings.objectSpaceNormals}`;
+            operation += ` -uc "${settings.useCompression}" -mb "${settings.embedMaps}" -mf "${settings.metallicFactor}" -rf "${settings.roughnessFactor}" -cl ${settings.compressionLevel} -ab ${settings.alphaBlend} -os ${settings.objectSpaceNormals}`;
         }
 
         const command = `"${this.configuration.executable}" ${operation}`;

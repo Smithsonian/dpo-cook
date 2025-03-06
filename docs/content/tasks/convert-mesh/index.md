@@ -7,8 +7,7 @@ summary: Converts geometric mesh data between various file formats.
 
 Converts geometric mesh data between various file formats.
  
-The task is usually executed by Smithsonian's own MeshSmith tool, except for conversions from FBX to GLB or glTF
-which are done by FBX2glTF. Meshlab can also be used if specified explicitly (set `useMeshlab` to true), but
+The task is usually done with Blender. Meshlab can also be used if specified explicitly, but
 Meshlab understands less input and output formats.
 
 ### Options
@@ -26,4 +25,4 @@ Meshlab understands less input and output formats.
 | translate      | [x,y,z] | no       | [0,0,0] | MeshSmith only: translates the mesh by the given vector if set.                          |
 | swizzle        | string  | no       | -       | MeshSmith only: Custom swizzle operation if set. Example: "X+Z+Y-".                      |
 | timeout        | number  | no       | 0       | Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup). |
-| useMeshlab     | boolean | no       | false   | Forces the use of Meshlab if true.                                                       |
+| tool     | string | no       | "Blender"   | Tools to use for conversion. "Blender", "MeshLab", "FBX2glTF", or "MeshSmith"(deprecated)                                                       |
