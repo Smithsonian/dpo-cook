@@ -191,6 +191,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/merge-img-channels/">Recipe: merge-img-channels</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/photogrammetry/">Recipe: photogrammetry</a>
     </li>
     
@@ -298,11 +302,11 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/tasks/merge-mesh/">MergeMesh</a>
+      <a href="/dpo-cook/tasks/merge-image-channels/">MergeImageChannels</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/tasks/merge-reports/">MergeReports</a>
+      <a href="/dpo-cook/tasks/merge-mesh/">MergeMesh</a>
     </li>
     
     <li class="">
@@ -416,8 +420,7 @@
 <div class="content">
   <h3 id="description">Description</h3>
 <p>Converts geometric mesh data between various file formats.</p>
-<p>The task is usually executed by Smithsonian&rsquo;s own MeshSmith tool, except for conversions from FBX to GLB or glTF
-which are done by FBX2glTF. Meshlab can also be used if specified explicitly (set <code>useMeshlab</code> to true), but
+<p>The task is usually done with Blender. Meshlab can also be used if specified explicitly, but
 Meshlab understands less input and output formats.</p>
 <h3 id="options">Options</h3>
 <table>
@@ -509,11 +512,11 @@ Meshlab understands less input and output formats.</p>
 <td>Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup).</td>
 </tr>
 <tr>
-<td>useMeshlab</td>
-<td>boolean</td>
+<td>tool</td>
+<td>string</td>
 <td>no</td>
-<td>false</td>
-<td>Forces the use of Meshlab if true.</td>
+<td>&ldquo;Blender&rdquo;</td>
+<td>Tools to use for conversion. &ldquo;Blender&rdquo;, &ldquo;MeshLab&rdquo;, &ldquo;FBX2glTF&rdquo;, or &ldquo;MeshSmith&rdquo;(deprecated)</td>
 </tr>
 </tbody>
 </table>

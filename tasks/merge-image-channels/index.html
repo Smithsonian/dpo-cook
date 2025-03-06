@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Recipe: si-voyager-asset - Cook Documentation</title>
+  <title>MergeImageChannels - Cook Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <link rel="icon" href="https://smithsonian.github.io/dpo-cook/favicon.ico">
@@ -120,9 +120,9 @@
       
     
       
-        
-      
     
+      
+        
       
     
       
@@ -214,7 +214,7 @@
       <a href="/dpo-cook/recipes/si-packrat-inspect/">Recipe: si-packrat-inspect</a>
     </li>
     
-    <li class="active ">
+    <li class="">
       <a href="/dpo-cook/recipes/si-voyager-asset/">Recipe: si-voyager-asset</a>
     </li>
     
@@ -301,7 +301,7 @@
       <a href="/dpo-cook/tasks/inspect-mesh/">InspectMesh</a>
     </li>
     
-    <li class="">
+    <li class="active ">
       <a href="/dpo-cook/tasks/merge-image-channels/">MergeImageChannels</a>
     </li>
     
@@ -416,10 +416,66 @@
         </div>
         <div class="col-12 col-md-9">
           
-<h1 class="title">Recipe: si-voyager-asset</h1>
+<h1 class="title">MergeImageChannels</h1>
 <div class="content">
-  <p>The <code>si-voyager-asset</code> recipe creates a <a href="https://github.com/Smithsonian/dpo-voyager">Smithsonian Voyager</a> package (scene file and linked assets) from a single mesh asset.
-This asset will <strong>not</strong> be decimated or transformed in any way before being converted to glTF or glb.</p>
+  <h3 id="description">Description</h3>
+<p>This task merges channels from separate images into one, useful when required by certain formats like glTF. Ex: merging an alpha map with diffuse texture or merging roughness, metalness, and ambient occlusion maps.</p>
+<h3 id="options">Options</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>redChannelMapFile</td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>Map input file to pull red channel from.</td>
+</tr>
+<tr>
+<td>greenChannelMapFile</td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>Map input file to pull green channel from.</td>
+</tr>
+<tr>
+<td>blueChannelMapFile</td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>Map input file to pull blue channel from.</td>
+</tr>
+<tr>
+<td>alphaChannelMapFile</td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>Map input file to pull alpha channel from.</td>
+</tr>
+<tr>
+<td>outputMapFile</td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>Combined map output file.</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>number</td>
+<td>no</td>
+<td>0</td>
+<td>Maximum task execution time in seconds</td>
+</tr>
+</tbody>
+</table>
 
 </div>
 

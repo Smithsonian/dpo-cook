@@ -191,6 +191,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/merge-img-channels/">Recipe: merge-img-channels</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/photogrammetry/">Recipe: photogrammetry</a>
     </li>
     
@@ -298,11 +302,11 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/tasks/merge-mesh/">MergeMesh</a>
+      <a href="/dpo-cook/tasks/merge-image-channels/">MergeImageChannels</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/tasks/merge-reports/">MergeReports</a>
+      <a href="/dpo-cook/tasks/merge-mesh/">MergeMesh</a>
     </li>
     
     <li class="">
@@ -422,130 +426,18 @@
 </ul>
 <h3 id="installation">Installation</h3>
 <ul>
-<li>Recommended version with Cook: <em>4.2.1</em></li>
+<li>Recommended version with Cook: <em>6.7.0</em></li>
 <li>Windows binary available to registered customers</li>
 </ul>
 <h3 id="configuration">Configuration</h3>
 <p>Example configuration for RapidCompact in the <code>tools.json</code> configuration file:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="s2">&#34;RapidCompact&#34;</span><span class="err">:</span> <span class="p">{</span>
-    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\RapidCompact CLI 4.2.1\\rpdx.exe&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;4.2.1&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;executable&#34;</span><span class="p">:</span> <span class="s2">&#34;C:\\Program Files\\RapidCompact CLI 6.7.0\\rpdx.exe&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;6.7.0&#34;</span><span class="p">,</span>
     <span class="nt">&#34;maxInstances&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
     <span class="nt">&#34;timeout&#34;</span><span class="p">:</span> <span class="mi">900</span>
 <span class="p">}</span>
-</code></pre></div><h3 id="options">Options</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Required</th>
-<th>Type</th>
-<th>Values/Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>highPolyMeshFile</td>
-<td>&ldquo;bake&rdquo; only</td>
-<td>string</td>
-<td>file path</td>
-<td></td>
-</tr>
-<tr>
-<td>lowPolyMeshFile</td>
-<td>&ldquo;bake&rdquo; only</td>
-<td>string</td>
-<td>file path</td>
-<td></td>
-</tr>
-<tr>
-<td>inputMeshFile</td>
-<td>yes except &ldquo;bake&rdquo;</td>
-<td>string</td>
-<td>file path</td>
-<td></td>
-</tr>
-<tr>
-<td>outputMeshFile</td>
-<td>yes except &ldquo;bake&rdquo;</td>
-<td>string</td>
-<td>file path</td>
-<td></td>
-</tr>
-<tr>
-<td>mapBaseName</td>
-<td>for &ldquo;bake&rdquo;</td>
-<td>string</td>
-<td>base name for baked maps</td>
-<td></td>
-</tr>
-<tr>
-<td>mode</td>
-<td>yes</td>
-<td>string</td>
-<td>&ldquo;decimate&rdquo;, &ldquo;unwrap&rdquo;, &ldquo;decimate-unwrap&rdquo;, &ldquo;bake&rdquo;</td>
-<td></td>
-</tr>
-<tr>
-<td>removeDuplicateVertices</td>
-<td>no</td>
-<td>boolean</td>
-<td></td>
-<td>false</td>
-</tr>
-<tr>
-<td>numFaces</td>
-<td>&ldquo;decimate&rdquo;, &ldquo;decimate-unwrap&rdquo; only</td>
-<td>number</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>unwrapMethod</td>
-<td>no</td>
-<td>number</td>
-<td>0 = fixedBoundary, 1 = fastConformal, 2 = conformal, 3 = isometric, 4 = forwardBijective</td>
-<td>4</td>
-</tr>
-<tr>
-<td>mapSize</td>
-<td>&ldquo;bake&rdquo; only</td>
-<td>number</td>
-<td></td>
-<td>2048</td>
-</tr>
-<tr>
-<td>bakeOcclusion</td>
-<td>no</td>
-<td>boolean</td>
-<td></td>
-<td>false</td>
-</tr>
-<tr>
-<td>occlusionRays</td>
-<td>no</td>
-<td>number</td>
-<td></td>
-<td>128</td>
-</tr>
-<tr>
-<td>normalsTangentSpace</td>
-<td>no</td>
-<td>boolean</td>
-<td></td>
-<td>false</td>
-</tr>
-<tr>
-<td>preserveBoundary</td>
-<td>no</td>
-<td>boolean</td>
-<td></td>
-<td>true</td>
-</tr>
-</tbody>
-</table>
-
+</code></pre></div>
 </div>
 
         </div>

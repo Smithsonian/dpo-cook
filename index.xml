@@ -125,6 +125,15 @@
     </item>
     
     <item>
+      <title>Recipe: merge-img-channels</title>
+      <link>https://smithsonian.github.io/dpo-cook/recipes/merge-img-channels/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/recipes/merge-img-channels/</guid>
+      <description>Merges channels of multiple input images into one.</description>
+    </item>
+    
+    <item>
       <title>Recipe: photogrammetry</title>
       <link>https://smithsonian.github.io/dpo-cook/recipes/photogrammetry/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -377,21 +386,21 @@
     </item>
     
     <item>
+      <title>MergeImageChannels</title>
+      <link>https://smithsonian.github.io/dpo-cook/tasks/merge-image-channels/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://smithsonian.github.io/dpo-cook/tasks/merge-image-channels/</guid>
+      <description>Combines channels from separate maps into one combined map.</description>
+    </item>
+    
+    <item>
       <title>MergeMesh</title>
       <link>https://smithsonian.github.io/dpo-cook/tasks/merge-mesh/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://smithsonian.github.io/dpo-cook/tasks/merge-mesh/</guid>
       <description>Merges a multi-mesh model file into one .obj and texture</description>
-    </item>
-    
-    <item>
-      <title>MergeReports</title>
-      <link>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</guid>
-      <description>Merge two mesh inspection reports</description>
     </item>
     
     <item>

@@ -191,6 +191,10 @@
     </li>
     
     <li class="">
+      <a href="/dpo-cook/recipes/merge-img-channels/">Recipe: merge-img-channels</a>
+    </li>
+    
+    <li class="">
       <a href="/dpo-cook/recipes/photogrammetry/">Recipe: photogrammetry</a>
     </li>
     
@@ -298,11 +302,11 @@
     </li>
     
     <li class="">
-      <a href="/dpo-cook/tasks/merge-mesh/">MergeMesh</a>
+      <a href="/dpo-cook/tasks/merge-image-channels/">MergeImageChannels</a>
     </li>
     
     <li class="">
-      <a href="/dpo-cook/tasks/merge-reports/">MergeReports</a>
+      <a href="/dpo-cook/tasks/merge-mesh/">MergeMesh</a>
     </li>
     
     <li class="">
@@ -414,7 +418,156 @@
           
 <h1 class="title">WebAsset</h1>
 <div class="content">
-  
+  <h3 id="description">Description</h3>
+<p>This task combines mesh and map data into a GLTF web asset. The asset can be written in JSON or binary format, with optionally embedded maps and DRACO-compressed mesh data.</p>
+<h3 id="options">Options</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>outputFile</td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>File name of the resulting web asset.</td>
+</tr>
+<tr>
+<td>meshFile</td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>File name of the input mesh to be added to the web asset.</td>
+</tr>
+<tr>
+<td>diffuseMapFile</td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>File name of the diffuse map to be added to the web asset.</td>
+</tr>
+<tr>
+<td>occlusionMapFile</td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>File name of the occlusion map to be added to the web asset.</td>
+</tr>
+<tr>
+<td>emissiveMapFile</td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>File name of the emissive map to be added to the web asset.</td>
+</tr>
+<tr>
+<td>metallicRoughnessMapFile</td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>File name of the metallic-roughness map to be added to the web asset.</td>
+</tr>
+<tr>
+<td>normalMapFile</td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>File name of the normal map to be added to the web asset.</td>
+</tr>
+<tr>
+<td>zoneMapFile</td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>File name of the zone map to be added to the web asset.</td>
+</tr>
+<tr>
+<td>metallicFactor</td>
+<td>number</td>
+<td>no</td>
+<td>0.0</td>
+<td>The metalness factor for the PBR material.</td>
+</tr>
+<tr>
+<td>roughnessFactor</td>
+<td>number</td>
+<td>no</td>
+<td>0.6</td>
+<td>The roughness factor for the PBR material.</td>
+</tr>
+<tr>
+<td>alignCenter</td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>Centers object if true, i.e. aligns object with origin.</td>
+</tr>
+<tr>
+<td>alignFloor</td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>Centers object and aligns it with y-origin if true.</td>
+</tr>
+<tr>
+<td>objectSpaceNormals</td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>True to use object space normals, false for tangent space normals.</td>
+</tr>
+<tr>
+<td>useCompression</td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>True if geometry should be compressed using the DRACO mesh compressor.</td>
+</tr>
+<tr>
+<td>compressionLevel</td>
+<td>integer</td>
+<td>no</td>
+<td>10</td>
+<td>Compression level for DRACO mesh compression, range 0 - 10.</td>
+</tr>
+<tr>
+<td>embedMaps</td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>True if map data should be embedded in the asset file, false if maps are embedded by reference only.</td>
+</tr>
+<tr>
+<td>writeBinary</td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>True if the asset should be written in binary format (.glb), false for a text .gltf file.</td>
+</tr>
+<tr>
+<td>alphaBlend</td>
+<td>boolean</td>
+<td>no</td>
+<td>false</td>
+<td>True if the asset should interpret alpha channel data as opacity.</td>
+</tr>
+<tr>
+<td>tool</td>
+<td>string</td>
+<td>no</td>
+<td>&ldquo;Blender&rdquo;</td>
+<td>Tool to use for generating web assets (&ldquo;MeshSmith&rdquo; or &ldquo;Blender&rdquo;).</td>
+</tr>
+</tbody>
+</table>
+
 </div>
 
         </div>

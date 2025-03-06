@@ -28,6 +28,8 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/inspect-mesh/</loc>
   </url><url>
+    <loc>https://smithsonian.github.io/dpo-cook/recipes/merge-img-channels/</loc>
+  </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/photogrammetry/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/recipes/unwrap/</loc>
@@ -91,9 +93,9 @@
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/instant-meshes/</loc>
   </url><url>
-    <loc>https://smithsonian.github.io/dpo-cook/tasks/merge-mesh/</loc>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/merge-image-channels/</loc>
   </url><url>
-    <loc>https://smithsonian.github.io/dpo-cook/tasks/merge-reports/</loc>
+    <loc>https://smithsonian.github.io/dpo-cook/tasks/merge-mesh/</loc>
   </url><url>
     <loc>https://smithsonian.github.io/dpo-cook/tools/meshfix/</loc>
   </url><url>
