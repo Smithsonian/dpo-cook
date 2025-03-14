@@ -346,14 +346,15 @@ def run():
             if node.type == 'TEX_IMAGE':
                 out_channels = []
                 channel_name = ""
-                image_name = node.image.name
+                path, filename = os.path.split(node.image.filepath)
+                image_name = filename
                 if node.image.packed_file != None:
                     image_name = "embedded*"+node.image.name
-                    if node.image.name not in embedded_textures:
-                        embedded_textures.append(node.image.name)
+                    if image_name not in embedded_textures:
+                        embedded_textures.append(image_name)
                 else:
-                    if node.image.name not in textures:
-                        textures.append(node.image.name)  
+                    if filename not in textures:
+                        textures.append(filename)  
                 find_channel(node, out_channels)
                 if len(out_channels) == 0:
                     channel = {
