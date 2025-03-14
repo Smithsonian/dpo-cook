@@ -55,14 +55,17 @@ export default class ToolTask extends Task
     addTool(name: string, settings: IToolSettings)
     {
         const instance = this.context.manager.createToolInstance(name, settings, this.context.jobDir);
-        this.report.tools.push(instance.report);
-        this.instances.push(instance);
+
+        if(instance) {
+            this.report.tools.push(instance.report);
+            this.instances.push(instance);
+        }
     }
 
     protected async execute(): Promise<unknown>
     {
         const instance = this.instances[0];
-        return this.runInstance(instance);
+        return instance ? this.runInstance(instance) : Promise.reject(new Error("Requested tool not available."));
     }
 
     protected async runInstance(instance: ToolInstance): Promise<unknown>
