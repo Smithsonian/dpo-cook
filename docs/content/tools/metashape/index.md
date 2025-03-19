@@ -18,7 +18,7 @@ summary: Photogrammetry tool
 Example configuration for Agisoft Metashape in the `tools.json` configuration file:
 
 ```json
-"RealityCapture": {
+"Metashape": {
     "executable": "C:\\Program Files\\Agisoft\\Metashape Pro\\metashape.exe",
     "version": "v1.8.3, build 14331",
     "maxInstances": 1,
