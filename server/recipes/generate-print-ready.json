@@ -1,0 +1,253 @@
+{
+    "id": "cc91de6b-4143-40b9-94c2-050597aa612c",
+    "name": "generate-print-ready",
+    "description": "Generate a print-ready mesh",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceMeshFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "sourceDiffuseMapFile": {
+               "type": "string",
+               "minLength": 1,
+               "format": "file"
+           },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "decimationTool": {
+                "type": "string",
+                "enum": [ "Meshlab", "RapidCompact" ],
+                "default": "Meshlab"
+            },
+            "sourceUnits": {
+                "type": "string",
+                "enum": [ "mm", "cm", "m", "ft", "km" ],
+                "default": "mm"
+            },
+            "destinationUnits": {
+                "type": "string",
+                "enum": [ "mm", "cm", "m", "ft", "km" ],
+                "default": "mm"
+            },
+            "numFaces": {
+                "type": "integer",
+                "minimum": 10000,
+                "multipleOf": 1000,
+                "default": 1000000
+            },
+            "mapSize": {
+                "type": "integer",
+                "minimum": 128,
+                "maximum": 8192,
+                "default": 4096
+            },
+            "scaleFactor": {
+                "type": "number",
+                "minimum": 0.01,
+                "maximum": 1000,
+                "default": 1.0
+            },
+            "maxRayDistance": {
+                "type": "number",
+                "default": 0
+            },
+            "unwrapSegmentationStrength": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            },
+            "unwrapPackEffort": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.7
+            }
+        },
+        "required": [
+            "sourceMeshFile"
+        ],
+        "advanced": [
+            "maxRayDistance", "unwrapSegmentationStrength", "unwrapPackEffort"
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceMeshFile))",
+                "bakeDiffuse": "$exists(sourceDiffuseMapFile)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "highPolyMeshFile": "sourceMeshFile"
+                }
+            },
+            "success": "'print-fix'",
+            "failure": "$failure"
+        },
+        "print-fix": {
+            "task": "PrintReady",
+            "description": "Process mesh to address print readiness",
+            "pre": {
+                "printFixedMeshFile": "outputFileBaseName & '-fixed.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "sourceMeshFile",
+                "outputMeshFile": "printFixedMeshFile",
+                "inputUnits": "sourceUnits",
+                "outputUnits": "sourceUnits"
+            },
+            "success": "'decimate-mesh'",
+            "failure": "$failure"
+        },
+        "decimate-mesh": {
+            "task": "DecimateMesh",
+            "description": "Decimate mesh",
+            "pre": {
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-' & $lowercase(decimationTool) & '-' & $k(numFaces) & '.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "printFixedMeshFile",
+                "outputMeshFile": "decimatedMeshFile",
+                "numFaces": "numFaces",
+                "cleanup": true,
+                "preserveTopology": true,
+                "preserveBoundaries": true,
+                "tool": "decimationTool"
+            },
+            "success": "'unwrap-rizom'",
+            "failure": "$failure"
+        },
+        "unwrap-rizom": {
+            "task": "UnwrapMesh",
+            "description": "Unwrap mesh using RizomUV",
+            "skip": "$not(bakeDiffuse)",
+            "pre": {
+                "unwrappedMeshFbxFile": "outputFileBaseName & '-unwrapped.fbx'",
+                "deliverables": {
+                    "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped.obj'"
+                }
+            },
+            "parameters": {
+                "inputMeshFile": "decimatedMeshFile",
+                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "saveFbx": true,
+                "saveObj": true,
+                "mapSize": "mapSize",
+                "segmentationStrength": "unwrapSegmentationStrength",
+                "packEffort": "unwrapPackEffort"
+            },
+            "success": "'inspect-unwrapped'",
+            "failure": "$failure"
+        },
+        "inspect-unwrapped": {
+            "task": "InspectMesh",
+            "description": "Calculate mesh size and max. ray distance for bake",
+            "skip": "$not(bakeDiffuse)",
+            "parameters": {
+                "meshFile": "deliverables.scene_unwrappedMesh",
+                "tool": "'Blender'"
+            },
+            "post": {
+                "autoRayDistance": "$min($result.inspection.scene.geometry.size) * 0.01",
+                "bakeScale": "$max($result.inspection.scene.geometry.size) > 2.0 ? 1.0 : 2.5 / $max($result.inspection.scene.geometry.size)"
+            },
+            "success": "'bake-texture'",
+            "failure": "$failure"
+        },
+        "bake-texture": {
+            "task": "BakeMaps",
+            "description": "Bake diffuse, normal and occlusion maps using xNormal",
+            "skip": "$not(bakeDiffuse)",
+            "pre": {
+                "mapBaseName": "outputFileBaseName & '.png'"
+            },
+            "parameters": {
+                "highPolyMeshFile": "sourceMeshFile",
+                "highPolyDiffuseMapFile": "sourceDiffuseMapFile",
+                "lowPolyUnwrappedMeshFile": "unwrappedMeshFbxFile",
+                "mapBaseName": "mapBaseName",
+                "mapSize": "mapSize",
+                "maxRayDistance": "maxRayDistance > 0 ? maxRayDistance : autoRayDistance",
+                "bakeDiffuse": true,
+                "bakeOcclusion": false,
+                "bakeVertexColor": false,
+                "bakeNormals": false,
+                "bakeTest": false,
+                "scale": "bakeScale",
+                "timeout": 900
+            },
+            "post": {
+                "diffuseMapUncompressed": "outputFileBaseName & '-diffuse.png'"
+            },
+            "success": "'sync-mtl'",
+            "failure": "$failure"
+        },
+        "sync-mtl": {
+            "task": "SyncObjMtl",
+            "description": "Sync mtl references",
+            "skip": "$not(bakeDiffuse)",
+            "pre": {
+                "mtlFile": "outputFileBaseName & '.mtl'"
+            },
+            "parameters": {
+                "objFile": "deliverables.scene_unwrappedMesh",
+                "mtlFile": "mtlFile",
+                "textureFile": "diffuseMapUncompressed"
+            },
+            "success": "'print-fix-final'",
+            "failure": "$failure"
+        },
+        "print-fix-final": {
+            "task": "PrintReady",
+            "description": "Process mesh to address print readiness",
+            "pre": {
+                "printFixedFinalFile": "outputFileBaseName & '-final.obj'"
+            },
+            "parameters": {
+                "inputMeshFile": "bakeDiffuse ? deliverables.scene_unwrappedMesh : decimatedMeshFile",
+                "outputMeshFile": "printFixedFinalFile",
+                "inputUnits": "sourceUnits",
+                "outputUnits": "destinationUnits",
+                "scale": "scaleFactor"
+            },
+            "success": "'clean-material'",
+            "failure": "$failure"
+        },
+        "clean-material": {
+            "task": "ConvertMesh",
+            "description": "Wash through blender to clean mtl file",
+            "parameters": {
+                "inputMeshFile": "printFixedFinalFile",
+                "outputMeshFile": "printFixedFinalFile",
+                "tool": "'Blender'"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
