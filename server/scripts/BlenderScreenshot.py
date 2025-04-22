@@ -48,5 +48,10 @@ if len(bpy.data.objects) > 0:
     print("Writing preview image: " + save_file)
     bpy.ops.view3d.camera_to_view_selected()
 
+# Set render engine to Cycles
+bpy.context.scene.render.engine = 'CYCLES'
+bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+bpy.context.scene.cycles.device = 'GPU'
+
 bpy.context.scene.render.filepath = save_file
 bpy.ops.render.render(write_still = True)
