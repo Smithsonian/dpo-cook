@@ -226,7 +226,7 @@
             "task": "PrintReady",
             "description": "Process mesh to address print readiness",
             "pre": {
-                "printFixedFinalFile": "outputFileBaseName & '-final.obj'"
+                "printFixedFinalFile": "outputFileBaseName & '-' & destinationUnits & '-final.obj'"
             },
             "parameters": {
                 "inputMeshFile": "bakeDiffuse ? deliverables.scene_unwrappedMesh : decimatedMeshFile",
