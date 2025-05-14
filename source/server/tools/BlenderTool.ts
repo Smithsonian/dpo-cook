@@ -134,7 +134,7 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderMergeTextures.py")}" -- "${inputFilePath}" "${instance.getFilePath(settings.outputFile2)}" "${instance.getFilePath(settings.outputFile)}"`;
         }
         else if(settings.mode === "screenshot") {
-            operation += ` --python "${instance.getFilePath("../../scripts/BlenderScreenshot.py")}" -- "${inputFilePath}"`;
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderScreenshot.py")}" -- "${inputFilePath}" "${settings.outputFile}"`;
         }
         else if(settings.mode === "webasset") {
             operation += ` --python "${instance.getFilePath("../../scripts/BlenderWebAsset.py")}" -- -i "${instance.getFilePath(settings.inputMeshFile)}" -o "${instance.getFilePath(settings.outputFile)}" -f "${settings.format}"`;

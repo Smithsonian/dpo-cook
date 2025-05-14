@@ -76,7 +76,7 @@
                 "segmentationStrength": "unwrapSegmentationStrength",
                 "packEffort": "unwrapPackEffort",
                 "cutHandles": "cutHandles",
-                "timeout": 1800,
+                "timeout": 3600,
                 "tool": "tool"
             },
             "success": "'delivery'",
