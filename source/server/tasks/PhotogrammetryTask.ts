@@ -66,8 +66,8 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     maskMode?: "File" | "Background";
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
-    tool?: "Metashape" | "RealityCapture" | "Meshroom";
+    /** Tool to use for photogrammetry ("Metashape" or "RealityScan" or "Meshroom", default: "Metashape"). */
+    tool?: "Metashape" | "RealityScan" | "Meshroom";
 }
 
 /**
@@ -98,12 +98,12 @@ export default class PhotogrammetryTask extends ToolTask
             turntableGroups: { type: "boolean", default: false},
             depthMaxNeighbors: { type: "integer", default: 16},
             genericPreselection: { type: "boolean", default: true},
-            meshQuality: { type: "string", enum: [ "Low", "Medium", "High", "Highest", "Custom" ], default: "High"},
+            meshQuality: { type: "string", enum: [ "Low", "Medium", "High", "Custom" ], default: "High"},
             customFaceCount: { type: "integer", default: 3000000},
             depthMapQuality: { type: "string", enum: [ "Low", "Medium", "High", "Highest" ], default: "Highest"},
             maskMode: { type: "string", enum: [ "File", "Background" ], default: "File"},
             timeout: { type: "integer", default: 0 },
-            tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
+            tool: { type: "string", enum: [ "Metashape", "RealityScan", "Meshroom" ], default: "Metashape" }
         },
         required: [
             "inputImageFolder",
@@ -144,15 +144,20 @@ export default class PhotogrammetryTask extends ToolTask
 
             this.addTool("Metashape", toolOptions);
         }
-        else if (params.tool === "RealityCapture") {
+        else if (params.tool === "RealityScan") {
             const toolOptions: IRealityCaptureToolSettings = {
                 imageInputFolder: params.inputImageFolder,
+                alignImageFolder: params.alignImageFolder,
                 outputFile: params.outputFile,
                 scalebarFile: params.scalebarFile,
+                keypointLimit: params.keypointLimit,
+                meshQuality: params.meshQuality,
+                customFaceCount: params.customFaceCount,
+                optimizeMarkers: params.optimizeMarkers,
                 timeout: params.timeout
             };
 
-            this.addTool("RealityCapture", toolOptions);
+            this.addTool("RealityScan", toolOptions);
         }
         else if (params.tool === "Meshroom") {
             const toolOptions: IMeshroomToolSettings = {

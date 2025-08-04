@@ -21,8 +21,15 @@ import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from
 export interface IRealityCaptureToolSettings extends IToolSettings
 {
     imageInputFolder: string;
+    alignImageFolder?: string;
+	maskImageFolder?: string;
     outputFile?: string;
     scalebarFile?: string;
+    meshQuality?: string;
+    //depthMapQuality?: string;
+    keypointLimit?: number;
+    customFaceCount?: number;
+    optimizeMarkers?: boolean;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +38,7 @@ export type RealityCaptureInstance = ToolInstance<RealityCaptureTool, IRealityCa
 
 export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealityCaptureToolSettings>
 {
-    static readonly toolName = "RealityCapture";
+    static readonly toolName = "RealityScan";
 
     protected static readonly defaultOptions: Partial<IRealityCaptureToolSettings> = {};
 
@@ -40,6 +47,8 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         const settings = instance.settings;
         const inputFolder = path.parse(settings.imageInputFolder).name;
         const name = path.parse(settings.outputFile).name;
+        const quality = settings.meshQuality === "Low" ? "Preview" : settings.meshQuality === "Medium" ? "Normal" : "High";
+        const faceCount = settings.meshQuality === "Custom" && settings.customFaceCount != undefined ? `-simplify ${settings.customFaceCount}` : ``;
 
         const inputImageFolder = instance.getFilePath(inputFolder);
         if (!inputImageFolder) {
@@ -49,7 +58,17 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         const outputDirectory = instance.workDir;
 
         let operations = "";
-        operations += ` -set "appIncSubdirs=true" -stdConsole -newScene -addFolder "${inputImageFolder}"`;
+        operations += ` -headless -set appQuitOnError=true -set appIncSubdirs=true -stdConsole -newScene -addFolder "${inputImageFolder}"`;
+
+        if(settings.alignImageFolder) {
+            const alignImageFolder = instance.getFilePath(path.parse(settings.alignImageFolder).name);
+            operations += ` -addFolder "${alignImageFolder}" -selectImage "${alignImageFolder}\\*.*" -enableMeshing false -enableTexturingAndColoring false`;
+        }
+
+        /*if(settings.maskImageFolder) {
+            const maskImageFolder = instance.getFilePath(path.parse(settings.maskImageFolder).name);
+            operations += ` -addFolder "${maskImageFolder}" -deselectAllImages -selectImage "${maskImageFolder}\\*.*" -enableMeshing false -enableTexturingAndColoring false -`;
+        }*/
 
         // add scaling info
         if(settings.scalebarFile) {
@@ -69,9 +88,10 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
             });
         }
 
-        operations += ` -align -selectMaximalComponent -setReconstructionRegionAuto -calculateHighModel -selectMarginalTriangles`;
-        operations += ` -removeSelectedTriangles -selectLargestModelComponent -invertTrianglesSelection -removeSelectedTriangles`;
-        operations += ` -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}.obj" "${outputDirectory}\\_rc_params.xml" -quit`;
+        operations += ` -silent "${outputDirectory}" -set sfmMaxFeaturesPerImage=${settings.keypointLimit} -align ${settings.optimizeMarkers ? "-align" : ""} -save "${outputDirectory}\\${name}-align.rcproj" -selectMaximalComponent`
+        operations += ` -setReconstructionRegionAuto ${quality == "High" ? "-calculateHighModel" : quality == "Normal" ? "-calculateNormalModel" : "-calculatePreviewModel"} ${faceCount} -save "${outputDirectory}\\${name}-mesh.rcproj"`;
+        operations += ` -selectMarginalTriangles -removeSelectedTriangles -selectLargestModelComponent -invertTrianglesSelection -removeSelectedTriangles -cleanModel`;
+        operations += ` -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}-raw_clean.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}.obj" "${outputDirectory}\\_rc_params.xml" -quit`;
 
         const command = `"${this.configuration.executable}" ${operations}`;
 

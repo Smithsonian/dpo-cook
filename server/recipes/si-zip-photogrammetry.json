@@ -37,6 +37,7 @@
                 "enum": [
                     "Metashape",
                     "RealityCapture",
+                    "RealityScan",
                     "Meshroom"
                 ],
                 "default": "Metashape"
@@ -555,11 +556,11 @@
             "pre": {
                 "deliverables": {
                     "alignProjZip": "baseMeshName & '-' & $lowercase(tool) & '-align.files.zip'",
-                    "alignProjFile": "baseMeshName & '-' & $lowercase(tool) & '-align.psx'"
+                    "alignProjFile": "baseMeshName & '-' & $lowercase(tool) & (tool = 'Metashape' ? '-align.psx' : '-align.rcproj')"
                 }
             },
             "parameters": {
-                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-align.files'",
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & (tool = 'Metashape' ? '-align.files' : '-align')",
                 "recursive": true,
                 "outputFile": "deliverables.alignProjZip",
                 "operation": "'path-zip'"
@@ -573,12 +574,12 @@
             "pre": {
                 "deliverables": {
                     "meshProjZip": "baseMeshName & '-' & $lowercase(tool) & '-mesh.files.zip'",
-                    "meshProjFile": "baseMeshName & '-' & $lowercase(tool) & '-mesh.psx'",
+                    "meshProjFile": "baseMeshName & '-' & $lowercase(tool) & (tool = 'Metashape' ? '-mesh.psx' : '-mesh.rcproj')",
                     "meshProjReport": "baseMeshName & '-' & $lowercase(tool) & '-report.pdf'"
                 }
             },
             "parameters": {
-                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-mesh.files'",
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & (tool = 'Metashape' ? '-mesh.files' : '-mesh')",
                 "recursive": true,
                 "outputFile": "deliverables.meshProjZip",
                 "operation": "'path-zip'"
@@ -592,11 +593,11 @@
             "pre": {
                 "deliverables": {
                     "finalProjZip": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.files.zip'",
-                    "finalProjFile": "baseMeshName & '-' & $lowercase(tool) & '-raw_clean.psx'"
+                    "finalProjFile": "baseMeshName & '-' & $lowercase(tool) & (tool = 'Metashape' ? '-raw_clean.psx' : '-raw_clean.rcproj')"
                 }
             },
             "parameters": {
-                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & '-raw_clean.files'",
+                "inputFile1": "$jobDir & '\\\\' & baseMeshName & '-' & $lowercase(tool) & (tool = 'Metashape' ? '-raw_clean.files' : '-raw_clean')",
                 "recursive": true,
                 "outputFile": "deliverables.finalProjZip",
                 "operation": "'path-zip'"
