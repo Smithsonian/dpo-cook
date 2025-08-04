@@ -386,7 +386,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
 
                     // after one second, send an additional task kill command
                     setTimeout(() => {
-                        const extraShot = `taskkill /F /IM ${path.basename(this.tool.configuration.executable)}`;
+                        const extraShot = `taskkill /F /PID ${shellScript.pid}`;
                         console.log("Tool.runApplication: " + extraShot);
                         child_process.exec(extraShot);
 
