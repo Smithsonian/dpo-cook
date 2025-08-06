@@ -16,6 +16,7 @@
  */
 
 import * as path from "path";
+import * as fs from "fs";
 import Tool, { IToolMessageEvent, IToolSettings, IToolSetup, ToolInstance } from "../app/Tool";
 
 export interface IRealityCaptureToolSettings extends IToolSettings
@@ -58,17 +59,33 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         const outputDirectory = instance.workDir;
 
         let operations = "";
-        operations += ` -headless -set appQuitOnError=true -set appIncSubdirs=true -stdConsole -newScene -addFolder "${inputImageFolder}"`;
+        operations += ` -headless -disableOnlineCommunication -set appQuitOnError=true -set appIncSubdirs=true -stdConsole -newScene -addFolder "${inputImageFolder}"`;
 
         if(settings.alignImageFolder) {
             const alignImageFolder = instance.getFilePath(path.parse(settings.alignImageFolder).name);
             operations += ` -addFolder "${alignImageFolder}" -selectImage "${alignImageFolder}\\*.*" -enableMeshing false -enableTexturingAndColoring false`;
         }
 
-        /*if(settings.maskImageFolder) {
+        if(settings.maskImageFolder) {
             const maskImageFolder = instance.getFilePath(path.parse(settings.maskImageFolder).name);
-            operations += ` -addFolder "${maskImageFolder}" -deselectAllImages -selectImage "${maskImageFolder}\\*.*" -enableMeshing false -enableTexturingAndColoring false -`;
-        }*/
+
+            const masks = fs.readdirSync(maskImageFolder);
+
+            if(masks.length < 10) {
+                masks.forEach( (mask) => {
+                    const filename = path.basename(mask);
+                    const tokenized = filename.split("-");
+                    const delimeter = tokenized[tokenized.length-2]
+                
+                    operations += ` -selectImage "${inputImageFolder}\\*${delimeter}*.*" -setImagesLayer "${maskImageFolder}\\${mask}" mask `;
+                });
+            }
+            else {
+                const newPath = inputImageFolder+"\\_mask!Masks";
+                fs.renameSync(maskImageFolder, newPath);
+                operations += ` -addFolder "${newPath}" `;
+            }
+        }
 
         // add scaling info
         if(settings.scalebarFile) {

@@ -148,6 +148,7 @@ export default class PhotogrammetryTask extends ToolTask
             const toolOptions: IRealityCaptureToolSettings = {
                 imageInputFolder: params.inputImageFolder,
                 alignImageFolder: params.alignImageFolder,
+                maskImageFolder: params.maskImageFolder,
                 outputFile: params.outputFile,
                 scalebarFile: params.scalebarFile,
                 keypointLimit: params.keypointLimit,
