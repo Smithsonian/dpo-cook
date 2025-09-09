@@ -238,6 +238,21 @@
                 "logToConsole": true,
                 "reportFile": "outputFileBaseName & '-webcombine-report.json'"
             },
+            "success": "'convert-mesh'",
+            "failure": "$failure"
+        },
+        "convert-mesh": {
+            "task": "ConvertMesh",
+            "description": "Convert mesh type to obj",
+            "skip": "$not($lowercase($extName($firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile))) = '.stl')",
+            "parameters": {
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
+                "outputMeshFile": "outputFileBaseName & '.obj'",
+                "tool": "'Blender'"
+            },
+            "post": {
+                "sourceMeshFile": "outputFileBaseName & '.obj'"
+            },
             "success": "'remesh'",
             "failure": "$failure"
         },
