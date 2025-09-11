@@ -154,6 +154,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "optimalPlacement": {
+                "type": "boolean",
+                "default": true
+            },
             "modelIndex": {
                 "type": "integer",
                 "minimum": 0,
@@ -210,7 +214,7 @@
         ],
         "advanced": [
             "bakeTest", "quadsOnly", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthWebMulti", "unwrapSegmentationStrengthWebThumb", "remeshFaces",
-            "modelIndex", "multiMeshFile", "cleanupMesh", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
+            "modelIndex", "multiMeshFile", "cleanupMesh", "optimalPlacement", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
             "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance", "decimationPasses"
         ],
         "additionalProperties": false
@@ -326,6 +330,7 @@
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": true
             },
             "post": {
@@ -541,6 +546,7 @@
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": true
             },
             "post": {
@@ -1000,6 +1006,7 @@
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
+                "optimalPlacement": "optimalPlacement",
                 "tool": "'RapidCompact'"
             },
             "post": {

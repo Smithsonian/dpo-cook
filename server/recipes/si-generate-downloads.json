@@ -190,6 +190,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "optimalPlacement": {
+                "type": "boolean",
+                "default": true
+            },
             "unwrapSegmentationStrengthLowAR": {
                 "type": "number",
                 "minimum": 0,
@@ -229,7 +233,7 @@
         ],
         "advanced": [
             "bakeTest", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthLowAR", "unwrapSegmentationStrengthMedium", "remeshFaces",
-            "cleanupMesh", "normalMapQualityLowAR", "normalMapQualityMedium", "occlusionMapQualityLowAR", "occlusionMapQualityMedium",
+            "cleanupMesh", "optimalPlacement", "normalMapQualityLowAR", "normalMapQualityMedium", "occlusionMapQualityLowAR", "occlusionMapQualityMedium",
             "diffuseMapQualityLowAR", "diffuseMapQualityMedium", "occlusionRays", "maxRayDistance", "scaleToMeters", "numFacesLow", "numFacesMedium",
             "numFacesAR", "mapSizeAR", "mapSizeLow", "mapSizeMedium"
         ],
@@ -372,6 +376,7 @@
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": true
             },
             "success": "'unwrap-rizom-low'",
@@ -670,6 +675,7 @@
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": true
             },
             "success": "'unwrap-rizom-ar'",
@@ -983,6 +989,7 @@
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": true
             },
             "success": "'unwrap-rizom-medium'",
