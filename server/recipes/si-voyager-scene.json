@@ -154,6 +154,10 @@
                 "type": "boolean",
                 "default": false
             },
+            "optimalPlacement": {
+                "type": "boolean",
+                "default": true
+            },
             "modelIndex": {
                 "type": "integer",
                 "minimum": 0,
@@ -197,6 +201,12 @@
             "bakeTest": {
                 "type": "boolean",
                 "default": true
+            },
+            "decimationPasses": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 4,
+                "default": 1
             }
         },
         "required": [
@@ -204,8 +214,8 @@
         ],
         "advanced": [
             "bakeTest", "quadsOnly", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthWebMulti", "unwrapSegmentationStrengthWebThumb", "remeshFaces",
-            "modelIndex", "multiMeshFile", "cleanupMesh", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
-            "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance"
+            "modelIndex", "multiMeshFile", "cleanupMesh", "optimalPlacement", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
+            "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance", "decimationPasses"
         ],
         "additionalProperties": false
     },
@@ -225,11 +235,27 @@
                 "mapSizeHigh": "mapSizeWebMulti",
                 "mapSizeMedium": "mapSizeWebMulti * 0.5",
                 "mapSizeLow": "mapSizeWebMulti * 0.25",
-                "bakeDiffuse": "$exists(sourceDiffuseMapFile)"
+                "bakeDiffuse": "$exists(sourceDiffuseMapFile)",
+                "decPassCount": "decimationPasses"
             },
             "parameters": {
                 "logToConsole": true,
                 "reportFile": "outputFileBaseName & '-webcombine-report.json'"
+            },
+            "success": "'convert-mesh'",
+            "failure": "$failure"
+        },
+        "convert-mesh": {
+            "task": "ConvertMesh",
+            "description": "Convert mesh type to obj",
+            "skip": "$not($lowercase($extName($firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile))) = '.stl')",
+            "parameters": {
+                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
+                "outputMeshFile": "outputFileBaseName & '.obj'",
+                "tool": "'Blender'"
+            },
+            "post": {
+                "sourceMeshFile": "outputFileBaseName & '.obj'"
             },
             "success": "'remesh'",
             "failure": "$failure"
@@ -252,6 +278,20 @@
             "post": {
                 "remeshedFile": "deliverables.remeshedMeshFile"
             },
+            "success": "'inspect-master'",
+            "failure": "$failure"
+        },
+        "inspect-master": {
+            "task": "InspectMesh",
+            "description": "Calculate triangle count for iterative decimation",
+            "skip": "decimationPasses < 2",
+            "parameters": {
+                "meshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
+                "tool": "'Blender'"
+            },
+            "post": {
+                "baseTriCount": "$result.inspection.scene.statistics.numTriangles"
+            },
             "success": "'decimate-rapid-webthumb'",
             "failure": "$failure"
         },
@@ -262,15 +302,18 @@
                 "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-webthumb.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
+                "inputMeshFile": "decimationPasses > 1 and decPassCount < decimationPasses ? decimatedMeshFile : $firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFacesWebThumb",
+                "numFaces": "decimationPasses = 1 ? numFacesWebThumb : baseTriCount - $floor((baseTriCount - numFacesWebThumb) * ((decimationPasses-decPassCount+1)/decimationPasses))",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "tool": "'RapidCompact'"
             },
-            "success": "'unwrap-rizom-webthumb'",
+            "post": {
+                "decPassCount": "decPassCount-1"
+            },
+            "success": "decPassCount > 0 ? 'decimate-rapid-webthumb' : 'unwrap-rizom-webthumb'",
             "failure": "'decimate-meshlab-webthumb'"
         },
         "decimate-meshlab-webthumb": {
@@ -280,16 +323,20 @@
                 "decimatedMeshFile": "outputFileBaseName & '-decimated-meshlab-webthumb.obj'"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
+                "inputMeshFile": "decimationPasses > 1 and decPassCount < decimationPasses ? decimatedMeshFile : $firstTrue(preDecimatedUnwrappedThumbTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFacesWebThumb",
+                "numFaces": "decimationPasses = 1 ? numFacesWebThumb : baseTriCount - $floor((baseTriCount - numFacesWebThumb) * ((decimationPasses-decPassCount+1)/decimationPasses))",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": true
             },
-            "success": "'unwrap-rizom-webthumb'",
+            "post": {
+                "decPassCount": "decPassCount-1"
+            },
+            "success": "decPassCount > 0 ? 'decimate-meshlab-webthumb' : 'unwrap-rizom-webthumb'",
             "failure": "$failure"
         },
         "unwrap-rizom-webthumb": {
@@ -466,37 +513,46 @@
             "task": "DecimateMesh",
             "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid.obj'"
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid.obj'",
+                "decPassCount": "decPassCount = 0 ? decimationPasses : decPassCount"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedMultiTargetFile, sourceMeshFile)",
+                "inputMeshFile": "decimationPasses > 1 and decPassCount < decimationPasses ? decimatedMeshFile : $firstTrue(preDecimatedUnwrappedMultiTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFacesWebMulti",
+                "numFaces": "decimationPasses = 1 ? numFacesWebMulti : baseTriCount - $floor((baseTriCount - numFacesWebMulti) * ((decimationPasses-decPassCount+1)/decimationPasses))",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "tool": "'RapidCompact'"
             },
-            "success": "'unwrap-rizom-webmulti'",
+            "post": {
+                "decPassCount": "decPassCount-1"
+            },
+            "success": "decPassCount > 0 ? 'decimate-rapid-webmulti' : 'unwrap-rizom-webmulti'",
             "failure": "'decimate-meshlab-webmulti'"
         },
         "decimate-meshlab-webmulti": {
             "task": "DecimateMesh",
             "description": "Decimate mesh using Meshlab",
             "pre": {
-                "decimatedMeshFile": "outputFileBaseName & '-decimated-meshlab-webmulti.obj'"
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-meshlab-webmulti.obj'",
+                "decPassCount": "decPassCount = 0 ? decimationPasses : decPassCount"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(preDecimatedUnwrappedMultiTargetFile, sourceMeshFile)",
+                "inputMeshFile": "decimationPasses > 1 and decPassCount < decimationPasses ? decimatedMeshFile : $firstTrue(preDecimatedUnwrappedMultiTargetFile, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFacesWebMulti",
+                "numFaces": "decimationPasses = 1 ? numFacesWebMulti : baseTriCount - $floor((baseTriCount - numFacesWebMulti) * ((decimationPasses-decPassCount+1)/decimationPasses))",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
+                "optimalPlacement": "optimalPlacement",
                 "computeVertexNormals": true
             },
-            "success": "'unwrap-rizom-webmulti'",
+            "post": {
+                "decPassCount": "decPassCount-1"
+            },
+            "success": "decPassCount > 0 ? 'decimate-meshlab-webmulti' : 'unwrap-rizom-webmulti'",
             "failure": "$failure"
         },
         "unwrap-rizom-webmulti": {
@@ -940,37 +996,46 @@
             "task": "DecimateMesh",
             "description": "Decimate mesh using RapidCompact",
             "pre": {
-                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-web-ar.obj'"
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-rapid-web-ar.obj'",
+                "decPassCount": "decPassCount = 0 ? decimationPasses : decPassCount"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFileWebAR, sourceMeshFile)",
+                "inputMeshFile": "decimationPasses > 1 and decPassCount < decimationPasses ? decimatedMeshFile : $firstTrue(processedMeshFileWebAR, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFacesWebAR",
+                "numFaces": "decimationPasses = 1 ? numFacesWebAR : baseTriCount - $floor((baseTriCount - numFacesWebAR) * ((decimationPasses-decPassCount+1)/decimationPasses))",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
+                "optimalPlacement": "optimalPlacement",
                 "tool": "'RapidCompact'"
             },
-            "success": "'unwrap-rizom-web-ar'",
+            "post": {
+                "decPassCount": "decPassCount-1"
+            },
+            "success": "decPassCount > 0 ? 'decimate-rapid-web-ar' : 'unwrap-rizom-web-ar'",
             "failure": "'decimate-meshlab-web-ar'"
         },
         "decimate-meshlab-web-ar": {
             "task": "DecimateMesh",
             "description": "Decimate mesh using Meshlab",
             "pre": {
-                "decimatedMeshFile": "outputFileBaseName & '-decimated-meshlab-web-ar.obj'"
+                "decimatedMeshFile": "outputFileBaseName & '-decimated-meshlab-web-ar.obj'",
+                "decPassCount": "decPassCount = 0 ? decimationPasses : decPassCount"
             },
             "parameters": {
-                "inputMeshFile": "$firstTrue(processedMeshFileWebAR, sourceMeshFile)",
+                "inputMeshFile": "decimationPasses > 1 and decPassCount < decimationPasses ? decimatedMeshFile : $firstTrue(processedMeshFileWebAR, sourceMeshFile)",
                 "outputMeshFile": "decimatedMeshFile",
-                "numFaces": "numFacesWebAR",
+                "numFaces": "decimationPasses = 1 ? numFacesWebAR : baseTriCount - $floor((baseTriCount - numFacesWebAR) * ((decimationPasses-decPassCount+1)/decimationPasses))",
                 "cleanup": "cleanupMesh",
                 "preserveTopology": true,
                 "preserveBoundaries": true,
                 "preserveTexCoords": false,
                 "computeVertexNormals": true
             },
-            "success": "'unwrap-rizom-web-ar'",
+            "post": {
+                "decPassCount": "decPassCount-1"
+            },
+            "success": "decPassCount > 0 ? 'decimate-meshlab-web-ar' : 'unwrap-rizom-web-ar'",
             "failure": "$failure"
         },
         "unwrap-rizom-web-ar": {
