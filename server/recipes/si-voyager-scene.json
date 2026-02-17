@@ -152,7 +152,7 @@
             },
             "cleanupMesh": {
                 "type": "boolean",
-                "default": false
+                "default": true
             },
             "optimalPlacement": {
                 "type": "boolean",
