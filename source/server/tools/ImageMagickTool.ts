@@ -123,9 +123,9 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
                 const channelAutoLevel = settings.channelNormalize ? "-auto-level" : "";
 
                 operation += [
-                    ` ( "${redImagePath}" ${channelAutoLevel} -gamma ${channelGamma[0]} )`,
-                    ` ( "${greenImagePath}" ${channelAutoLevel} -gamma ${channelGamma[1]} )`,
-                    ` ( "${blueImagePath}" ${channelAutoLevel} -gamma ${channelGamma[2]} )`,
+                    ` ( "${redImagePath}" ${channelAutoLevel} -channel R -separate -gamma ${channelGamma[0]} )`,
+                    ` ( "${greenImagePath}" ${channelAutoLevel} -channel G -separate -gamma ${channelGamma[1]} )`,
+                    ` ( "${blueImagePath}" ${channelAutoLevel} -channel B -separate -gamma ${channelGamma[2]} )`,
                 ].join("");
     
                 if(settings.alphaChannelInputFile) {
