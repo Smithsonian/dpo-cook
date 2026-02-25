@@ -44,6 +44,8 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     scalebarFile: string;
     /** Flag to enable discarding high-error markers */
     optimizeMarkers: boolean;
+    /** Flag to enable the reconstruction step (RealityScan)*/
+    doReconstruct: boolean;
     /** Percent success required to pass alignment stage */
     alignmentLimit?: number;
     /** Max number of tiepoints */
@@ -92,6 +94,7 @@ export default class PhotogrammetryTask extends ToolTask
             camerasFile: { type: "string", minLength: 1 },
             scalebarFile: { type: "string", minLength: 1 },
             optimizeMarkers: { type: "boolean", default: false},
+            doReconstruct: { type: "boolean", default: true },
             alignmentLimit: { type: "number", default: 50},
             tiepointLimit: { type: "integer", default: 25000},
             keypointLimit: { type: "integer", default: 75000},
@@ -155,6 +158,8 @@ export default class PhotogrammetryTask extends ToolTask
                 meshQuality: params.meshQuality,
                 customFaceCount: params.customFaceCount,
                 optimizeMarkers: params.optimizeMarkers,
+                camerasFile: params.camerasFile,
+                doReconstruct: params.doReconstruct,
                 timeout: params.timeout
             };
 

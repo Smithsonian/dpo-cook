@@ -43,7 +43,7 @@ export interface IPhotogrammetryTexTaskParameters extends ITaskParameters
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for photogrammetry ("Metashape" or "RealityCapture" or "Meshroom", default: "Metashape"). */
-    tool?: "Metashape" | "RealityCapture" | "Meshroom";
+    tool?: "Metashape" | "RealityCapture" | "RealityScan" | "Meshroom";
 }
 
 /**
@@ -67,7 +67,7 @@ export default class PhotogrammetryTexTask extends ToolTask
             camerasFile: { type: "string", minLength: 1 },
             scalebarFile: { type: "string", minLength: 1 },
             timeout: { type: "integer", default: 0 },
-            tool: { type: "string", enum: [ "Metashape", "RealityCapture", "Meshroom" ], default: "Metashape" }
+            tool: { type: "string", enum: [ "Metashape", "RealityCapture", "RealityScan", "Meshroom" ], default: "Metashape" }
         },
         required: [
             "inputImageFolder",

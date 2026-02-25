@@ -31,6 +31,8 @@ export interface IRealityCaptureToolSettings extends IToolSettings
     keypointLimit?: number;
     customFaceCount?: number;
     optimizeMarkers?: boolean;
+    camerasFile?: string;
+    doReconstruct?: boolean;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,10 +107,21 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
             });
         }
 
-        operations += ` -silent "${outputDirectory}" -set sfmMaxFeaturesPerImage=${settings.keypointLimit} -align ${settings.optimizeMarkers ? "-align" : ""} -save "${outputDirectory}\\${name}-align.rcproj" -selectMaximalComponent`
-        operations += ` -setReconstructionRegionAuto ${quality == "High" ? "-calculateHighModel" : quality == "Normal" ? "-calculateNormalModel" : "-calculatePreviewModel"} ${faceCount} -save "${outputDirectory}\\${name}-mesh.rcproj"`;
-        operations += ` -selectMarginalTriangles -removeSelectedTriangles -selectLargestModelComponent -invertTrianglesSelection -removeSelectedTriangles -cleanModel`;
-        operations += ` -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}-raw_clean.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}.obj" "${outputDirectory}\\_rc_params.xml" -quit`;
+        operations += ` -silent "${outputDirectory}" -set sfmMaxFeaturesPerImage=${settings.keypointLimit} -align ${settings.optimizeMarkers ? "-align" : ""}`
+        
+        if(settings.camerasFile) {
+            operations += ` -exportRegistration "${outputDirectory}\\${settings.camerasFile}.csv" -exportSparsePointCloud "${outputDirectory}\\${settings.camerasFile}-points.ply"`;
+        }
+
+        operations += ` -save "${outputDirectory}\\${name}-align.rcproj"`;
+
+        if(settings.doReconstruct) {
+            operations += ` -selectMaximalComponent -setReconstructionRegionAuto ${quality == "High" ? "-calculateHighModel" : quality == "Normal" ? "-calculateNormalModel" : "-calculatePreviewModel"} ${faceCount} -save "${outputDirectory}\\${name}-mesh.rcproj"`;
+            operations += ` -selectMarginalTriangles -removeSelectedTriangles -selectLargestModelComponent -invertTrianglesSelection -removeSelectedTriangles -cleanModel`;
+            operations += ` -renameSelectedModel "${name}_model" -calculateTexture -save "${outputDirectory}\\${name}-raw_clean.rcproj" -exportModel "${name}_model" "${outputDirectory}\\${name}.obj" "${outputDirectory}\\_rc_params.xml"`;
+        }
+
+        operations += ` -quit`;
 
         const command = `"${this.configuration.executable}" ${operations}`;
 
