@@ -374,7 +374,7 @@
             "pre": {
                 "camerasFile": "baseMeshName",
                 "deliverables": {
-                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.obj'"
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
                 }
             },
             "parameters": {
@@ -399,18 +399,22 @@
                 "tool": "'RealityScan'",
                 "timeout": 86400
             },
-            "success": "'delivery'",
+            "success": "'generate-splat'",
             "failure": "$failure"
         },
         "generate-splat": {
             "task": "RadianceField",
             "description": "Create radiance field using pre-aligned cameras",
             "pre": {
-                "alignFolderConverted": "alignFolderBaseName & '_converted'"
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
+                }
             },
             "parameters": {
-                "operation": "'CreateFolder'",
-                "name": "alignFolderConverted"
+                "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
+                "camerasFile": "baseMeshName & '.csv'",
+                "pointsFile": "baseMeshName & '-points.ply'",
+                "outputFile": "deliverables.meshFile"
             },
             "success": "'delivery'",
             "failure": "$failure"

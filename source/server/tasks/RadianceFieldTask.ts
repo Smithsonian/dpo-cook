@@ -34,6 +34,8 @@ export interface IRadianceFieldTaskParameters extends ITaskParameters
     outputFile: string;
     /** Name used for saved camera position file */
     camerasFile: string;
+    /** Name used for saved points position file */
+    pointsFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for radiance field generation ("PostShot", default: "PostShot"). */
@@ -58,6 +60,7 @@ export default class RadianceFieldTask extends ToolTask
             inputImageFolder: { type: "string", minLength: 1 },
             outputFile: { type: "string", minLength: 1 },
             camerasFile: { type: "string", minLength: 1 },
+            pointsFile: { type: "string", minLength: 1 },
             timeout: { type: "integer", default: 0 },
             tool: { type: "string", enum: [ "PostShot" ], default: "PostShot" }
         },
@@ -80,6 +83,7 @@ export default class RadianceFieldTask extends ToolTask
                 imageInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
                 camerasFile: params.camerasFile,
+                pointsFile: params.pointsFile,
                 timeout: params.timeout
             };
 

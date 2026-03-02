@@ -23,6 +23,7 @@ export interface IPostShotToolSettings extends IToolSettings
     imageInputFolder: string;
     outputFile?: string;
     camerasFile?: string;
+    pointsFile?: string;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,16 @@ export default class PostShotTool extends Tool<PostShotTool, IPostShotToolSettin
             }
             else {
                 operations += ` "${camerasPath}"`;
+            }
+        }
+
+        if(settings.pointsFile) {
+            const pointsPath = instance.getFilePath(settings.pointsFile);
+            if (!pointsPath) {
+                throw new Error("PostShotTool: bad points file path");
+            }
+            else {
+                operations += ` "${pointsPath}"`;
             }
         }
 
