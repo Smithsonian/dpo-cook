@@ -110,7 +110,7 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         operations += ` -silent "${outputDirectory}" -set sfmMaxFeaturesPerImage=${settings.keypointLimit} -align ${settings.optimizeMarkers ? "-align" : ""}`
         
         if(settings.camerasFile) {
-            operations += ` -exportRegistration "${outputDirectory}\\${settings.camerasFile}.csv" -exportSparsePointCloud "${outputDirectory}\\${settings.camerasFile}-points.ply"`;
+            operations += ` -exportRegistration "${outputDirectory}\\${settings.camerasFile}.csv" "${outputDirectory}\\_reg_params.xml" -exportSparsePointCloud "${outputDirectory}\\${settings.camerasFile}-points.ply" "${outputDirectory}\\_points_params.xml"`;
         }
 
         operations += ` -save "${outputDirectory}\\${name}-align.rcproj"`;
@@ -123,27 +123,106 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
 
         operations += ` -quit`;
 
+        const configFiles = [];
+
         const command = `"${this.configuration.executable}" ${operations}`;
 
-        // set export parameters via params.xml file
-        const content = [`<ModelExport exportBinary="1" exportInfoFile="1" exportVertices="1" exportVertexColors="2"`,
-        `exportVertexNormals="0" exportTriangles="1" exportTriangleStrips="0"`,
-        `meshColor="4294967295" tileType="0" exportTextureAlpha="0" exportToOneTexture="0"`,
-        `embedTextures="0" shrinkTextures="0" oneTextureMaxSide="8192" oneTextureUsePow2TexSide="1"`,
-        `exportCoordinateSystemType="0" settingsAnchor="0 0 0" settingsRotation="0 0 0"`,
-        `settingsScalex="1" settingsScaley="1" settingsScalez="1" normalSpace="2"`,
-        `normalRange="0" normalFlip="0 0 0" formatAndVersionUID="obj 000 "`,
-        `exportModelByParts="0" exportRandomPartColor="0" exportCameras="0"`,
-        `exportCamerasAsModelPart="0" exportMaterials="1" numberAsciiFormatting="5"`,
-        `authorComment="" exportedLayerCount="1">`,
-        `<Header magic="5786949" version="5"/>`,
-        `<Layer0 type="1" textureLayerIndex="0" textureWicContainerFormat="{1B7CFAF4-713F-473C-BBCD-6137425FAEAF}"`,
-        `  textureWicPixelFormat="{6FDDC324-4E03-4BFE-B185-3D77768DC90F}" textureExtension="png"/>`,
-        `</ModelExport>`].join("\n");
+        if(settings.doReconstruct) {
+            // set export parameters via params.xml file
+            const content = [`<ModelExport exportBinary="1" exportInfoFile="1" exportVertices="1" exportVertexColors="2"`,
+            `exportVertexNormals="0" exportTriangles="1" exportTriangleStrips="0"`,
+            `meshColor="4294967295" tileType="0" exportTextureAlpha="0" exportToOneTexture="0"`,
+            `embedTextures="0" shrinkTextures="0" oneTextureMaxSide="8192" oneTextureUsePow2TexSide="1"`,
+            `exportCoordinateSystemType="0" settingsAnchor="0 0 0" settingsRotation="0 0 0"`,
+            `settingsScalex="1" settingsScaley="1" settingsScalez="1" normalSpace="2"`,
+            `normalRange="0" normalFlip="0 0 0" formatAndVersionUID="obj 000 "`,
+            `exportModelByParts="0" exportRandomPartColor="0" exportCameras="0"`,
+            `exportCamerasAsModelPart="0" exportMaterials="1" numberAsciiFormatting="5"`,
+            `authorComment="" exportedLayerCount="1">`,
+            `<Header magic="5786949" version="5"/>`,
+            `<Layer0 type="1" textureLayerIndex="0" textureWicContainerFormat="{1B7CFAF4-713F-473C-BBCD-6137425FAEAF}"`,
+            `  textureWicPixelFormat="{6FDDC324-4E03-4BFE-B185-3D77768DC90F}" textureExtension="png"/>`,
+            `</ModelExport>`].join("\n");
 
-        const paramFileName = "_rc_params.xml";
+            const paramFileName = "_rc_params.xml";
 
-        return instance.writeFile(paramFileName, content).then(() => ({
+            configFiles.push(instance.writeFile(paramFileName, content));
+        }
+
+        if(settings.camerasFile) {
+            // set export parameters via params.xml file
+            const regContent = [`<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
+            <entry key="calexTrans" value="1"/>
+            <entry key="calexHasDisabled" value="0x0"/>
+            <entry key="MvsExportScaleZ" value="1.0"/>
+            <entry key="MvsExportIsGeoreferenced" value="0x0"/>
+            <entry key="MvsExportIsModelCoordinates" value="0"/>
+            <entry key="MvsExportScaleY" value="1.0"/>
+            <entry key="MvsExportScaleX" value="1.0"/>
+            <entry key="MvsExportRotationY" value="0.0"/>
+            <entry key="MvsExportcoordinatesystemtype" value="0"/>
+            <entry key="MvsExportNormalFlipZ" value="false"/>
+            <entry key="MvsExportRotationX" value="0.0"/>
+            <entry key="hasCalexFilePath" value="1"/>
+            <entry key="MvsExportNormalFlipY" value="false"/>
+            <entry key="MvsExportNormalSpace" value="Mikktspace"/>
+            <entry key="calexHasUndistort" value="-1"/>
+            <entry key="MvsExportNormalFlipX" value="false"/>
+            <entry key="MvsExportRotationZ" value="0.0"/>
+            <entry key="calexFileFormat" value="Internal/External camera parameters"/>
+            <entry key="MvsExportMoveZ" value="0.0"/>
+            <entry key="calexFileFormatId" value="{0CA18733-1EBC-4254-9974-17197EB409BD}"/>
+            <entry key="hasRadianceFieldsTransAABB" value="0"/>
+            <entry key="hasCalexFileName" value="1"/>
+            <entry key="calexHasImageExport" value="-1"/>
+            <entry key="MvsExportMoveX" value="0.0"/>
+            <entry key="MvsExportNormalRange" value="ZeroToOne"/>
+            <entry key="MvsExportMoveY" value="0.0"/>
+            </Configuration>`].join("\n");
+
+            const regFileName = "_reg_params.xml";
+
+            configFiles.push(instance.writeFile(regFileName, regContent));
+
+            // set export parameters via params.xml file
+            const pointsContent = [`<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
+            <entry key="calexTrans" value="1"/>
+            <entry key="bAscii" value="false"/>
+            <entry key="calexHasDisabled" value="0x0"/>
+            <entry key="bVertexColor" value="true"/>
+            <entry key="MvsExportScaleZ" value="1.0"/>
+            <entry key="MvsExportIsGeoreferenced" value="0x0"/>
+            <entry key="MvsExportIsModelCoordinates" value="0"/>
+            <entry key="MvsExportScaleY" value="1.0"/>
+            <entry key="MvsExportScaleX" value="1.0"/>
+            <entry key="MvsExportRotationY" value="0.0"/>
+            <entry key="MvsExportcoordinatesystemtype" value="0"/>
+            <entry key="MvsExportNormalFlipZ" value="false"/>
+            <entry key="MvsExportRotationX" value="0.0"/>
+            <entry key="hasCalexFilePath" value="1"/>
+            <entry key="MvsExportNormalFlipY" value="false"/>
+            <entry key="MvsExportNormalSpace" value="Mikktspace"/>
+            <entry key="calexHasUndistort" value="-1"/>
+            <entry key="MvsExportNormalFlipX" value="false"/>
+            <entry key="MvsExportRotationZ" value="0.0"/>
+            <entry key="calexFileFormat" value="Sparse point cloud as Polygon File Format (*.ply)"/>
+            <entry key="MvsExportMoveZ" value="0.0"/>
+            <entry key="calexFileFormatId" value="{B63136B7-2E64-4D08-B5B1-A945F1AED679}"/>
+            <entry key="hasRadianceFieldsTransAABB" value="0"/>
+            <entry key="hasCalexFileName" value="1"/>
+            <entry key="calexHasImageExport" value="-1"/>
+            <entry key="MvsExportMoveX" value="0.0"/>
+            <entry key="MvsExportNormalRange" value="ZeroToOne"/>
+            <entry key="MvsExportMoveY" value="0.0"/>
+          </Configuration>`].join("\n");
+
+            const pointsFileName = "_points_params.xml";
+
+            configFiles.push(instance.writeFile(pointsFileName, pointsContent));
+        }
+
+
+        return Promise.all(configFiles).then(() => ({
             command
         }));
     }
