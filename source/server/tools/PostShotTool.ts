@@ -36,6 +36,18 @@ export default class PostShotTool extends Tool<PostShotTool, IPostShotToolSettin
 
     protected static readonly defaultOptions: Partial<IPostShotToolSettings> = {};
 
+    onInstanceMessage(event: IToolMessageEvent): boolean
+    {
+        const { instance, message } = event;
+
+        // keep errors
+        if (message.startsWith("Training Radiance Field")) {
+            return true;
+        }
+
+        return false;
+    }
+
     async setupInstance(instance: PostShotInstance): Promise<IToolSetup>
     {
         const settings = instance.settings;
