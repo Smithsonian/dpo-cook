@@ -40,7 +40,6 @@ export default class PostShotTool extends Tool<PostShotTool, IPostShotToolSettin
     {
         const { instance, message } = event;
 
-        // keep errors
         if (message.startsWith("Training Radiance Field")) {
             return true;
         }
