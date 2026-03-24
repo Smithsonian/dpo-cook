@@ -1262,12 +1262,12 @@
             "description": "Sync mtl references for master asset",
             "skip": "$not(bakeDiffuse) or $not($contains(sourceMeshFile, /obj$/))",
             "pre": {
-                "mtlFile_master": "outputFileBaseName & '-master.mtl'"
+                "mtlFile_master": "outputFileBaseName & '.mtl'"
             },
             "parameters": {
                 "objFile": "sourceMeshFile",
                 "mtlFile": "mtlFile_master",
-                "textureFile": "sourceDiffuseMapFile",
+                "diffuseMapFile": "sourceDiffuseMapFile",
                 "doForce": true
             },
             "success": "'combine-meshes'",
