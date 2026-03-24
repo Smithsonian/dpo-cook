@@ -332,12 +332,13 @@
             "description": "Sync mtl references for master asset",
             "skip": "$not(bakeDiffuse)",
             "pre": {
-                "mtlFile_master": "$exists(sourceMTLFile) ? $baseName(reorientedMeshFileMaster) & '.mtl' : outputFileBaseName & '-master.mtl'"
+                "mtlFile_master": "$baseName(reorientedMeshFileMaster) & '.mtl'"
             },
             "parameters": {
                 "objFile": "reorientedMeshFileMaster",
                 "mtlFile": "mtlFile_master",
-                "textureFile": "sourceDiffuseMapFile"
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? sourceDiffuseMapFile : ''",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? sourceRoughMetalMapFile : ''"
             },
             "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-low' : 'decimate-meshlab-low'",
             "failure": "$failure"
@@ -617,12 +618,13 @@
             "description": "Sync mtl references for Low asset",
             "skip": "$not(generateLowAssets) or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
             "pre": {
-                "mtlFile_low": "baseMeshMapNameLow & '.mtl'"
+                "mtlFile_low": "outputFileBaseName & '-' & $k(numFacesLow) & '.mtl'"
             },
             "parameters": {
                 "objFile": "scene_unwrappedMeshLow",
                 "mtlFile": "mtlFile_low",
-                "textureFile": "scene_diffuseMapHigh"
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapHigh : ''",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapLow : ''"
             },
             "success": "'inspect-mesh'",
             "failure": "$failure"
@@ -833,21 +835,6 @@
                 "inputImageFile": "roughMetalMapUncompressedAR",
                 "outputImageFile": "scene_roughMetalMapAR",
                 "quality": "diffuseMapQualityLowAR"
-            },
-            "success": "'sync-mtl-ar'",
-            "failure": "$failure"
-        },
-        "sync-mtl-ar": {
-            "task": "SyncObjMtl",
-            "description": "Sync mtl references for AR asset",
-            "skip": "$not(generateARAssets) or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
-            "pre": {
-                "mtlFile_ar": "baseMeshMapNameAR & '.mtl'"
-            },
-            "parameters": {
-                "objFile": "scene_unwrappedMesh",
-                "mtlFile": "mtlFile_ar",
-                "textureFile": "scene_diffuseMapAR"
             },
             "success": "'web-asset-glb-draco-ar'",
             "failure": "$failure"
@@ -1238,12 +1225,13 @@
             "description": "Sync mtl references for Medium asset",
             "skip": "$not(generateMediumAssets)  or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
             "pre": {
-                "mtlFile_medium": "baseMeshMapNameMedium & '.mtl'"
+                "mtlFile_medium": "outputFileBaseName & '-1000k' & '.mtl'"
             },
             "parameters": {
                 "objFile": "unwrappedMesh",
                 "mtlFile": "mtlFile_medium",
-                "textureFile": "diffuseMap"
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? diffuseMap : ''",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? roughMetalMap : ''"
             },
             "success": "'zip-master'",
             "failure": "$failure"
