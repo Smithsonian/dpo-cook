@@ -37,8 +37,10 @@ export interface ISyncObjMtlTaskParameters extends ITaskParameters
     mtlFile: string;
     /** Name of the diffuse texture file to be referenced in the mtl. */
     diffuseMapFile: string;
-    /** Name of the metalness/roughness texture file to be referenced in the mtl. */
-    metallicRoughnessMapFile: string;
+    /** Name of the metalness texture file to be referenced in the mtl. */
+    metalnessMapFile: string;
+    /** Name of the roughness texture file to be referenced in the mtl. */
+    roughnessMapFile: string;
     /** Force a mtl file reference in the obj even if none exists. */
     doForce?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
@@ -65,7 +67,8 @@ export default class SyncObjMtlTask extends ToolTask
             objFile: { type: "string", minLength: 1 },
             mtlFile: { type: "string", minLength: 1 },
             diffuseMapFile: { type: "string", minLength: 0, default: "" },
-            metallicRoughnessMapFile: { type: "string", minLength: 0, default: "" },
+            metalnessMapFile: { type: "string", minLength: 0, default: "" },
+            roughnessMapFile: { type: "string", minLength: 0, default: "" },
             doForce: { type: "boolean", default: false} ,
             timeout: { type: "integer", minimum: 0, default: 0 },
             tool: { type: "string", enum: [ "Cscript", "Blender" ], default: "Blender" }
@@ -129,7 +132,8 @@ export default class SyncObjMtlTask extends ToolTask
             const settings: IBlenderToolSettings = {
                 inputMeshFile: objFilePath,
                 diffuseMapFile: params.diffuseMapFile,
-                metallicRoughnessMapFile: params.metallicRoughnessMapFile,
+                metalnessMapFile: params.metalnessMapFile,
+                roughnessMapFile: params.roughnessMapFile,
                 mode: "mtlsync",
                 timeout: params.timeout
             };

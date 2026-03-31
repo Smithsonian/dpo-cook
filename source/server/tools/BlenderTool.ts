@@ -38,6 +38,8 @@ export interface IBlenderToolSettings extends IToolSettings
     occlusionMapFile?: string;
     emissiveMapFile?: string;
     metallicRoughnessMapFile?: string;
+    metalnessMapFile?: string;
+    roughnessMapFile?: string;
     normalMapFile?: string;
     objectSpaceNormals?: boolean;
     useCompression?: boolean;
@@ -160,8 +162,11 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             if(settings.diffuseMapFile) {
                 operation += ` -dm "${instance.getFilePath(settings.diffuseMapFile)}"`;
             }
-            if(settings.metallicRoughnessMapFile) {
-                operation += ` -mrm "${instance.getFilePath(settings.metallicRoughnessMapFile)}"`;
+            if(settings.metalnessMapFile) {
+                operation += ` -mm "${instance.getFilePath(settings.metalnessMapFile)}"`;
+            }
+            if(settings.roughnessMapFile) {
+                operation += ` -rm "${instance.getFilePath(settings.roughnessMapFile)}"`;
             }
         }
 

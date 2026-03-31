@@ -28,7 +28,8 @@ def run():
     parser.add_argument("-i", "--input", required=True, help="Input filepath")
     parser.add_argument("-o", "--output", required=False, help="Output filepath")
     parser.add_argument("-dm", "--diffuse", required=False, help="Diffuse filepath")
-    parser.add_argument("-mrm", "--metalrough", required=False, help="MetalRough filepath")
+    parser.add_argument("-mm", "--metalness", required=False, help="Metalness filepath")
+    parser.add_argument("-rm", "--roughness", required=False, help="Roughness filepath")
     args = parser.parse_known_args(argv)[0]
 
     textures = []
@@ -69,18 +70,20 @@ def run():
             mat.node_tree.links.new(bsdf.inputs[tex_type], tex_image.outputs['Color'])
 
     #handle metal/roughness map
-    if args.metalrough is not None:
+    if args.metalness is not None:
         exportPBR = True
         mr_tex_image = mat.node_tree.nodes.new('ShaderNodeTexImage')
-        mr_tex_image.image = bpy.data.images.load(args.metalrough)
+        mr_tex_image.image = bpy.data.images.load(args.metalness)
         mr_tex_image.image.colorspace_settings.name = "Non-Color"
 
-        #separate_node_bg = mat.node_tree.nodes.new('ShaderNodeSeparateColor')
-        #mat.node_tree.links.new(separate_node_bg.inputs[0], mr_tex_image.outputs['Color'])
-        #mat.node_tree.links.new(bsdf.inputs['Metallic'], separate_node_bg.outputs['Blue'])
-        #mat.node_tree.links.new(bsdf.inputs['Roughness'], separate_node_bg.outputs['Green'])
         mat.node_tree.links.new(bsdf.inputs['Metallic'], mr_tex_image.outputs['Color'])
-        mat.node_tree.links.new(bsdf.inputs['Roughness'], mr_tex_image.outputs['Color'])
+    if args.roughness is not None:
+        exportPBR = True
+        rm_tex_image = mat.node_tree.nodes.new('ShaderNodeTexImage')
+        rm_tex_image.image = bpy.data.images.load(args.roughness)
+        rm_tex_image.image.colorspace_settings.name = "Non-Color"
+
+        mat.node_tree.links.new(bsdf.inputs['Roughness'], rm_tex_image.outputs['Color'])
 
     # Get the active object and assign material
     obj = bpy.context.active_object
