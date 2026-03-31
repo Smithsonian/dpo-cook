@@ -1,6 +1,6 @@
 {
     "id": "25cd358b-360c-43f5-86e1-3d0b92e4a673",
-    "name": "gaussian-splat",
+    "name": "gaussian-splat-align",
     "description": "Create gaussian splat from image set",
     "version": "1",
     "start": "log",
@@ -147,6 +147,13 @@
                     "Background"
                 ],
                 "default": "File"
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "PostShot"
+                ],
+                "default": "PostShot"
             }
         },
         "required": [

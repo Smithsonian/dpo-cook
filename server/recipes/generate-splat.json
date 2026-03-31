@@ -1,0 +1,126 @@
+{
+    "id": "0e8aa2c6-b53e-462b-8237-0c5b6f5442c8",
+    "name": "generate-splat",
+    "description": "Create gaussian splat from point cloud and camera alignment",
+    "version": "1",
+    "start": "log",
+
+    "parameterSchema": {
+        "type": "object",
+        "properties": {
+            "sourceImageFolder": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "camerasFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "pointsFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
+            "outputFileBaseName": {
+                "type": "string",
+                "minLength": 1
+            },
+            "tool": {
+                "type": "string",
+                "enum": [
+                    "PostShot"
+                ],
+                "default": "PostShot"
+            }
+        },
+        "required": [
+            "sourceImageFolder", "camerasFile", "pointsFile"
+        ],
+        "advanced": [
+        ],
+        "additionalProperties": false
+    },
+
+    "steps": {
+        "log": {
+            "task": "Log",
+            "description": "Enable logging services",
+            "pre": {
+                "outputFileBaseName": "$baseName($firstTrue(outputFileBaseName, sourceImageFolder))",
+                "baseMeshName": "$firstTrue(outputFileBaseName, sourceImageFolder)",
+                "sourceFolderBaseName": "$baseName(sourceImageFolder)"
+            },
+            "parameters": {
+                "logToConsole": true,
+                "reportFile": "outputFileBaseName & '-report.json'"
+            },
+            "success": "'pickup'",
+            "failure": "$failure"
+        },
+        "pickup": {
+            "task": "Pickup",
+            "description": "Fetch input files from client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(pickupPath, $currentDir)",
+                "files": {
+                    "sourceImageFolder": "sourceImageFolder",
+                    "camerasFile": "camerasFile",
+					"pointsFile": "pointsFile"
+                }
+            },
+            "success": "'unzip'",
+            "failure": "$failure"
+        },
+        "unzip": {
+            "task": "Zip",
+            "description": "Unzip image folder",
+            "parameters": {
+                "inputFile1": "sourceImageFolder",
+                "operation": "'unzip'"
+            },
+            "success": "'delete-standard'",
+            "failure": "$failure"
+        },
+        "delete-standard": {
+            "task": "FileOperation",
+            "description": "Delete zipped images",
+            "parameters": {
+                "operation": "'DeleteFile'",
+                "name": "sourceImageFolder"
+            },
+            "success": "'generate-splat'",
+            "failure": "$failure"
+        },
+        "generate-splat": {
+            "task": "RadianceField",
+            "description": "Create radiance field using pre-aligned cameras",
+            "pre": {
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
+                "camerasFile": "camerasFile",
+                "pointsFile": "pointsFile",
+                "outputFile": "deliverables.meshFile"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },      
+        "delivery": {
+            "task": "Delivery",
+            "description": "Send result files back to client",
+            "parameters": {
+                "method": "transportMethod",
+                "path": "$firstTrue(deliveryPath, pickupPath, $currentDir)",
+                "files": "deliverables"
+            },
+            "success": "$success",
+            "failure": "$failure"
+        }
+    }
+}
