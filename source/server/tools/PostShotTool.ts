@@ -24,6 +24,10 @@ export interface IPostShotToolSettings extends IToolSettings
     outputFile?: string;
     camerasFile?: string;
     pointsFile?: string;
+    profile?: string;
+    antiAliasing?: boolean;
+    maxSHDegree?: number;
+    downscale?: boolean;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,6 +85,22 @@ export default class PostShotTool extends Tool<PostShotTool, IPostShotToolSettin
             else {
                 operations += ` "${pointsPath}"`;
             }
+        }
+
+        if(settings.profile) {
+            operations += ` --profile "${settings.profile}"`;
+        }
+
+        if(settings.antiAliasing) {
+            operations += ` --anti-aliasing ${settings.antiAliasing}`;
+        }
+
+        if(settings.maxSHDegree) {
+            operations += ` --max-sh-degree ${settings.maxSHDegree}`;
+        }
+
+        if(settings.downscale === false) {
+            operations += ` --max-image-size 0`;
         }
 
         operations += ` --show-train-error -o "${outputDirectory}\\${name}.psht" --export-splat-ply "${outputDirectory}\\${name}.ply"`;

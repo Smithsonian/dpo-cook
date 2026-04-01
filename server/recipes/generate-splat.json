@@ -27,6 +27,29 @@
                 "type": "string",
                 "minLength": 1
             },
+            "profile": {
+                "type": "string",
+                "enum": [
+                    "Splat ADC",
+                    "Splat MCMC",
+                    "Splat3"
+                ],
+                "default": "Splat3"
+            },
+            "antiAliasing": {
+                "type": "boolean",
+                "default": false
+            },
+            "downscale": {
+                "type": "boolean",
+                "default": true
+            },
+            "maxSHDegree": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3,
+                "default": 3
+            },
             "tool": {
                 "type": "string",
                 "enum": [
@@ -106,7 +129,11 @@
                 "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
                 "camerasFile": "camerasFile",
                 "pointsFile": "pointsFile",
-                "outputFile": "deliverables.meshFile"
+                "outputFile": "deliverables.meshFile",
+                "profile": "profile",
+                "antiAliasing": "antiAliasing",
+                "downscale": "downscale",
+                "maxSHDegree": "maxSHDegree"
             },
             "success": "'delivery'",
             "failure": "$failure"
