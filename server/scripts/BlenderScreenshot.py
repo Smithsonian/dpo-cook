@@ -22,6 +22,8 @@ argv = argv[argv.index("--") + 1:]
 filename, file_extension = os.path.splitext(argv[0])
 file_extension = file_extension.lower()
 
+output_filename = argv[1]
+
 #import scene
 if file_extension == '.obj':
     bpy.ops.wm.obj_import(filepath=argv[0])
@@ -44,9 +46,14 @@ else:
 if len(bpy.data.objects) > 0:
     bpy.context.scene.camera = bpy.context.scene.objects.get('Camera')
     dir = os.path.dirname(filename)
-    save_file = os.path.join(dir, "preview.png")
+    save_file = os.path.join(dir, output_filename)
     print("Writing preview image: " + save_file)
     bpy.ops.view3d.camera_to_view_selected()
+
+# Set render engine to Cycles
+bpy.context.scene.render.engine = 'CYCLES'
+bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'
+bpy.context.scene.cycles.device = 'GPU'
 
 bpy.context.scene.render.filepath = save_file
 bpy.ops.render.render(write_still = True)
