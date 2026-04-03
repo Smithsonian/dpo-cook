@@ -207,6 +207,10 @@
                 "minimum": 1,
                 "maximum": 4,
                 "default": 1
+            },
+            "saveScreenshot": {
+                "type": "boolean",
+                "default": false
             }
         },
         "required": [
@@ -215,7 +219,7 @@
         "advanced": [
             "bakeTest", "quadsOnly", "inspectMesh", "unwrapPackEffort", "unwrapSegmentationStrengthWebMulti", "unwrapSegmentationStrengthWebThumb", "remeshFaces",
             "modelIndex", "multiMeshFile", "cleanupMesh", "optimalPlacement", "normalMapQualityWebMulti", "normalMapQualityWebThumb", "occlusionMapQuality", "diffuseMapQualityWebMulti", 
-            "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance", "decimationPasses"
+            "diffuseMapQualityWebThumb", "occlusionRays", "maxRayDistance", "decimationPasses", "saveScreenshot"
         ],
         "additionalProperties": false
     },
@@ -482,9 +486,21 @@
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
             },
-            "success": "'update-document'",
+            "success": "'screenshot-thumb'",
             "failure": "$failure"
 
+        },
+        "screenshot-thumb": {
+            "task": "Screenshot",
+            "skip": "$not(saveScreenshot)",
+            "description": "Generate screenshot of result geometry.",
+            "parameters": {
+                "inputMeshFile": "deliverables.webAssetGlb",
+                "outputFile": "baseMeshNameWebThumb & '-thumb-preview'",
+                "timeout": 1200
+            },
+            "success": "'update-document'",
+            "failure": "$failure"
         },
         "update-document": {
             "task": "Document",
@@ -745,6 +761,18 @@
                 "writeBinary": true,
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
+            },
+            "success": "'screenshot-high'",
+            "failure": "$failure"
+        },
+        "screenshot-high": {
+            "task": "Screenshot",
+            "skip": "$not(saveScreenshot)",
+            "description": "Generate screenshot of result geometry.",
+            "parameters": {
+                "inputMeshFile": "deliverables.scene_webAssetHighGlb",
+                "outputFile": "baseMeshMapNameHigh & '-high-preview'",
+                "timeout": 1200
             },
             "success": "'update-document-high'",
             "failure": "$failure"
