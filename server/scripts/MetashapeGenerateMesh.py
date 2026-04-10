@@ -157,6 +157,8 @@ parser.add_argument("-ttg", required=False, default="False", help="Process turnt
 parser.add_argument("-mq", required=False, default=2, help="Model resolution quality")
 parser.add_argument("-cfc", required=False, default=3000000, help="Custom model face count")
 parser.add_argument("-dmq", required=False, default=0, help="Depth map quality")
+parser.add_argument("-cmp", required=False, default="False", help="Export COLMAP")
+parser.add_argument("-geo", required=False, default="True", help="Do geometry reconstruction")
 args = parser.parse_args()
 
 doc = Metashape.app.document
@@ -518,90 +520,96 @@ if args.sb != None:
                 print("Adding Scalebar " + row['marker1'] + " " + row['marker2'])
 
 """ Build Dense Cloud Process"""
-# build depth maps
-# downscale = # 1=UltraHigh, 2=High, 4=Medium, 8=low
-# Ultrahigh setting loads the image data at full resolution, High downsamples x2, medium downsamples x4, low x8
-chunk.buildDepthMaps\
-(
-    downscale=pow(2,int(args.dmq)),
-    filter_mode=Metashape.MildFiltering,
-    reuse_depth=False,
-    max_neighbors=args.dmn,
-    subdivide_task=True,
-    workitem_size_cameras=20,
-    max_workgroup_size=100
-)
+exportGeometry = convert(args.geo);
+if exportGeometry == True:
+    # build depth maps
+    # downscale = # 1=UltraHigh, 2=High, 4=Medium, 8=low
+    # Ultrahigh setting loads the image data at full resolution, High downsamples x2, medium downsamples x4, low x8
+    chunk.buildDepthMaps\
+    (
+        downscale=pow(2,int(args.dmq)),
+        filter_mode=Metashape.MildFiltering,
+        reuse_depth=False,
+        max_neighbors=args.dmn,
+        subdivide_task=True,
+        workitem_size_cameras=20,
+        max_workgroup_size=100
+    )
 
-modelQuality = [Metashape.FaceCount.LowFaceCount, Metashape.FaceCount.MediumFaceCount, Metashape.FaceCount.HighFaceCount, Metashape.FaceCount.CustomFaceCount]
+    modelQuality = [Metashape.FaceCount.LowFaceCount, Metashape.FaceCount.MediumFaceCount, Metashape.FaceCount.HighFaceCount, Metashape.FaceCount.CustomFaceCount]
 
-chunk.buildModel\
-(
-    surface_type=Metashape.Arbitrary,
-    interpolation=Metashape.DisabledInterpolation,
-    face_count = modelQuality[3] if int(args.mq) < 0 else modelQuality[int(args.mq)],
-    face_count_custom = 0 if int(args.mq) < 0 else args.cfc,
-    source_data = Metashape.DepthMapsData,
-    vertex_colors=False,
-    vertex_confidence=True,
-    volumetric_masks=False,
-    keep_depth=True,
-    trimming_radius=10,
-    subdivide_task=True,
-    workitem_size_cameras=20,
-    max_workgroup_size=100
-)
+    chunk.buildModel\
+    (
+        surface_type=Metashape.Arbitrary,
+        interpolation=Metashape.DisabledInterpolation,
+        face_count = modelQuality[3] if int(args.mq) < 0 else modelQuality[int(args.mq)],
+        face_count_custom = 0 if int(args.mq) < 0 else args.cfc,
+        source_data = Metashape.DepthMapsData,
+        vertex_colors=False,
+        vertex_confidence=True,
+        volumetric_masks=False,
+        keep_depth=True,
+        trimming_radius=10,
+        subdivide_task=True,
+        workitem_size_cameras=20,
+        max_workgroup_size=100
+    )
 
-# UV unwrap model
-chunk.buildUV\
-(
-    mapping_mode=Metashape.GenericMapping,
-    page_count=1,
-    #adaptive_resolution=False
-)
+    # UV unwrap model
+    chunk.buildUV\
+    (
+        mapping_mode=Metashape.GenericMapping,
+        page_count=1,
+        #adaptive_resolution=False
+    )
 
-chunk.buildTexture\
-(
-    blending_mode=Metashape.MosaicBlending,
-    texture_size=8192,
-    fill_holes=False,
-    ghosting_filter=False,
-    texture_type=Metashape.Model.DiffuseMap,
-    transfer_texture=True
-)
+    chunk.buildTexture\
+    (
+        blending_mode=Metashape.MosaicBlending,
+        texture_size=8192,
+        fill_holes=False,
+        ghosting_filter=False,
+        texture_type=Metashape.Model.DiffuseMap,
+        transfer_texture=True
+    )
 
-chunk.updateTransform()
+    chunk.updateTransform()
 
-if processGroups == True:
-    # Move model to center
-    model_to_origin(chunk, camera_refs, align_ring_name)
+    if processGroups == True:
+        # Move model to center
+        model_to_origin(chunk, camera_refs, align_ring_name)
 
-chunk.exportModel\
-(
-    path=imagePath+"\\..\\"+args.output,
-    binary=True,
-    precision=6,
-    texture_format=Metashape.ImageFormatTIFF,
-    save_texture=True,
-    save_uv=True,
-    save_normals=True,
-    save_colors=False,
-    save_cameras=True,
-    save_markers=True,
-    save_udim=False,
-    save_alpha=False,
-    strip_extensions=False,
-    raster_transform=Metashape.RasterTransformNone,
-    colors_rgb_8bit=True,
-    comment="Created via Metashape python",
-    save_comment=True,
-    format=Metashape.ModelFormatOBJ,
-)
+    chunk.exportModel\
+    (
+        path=imagePath+"\\..\\"+args.output,
+        binary=True,
+        precision=6,
+        texture_format=Metashape.ImageFormatTIFF,
+        save_texture=True,
+        save_uv=True,
+        save_normals=True,
+        save_colors=False,
+        save_cameras=True,
+        save_markers=True,
+        save_udim=False,
+        save_alpha=False,
+        strip_extensions=False,
+        raster_transform=Metashape.RasterTransformNone,
+        colors_rgb_8bit=True,
+        comment="Created via Metashape python",
+        save_comment=True,
+        format=Metashape.ModelFormatOBJ,
+    )
 
 # remove alignment-only cameras
 if args.align_input != None:
     for camera in chunk.cameras:
         if camera.group != None and camera.group.label == "alignment_images":
             chunk.remove(camera)
+
+exportCOLMAPFlag = convert(args.cmp)
+if exportCOLMAPFlag == True:
+    chunk.exportCameras(path=os.path.normpath(imagePath+"\\..\\colmap.txt"), format=Metashape.CamerasFormatColmap, binary=True, save_points=True)
 
 chunk.exportCameras(camerasPath)
 chunk.exportReport(imagePath+"\\..\\"+basename+"-report.pdf")

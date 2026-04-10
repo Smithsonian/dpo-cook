@@ -148,7 +148,15 @@
                 ],
                 "default": "File"
             },
-            "tool": {
+            "alignTool": {
+                "type": "string",
+                "enum": [
+                    "RealityScan",
+                    "Metashape"
+                ],
+                "default": "RealityScan"
+            },
+            "splatTool": {
                 "type": "string",
                 "enum": [
                     "PostShot"
@@ -379,7 +387,7 @@
             "task": "Photogrammetry",
             "description": "Create mesh and texture from image set.",
             "pre": {
-                "camerasFile": "baseMeshName",
+                "camerasFile": "alignTool = 'RealityScan' ? baseMeshName : 'cameras.xml'",
                 "deliverables": {
                     "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
                 }
@@ -403,13 +411,14 @@
                 "depthMapQuality": "depthMapQuality",
                 "maskMode": "maskMode",
                 "doReconstruct": false,
-                "tool": "'RealityScan'",
+                "exportCOLMAP": "alignTool = 'Metashape'",
+                "tool": "alignTool",
                 "timeout": 86400
             },
-            "success": "'generate-splat'",
+            "success": "alignTool = 'RealityScan' ? 'generate-splat-realityscan' : 'generate-splat-metashape'",
             "failure": "$failure"
         },
-        "generate-splat": {
+        "generate-splat-realityscan": {
             "task": "RadianceField",
             "description": "Create radiance field using pre-aligned cameras",
             "pre": {
@@ -425,7 +434,25 @@
             },
             "success": "'delivery'",
             "failure": "$failure"
-        },      
+        },  
+        "generate-splat-metashape": {
+            "task": "RadianceField",
+            "description": "Create radiance field using pre-aligned cameras",
+            "pre": {
+                "deliverables": {
+                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
+                }
+            },
+            "parameters": {
+                "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
+                "camerasFile": "'sparse\\\\0\\\\cameras.bin'",
+                "pointsFile": "'sparse\\\\0\\\\points3D.bin'",
+                "imagesFile": "'sparse\\\\0\\\\images.bin'",
+                "outputFile": "deliverables.meshFile"
+            },
+            "success": "'delivery'",
+            "failure": "$failure"
+        },    
         "delivery": {
             "task": "Delivery",
             "description": "Send result files back to client",

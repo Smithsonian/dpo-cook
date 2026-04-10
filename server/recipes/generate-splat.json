@@ -23,6 +23,11 @@
                 "minLength": 1,
                 "format": "file"
             },
+            "imagesFile": {
+                "type": "string",
+                "minLength": 1,
+                "format": "file"
+            },
             "outputFileBaseName": {
                 "type": "string",
                 "minLength": 1
@@ -91,7 +96,8 @@
                 "files": {
                     "sourceImageFolder": "sourceImageFolder",
                     "camerasFile": "camerasFile",
-					"pointsFile": "pointsFile"
+					"pointsFile": "pointsFile",
+                    "imagesFile": "imagesFile"
                 }
             },
             "success": "'unzip'",
@@ -129,6 +135,7 @@
                 "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
                 "camerasFile": "camerasFile",
                 "pointsFile": "pointsFile",
+                "imagesFile": "imagesFile",
                 "outputFile": "deliverables.meshFile",
                 "profile": "profile",
                 "antiAliasing": "antiAliasing",

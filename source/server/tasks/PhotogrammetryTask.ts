@@ -46,6 +46,8 @@ export interface IPhotogrammetryTaskParameters extends ITaskParameters
     optimizeMarkers: boolean;
     /** Flag to enable the reconstruction step (RealityScan)*/
     doReconstruct: boolean;
+    /** Flag to enable exporting COLMAP alignment files*/
+    exportCOLMAP: boolean;
     /** Percent success required to pass alignment stage */
     alignmentLimit?: number;
     /** Max number of tiepoints */
@@ -101,6 +103,7 @@ export default class PhotogrammetryTask extends ToolTask
             turntableGroups: { type: "boolean", default: false},
             depthMaxNeighbors: { type: "integer", default: 16},
             genericPreselection: { type: "boolean", default: true},
+            exportCOLMAP: { type: "boolean", default: false},
             meshQuality: { type: "string", enum: [ "Low", "Medium", "High", "Custom" ], default: "High"},
             customFaceCount: { type: "integer", default: 3000000},
             depthMapQuality: { type: "string", enum: [ "Low", "Medium", "High", "Highest" ], default: "Highest"},
@@ -142,6 +145,8 @@ export default class PhotogrammetryTask extends ToolTask
                 depthMapQuality: params.depthMapQuality,
                 maskMode: params.maskMode,
                 mode: "full",
+                doReconstruct: params.doReconstruct,
+                exportCOLMAP: params.exportCOLMAP,
                 timeout: params.timeout
             };
 

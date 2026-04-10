@@ -24,6 +24,7 @@ export interface IPostShotToolSettings extends IToolSettings
     outputFile?: string;
     camerasFile?: string;
     pointsFile?: string;
+    imagesFile?: string;
     profile?: string;
     antiAliasing?: boolean;
     maxSHDegree?: number;
@@ -84,6 +85,16 @@ export default class PostShotTool extends Tool<PostShotTool, IPostShotToolSettin
             }
             else {
                 operations += ` "${pointsPath}"`;
+            }
+        }
+
+        if(settings.imagesFile) {
+            const imagesPath = instance.getFilePath(settings.imagesFile);
+            if (!imagesPath) {
+                throw new Error("PostShotTool: bad images file path");
+            }
+            else {
+                operations += ` "${imagesPath}"`;
             }
         }
 

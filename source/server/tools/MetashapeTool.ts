@@ -40,6 +40,8 @@ export interface IMetashapeToolSettings extends IToolSettings
     meshQuality?: string;
     depthMapQuality?: string;
     customFaceCount?: number;
+    doReconstruct?: boolean;
+    exportCOLMAP?: boolean;
     maskMode?: string;
 }
 
@@ -149,6 +151,14 @@ export default class MetashapeTool extends Tool<MetashapeTool, IMetashapeToolSet
         if(settings.camerasFile) {
             const camFilePath = instance.getFilePath(settings.camerasFile);
             operation += ` -c "${camFilePath}"`;
+        }
+
+        if(settings.exportCOLMAP != null) {
+            operation += ` -cmp ${settings.exportCOLMAP}`;
+        }
+
+        if(settings.doReconstruct != null) {
+            operation += ` -geo ${settings.doReconstruct}`;
         }
 
         const logfile = "_metashape_log_" + settings.mode + ".txt";

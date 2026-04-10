@@ -36,6 +36,8 @@ export interface IRadianceFieldTaskParameters extends ITaskParameters
     camerasFile: string;
     /** Name used for saved points position file */
     pointsFile: string;
+    /** Name used for saved images reference file (COLMAP format only) */
+    imagesFile: string;
     /** Specific to PostShot. The radiance field model profile to train. */
     profile?: string;
     /** True to train with Anti-Aliasing. */
@@ -69,6 +71,7 @@ export default class RadianceFieldTask extends ToolTask
             outputFile: { type: "string", minLength: 1 },
             camerasFile: { type: "string", minLength: 1 },
             pointsFile: { type: "string", minLength: 1 },
+            imagesFile: { type: "string", minLength: 1 },
             profile: { type: "string", enum: ["Splat ADC","Splat MCMC","Splat3"], default: "Splat3" },
             antiAliasing: { type: "boolean", default: false },
             downscale: { type: "boolean", default: true },
@@ -96,6 +99,7 @@ export default class RadianceFieldTask extends ToolTask
                 outputFile: params.outputFile,
                 camerasFile: params.camerasFile,
                 pointsFile: params.pointsFile,
+                imagesFile: params.imagesFile,
                 profile: params.profile,
                 antiAliasing: params.antiAliasing,
                 downscale: params.downscale,
