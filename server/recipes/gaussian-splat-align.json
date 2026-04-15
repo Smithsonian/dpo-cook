@@ -162,6 +162,10 @@
                     "PostShot"
                 ],
                 "default": "PostShot"
+            },
+            "useCOLMAP": {
+                "type": "boolean",
+                "default": true
             }
         },
         "required": [
@@ -388,8 +392,9 @@
             "description": "Create mesh and texture from image set.",
             "pre": {
                 "camerasFile": "alignTool = 'RealityScan' ? baseMeshName : 'cameras.xml'",
+                "exportCOLMAP": "useCOLMAP or (alignTool = 'Metashape')",
                 "deliverables": {
-                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
+                    "meshFile": "baseMeshName & '-' & $lowercase(alignTool) & '.ply'"
                 }
             },
             "parameters": {
@@ -411,19 +416,19 @@
                 "depthMapQuality": "depthMapQuality",
                 "maskMode": "maskMode",
                 "doReconstruct": false,
-                "exportCOLMAP": "alignTool = 'Metashape'",
+                "exportCOLMAP": "exportCOLMAP",
                 "tool": "alignTool",
                 "timeout": 86400
             },
-            "success": "alignTool = 'RealityScan' ? 'generate-splat-realityscan' : 'generate-splat-metashape'",
+            "success": "exportCOLMAP ? 'generate-splat-colmap' : 'generate-splat-pointcloud'",
             "failure": "$failure"
         },
-        "generate-splat-realityscan": {
+        "generate-splat-pointcloud": {
             "task": "RadianceField",
             "description": "Create radiance field using pre-aligned cameras",
             "pre": {
                 "deliverables": {
-                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
+                    "meshFile": "baseMeshName & '-' & $lowercase(splatTool) & '.ply'"
                 }
             },
             "parameters": {
@@ -435,19 +440,19 @@
             "success": "'delivery'",
             "failure": "$failure"
         },  
-        "generate-splat-metashape": {
+        "generate-splat-colmap": {
             "task": "RadianceField",
             "description": "Create radiance field using pre-aligned cameras",
             "pre": {
                 "deliverables": {
-                    "meshFile": "baseMeshName & '-' & $lowercase(tool) & '.ply'"
+                    "meshFile": "baseMeshName & '-' & $lowercase(splatTool) & '.ply'"
                 }
             },
             "parameters": {
-                "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
-                "camerasFile": "'sparse\\\\0\\\\cameras.bin'",
-                "pointsFile": "'sparse\\\\0\\\\points3D.bin'",
-                "imagesFile": "'sparse\\\\0\\\\images.bin'",
+                "inputImageFolder": "alignTool = 'RealityScan' ? 'colmap\\\\' : 'images\\\\'",
+                "camerasFile": "alignTool = 'RealityScan' ? 'colmap\\\\Cameras.txt' : 'sparse\\\\0\\\\cameras.txt'",
+                "pointsFile": "alignTool = 'RealityScan' ? 'colmap\\\\Points3D.txt' : 'sparse\\\\0\\\\points3D.txt'",
+                "imagesFile": "alignTool = 'RealityScan' ? 'colmap\\\\Images.txt' : 'sparse\\\\0\\\\images.txt'",
                 "outputFile": "deliverables.meshFile"
             },
             "success": "'delivery'",

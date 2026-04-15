@@ -609,7 +609,7 @@ if args.align_input != None:
 
 exportCOLMAPFlag = convert(args.cmp)
 if exportCOLMAPFlag == True:
-    chunk.exportCameras(path=os.path.normpath(imagePath+"\\..\\colmap.txt"), format=Metashape.CamerasFormatColmap, binary=True, save_points=True)
+    chunk.exportCameras(path=os.path.normpath(imagePath+"\\..\\colmap.txt"), format=Metashape.CamerasFormatColmap, save_points=True)
 
 chunk.exportCameras(camerasPath)
 chunk.exportReport(imagePath+"\\..\\"+basename+"-report.pdf")

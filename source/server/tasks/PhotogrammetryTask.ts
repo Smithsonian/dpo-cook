@@ -165,6 +165,7 @@ export default class PhotogrammetryTask extends ToolTask
                 optimizeMarkers: params.optimizeMarkers,
                 camerasFile: params.camerasFile,
                 doReconstruct: params.doReconstruct,
+                exportCOLMAP: params.exportCOLMAP,
                 timeout: params.timeout
             };
 

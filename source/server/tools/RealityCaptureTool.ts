@@ -32,6 +32,7 @@ export interface IRealityCaptureToolSettings extends IToolSettings
     customFaceCount?: number;
     optimizeMarkers?: boolean;
     camerasFile?: string;
+    exportCOLMAP?: boolean;
     doReconstruct?: boolean;
 }
 
@@ -110,7 +111,12 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         operations += ` -silent "${outputDirectory}" -set sfmMaxFeaturesPerImage=${settings.keypointLimit} -align ${settings.optimizeMarkers ? "-align" : ""}`
         
         if(settings.camerasFile) {
-            operations += ` -exportRegistration "${outputDirectory}\\${settings.camerasFile}.csv" "${outputDirectory}\\_reg_params.xml" -exportSparsePointCloud "${outputDirectory}\\${settings.camerasFile}-points.ply" "${outputDirectory}\\_points_params.xml"`;
+            if(settings.exportCOLMAP) {
+                operations += ` -exportRegistration "${outputDirectory}\\colmap\\${settings.camerasFile}.txt" "${outputDirectory}\\_reg_params.xml"`;
+            }
+            else {
+                operations += ` -exportRegistration "${outputDirectory}\\${settings.camerasFile}.csv" "${outputDirectory}\\_reg_params.xml" -exportSparsePointCloud "${outputDirectory}\\${settings.camerasFile}-points.ply" "${outputDirectory}\\_points_params.xml"`;
+            }
         }
 
         operations += ` -save "${outputDirectory}\\${name}-align.rcproj"`;
@@ -150,75 +156,128 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         }
 
         if(settings.camerasFile) {
-            // set export parameters via params.xml file
-            const regContent = [`<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
-            <entry key="calexTrans" value="1"/>
-            <entry key="calexHasDisabled" value="0x0"/>
-            <entry key="MvsExportScaleZ" value="1.0"/>
-            <entry key="MvsExportIsGeoreferenced" value="0x0"/>
-            <entry key="MvsExportIsModelCoordinates" value="0"/>
-            <entry key="MvsExportScaleY" value="1.0"/>
-            <entry key="MvsExportScaleX" value="1.0"/>
-            <entry key="MvsExportRotationY" value="0.0"/>
-            <entry key="MvsExportcoordinatesystemtype" value="0"/>
-            <entry key="MvsExportNormalFlipZ" value="false"/>
-            <entry key="MvsExportRotationX" value="0.0"/>
-            <entry key="hasCalexFilePath" value="1"/>
-            <entry key="MvsExportNormalFlipY" value="false"/>
-            <entry key="MvsExportNormalSpace" value="Mikktspace"/>
-            <entry key="calexHasUndistort" value="-1"/>
-            <entry key="MvsExportNormalFlipX" value="false"/>
-            <entry key="MvsExportRotationZ" value="0.0"/>
-            <entry key="calexFileFormat" value="Internal/External camera parameters"/>
-            <entry key="MvsExportMoveZ" value="0.0"/>
-            <entry key="calexFileFormatId" value="{0CA18733-1EBC-4254-9974-17197EB409BD}"/>
-            <entry key="hasRadianceFieldsTransAABB" value="0"/>
-            <entry key="hasCalexFileName" value="1"/>
-            <entry key="calexHasImageExport" value="-1"/>
-            <entry key="MvsExportMoveX" value="0.0"/>
-            <entry key="MvsExportNormalRange" value="ZeroToOne"/>
-            <entry key="MvsExportMoveY" value="0.0"/>
+            if(settings.exportCOLMAP) {
+                // set export parameters via params.xml file
+                const regContent = [`<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
+                <entry key="calexUndistResMode" value="2"/>
+                <entry key="calexUndistPrincipal" value="true"/>
+                <entry key="calexTrans" value="1"/>
+                <entry key="calexUndistortNaming" value="1"/>
+                <entry key="calexUndistortPixelFormat" value="32bppBGRA"/>
+                <entry key="calexHasDisabled" value="0x0"/>
+                <entry key="calexRequiresUndistortPrincipal" value="0x0"/>
+                <entry key="calexExportImages" value="true"/>
+                <entry key="calexUndistortImageFormat" value="jpg"/>
+                <entry key="MvsExportScaleZ" value="1.0"/>
+                <entry key="MvsExportIsGeoreferenced" value="0x0"/>
+                <entry key="MvsExportIsModelCoordinates" value="0"/>
+                <entry key="calexRequiresColorCorrection" value="0x0"/>
+                <entry key="MvsExportScaleY" value="1.0"/>
+                <entry key="calexRequiresEqualResolution" value="0x0"/>
+                <entry key="calexDownscale" value="0x1"/>
+                <entry key="calexUndistMaxPixels" value="0"/>
+                <entry key="calexInputHasLayers" value="0"/>
+                <entry key="MvsExportScaleX" value="1.0"/>
+                <entry key="calexUndistFitMode" value="4"/>
+                <entry key="MvsExportRotationY" value="0.0"/>
+                <entry key="MvsExportcoordinatesystemtype" value="0"/>
+                <entry key="MvsExportNormalFlipZ" value="false"/>
+                <entry key="MvsExportRotationX" value="0.0"/>
+                <entry key="hasCalexFilePath" value="1"/>
+                <entry key="calexFolderCustom" value="0"/>
+                <entry key="MvsExportNormalFlipY" value="false"/>
+                <entry key="MvsExportNormalSpace" value="Mikktspace"/>
+                <entry key="calexHasUndistort" value="2"/>
+                <entry key="MvsExportNormalFlipX" value="false"/>
+                <entry key="MvsExportRotationZ" value="0.0"/>
+                <entry key="calexFileFormat" value="Colmap Text Format"/>
+                <entry key="MvsExportMoveZ" value="0.0"/>
+                <entry key="calexFileFormatId" value="{280B11A4-F9A3-47D1-AE58-C0DEA33487D8}"/>
+                <entry key="calexUndistBackColor" value="0"/>
+                <entry key="hasRadianceFieldsTransAABB" value="0"/>
+                <entry key="hasCalexFileName" value="1"/>
+                <entry key="calexUndistCutOut" value="1.0"/>
+                <entry key="calexHasImageExport" value="1"/>
+                <entry key="MvsExportMoveX" value="0.0"/>
+                <entry key="MvsExportNormalRange" value="ZeroToOne"/>
+                <entry key="MvsExportMoveY" value="0.0"/>
+              </Configuration>`].join("\n");
+
+                const regFileName = "_reg_params.xml";
+
+                configFiles.push(instance.writeFile(regFileName, regContent));
+            }
+            else {
+                // set export parameters via params.xml file
+                const regContent = [`<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
+                <entry key="calexTrans" value="1"/>
+                <entry key="calexHasDisabled" value="0x0"/>
+                <entry key="MvsExportScaleZ" value="1.0"/>
+                <entry key="MvsExportIsGeoreferenced" value="0x0"/>
+                <entry key="MvsExportIsModelCoordinates" value="0"/>
+                <entry key="MvsExportScaleY" value="1.0"/>
+                <entry key="MvsExportScaleX" value="1.0"/>
+                <entry key="MvsExportRotationY" value="0.0"/>
+                <entry key="MvsExportcoordinatesystemtype" value="0"/>
+                <entry key="MvsExportNormalFlipZ" value="false"/>
+                <entry key="MvsExportRotationX" value="0.0"/>
+                <entry key="hasCalexFilePath" value="1"/>
+                <entry key="MvsExportNormalFlipY" value="false"/>
+                <entry key="MvsExportNormalSpace" value="Mikktspace"/>
+                <entry key="calexHasUndistort" value="-1"/>
+                <entry key="MvsExportNormalFlipX" value="false"/>
+                <entry key="MvsExportRotationZ" value="0.0"/>
+                <entry key="calexFileFormat" value="Internal/External camera parameters"/>
+                <entry key="MvsExportMoveZ" value="0.0"/>
+                <entry key="calexFileFormatId" value="{0CA18733-1EBC-4254-9974-17197EB409BD}"/>
+                <entry key="hasRadianceFieldsTransAABB" value="0"/>
+                <entry key="hasCalexFileName" value="1"/>
+                <entry key="calexHasImageExport" value="-1"/>
+                <entry key="MvsExportMoveX" value="0.0"/>
+                <entry key="MvsExportNormalRange" value="ZeroToOne"/>
+                <entry key="MvsExportMoveY" value="0.0"/>
+                </Configuration>`].join("\n");
+
+                const regFileName = "_reg_params.xml";
+
+                configFiles.push(instance.writeFile(regFileName, regContent));
+
+                // set export parameters via params.xml file
+                const pointsContent = [`<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
+                <entry key="calexTrans" value="1"/>
+                <entry key="bAscii" value="false"/>
+                <entry key="calexHasDisabled" value="0x0"/>
+                <entry key="bVertexColor" value="true"/>
+                <entry key="MvsExportScaleZ" value="1.0"/>
+                <entry key="MvsExportIsGeoreferenced" value="0x0"/>
+                <entry key="MvsExportIsModelCoordinates" value="0"/>
+                <entry key="MvsExportScaleY" value="1.0"/>
+                <entry key="MvsExportScaleX" value="1.0"/>
+                <entry key="MvsExportRotationY" value="0.0"/>
+                <entry key="MvsExportcoordinatesystemtype" value="0"/>
+                <entry key="MvsExportNormalFlipZ" value="false"/>
+                <entry key="MvsExportRotationX" value="0.0"/>
+                <entry key="hasCalexFilePath" value="1"/>
+                <entry key="MvsExportNormalFlipY" value="false"/>
+                <entry key="MvsExportNormalSpace" value="Mikktspace"/>
+                <entry key="calexHasUndistort" value="-1"/>
+                <entry key="MvsExportNormalFlipX" value="false"/>
+                <entry key="MvsExportRotationZ" value="0.0"/>
+                <entry key="calexFileFormat" value="Sparse point cloud as Polygon File Format (*.ply)"/>
+                <entry key="MvsExportMoveZ" value="0.0"/>
+                <entry key="calexFileFormatId" value="{B63136B7-2E64-4D08-B5B1-A945F1AED679}"/>
+                <entry key="hasRadianceFieldsTransAABB" value="0"/>
+                <entry key="hasCalexFileName" value="1"/>
+                <entry key="calexHasImageExport" value="-1"/>
+                <entry key="MvsExportMoveX" value="0.0"/>
+                <entry key="MvsExportNormalRange" value="ZeroToOne"/>
+                <entry key="MvsExportMoveY" value="0.0"/>
             </Configuration>`].join("\n");
 
-            const regFileName = "_reg_params.xml";
+                const pointsFileName = "_points_params.xml";
 
-            configFiles.push(instance.writeFile(regFileName, regContent));
-
-            // set export parameters via params.xml file
-            const pointsContent = [`<Configuration id="{2D5793BC-A65D-4318-A1B9-A05044608385}">
-            <entry key="calexTrans" value="1"/>
-            <entry key="bAscii" value="false"/>
-            <entry key="calexHasDisabled" value="0x0"/>
-            <entry key="bVertexColor" value="true"/>
-            <entry key="MvsExportScaleZ" value="1.0"/>
-            <entry key="MvsExportIsGeoreferenced" value="0x0"/>
-            <entry key="MvsExportIsModelCoordinates" value="0"/>
-            <entry key="MvsExportScaleY" value="1.0"/>
-            <entry key="MvsExportScaleX" value="1.0"/>
-            <entry key="MvsExportRotationY" value="0.0"/>
-            <entry key="MvsExportcoordinatesystemtype" value="0"/>
-            <entry key="MvsExportNormalFlipZ" value="false"/>
-            <entry key="MvsExportRotationX" value="0.0"/>
-            <entry key="hasCalexFilePath" value="1"/>
-            <entry key="MvsExportNormalFlipY" value="false"/>
-            <entry key="MvsExportNormalSpace" value="Mikktspace"/>
-            <entry key="calexHasUndistort" value="-1"/>
-            <entry key="MvsExportNormalFlipX" value="false"/>
-            <entry key="MvsExportRotationZ" value="0.0"/>
-            <entry key="calexFileFormat" value="Sparse point cloud as Polygon File Format (*.ply)"/>
-            <entry key="MvsExportMoveZ" value="0.0"/>
-            <entry key="calexFileFormatId" value="{B63136B7-2E64-4D08-B5B1-A945F1AED679}"/>
-            <entry key="hasRadianceFieldsTransAABB" value="0"/>
-            <entry key="hasCalexFileName" value="1"/>
-            <entry key="calexHasImageExport" value="-1"/>
-            <entry key="MvsExportMoveX" value="0.0"/>
-            <entry key="MvsExportNormalRange" value="ZeroToOne"/>
-            <entry key="MvsExportMoveY" value="0.0"/>
-          </Configuration>`].join("\n");
-
-            const pointsFileName = "_points_params.xml";
-
-            configFiles.push(instance.writeFile(pointsFileName, pointsContent));
+                configFiles.push(instance.writeFile(pointsFileName, pointsContent));
+            }
         }
 
 
