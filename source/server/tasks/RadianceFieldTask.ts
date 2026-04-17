@@ -21,6 +21,7 @@ import { IPostShotToolSettings } from "../tools/PostShotTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask from "../app/ToolTask";
+import { ILichtFeldStudioToolSettings } from "../tools/LichtFeldStudio";
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +50,7 @@ export interface IRadianceFieldTaskParameters extends ITaskParameters
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
     /** Tool to use for radiance field generation ("PostShot", default: "PostShot"). */
-    tool?: "PostShot";
+    tool?: "PostShot" | "LichtFeldStudio";
 }
 
 /**
@@ -77,7 +78,7 @@ export default class RadianceFieldTask extends ToolTask
             downscale: { type: "boolean", default: true },
             maxSHDegree: { type: "integer", minimum: 0, maximum: 3, default: 3},
             timeout: { type: "integer", default: 0 },
-            tool: { type: "string", enum: [ "PostShot" ], default: "PostShot" }
+            tool: { type: "string", enum: [ "PostShot", "LichtFeldStudio" ], default: "PostShot" }
         },
         required: [
             "inputImageFolder",
@@ -108,6 +109,19 @@ export default class RadianceFieldTask extends ToolTask
             };
 
             this.addTool("PostShot", toolOptions);
+        }
+        if (params.tool === "LichtFeldStudio") {
+            const toolOptions: ILichtFeldStudioToolSettings = {
+                colmapInputFolder: params.inputImageFolder,
+                outputFile: params.outputFile,
+                /*profile: params.profile,
+                antiAliasing: params.antiAliasing,
+                downscale: params.downscale,
+                maxSHDegree: params.maxSHDegree,*/
+                timeout: params.timeout
+            };
+
+            this.addTool("LichtFeldStudio", toolOptions);
         }
         else {
             throw new Error("RadianceFieldTask.constructor - unknown tool: " + params.tool);

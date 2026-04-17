@@ -159,7 +159,8 @@
             "splatTool": {
                 "type": "string",
                 "enum": [
-                    "PostShot"
+                    "PostShot",
+                    "LichtFeldStudio"
                 ],
                 "default": "PostShot"
             },
@@ -453,7 +454,8 @@
                 "camerasFile": "alignTool = 'RealityScan' ? 'colmap\\\\Cameras.txt' : 'sparse\\\\0\\\\cameras.txt'",
                 "pointsFile": "alignTool = 'RealityScan' ? 'colmap\\\\Points3D.txt' : 'sparse\\\\0\\\\points3D.txt'",
                 "imagesFile": "alignTool = 'RealityScan' ? 'colmap\\\\Images.txt' : 'sparse\\\\0\\\\images.txt'",
-                "outputFile": "deliverables.meshFile"
+                "outputFile": "deliverables.meshFile",
+                "tool": "splatTool"
             },
             "success": "'delivery'",
             "failure": "$failure"
