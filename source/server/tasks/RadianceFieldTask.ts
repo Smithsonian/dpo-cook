@@ -110,7 +110,7 @@ export default class RadianceFieldTask extends ToolTask
 
             this.addTool("PostShot", toolOptions);
         }
-        if (params.tool === "LichtFeldStudio") {
+        else if (params.tool === "LichtFeldStudio") {
             const toolOptions: ILichtFeldStudioToolSettings = {
                 colmapInputFolder: params.inputImageFolder,
                 outputFile: params.outputFile,
