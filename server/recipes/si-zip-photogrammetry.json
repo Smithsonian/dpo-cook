@@ -93,13 +93,13 @@
             },
             "tiepointLimit": {
                 "type": "number",
-                "default": 25000,
+                "default": 8000,
                 "minimum": 1000,
                 "maximum": 50000
             },
             "keypointLimit": {
                 "type": "number",
-                "default": 75000,
+                "default": 80000,
                 "minimum": 1000,
                 "maximum": 120000
             },
@@ -117,7 +117,7 @@
             },
             "genericPreselection": {
                 "type": "boolean",
-                "default": true
+                "default": false
             },
             "depthMaxNeighbors": {
                 "type": "number",
