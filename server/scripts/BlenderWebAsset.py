@@ -107,7 +107,7 @@ def run():
     if args.occlusion is not None:
         settings_node = mat.node_tree.nodes.new('ShaderNodeGroup')
         gltf_node_group = bpy.data.node_groups.new('glTF Material Output', 'ShaderNodeTree')
-        gltf_node_group.inputs.new("NodeSocketFloat", "Occlusion")
+        gltf_node_group.interface.new_socket(name="Occlusion", in_out="INPUT", socket_type="NodeSocketFloat")
         settings_node.node_tree = gltf_node_group
         occ_tex_image = mat.node_tree.nodes.new('ShaderNodeTexImage')
         occ_tex_image.image = bpy.data.images.load(args.occlusion)
