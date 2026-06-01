@@ -46,7 +46,7 @@ def run():
     elif file_extension == '.ply':
         bpy.ops.import_mesh.ply(filepath=args.input)
     elif file_extension == '.stl':
-        bpy.ops.import_mesh.stl(filepath=args.input)
+        bpy.ops.wm.stl_import(filepath=args.input)
     elif file_extension == '.x3d':
         bpy.ops.import_scene.x3d(filepath=args.input)
     elif file_extension == '.dae':

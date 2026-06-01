@@ -24,7 +24,7 @@ if file_extension == '.obj':
 elif file_extension == '.ply':
     bpy.ops.import_mesh.ply(filepath=argv[0])
 elif file_extension == '.stl':
-    bpy.ops.import_mesh.stl(filepath=argv[0])
+    bpy.ops.wm.stl_import(filepath=argv[0])
 elif file_extension == '.x3d':
     bpy.ops.import_scene.x3d(filepath=argv[0])
 elif file_extension == '.dae':
@@ -56,7 +56,7 @@ if len(bpy.data.objects) > 0:
     elif file_extension == '.ply':
         bpy.ops.export_mesh.ply(filepath=save_file)
     elif file_extension == '.stl':
-        bpy.ops.export_mesh.stl(filepath=save_file)
+        bpy.ops.wm.stl_export(filepath=save_file)
     elif file_extension == '.usdz':
         bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True)
     elif file_extension == '.fbx':
