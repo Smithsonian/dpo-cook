@@ -269,18 +269,16 @@
             "description": "Generate a new quad-based mesh",
             "skip": "remeshFaces < 1",
             "pre": {
-                "deliverables": {
-                    "remeshedMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, outputFileBaseName & '-remeshed.obj')"
-                }
+                "remeshedMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, outputFileBaseName & '-remeshed.obj')"
             },
             "parameters": {
                 "inputMeshFile": "$firstTrue(preDecimatedUnwrappedTargetFile, sourceMeshFile)",
-                "outputMeshFile": "deliverables.remeshedMeshFile",
+                "outputMeshFile": "remeshedMeshFile",
                 "numFaces": "remeshFaces",
                 "quadsOnly": "quadsOnly"
             },
             "post": {
-                "remeshedFile": "deliverables.remeshedMeshFile"
+                "remeshedFile": "remeshedMeshFile"
             },
             "success": "'inspect-master'",
             "failure": "$failure"
@@ -348,13 +346,11 @@
             "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "unwrappedMeshFbxFile": "outputFileBaseName & '-unwrapped-webthumb.fbx'",
-                "deliverables": {
-                    "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-webthumb.obj'"
-                }
+                "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-webthumb.obj'"
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "outputMeshFile": "scene_unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSizeWebThumb",
@@ -369,7 +365,7 @@
             "description": "Calculate mesh size and max. ray distance for bake",
             "skip": "maxRayDistance > 0",
             "parameters": {
-                "meshFile": "deliverables.scene_unwrappedMesh",
+                "meshFile": "scene_unwrappedMesh",
                 "tool": "'Blender'"
             },
             "post": {
@@ -403,13 +399,11 @@
                 "timeout": 900
             },
             "post": {
-                "deliverables": {
-                    "diffuseMapUncompressedwebthumb": "bakeDiffuse ? (baseMeshNameWebThumb & '-diffuse.png') : ''",
-                    "vcolMapUncompressedwebthumb": "bakeVertexColor ? (baseMeshNameWebThumb & '_vcols.png') : ''",
-                    "occlusionMapUncompressedwebthumb": "(baseMeshNameWebThumb & '-occlusion.png')",
-                    "normalMapUncompressedwebthumb": "bakeNormalsWebThumb ? (baseMeshNameWebThumb & '-normals.png') : ''",
-                    "testMapwebthumb": "bakeTest ? (baseMeshNameWebThumb & '-test.png') : ''"
-                }
+                "diffuseMapUncompressedwebthumb": "bakeDiffuse ? (baseMeshNameWebThumb & '-diffuse.png') : ''",
+                "vcolMapUncompressedwebthumb": "bakeVertexColor ? (baseMeshNameWebThumb & '_vcols.png') : ''",
+                "occlusionMapUncompressedwebthumb": "(baseMeshNameWebThumb & '-occlusion.png')",
+                "normalMapUncompressedwebthumb": "bakeNormalsWebThumb ? (baseMeshNameWebThumb & '-normals.png') : ''",
+                "testMapwebthumb": "bakeTest ? (baseMeshNameWebThumb & '-test.png') : ''"
             },
             "success": "'convert-diffuse-map-webthumb'",
             "failure": "$failure"
@@ -419,13 +413,11 @@
             "description": "Convert Diffuse Map",
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
-                "deliverables": {
-                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebThumb & '-diffuse-webthumb.jpg' : baseMeshNameWebThumb & '-diffuse-webthumb.png'"
-                }
+                "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebThumb & '-diffuse-webthumb.jpg' : baseMeshNameWebThumb & '-diffuse-webthumb.png'"
             },
             "parameters": {
-                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebthumb : deliverables.diffuseMapUncompressedwebthumb",
-                "outputImageFile": "deliverables.scene_diffuseMap",
+                "inputImageFile": "bakeVertexColor ? vcolMapUncompressedwebthumb : diffuseMapUncompressedwebthumb",
+                "outputImageFile": "scene_diffuseMap",
                 "quality": "diffuseMapQualityWebThumb"
             },
             "success": "'convert-occlusion-map-webthumb'",
@@ -435,13 +427,11 @@
             "task": "ConvertImage",
             "description": "Convert Occlusion Map",
             "pre": {
-                "deliverables": {
-                    "scene_occlusionMap": "baseMeshNameWebThumb & '-occlusion-webthumb.jpg'"
-                }
+                "scene_occlusionMap": "baseMeshNameWebThumb & '-occlusion-webthumb.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.occlusionMapUncompressedwebthumb",
-                "outputImageFile": "deliverables.scene_occlusionMap",
+                "inputImageFile": "occlusionMapUncompressedwebthumb",
+                "outputImageFile": "scene_occlusionMap",
                 "quality": "occlusionMapQuality"
             },
             "success": "'convert-normal-map-webthumb'",
@@ -452,13 +442,11 @@
             "description": "Convert Normal Map",
             "skip": "$not(bakeNormalsWebThumb)",
             "pre": {
-                "deliverables": {
-                    "scene_normalMap": "baseMeshNameWebThumb & '-normals-webthumb.jpg'"
-                }
+                "scene_normalMap": "baseMeshNameWebThumb & '-normals-webthumb.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.normalMapUncompressedwebthumb",
-                "outputImageFile": "deliverables.scene_normalMap",
+                "inputImageFile": "normalMapUncompressedwebthumb",
+                "outputImageFile": "scene_normalMap",
                 "quality": "normalMapQualityWebThumb"
             },
             "success": "'web-asset-glb'",
@@ -469,15 +457,15 @@
             "description": "Create binary, compressed, embedded glTF asset (thumb)",
             "pre": {
                 "deliverables": {
-                    "webAssetGlb": "baseMeshNameWebThumb & '-thumb.glb'"
+                    "webAssetThumbGlb": "baseMeshNameWebThumb & '-thumb.glb'"
                 }
             },
             "parameters": {
-                "outputFile": "deliverables.webAssetGlb",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "deliverables.scene_diffuseMap",
-                "occlusionMapFile": "deliverables.scene_occlusionMap",
-                "normalMapFile": "deliverables.scene_normalMap",
+                "outputFile": "deliverables.webAssetThumbGlb",
+                "meshFile": "scene_unwrappedMesh",
+                "diffuseMapFile": "scene_diffuseMap",
+                "occlusionMapFile": "scene_occlusionMap",
+                "normalMapFile": "scene_normalMap",
                 "objectSpaceNormals": false,
                 "useCompression": true,
                 "compressionLevel": 10,
@@ -495,7 +483,7 @@
             "skip": "$not(saveScreenshot)",
             "description": "Generate screenshot of result geometry.",
             "parameters": {
-                "inputMeshFile": "deliverables.webAssetGlb",
+                "inputMeshFile": "deliverables.webAssetThumbGlb",
                 "outputFile": "baseMeshNameWebThumb & '-thumb-preview'",
                 "timeout": 1200
             },
@@ -518,7 +506,7 @@
                 "modelName": "outputFileBaseName",
                 "units": "units",
                 "derivativeQuality": "'Thumb'",
-                "modelFile": "$firstTrue(deliverables.webAssetGlb, deliverables.webAssetGltf)",
+                "modelFile": "$firstTrue(deliverables.webAssetThumbGlb, deliverables.webAssetGltf)",
                 "numFaces": "numFacesWebThumb",
                 "mapSize": "mapSizeWebThumb"
             },
@@ -576,13 +564,11 @@
             "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "unwrappedMeshFbxFile": "outputFileBaseName & '-unwrapped-webmulti.fbx'",
-                "deliverables": {
-                    "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-webmulti.obj'"
-                }
+                "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-webmulti.obj'"
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "outputMeshFile": "scene_unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSizeWebMulti",
@@ -596,7 +582,7 @@
             "task": "InspectMesh",
             "description": "Calculate mesh size and max. ray distance for bake",
             "parameters": {
-                "meshFile": "deliverables.scene_unwrappedMesh",
+                "meshFile": "scene_unwrappedMesh",
                 "tool": "'Blender'"
             },
             "post": {
@@ -630,13 +616,11 @@
                 "timeout": 1200
             },
             "post": {
-                "deliverables": {
-                    "diffuseMapUncompressedwebmulti": "bakeDiffuse ? (baseMeshNameWebMulti & '-diffuse.png') : ''",
-                    "vcolMapUncompressedwebmulti": "bakeVertexColor ? (baseMeshNameWebMulti & '_vcols.png') : ''",
-                    "occlusionMapUncompressedwebmulti": "(baseMeshNameWebMulti & '-occlusion.png')",
-                    "normalMapUncompressedwebmulti": "(baseMeshNameWebMulti & '-normals.png')",
-                    "testMapwebmulti": "bakeTest ? (baseMeshNameWebMulti & '-test.png') : ''"
-                }
+                "diffuseMapUncompressedwebmulti": "bakeDiffuse ? (baseMeshNameWebMulti & '-diffuse.png') : ''",
+                "vcolMapUncompressedwebmulti": "bakeVertexColor ? (baseMeshNameWebMulti & '_vcols.png') : ''",
+                "occlusionMapUncompressedwebmulti": "(baseMeshNameWebMulti & '-occlusion.png')",
+                "normalMapUncompressedwebmulti": "(baseMeshNameWebMulti & '-normals.png')",
+                "testMapwebmulti": "bakeTest ? (baseMeshNameWebMulti & '-test.png') : ''"
             },
             "success": "'bake-rough-metal'",
             "failure": "$failure"
@@ -666,9 +650,7 @@
                 "timeout": 1200
             },
             "post": {
-                "deliverables": {
-                    "roughMetalMapUncompressedwebmulti": "baseMeshNameWebMulti & '-roughmetal-diffuse.png'"
-                }
+                "roughMetalMapUncompressedwebmulti": "baseMeshNameWebMulti & '-roughmetal-diffuse.png'"
             },
             "success": "'convert-diffuse-map-high'",
             "failure": "$failure"
@@ -678,13 +660,11 @@
             "description": "Convert Diffuse Map",
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
-                "deliverables": {
-                    "scene_diffuseMapHigh": "$not(saveAlpha) ? baseMeshMapNameHigh & '-diffuse.jpg' : baseMeshMapNameHigh & '-diffuse.png'"
-                }
+                "scene_diffuseMapHigh": "$not(saveAlpha) ? baseMeshMapNameHigh & '-diffuse.jpg' : baseMeshMapNameHigh & '-diffuse.png'"
             },
             "parameters": {
-                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebmulti : deliverables.diffuseMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_diffuseMapHigh",
+                "inputImageFile": "bakeVertexColor ? vcolMapUncompressedwebmulti : diffuseMapUncompressedwebmulti",
+                "outputImageFile": "scene_diffuseMapHigh",
                 "quality": "diffuseMapQualityWebMulti"
             },
             "success": "'convert-occlusion-map-high'",
@@ -694,13 +674,11 @@
             "task": "ConvertImage",
             "description": "Convert Occlusion Map High",
             "pre": {
-                "deliverables": {
-                    "scene_occlusionMapHigh": "baseMeshMapNameHigh & '-occlusion.jpg'"
-                }
+                "scene_occlusionMapHigh": "baseMeshMapNameHigh & '-occlusion.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.occlusionMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_occlusionMapHigh",
+                "inputImageFile": "occlusionMapUncompressedwebmulti",
+                "outputImageFile": "scene_occlusionMapHigh",
                 "quality": "occlusionMapQuality"
             },
             "success": "'convert-normal-map-high'",
@@ -710,13 +688,11 @@
             "task": "ConvertImage",
             "description": "Convert Normal Map High",
             "pre": {
-                "deliverables": {
-                    "scene_normalMapHigh": "baseMeshMapNameHigh & '-normals.jpg'"
-                }
+                "scene_normalMapHigh": "baseMeshMapNameHigh & '-normals.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_normalMapHigh",
+                "inputImageFile": "normalMapUncompressedwebmulti",
+                "outputImageFile": "scene_normalMapHigh",
                 "quality": "normalMapQualityWebMulti"
             },
             "success": "'convert-rough-metal-map-high'",
@@ -727,13 +703,11 @@
             "description": "Convert Roughness/Metalness Map High",
             "skip": "$not($exists(sourceRoughMetalMapFile))",
             "pre": {
-                "deliverables": {
-                    "scene_roughMetalMapHigh": "baseMeshMapNameHigh & '-roughmetal.jpg'"
-                }
+                "scene_roughMetalMapHigh": "baseMeshMapNameHigh & '-roughmetal.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.roughMetalMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_roughMetalMapHigh",
+                "inputImageFile": "roughMetalMapUncompressedwebmulti",
+                "outputImageFile": "scene_roughMetalMapHigh",
                 "quality": "diffuseMapQualityWebMulti"
             },
             "success": "'web-asset-glb-high'",
@@ -749,11 +723,11 @@
             },
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetHighGlb",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapHigh : ''",
-                "occlusionMapFile": "deliverables.scene_occlusionMapHigh",
-                "normalMapFile": "deliverables.scene_normalMapHigh",
-                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapHigh : ''",
+                "meshFile": "scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapHigh : ''",
+                "occlusionMapFile": "scene_occlusionMapHigh",
+                "normalMapFile": "scene_normalMapHigh",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapHigh : ''",
                 "objectSpaceNormals": false,
                 "useCompression": true,
                 "compressionLevel": 10,
@@ -803,13 +777,11 @@
             "description": "Convert Diffuse Map",
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
-                "deliverables": {
-                    "scene_diffuseMapMedium": "$not(saveAlpha) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
-                }
+                "scene_diffuseMapMedium": "$not(saveAlpha) ? baseMeshMapNameMedium & '-diffuse.jpg' : baseMeshMapNameMedium & '-diffuse.png'"
             },
             "parameters": {
-                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebmulti : deliverables.diffuseMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_diffuseMapMedium",
+                "inputImageFile": "bakeVertexColor ? vcolMapUncompressedwebmulti : diffuseMapUncompressedwebmulti",
+                "outputImageFile": "scene_diffuseMapMedium",
                 "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeMedium"
             },
@@ -820,13 +792,11 @@
             "task": "ConvertImage",
             "description": "Convert Occlusion Map Medium",
             "pre": {
-                "deliverables": {
-                    "scene_occlusionMapMedium": "baseMeshMapNameMedium & '-occlusion.jpg'"
-                }
+                "scene_occlusionMapMedium": "baseMeshMapNameMedium & '-occlusion.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.occlusionMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_occlusionMapMedium",
+                "inputImageFile": "occlusionMapUncompressedwebmulti",
+                "outputImageFile": "scene_occlusionMapMedium",
                 "quality": "occlusionMapQuality",
                 "resize": "mapSizeMedium"
             },
@@ -837,13 +807,11 @@
             "task": "ConvertImage",
             "description": "Convert Normal Map Medium",
             "pre": {
-                "deliverables": {
-                    "scene_normalMapMedium": "baseMeshMapNameMedium & '-normals.jpg'"
-                }
+                "scene_normalMapMedium": "baseMeshMapNameMedium & '-normals.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_normalMapMedium",
+                "inputImageFile": "normalMapUncompressedwebmulti",
+                "outputImageFile": "scene_normalMapMedium",
                 "quality": "normalMapQualityWebMulti",
                 "resize": "mapSizeMedium"
             },
@@ -855,13 +823,11 @@
             "description": "Convert Roughness/Metalness Map Medium",
             "skip": "$not($exists(sourceRoughMetalMapFile))",
             "pre": {
-                "deliverables": {
-                    "scene_roughMetalMapMedium": "baseMeshMapNameMedium & '-roughmetal.jpg'"
-                }
+                "scene_roughMetalMapMedium": "baseMeshMapNameMedium & '-roughmetal.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.roughMetalMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_roughMetalMapMedium",
+                "inputImageFile": "roughMetalMapUncompressedwebmulti",
+                "outputImageFile": "scene_roughMetalMapMedium",
                 "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeMedium"
             },
@@ -878,11 +844,11 @@
             },
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetMediumGlb",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapMedium : ''",
-                "occlusionMapFile": "deliverables.scene_occlusionMapMedium",
-                "normalMapFile": "deliverables.scene_normalMapMedium",
-                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapMedium : ''",
+                "meshFile": "scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapMedium : ''",
+                "occlusionMapFile": "scene_occlusionMapMedium",
+                "normalMapFile": "scene_normalMapMedium",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapMedium : ''",
                 "objectSpaceNormals": false,
                 "useCompression": true,
                 "compressionLevel": 10,
@@ -913,13 +879,11 @@
             "description": "Convert Diffuse Map",
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
-                "deliverables": {
-                    "scene_diffuseMapLow": "$not(saveAlpha) ? baseMeshMapNameLow & '-diffuse.jpg' : baseMeshMapNameLow & '-diffuse.png'"
-                }
+                "scene_diffuseMapLow": "$not(saveAlpha) ? baseMeshMapNameLow & '-diffuse.jpg' : baseMeshMapNameLow & '-diffuse.png'"
             },
             "parameters": {
-                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebmulti : deliverables.diffuseMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_diffuseMapLow",
+                "inputImageFile": "bakeVertexColor ? vcolMapUncompressedwebmulti : diffuseMapUncompressedwebmulti",
+                "outputImageFile": "scene_diffuseMapLow",
                 "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeLow"
             },
@@ -930,13 +894,11 @@
             "task": "ConvertImage",
             "description": "Convert Occlusion Map Low",
             "pre": {
-                "deliverables": {
-                    "scene_occlusionMapLow": "baseMeshMapNameLow & '-occlusion.jpg'"
-                }
+                "scene_occlusionMapLow": "baseMeshMapNameLow & '-occlusion.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.occlusionMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_occlusionMapLow",
+                "inputImageFile": "occlusionMapUncompressedwebmulti",
+                "outputImageFile": "scene_occlusionMapLow",
                 "quality": "occlusionMapQuality",
                 "resize": "mapSizeLow"
             },
@@ -947,13 +909,11 @@
             "task": "ConvertImage",
             "description": "Convert Normal Map Low",
             "pre": {
-                "deliverables": {
-                    "scene_normalMapLow": "baseMeshMapNameLow & '-normals.jpg'"
-                }
+                "scene_normalMapLow": "baseMeshMapNameLow & '-normals.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.normalMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_normalMapLow",
+                "inputImageFile": "normalMapUncompressedwebmulti",
+                "outputImageFile": "scene_normalMapLow",
                 "quality": "normalMapQualityWebMulti",
                 "resize": "mapSizeLow"
             },
@@ -965,13 +925,11 @@
             "description": "Convert Roughness/Metalness Map Low",
             "skip": "$not($exists(sourceRoughMetalMapFile))",
             "pre": {
-                "deliverables": {
-                    "scene_roughMetalMapLow": "baseMeshMapNameLow & '-roughmetal.jpg'"
-                }
+                "scene_roughMetalMapLow": "baseMeshMapNameLow & '-roughmetal.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.roughMetalMapUncompressedwebmulti",
-                "outputImageFile": "deliverables.scene_roughMetalMapLow",
+                "inputImageFile": "roughMetalMapUncompressedwebmulti",
+                "outputImageFile": "scene_roughMetalMapLow",
                 "quality": "diffuseMapQualityWebMulti",
                 "resize": "mapSizeLow"
             },
@@ -988,11 +946,11 @@
             },
             "parameters": {
                 "outputFile": "deliverables.scene_webAssetLowGlb",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? deliverables.scene_diffuseMapLow : ''",
-                "occlusionMapFile": "deliverables.scene_occlusionMapLow",
-                "normalMapFile": "deliverables.scene_normalMapLow",
-                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapLow : ''",
+                "meshFile": "scene_unwrappedMesh",
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapLow : ''",
+                "occlusionMapFile": "scene_occlusionMapLow",
+                "normalMapFile": "scene_normalMapLow",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapLow : ''",
                 "objectSpaceNormals": false,
                 "useCompression": true,
                 "compressionLevel": 10,
@@ -1071,13 +1029,11 @@
             "description": "Unwrap mesh using RizomUV",
             "pre": {
                 "unwrappedMeshFbxFile": "outputFileBaseName & '-unwrapped-web-ar.fbx'",
-                "deliverables": {
-                    "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-web-ar.obj'"
-                }
+                "scene_unwrappedMesh": "outputFileBaseName & '-unwrapped-web-ar.obj'"
             },
             "parameters": {
                 "inputMeshFile": "decimatedMeshFile",
-                "outputMeshFile": "deliverables.scene_unwrappedMesh",
+                "outputMeshFile": "scene_unwrappedMesh",
                 "saveFbx": true,
                 "saveObj": true,
                 "mapSize": "mapSizeWebAR",
@@ -1092,7 +1048,7 @@
             "description": "Calculate mesh size and max. ray distance for bake",
             "skip": "maxRayDistance > 0",
             "parameters": {
-                "meshFile": "deliverables.scene_unwrappedMesh",
+                "meshFile": "scene_unwrappedMesh",
                 "tool": "'Blender'"
             },
             "post": {
@@ -1126,13 +1082,11 @@
                 "timeout": 900
             },
             "post": {
-                "deliverables": {
-                    "diffuseMapUncompressedwebar": "bakeDiffuse ? (baseMeshNameWebAR & '-diffuse.png') : ''",
-                    "vcolMapUncompressedwebar": "bakeVertexColor ? (baseMeshNameWebAR & '_vcols.png') : ''",
-                    "occlusionMapUncompressedwebar": "(baseMeshNameWebAR & '-occlusion.png')",
-                    "normalMapUncompressedwebar": "(baseMeshNameWebAR & '-normals.png')",
-                    "testMapwebar": "bakeTest ? (baseMeshNameWebAR & '-test.png') : ''"
-                }
+                "diffuseMapUncompressedwebar": "bakeDiffuse ? (baseMeshNameWebAR & '-diffuse.png') : ''",
+                "vcolMapUncompressedwebar": "bakeVertexColor ? (baseMeshNameWebAR & '_vcols.png') : ''",
+                "occlusionMapUncompressedwebar": "(baseMeshNameWebAR & '-occlusion.png')",
+                "normalMapUncompressedwebar": "(baseMeshNameWebAR & '-normals.png')",
+                "testMapwebar": "bakeTest ? (baseMeshNameWebAR & '-test.png') : ''"
             },
             "success": "'bake-rough-metal-web-ar'",
             "failure": "$failure"
@@ -1162,9 +1116,7 @@
                 "timeout": 900
             },
             "post": {
-                "deliverables": {
-                    "roughMetalMapUncompressedwebar": "baseMeshNameWebAR & '-roughmetal-diffuse.png'"
-                }
+                "roughMetalMapUncompressedwebar": "baseMeshNameWebAR & '-roughmetal-diffuse.png'"
             },
             "success": "'convert-diffuse-map-web-ar'",
             "failure": "$failure"
@@ -1174,13 +1126,11 @@
             "description": "Convert Diffuse Map",
             "skip": "$not(bakeDiffuse) and $not(bakeVertexColor)",
             "pre": {
-                "deliverables": {
-                    "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebAR & '-diffuse-web-ar.jpg' : baseMeshNameWebAR & '-diffuse-web-ar.png'"
-                }
+                "scene_diffuseMap": "$not(saveAlpha) ? baseMeshNameWebAR & '-diffuse-web-ar.jpg' : baseMeshNameWebAR & '-diffuse-web-ar.png'"
             },
             "parameters": {
-                "inputImageFile": "bakeVertexColor ? deliverables.vcolMapUncompressedwebar : deliverables.diffuseMapUncompressedwebar",
-                "outputImageFile": "deliverables.scene_diffuseMap",
+                "inputImageFile": "bakeVertexColor ? vcolMapUncompressedwebar : diffuseMapUncompressedwebar",
+                "outputImageFile": "scene_diffuseMap",
                 "quality": "diffuseMapQualityWebMulti"
             },
             "success": "'convert-occlusion-map-web-ar'",
@@ -1190,13 +1140,11 @@
             "task": "ConvertImage",
             "description": "Convert Occlusion Map",
             "pre": {
-                "deliverables": {
-                    "scene_occlusionMap": "baseMeshNameWebAR & '-occlusion-web-ar.jpg'"
-                }
+                "scene_occlusionMap": "baseMeshNameWebAR & '-occlusion-web-ar.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.occlusionMapUncompressedwebar",
-                "outputImageFile": "deliverables.scene_occlusionMap",
+                "inputImageFile": "occlusionMapUncompressedwebar",
+                "outputImageFile": "scene_occlusionMap",
                 "quality": "occlusionMapQuality"
             },
             "success": "'convert-normal-map-web-ar'",
@@ -1206,13 +1154,11 @@
             "task": "ConvertImage",
             "description": "Convert Normal Map",
             "pre": {
-                "deliverables": {
-                    "scene_normalMap": "baseMeshNameWebAR & '-normals-web-ar.jpg'"
-                }
+                "scene_normalMap": "baseMeshNameWebAR & '-normals-web-ar.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.normalMapUncompressedwebar",
-                "outputImageFile": "deliverables.scene_normalMap",
+                "inputImageFile": "normalMapUncompressedwebar",
+                "outputImageFile": "scene_normalMap",
                 "quality": "normalMapQualityWebMulti"
             },
             "success": "'convert-roughmetal-map-web-ar'",
@@ -1223,13 +1169,11 @@
             "description": "Convert Roughness/Metalness Map",
             "skip": "$not($exists(sourceRoughMetalMapFile))",
             "pre": {
-                "deliverables": {
-                    "scene_roughMetalMapAR": "baseMeshNameWebAR & '-roughmetal-web-ar.jpg'"
-                }
+                "scene_roughMetalMapAR": "baseMeshNameWebAR & '-roughmetal-web-ar.jpg'"
             },
             "parameters": {
-                "inputImageFile": "deliverables.roughMetalMapUncompressedwebar",
-                "outputImageFile": "deliverables.scene_roughMetalMapAR",
+                "inputImageFile": "roughMetalMapUncompressedwebar",
+                "outputImageFile": "scene_roughMetalMapAR",
                 "quality": "diffuseMapQualityWebMulti"
             },
             "success": "'web-ar-asset-glb'",
@@ -1245,11 +1189,11 @@
             },
             "parameters": {
                 "outputFile": "deliverables.webAssetGlb",
-                "meshFile": "deliverables.scene_unwrappedMesh",
-                "diffuseMapFile": "deliverables.scene_diffuseMap",
-                "occlusionMapFile": "deliverables.scene_occlusionMap",
-                "normalMapFile": "deliverables.scene_normalMap",
-                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? deliverables.scene_roughMetalMapAR : ''",
+                "meshFile": "scene_unwrappedMesh",
+                "diffuseMapFile": "scene_diffuseMap",
+                "occlusionMapFile": "scene_occlusionMap",
+                "normalMapFile": "scene_normalMap",
+                "metallicRoughnessMapFile": "sourceRoughMetalMapFile ? scene_roughMetalMapAR : ''",
                 "objectSpaceNormals": false,
                 "useCompression": true,
                 "compressionLevel": 10,
