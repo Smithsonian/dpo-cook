@@ -80,7 +80,7 @@ def run():
         uv_atlas = bpy.context.object.data.uv_layers.new(name='UVAtlas')
 
         # set new uv map as active
-        obj.data.uv_layers.active = uv_atlas
+        obj.data.uv_layers['UVAtlas'].active = True
 
         # Pack the UV islands
         bpy.ops.uv.pack_islands(margin=0.001)
