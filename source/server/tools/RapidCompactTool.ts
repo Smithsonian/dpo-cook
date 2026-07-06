@@ -106,13 +106,13 @@ export default class RapidCompactTool extends Tool<RapidCompactTool, IRapidCompa
                 const highPolyMesh = instance.getFilePath(settings.highPolyMeshFile);
                 const lowPolyMesh = instance.getFilePath(settings.lowPolyMeshFile);
 
-                command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${config.options} -e _rpd_dummy.obj`;
+                command += ` -i "${highPolyMesh}" -i "${lowPolyMesh}" ${config.options.join(" ")} -e _rpd_dummy.obj`;
             }
             else {
                 const inputFilePath = instance.getFilePath(settings.inputMeshFile);
                 const outputFilePath = instance.getFilePath(settings.outputMeshFile);
 
-                command += ` -i "${inputFilePath}" ${config.options} -e "${outputFilePath}"`;
+                command += ` -i "${inputFilePath}" ${config.options.join(" ")} -e "${outputFilePath}"`;
             }
 
             return {
