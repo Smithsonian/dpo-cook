@@ -20,7 +20,7 @@ import * as path from "path";
 
 import { Dictionary } from "@ff/core/types";
 
-import * as jsonLoader from "../utils/jsonLoader";
+import { validate } from "../utils/jsonLoader";
 
 import Tool, { ToolInstance, IToolSettings, IToolConfiguration } from "./Tool";
 
@@ -44,7 +44,7 @@ export default class TaskManager
         const schemaDir = path.resolve(dirs.base, "schemas/");
         const toolsSchemaPath = path.resolve(schemaDir, "tools.schema.json");
         const toolsFilePath = path.resolve(dirs.base, "tools.json");
-        this.toolConfigurations = jsonLoader.validate(toolsFilePath, toolsSchemaPath, true);
+        this.toolConfigurations = validate(toolsFilePath, toolsSchemaPath, true);
 
         this.loadTools(dirs.tools);
         this.loadTasks(dirs.tasks);

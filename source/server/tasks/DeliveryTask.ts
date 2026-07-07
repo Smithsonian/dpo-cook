@@ -17,8 +17,8 @@
 
 import * as fs from "fs";
 import * as path from "path";
-//import {createClient} from "webdav/web";
-const { createClient } = require("webdav");
+import {createClient} from "webdav";
+//const { createClient } = require("webdav");
 
 import Job from "../app/Job";
 

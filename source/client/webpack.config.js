@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-"use strict";
+//"use strict";
 
 var path = require('path');
 const childProcess = require("child_process");

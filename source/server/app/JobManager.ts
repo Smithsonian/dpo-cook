@@ -17,14 +17,14 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import * as filenamify from "filenamify";
+import filenamify from "filenamify";
 
-import * as Ajv from "ajv";
+import Ajv from "ajv";
 import { ValidateFunction } from "ajv";
 const jsonValidator = new Ajv({ allErrors: true, verbose: true });
 jsonValidator.addFormat("file", value => true);
 
-import Publisher from "@ff/core/Publisher";
+import Publisher from "@ff/core/Publisher.js";
 
 import {
     IRecipe,
@@ -184,6 +184,8 @@ export default class JobManager extends Publisher
 
             // validate the job parameters against the recipe's parameter schema
             if (!jsonValidator.validate(recipe.parameterSchema, jobOrder.parameters)) {
+                //console.log(recipe.parameterSchema);
+                //console.log(jobOrder.parameters);
                 throw new Error(
                     "invalid parameters in job order; " +
                     jsonValidator.errorsText(null, { separator: ", ", dataVar: "parameters" })

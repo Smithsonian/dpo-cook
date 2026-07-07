@@ -17,10 +17,10 @@
 
 import * as fs from "fs-extra";
 import * as path from "path";
-import * as moment from "moment";
-import * as table from "markdown-table";
+import moment from "moment";
+import table from "markdown-table";
 
-import * as Ajv from "ajv";
+import Ajv from "ajv";
 import { ValidateFunction } from "ajv";
 const jsonValidator = new Ajv({ useDefaults: true });
 
@@ -149,7 +149,7 @@ export default class Task
      */
     async cancel(): Promise<unknown>
     {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             if (this._resolveCancel) {
                 return reject("cancellation already in progress");

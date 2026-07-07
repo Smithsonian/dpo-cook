@@ -66,7 +66,7 @@ export default class DummyTask extends Task
     {
         const options = this.parameters as IDummyTaskParameters;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             let timeoutHandler, intervalHandler;
 
