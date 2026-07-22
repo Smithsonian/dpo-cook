@@ -51,7 +51,7 @@ export default class LichtFeldStudioTool extends Tool<LichtFeldStudioTool, ILich
         const inputFolder = path.parse(settings.colmapInputFolder).name;
         const name = path.parse(settings.outputFile).name;
 
-        const colmapInputFolder = instance.workDir;//instance.getFilePath(inputFolder);
+        const colmapInputFolder = instance.getFilePath(inputFolder);
         if (!colmapInputFolder) {
             throw new Error("LichtFeldStudioTool: missing image folder name");
         }

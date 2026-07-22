@@ -436,7 +436,8 @@
                 "inputImageFolder": "convertToJpg or preprocess ? sourceFolderConverted : sourceFolderBaseName",
                 "camerasFile": "baseMeshName & '.csv'",
                 "pointsFile": "baseMeshName & '-points.ply'",
-                "outputFile": "deliverables.meshFile"
+                "outputFile": "deliverables.meshFile",
+                "timeout": 14400
             },
             "success": "'delivery'",
             "failure": "$failure"
@@ -451,11 +452,12 @@
             },
             "parameters": {
                 "inputImageFolder": "alignTool = 'RealityScan' ? 'colmap\\\\' : 'images\\\\'",
-                "camerasFile": "alignTool = 'RealityScan' ? 'colmap\\\\Cameras.txt' : 'sparse\\\\0\\\\cameras.txt'",
-                "pointsFile": "alignTool = 'RealityScan' ? 'colmap\\\\Points3D.txt' : 'sparse\\\\0\\\\points3D.txt'",
-                "imagesFile": "alignTool = 'RealityScan' ? 'colmap\\\\Images.txt' : 'sparse\\\\0\\\\images.txt'",
+                "camerasFile": "alignTool = 'RealityScan' ? 'colmap\\\\sparse\\\\0\\\\Cameras.txt' : 'sparse\\\\0\\\\cameras.txt'",
+                "pointsFile": "alignTool = 'RealityScan' ? 'colmap\\\\sparse\\\\0\\\\Points3D.txt' : 'sparse\\\\0\\\\points3D.txt'",
+                "imagesFile": "alignTool = 'RealityScan' ? 'colmap\\\\sparse\\\\0\\\\Images.txt' : 'sparse\\\\0\\\\images.txt'",
                 "outputFile": "deliverables.meshFile",
-                "tool": "splatTool"
+                "tool": "splatTool",
+                "timeout": 14400
             },
             "success": "'delivery'",
             "failure": "$failure"
