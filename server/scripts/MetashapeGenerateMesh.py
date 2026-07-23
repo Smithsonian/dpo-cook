@@ -275,6 +275,9 @@ chunk.matchPhotos\
     reset_matches=False
 )
 
+# estimate image quality
+chunk.analyzeImages(chunk.cameras)
+
 # align the matched image pairs
 chunk.alignCameras()
 
@@ -455,22 +458,22 @@ if success_ratio < int(args.align_limit):
 # optimize cameras
 chunk.optimizeCameras( adaptive_fitting=True )
 
-if args.sb != None:
-    ## Detect markers
-    # Detect Circular 12bit coded markers
-    # Coded target options: [CircularTarget12bit, CircularTarget14bit, CircularTarget16bit, CircularTarget20bit]
-    chunk.detectMarkers\
-    (
-        target_type=Metashape.TargetType.CircularTarget12bit,
-        tolerance=25,
-        filter_mask=False,
-        inverted=False,
-        noparity=True,
-        maximum_residual=5,
-        minimum_size=0,
-        minimum_dist=5
-    )
+## Detect markers
+# Detect Circular 12bit coded markers
+# Coded target options: [CircularTarget12bit, CircularTarget14bit, CircularTarget16bit, CircularTarget20bit]
+chunk.detectMarkers\
+(
+    target_type=Metashape.TargetType.CircularTarget12bit,
+    tolerance=25,
+    filter_mask=False,
+    inverted=False,
+    noparity=True,
+    maximum_residual=5,
+    minimum_size=0,
+    minimum_dist=5
+)
 
+if args.sb != None:
 
     optimizeMarkerFlag = convert(args.optm);
     if optimizeMarkerFlag == True:

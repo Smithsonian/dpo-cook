@@ -188,7 +188,7 @@
             },
             "cleanupMesh": {
                 "type": "boolean",
-                "default": false
+                "default": true
             },
             "optimalPlacement": {
                 "type": "boolean",
@@ -324,6 +324,23 @@
             "post": {
                 "reorientedMeshFileMaster": "'merged_multi_mesh.obj'"
             },
+            "success": "'split-roughmetal'",
+            "failure": "$failure"
+        },
+        "split-roughmetal": {
+            "task": "SplitImageChannels",
+            "description": "Split roughness/metalness into single channels.",
+            "skip": "$not($exists(sourceRoughMetalMapFile))",
+            "pre": {
+                "roughMapFile": "$baseName(reorientedMeshFileMaster) & '-roughness.jpg'",
+                "metalMapFile": "$baseName(reorientedMeshFileMaster) & '-metalness.jpg'"
+            },
+            "parameters": {
+                "inputMapFile": "sourceRoughMetalMapFile",
+                "greenChannelMapFile": "roughMapFile",
+                "blueChannelMapFile": "metalMapFile",
+                "timeout": 7200
+            },
             "success": "'sync-mtl-master'",
             "failure": "$failure"
         },
@@ -332,12 +349,14 @@
             "description": "Sync mtl references for master asset",
             "skip": "$not(bakeDiffuse)",
             "pre": {
-                "mtlFile_master": "$firstTrue(sourceMTLFile, outputFileBaseName & '-master.mtl')"
+                "mtlFile_master": "$baseName(reorientedMeshFileMaster) & '.mtl'"
             },
             "parameters": {
                 "objFile": "reorientedMeshFileMaster",
                 "mtlFile": "mtlFile_master",
-                "textureFile": "sourceDiffuseMapFile"
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? sourceDiffuseMapFile : ''",
+                "roughnessMapFile": "sourceRoughMetalMapFile ? roughMapFile : ''",
+                "metalnessMapFile": "sourceRoughMetalMapFile ? metalMapFile : ''"
             },
             "success": "decimationTool = 'RapidCompact' ? 'decimate-rapid-low' : 'decimate-meshlab-low'",
             "failure": "$failure"
@@ -609,6 +628,23 @@
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
             },
+            "success": "'split-roughmetal-low'",
+            "failure": "$failure"
+        },
+        "split-roughmetal-low": {
+            "task": "SplitImageChannels",
+            "description": "Split roughness/metalness into single channels.",
+            "skip": "$not(generateLowAssets) or $not($exists(scene_roughMetalMapLow))",
+            "pre": {
+                "roughMapLowFile": "$baseName(reorientedMeshFileMaster) & '-roughness-low.jpg'",
+                "metalMapLowFile": "$baseName(reorientedMeshFileMaster) & '-metalness-low.jpg'"
+            },
+            "parameters": {
+                "inputMapFile": "scene_roughMetalMapLow",
+                "greenChannelMapFile": "roughMapLowFile",
+                "blueChannelMapFile": "metalMapLowFile",
+                "timeout": 7200
+            },
             "success": "'sync-mtl-low'",
             "failure": "$failure"
         },
@@ -617,12 +653,14 @@
             "description": "Sync mtl references for Low asset",
             "skip": "$not(generateLowAssets) or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
             "pre": {
-                "mtlFile_low": "baseMeshMapNameLow & '.mtl'"
+                "mtlFile_low": "outputFileBaseName & '-' & $k(numFacesLow) & '.mtl'"
             },
             "parameters": {
                 "objFile": "scene_unwrappedMeshLow",
                 "mtlFile": "mtlFile_low",
-                "textureFile": "scene_diffuseMapHigh"
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? scene_diffuseMapHigh : ''",
+                "roughnessMapFile": "sourceRoughMetalMapFile ? roughMapLowFile : ''",
+                "metalnessMapFile": "sourceRoughMetalMapFile ? metalMapLowFile : ''"
             },
             "success": "'inspect-mesh'",
             "failure": "$failure"
@@ -833,21 +871,6 @@
                 "inputImageFile": "roughMetalMapUncompressedAR",
                 "outputImageFile": "scene_roughMetalMapAR",
                 "quality": "diffuseMapQualityLowAR"
-            },
-            "success": "'sync-mtl-ar'",
-            "failure": "$failure"
-        },
-        "sync-mtl-ar": {
-            "task": "SyncObjMtl",
-            "description": "Sync mtl references for AR asset",
-            "skip": "$not(generateARAssets) or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
-            "pre": {
-                "mtlFile_ar": "baseMeshMapNameAR & '.mtl'"
-            },
-            "parameters": {
-                "objFile": "scene_unwrappedMesh",
-                "mtlFile": "mtlFile_ar",
-                "textureFile": "scene_diffuseMapAR"
             },
             "success": "'web-asset-glb-draco-ar'",
             "failure": "$failure"
@@ -1230,6 +1253,23 @@
                 "alphaBlend": "saveAlpha",
                 "tool": "assetTool"
             },
+            "success": "'split-roughmetal-med'",
+            "failure": "$failure"
+        },
+        "split-roughmetal-med": {
+            "task": "SplitImageChannels",
+            "description": "Split roughness/metalness into single channels.",
+            "skip": "$not(generateMediumAssets) or $not($exists(roughMetalMap))",
+            "pre": {
+                "roughMapMedFile": "$baseName(reorientedMeshFileMaster) & '-roughness-med.jpg'",
+                "metalMapMedFile": "$baseName(reorientedMeshFileMaster) & '-metalness-med.jpg'"
+            },
+            "parameters": {
+                "inputMapFile": "roughMetalMap",
+                "greenChannelMapFile": "roughMapMedFile",
+                "blueChannelMapFile": "metalMapMedFile",
+                "timeout": 7200
+            },
             "success": "'sync-mtl-medium'",
             "failure": "$failure"
         },
@@ -1238,12 +1278,14 @@
             "description": "Sync mtl references for Medium asset",
             "skip": "$not(generateMediumAssets)  or ($not(bakeDiffuse)  and $not(bakeVertexColor))",
             "pre": {
-                "mtlFile_medium": "baseMeshMapNameMedium & '.mtl'"
+                "mtlFile_medium": "outputFileBaseName & '-1000k' & '.mtl'"
             },
             "parameters": {
                 "objFile": "unwrappedMesh",
                 "mtlFile": "mtlFile_medium",
-                "textureFile": "diffuseMap"
+                "diffuseMapFile": "bakeDiffuse or bakeVertexColor ? diffuseMap : ''",
+                "roughnessMapFile": "sourceRoughMetalMapFile ? roughMapMedFile : ''",
+                "metalnessMapFile": "sourceRoughMetalMapFile ? metalMapMedFile : ''"
             },
             "success": "'zip-master'",
             "failure": "$failure"
@@ -1260,7 +1302,8 @@
                 "inputFile1": "reorientedMeshFileMaster",
                 "inputFile2": "sourceDiffuseMapFile",
                 "inputFile3": "mtlFile_master",
-                "inputFile4": "sourceRoughMetalMapFile",
+                "inputFile4": "roughMapFile",
+                "inputFile5": "metalMapFile",
                 "outputFile": "deliverables.objZipFull",
                 "operation": "'zip'"
             },
@@ -1304,7 +1347,8 @@
                 "inputFile3": "scene_diffuseMapHigh",
                 "inputFile4": "scene_occlusionMapHigh",
                 "inputFile5": "scene_normalMapHigh",
-                "inputFile6": "scene_roughMetalMapLow",
+                "inputFile6": "roughMapLowFile",
+                "inputFile7": "metalMapLowFile",
                 "outputFile": "deliverables.objZipLow",
                 "operation": "'zip'"
             },
@@ -1348,7 +1392,8 @@
                 "inputFile3": "diffuseMap",
                 "inputFile4": "occlusionMap",
                 "inputFile5": "normalMap",
-                "inputFile6": "roughMetalMap",
+                "inputFile6": "roughMapMedFile",
+                "inputFile7": "metalMapMedFile",
                 "outputFile": "deliverables.objZipMed",
                 "operation": "'zip'"
             },

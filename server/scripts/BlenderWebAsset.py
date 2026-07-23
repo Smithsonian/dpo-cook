@@ -70,7 +70,7 @@ def run():
     elif file_extension == '.ply':
         bpy.ops.import_mesh.ply(filepath=args.input)
     elif file_extension == '.stl':
-        bpy.ops.import_mesh.stl(filepath=args.input)
+        bpy.ops.wm.stl_import(filepath=args.input)
     elif file_extension == '.x3d':
         bpy.ops.import_scene.x3d(filepath=args.input)
     elif file_extension == '.dae':
@@ -107,7 +107,7 @@ def run():
     if args.occlusion is not None:
         settings_node = mat.node_tree.nodes.new('ShaderNodeGroup')
         gltf_node_group = bpy.data.node_groups.new('glTF Material Output', 'ShaderNodeTree')
-        gltf_node_group.inputs.new("NodeSocketFloat", "Occlusion")
+        gltf_node_group.interface.new_socket(name="Occlusion", in_out="INPUT", socket_type="NodeSocketFloat")
         settings_node.node_tree = gltf_node_group
         occ_tex_image = mat.node_tree.nodes.new('ShaderNodeTexImage')
         occ_tex_image.image = bpy.data.images.load(args.occlusion)

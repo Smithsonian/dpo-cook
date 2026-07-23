@@ -52,9 +52,8 @@ export default class RealityCaptureTool extends Tool<RealityCaptureTool, IRealit
         operations += ` -set "appIncSubdirs=true" -stdConsole -newScene -addFolder "${inputImageFolder}"`;
 
         // add scaling info
+        operations += ` -detectMarkers`;
         if(settings.scalebarFile) {
-            operations += ` -detectMarkers`;
-
             const sbFile: string = await instance.readFile(settings.scalebarFile).then(data => { return data as string })
             .catch( err => { throw new Error(`Error reading scalebar file. ${err}`) });
 
