@@ -492,6 +492,7 @@
             "description": "Generate screenshot of result geometry.",
             "parameters": {
                 "inputMeshFile": "deliverables.finalMeshFile",
+                "outputFile": "baseMeshName & '-final-preview'",
                 "timeout": 1200
             },
             "success": "'delivery'",

@@ -9,7 +9,7 @@ def importModel(file_path, file_extension):
     elif file_extension == '.ply':
         bpy.ops.import_mesh.ply(filepath=file_path)
     elif file_extension == '.stl':
-        bpy.ops.import_mesh.stl(filepath=file_path)
+        bpy.ops.wm.stl_import(filepath=file_path)
     elif file_extension == '.x3d':
         bpy.ops.import_scene.x3d(filepath=file_path)
     elif file_extension == '.dae':
@@ -80,7 +80,7 @@ def run():
         uv_atlas = bpy.context.object.data.uv_layers.new(name='UVAtlas')
 
         # set new uv map as active
-        obj.data.uv_layers.active = uv_atlas
+        obj.data.uv_layers['UVAtlas'].active = True
 
         # Pack the UV islands
         bpy.ops.uv.pack_islands(margin=0.001)

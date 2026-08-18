@@ -29,6 +29,8 @@ export interface IScreenshotTaskParameters extends ITaskParameters
 {
     /** Input mesh file name. */
     inputMeshFile: string;
+    /** Output screenshot file name. */
+    outputFile: string;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
 }
@@ -49,10 +51,11 @@ export default class ScreenshotTask extends ToolTask
         type: "object",
         properties: {
             inputMeshFile: { type: "string", minLength: 1 },
+            outputFile: { type: "string", minLength: 1 },
             timeout: { type: "integer", default: 0 }
         },
         required: [
-            "inputMeshFile"
+            "inputMeshFile", "outputFile"
         ],
         additionalProperties: false
     };
@@ -66,6 +69,7 @@ export default class ScreenshotTask extends ToolTask
 
         const settings: IBlenderToolSettings = {
             inputMeshFile: params.inputMeshFile,
+            outputFile: params.outputFile,
             mode: "screenshot",
             timeout: params.timeout
         };
