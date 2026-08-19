@@ -18,7 +18,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import * as jsonLoader from "../utils/jsonLoader";
+import { validate } from "../utils/jsonLoader";
 
 import ExpressServer from "./ExpressServer";
 import JobManager from "./JobManager";
@@ -47,7 +47,7 @@ export default class ProcessingServer
         const schemaDir = path.resolve(baseDir, "schemas/");
         const configSchemaPath = path.resolve(schemaDir, "server.schema.json");
         const configFilePath = path.resolve(baseDir, "server.json");
-        const config = jsonLoader.validate<any>(configFilePath, configSchemaPath, true);
+        const config = validate<any>(configFilePath, configSchemaPath, true);
 
 
         const { work, recipes, files, tools, tasks } = config.directories;

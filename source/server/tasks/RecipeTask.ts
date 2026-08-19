@@ -17,10 +17,10 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import * as cloneDeep from "clone-deep";
-import * as jsonata from "jsonata";
+import cloneDeep from "clone-deep";
+import jsonata from "jsonata";
 
-import * as Ajv from "ajv";
+import Ajv from "ajv";
 const jsonValidator = new Ajv({ useDefaults: true, allErrors: true });
 jsonValidator.addFormat("file", value => true);
 

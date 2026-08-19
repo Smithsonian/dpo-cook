@@ -24,6 +24,7 @@ import { ICscriptToolSettings } from "../tools/CscriptTool";
 
 import Task, { ITaskParameters } from "../app/Task";
 import ToolTask from "../app/ToolTask";
+import { IBlenderToolSettings } from "../tools/BlenderTool";
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -34,14 +35,18 @@ export interface ISyncObjMtlTaskParameters extends ITaskParameters
     objFile: string;
     /** Name of the mtl file to sync to the obj. */
     mtlFile: string;
-    /** Name of the texture file to be referenced in the mtl. */
-    textureFile: string;
+    /** Name of the diffuse texture file to be referenced in the mtl. */
+    diffuseMapFile: string;
+    /** Name of the metalness texture file to be referenced in the mtl. */
+    metalnessMapFile: string;
+    /** Name of the roughness texture file to be referenced in the mtl. */
+    roughnessMapFile: string;
     /** Force a mtl file reference in the obj even if none exists. */
     doForce?: boolean;
     /** Maximum task execution time in seconds (default: 0, uses timeout defined in tool setup, see [[IToolConfiguration]]). */
     timeout?: number;
-    /** Default tool is Cscript. Specify another tool if needed. */
-    tool?: "Cscript";
+    /** Default tool is Blender. Specify another tool if needed. */
+    tool?: "Blender" | "Cscript";
 }
 
 /**
@@ -61,15 +66,17 @@ export default class SyncObjMtlTask extends ToolTask
         properties: {
             objFile: { type: "string", minLength: 1 },
             mtlFile: { type: "string", minLength: 1 },
-            textureFile: { type: "string", minLength: 0, default: "" },
+            diffuseMapFile: { type: "string", minLength: 0, default: "" },
+            metalnessMapFile: { type: "string", minLength: 0, default: "" },
+            roughnessMapFile: { type: "string", minLength: 0, default: "" },
             doForce: { type: "boolean", default: false} ,
             timeout: { type: "integer", minimum: 0, default: 0 },
-            tool: { type: "string", enum: [ "Cscript" ], default: "Cscript" }
+            tool: { type: "string", enum: [ "Cscript", "Blender" ], default: "Blender" }
         },
         required: [
             "objFile",
             "mtlFile",
-            "textureFile"
+            "diffuseMapFile"
         ],
         additionalProperties: false
     };
@@ -86,24 +93,24 @@ export default class SyncObjMtlTask extends ToolTask
         const objFilePath = path.resolve(this.context.jobDir, params.objFile);
         const mtlFilePath = path.resolve(this.context.jobDir, params.mtlFile);
 
-        // Create mtl file if needed.
-        try {
-            if(!fs.existsSync(mtlFilePath)) {
-                // default mtl file
-                const mtlString = `newmtl ml\nmap_Kd ${params.textureFile}`;
-
-                fs.writeFile(mtlFilePath, mtlString, function (err) {
-                    if (err) throw err;
-                });
-
-                generatedMtl = true;
-            }
-        }
-        catch(err) {
-            throw new Error("File system error. Can't check mtl file.");
-        }
-
         if (params.tool === "Cscript") {
+
+            // Create mtl file if needed.
+            try {
+                if(!fs.existsSync(mtlFilePath)) {
+                    // default mtl file
+                    const mtlString = `newmtl ml\nmap_Kd ${params.diffuseMapFile}`;
+
+                    fs.writeFile(mtlFilePath, mtlString, function (err) {
+                        if (err) throw err;
+                    });
+
+                    generatedMtl = true;
+                }
+            }
+            catch(err) {
+                throw new Error("File system error. Can't check mtl file.");
+            }
             
             let script = "";
             //const objBuffer = fs.readFileSync(objFilePath);
@@ -120,6 +127,18 @@ export default class SyncObjMtlTask extends ToolTask
             };
 
             this.addTool("Cscript", settings);
+        }
+        else if (params.tool === "Blender") {
+            const settings: IBlenderToolSettings = {
+                inputMeshFile: objFilePath,
+                diffuseMapFile: params.diffuseMapFile,
+                metalnessMapFile: params.metalnessMapFile,
+                roughnessMapFile: params.roughnessMapFile,
+                mode: "mtlsync",
+                timeout: params.timeout
+            };
+           
+            this.addTool("Blender", settings);
         }
         else {
             throw new Error("SyncObjMtlTask.constructor - unknown tool: " + params.tool);  

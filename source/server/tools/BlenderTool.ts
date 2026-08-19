@@ -38,6 +38,8 @@ export interface IBlenderToolSettings extends IToolSettings
     occlusionMapFile?: string;
     emissiveMapFile?: string;
     metallicRoughnessMapFile?: string;
+    metalnessMapFile?: string;
+    roughnessMapFile?: string;
     normalMapFile?: string;
     objectSpaceNormals?: boolean;
     useCompression?: boolean;
@@ -153,6 +155,19 @@ export default class BlenderTool extends Tool<BlenderTool, IBlenderToolSettings>
             }
 
             operation += ` -uc "${settings.useCompression}" -mb "${settings.embedMaps}" -mf "${settings.metallicFactor}" -rf "${settings.roughnessFactor}" -cl ${settings.compressionLevel} -ab ${settings.alphaBlend} -os ${settings.objectSpaceNormals}`;
+        }
+        else if(settings.mode === "mtlsync") {
+            operation += ` --python "${instance.getFilePath("../../scripts/BlenderMtlSync.py")}" -- -i "${instance.getFilePath(settings.inputMeshFile)}" -o "${instance.getFilePath(settings.inputMeshFile)}"`;
+        
+            if(settings.diffuseMapFile) {
+                operation += ` -dm "${instance.getFilePath(settings.diffuseMapFile)}"`;
+            }
+            if(settings.metalnessMapFile) {
+                operation += ` -mm "${instance.getFilePath(settings.metalnessMapFile)}"`;
+            }
+            if(settings.roughnessMapFile) {
+                operation += ` -rm "${instance.getFilePath(settings.roughnessMapFile)}"`;
+            }
         }
 
         const command = `"${this.configuration.executable}" ${operation}`;

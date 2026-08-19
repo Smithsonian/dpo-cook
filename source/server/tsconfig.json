@@ -4,10 +4,16 @@
         { "path": "../common" }
     ],
     "compilerOptions": {
-        "target": "ES2016",
+        "target": "es2017",
         "module": "commonjs",
         "sourceMap": true,
+        //"strict": true,
+        "jsx": "react",
+        "esModuleInterop": true,
         "resolveJsonModule": true,
+        "moduleResolution": "node",
+        //"noUnusedLocals": true,
+        "experimentalDecorators": true,
         "outDir": "../../server/bin",
         "baseUrl": "../../server/bin/node_modules"
     },
