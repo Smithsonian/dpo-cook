@@ -217,7 +217,7 @@
             "parameters": {
                 "objFile": "deliverables.scene_unwrappedMesh",
                 "mtlFile": "mtlFile",
-                "textureFile": "diffuseMapUncompressed"
+                "diffuseMapFile": "diffuseMapUncompressed"
             },
             "success": "'print-fix-final'",
             "failure": "$failure"
