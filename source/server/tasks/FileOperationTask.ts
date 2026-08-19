@@ -17,8 +17,8 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import * as mkdirp from "mkdirp";
-import * as rimraf from "rimraf";
+import { mkdirp } from "mkdirp";
+import rimraf from "rimraf";
 
 import Job from "../app/Job";
 
