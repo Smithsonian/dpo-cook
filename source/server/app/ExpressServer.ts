@@ -102,6 +102,9 @@ export default class ExpressServer
         this.server.listen(port, () => {
             console.info(`\nServer ready and listening on port ${port}`);
         });
+
+        this.server.timeout = 0;
+        this.server.requestTimeout = 0;
     }
 
     addSessions()
