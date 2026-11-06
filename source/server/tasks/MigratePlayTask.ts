@@ -16,11 +16,11 @@
  */
 
 import * as fs from "fs-extra";
-import * as mkdirp from "mkdirp";
-import * as filenamify from "filenamify";
-import * as deepEqual from "deep-equal";
+import mkdirp from "mkdirp";
+import filenamify from "filenamify";
+import deepEqual from "deep-equal";
 import { Parser, DomHandler, DomUtils } from "htmlparser2";
-import * as THREE from "three";
+import THREE from "three";
 
 import { Dictionary } from "@ff/core/types";
 import uniqueId from "@ff/core/uniqueId";

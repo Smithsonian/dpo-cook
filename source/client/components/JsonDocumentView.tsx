@@ -16,7 +16,7 @@
  */
 
 import * as React from "react";
-import JSONTree from "react-json-tree";
+import {JSONTree} from "react-json-tree";
 
 import FlexContainer from "@ff/react/FlexContainer";
 import FlexItem from "@ff/react/FlexItem";

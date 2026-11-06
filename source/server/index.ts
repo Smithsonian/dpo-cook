@@ -20,7 +20,7 @@ sourceMapSupport.install();
 
 import * as path from "path";
 
-import ProcessingServer from "./app/ProcessingServer";
+import ProcessingServer from "./app/ProcessingServer.js";
 
 ////////////////////////////////////////////////////////////////////////////////
 
