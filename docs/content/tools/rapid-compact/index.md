@@ -1,17 +1,18 @@
 ---
-title: RapidCompact
+title: RapidCompact/RapidPipeline
 summary: All-in-one mesh simplification, UV unwrapping, and map baking tool.
 ---
 
 ### Information
 
-- Developer: [Darmstadt Graphics Group GmbH](https://www.dgg3d.com/)
-- Website: https://www.dgg3d.com/rapidcompact
+- Developer: [Darmstadt Graphics Group GmbH](https://rapidpipeline.com/en/about/)
+- Website: https://rapidpipeline.com/
 - License: Commercial/Proprietary
 
 ### Installation
 
 - Recommended version with Cook: *6.7.0*
+- **Note** - the currently supported version above is branded as RapidCompact, though newer versions of the software are available as RapidPipeline.
 - Windows binary available to registered customers
 
 ### Configuration

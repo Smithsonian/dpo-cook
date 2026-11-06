@@ -24,7 +24,7 @@ if file_extension == '.obj':
 elif file_extension == '.ply':
     bpy.ops.import_mesh.ply(filepath=argv[0])
 elif file_extension == '.stl':
-    bpy.ops.import_mesh.stl(filepath=argv[0])
+    bpy.ops.wm.stl_import(filepath=argv[0])
 elif file_extension == '.x3d':
     bpy.ops.import_scene.x3d(filepath=argv[0])
 elif file_extension == '.dae':
@@ -42,10 +42,6 @@ try: #check for provided output filename
     file_extension = file_extension.lower()
 except IndexError:
     mod_filename = filename
-
-# saving usdz as usdc for now and zipping later
-if file_extension == '.usdz':
-    file_extension = '.usdc'
     
 print("Exporting file: " + mod_filename)
 if len(bpy.data.objects) > 0:
@@ -60,9 +56,9 @@ if len(bpy.data.objects) > 0:
     elif file_extension == '.ply':
         bpy.ops.export_mesh.ply(filepath=save_file)
     elif file_extension == '.stl':
-        bpy.ops.export_mesh.stl(filepath=save_file)
-    elif file_extension == '.usdc':
-        bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True, export_textures=True, relative_paths=True)
+        bpy.ops.wm.stl_export(filepath=save_file)
+    elif file_extension == '.usdz':
+        bpy.ops.wm.usd_export(filepath=save_file, check_existing=False, export_materials=True, generate_preview_surface=True)
     elif file_extension == '.fbx':
         bpy.ops.export_scene.fbx(filepath=save_file, check_existing=False, path_mode="COPY", embed_textures=True)
     else:

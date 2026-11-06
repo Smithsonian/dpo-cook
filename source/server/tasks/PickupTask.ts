@@ -151,7 +151,7 @@ export default class PickupTask extends Task
 
         return remoteClient.getFileContents(remoteFileName)
             .then(buffer => {
-                return new Promise((resolve, reject) => {
+                return new Promise<void>((resolve, reject) => {
                     fs.writeFile(destinationFilePath, buffer, err => {
                         if (err) {
                             return reject(new Error(`failed to write file: '${destinationFilePath}', reason: ${err.message}`));

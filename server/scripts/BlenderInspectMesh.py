@@ -5,7 +5,6 @@ import sys
 import math
 import bmesh
 import struct
-from io_mesh_stl import stl_utils
 from mathutils import Vector, Euler, bvhtree
 
 channel_types = ['Base Color', 'Metallic', 'Specular', 'Roughness', 'Transmission', 'Emission', 'Alpha', 'Normal', 'Occlusion']
@@ -57,6 +56,29 @@ def self_intersecting(object: bpy.types.Object) -> bool:
     bpy.context.view_layer.objects.active = None
     
     return is_intersecting
+
+def is_stl_ascii(filepath):
+    try:
+        with open(filepath, 'rb') as file:
+            # Read the first 5 bytes
+            header = file.read(5)
+            
+            # ASCII STL files must start with the word 'solid' (case-insensitive)
+            if header.lower() != b'solid':
+                return False
+                
+            # Double-check by reading a larger chunk and scanning for null bytes
+            # Binary STLs frequently contain random binary values including nulls
+            file.seek(0)
+            chunk = file.read(1024)
+            if b'\x00' in chunk:
+                return False
+                
+            return True
+            
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        return False
 
 # Check for ply format - pulled from importer (import_ply.py)
 def is_ply_ascii(filepath) -> bool:
@@ -155,9 +177,8 @@ def run():
         bpy.ops.import_mesh.ply(filepath=argv[0])
         isAscii = is_ply_ascii(argv[0])
     elif file_extension == '.stl':
-        bpy.ops.import_mesh.stl(filepath=argv[0])
-        with open(argv[0], 'rb') as data:
-            isAscii = stl_utils._is_ascii_file(data)
+        bpy.ops.wm.stl_import(filepath=argv[0])
+        isAscii = is_stl_ascii(argv[0])
     elif file_extension == '.x3d':
         bpy.ops.import_scene.x3d(filepath=argv[0])
     elif file_extension == '.dae':

@@ -18,8 +18,8 @@
 import * as fs from "fs-extra";
 import * as path from "path";
 import * as os from "os";
-import * as osUtils from "os-utils";
-import * as child_process from "child_process";
+import osUtils from "os-utils";
+import child_process from "child_process";
 
 import Publisher, { ITypedEvent } from "@ff/core/Publisher";
 
@@ -156,7 +156,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
 
     async cancel(): Promise<unknown>
     {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             if (this._resolveCancel) {
                 return reject("cancellation already in progress");
@@ -269,7 +269,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
      */
     protected async wait(): Promise<unknown>
     {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             // tool instances and CPU available? then run immediately
             osUtils.cpuUsage(usage => {
@@ -311,7 +311,7 @@ export default class ToolInstance<T extends Tool = Tool, S extends IToolSettings
         let cancelTimerHandle = null;
         let timeoutHandle = null;
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             let terminated = false;
             const time = new Date();

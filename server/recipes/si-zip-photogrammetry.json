@@ -94,13 +94,13 @@
             },
             "tiepointLimit": {
                 "type": "number",
-                "default": 25000,
+                "default": 8000,
                 "minimum": 1000,
                 "maximum": 50000
             },
             "keypointLimit": {
                 "type": "number",
-                "default": 75000,
+                "default": 80000,
                 "minimum": 1000,
                 "maximum": 120000
             },
@@ -114,11 +114,11 @@
             },
             "saveScreenshot": {
                 "type": "boolean",
-                "default": false
+                "default": true
             },
             "genericPreselection": {
                 "type": "boolean",
-                "default": true
+                "default": false
             },
             "depthMaxNeighbors": {
                 "type": "number",
@@ -167,6 +167,10 @@
                 ],
                 "default": "File"
             },
+            "recursiveZip": {
+                "type": "boolean",
+                "default": false
+            },
             "transportMethod": {
                 "type": "string",
                 "enum": [
@@ -186,7 +190,7 @@
         "advanced": [
             "alignmentLimit", "convertToJpg", "tiepointLimit", "keypointLimit", "turntableGroups", "genericPreselection", "depthMaxNeighbors",
             "meshQuality", "customFaceCount", "depthMapQuality", "saveScreenshot", "levelClipAlign", "clipLevel", "maskMode", "wbTint", "wbTemperature",
-            "exposureComp", "sharpeningEnabled", "lensProfile"
+            "exposureComp", "sharpeningEnabled", "lensProfile", "recursiveZip"
         ],
         "additionalProperties": false
     },
@@ -218,7 +222,7 @@
             "parameters": {
                 "inputFile1": "sourceFolderPath",
                 "fileFilter": "filetype",
-                "recursive": false,
+                "recursive": "recursiveZip",
                 "outputFile": "fileZip",
                 "operation": "'path-zip'"
             },
@@ -256,7 +260,7 @@
             "parameters": {
                 "inputFile1": "alignFolderPath",
                 "fileFilter": "filetype",
-                "recursive": false,
+                "recursive": "recursiveZip",
                 "outputFile": "alignFileZip",
                 "operation": "'path-zip'"
             },
@@ -327,7 +331,7 @@
             "parameters": {
                 "inputFile1": "maskFolderPath",
                 "fileFilter": "maskFiletype",
-                "recursive": false,
+                "recursive": "recursiveZip",
                 "outputFile": "maskFileZip",
                 "operation": "'path-zip'"
             },
@@ -545,6 +549,7 @@
             "description": "Generate screenshot of result geometry.",
             "parameters": {
                 "inputMeshFile": "deliverables.finalMeshFile",
+                "outputFile": "baseMeshName & '-raw_clean-preview'",
                 "timeout": 1200
             },
             "success": "'zip-proj-align'",

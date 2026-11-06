@@ -19,7 +19,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as commentJSON from "comment-json";
 
-import * as Ajv from "ajv";
+import Ajv from "ajv";
 import { ValidateFunction } from "ajv";
 const jsonValidator = new Ajv({ useDefaults: true, allErrors: true });
 

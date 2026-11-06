@@ -43,8 +43,10 @@ export interface IImageMagickToolSettings extends IToolSettings
     level?: number;
     /** Resizes the image. values <= 2 represent relative scale, otherwise absolute size in pixels. */
     resize?: number;
-    /** If true, expects three input images which are copied to the red, green, and blue channels. */
+    /** If true, expects three input images which are copied to the red, green, and blue channels. (optional alpha) */
     channelCombine?: boolean;
+    /** If true, expects a single input image to be split to available image channel files */
+    channelSplit?: boolean;
     /** Automatic stretching of the individual channels. */
     channelNormalize?: boolean;
     /** Gamma correction of the individual channels (1.0 = unchanged). */
@@ -99,12 +101,8 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
             operation += ` -path "${outputImagePath}" -quality ${quality} -format ${settings.batchConvertType} "${inputImagePath}\\*.*"`;
         }
         else { // single image conversion
-            const outputImagePath = instance.getFilePath(settings.outputImageFile);
-            if (!outputImagePath) {
-                throw new Error("ImageMagickTool: missing output map file");
-            }
-
-            operation = "convert";
+            
+            operation = "";//"convert";
 
             if (settings.channelCombine) {
                 const redImagePath = instance.getFilePath(settings.redChannelInputFile);
@@ -123,9 +121,9 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
                 const channelAutoLevel = settings.channelNormalize ? "-auto-level" : "";
 
                 operation += [
-                    ` ( "${redImagePath}" ${channelAutoLevel} -gamma ${channelGamma[0]} )`,
-                    ` ( "${greenImagePath}" ${channelAutoLevel} -gamma ${channelGamma[1]} )`,
-                    ` ( "${blueImagePath}" ${channelAutoLevel} -gamma ${channelGamma[2]} )`,
+                    ` ( "${redImagePath}" ${channelAutoLevel} -channel R -set colorspace RGB -separate -gamma ${channelGamma[0]} )`,
+                    ` ( "${greenImagePath}" ${channelAutoLevel} -channel G -set colorspace RGB -separate -gamma ${channelGamma[1]} )`,
+                    ` ( "${blueImagePath}" ${channelAutoLevel} -channel B -set colorspace RGB -separate -gamma ${channelGamma[2]} )`,
                 ].join("");
     
                 if(settings.alphaChannelInputFile) {
@@ -134,6 +132,34 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
                 }
     
                 operation += ` -combine`;
+            }
+            else if (settings.channelSplit) {
+                const inputImagePath = instance.getFilePath(settings.inputImageFile);
+                const redImagePath = instance.getFilePath(settings.redChannelInputFile);
+                const greenImagePath = instance.getFilePath(settings.greenChannelInputFile);
+                const blueImagePath = instance.getFilePath(settings.blueChannelInputFile);
+                const alphaImagePath = instance.getFilePath(settings.alphaChannelInputFile);
+                let channels = "";
+
+                if(redImagePath) {
+                    channels += "R";
+                }
+                if(greenImagePath) {
+                    channels += "G";
+                }
+                if(blueImagePath) {
+                    channels += "B";
+                }
+                if(alphaImagePath) {
+                    channels += "A";
+                }
+
+                if(channels.length > 0) {
+                    operation += ` "${inputImagePath}" -channel ${channels} -separate `;
+                }
+
+                const inputFilename = settings.inputImageFile.split(".");
+                settings.outputImageFile = inputFilename[0] + "_%d." + inputFilename[1];
             }
             else {
                 const inputImagePath = instance.getFilePath(settings.inputImageFile);
@@ -155,6 +181,11 @@ export default class ImageMagickTool extends Tool<ImageMagickTool, IImageMagickT
             const gamma = settings.gamma || 1.0;
             if (gamma !== 1.0) {
                 operation += ` -gamma ${gamma}`;
+            }
+
+            const outputImagePath = instance.getFilePath(settings.outputImageFile);
+            if (!outputImagePath) {
+                throw new Error("ImageMagickTool: missing output map file");
             }
 
             let quality = settings.quality || 70;

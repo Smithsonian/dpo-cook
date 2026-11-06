@@ -117,7 +117,7 @@ export default class GenerateUsdzTask extends ToolTask
 
     protected async instanceDidExit(instance: ToolInstance)
     {
-        if (instance.tool instanceof BlenderTool) {
+        /*if (instance.tool instanceof BlenderTool) {
             const params = this.parameters as IGenerateUsdzTaskParameters;
             const filename = path.parse(params.outputFile).name;
             const usdaName = filename + ".usdc"
@@ -149,7 +149,7 @@ export default class GenerateUsdzTask extends ToolTask
             }).catch((error) => {throw new Error("could not rename USD file. "+error);});
 
             await zipTask.run().catch((e) => {throw new Error("Could not zip usdz: "+e);});
-        }
+        }*/
 
         return Promise.resolve();
     }

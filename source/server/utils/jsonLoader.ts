@@ -18,7 +18,7 @@
 import * as fs from "fs";
 import * as commentJSON from "comment-json";
 
-import * as Ajv from "ajv";
+import Ajv from "ajv";
 import { ValidateFunction } from "ajv";
 
 

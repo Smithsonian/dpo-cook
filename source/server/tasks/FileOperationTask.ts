@@ -17,8 +17,8 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import * as mkdirp from "mkdirp";
-import * as rimraf from "rimraf";
+import { mkdirp } from "mkdirp";
+import rimraf from "rimraf";
 
 import Job from "../app/Job";
 
@@ -74,7 +74,7 @@ export default class FileOperationTask extends Task
 
     protected async execute(): Promise<unknown>
     {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
 
             const params = this.parameters as IFileOperationTaskParameters;
             const filePath = path.resolve(this.context.jobDir, params.name);
